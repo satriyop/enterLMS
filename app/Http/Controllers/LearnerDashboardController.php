@@ -47,14 +47,11 @@ class LearnerDashboardController extends Controller
             ->get();
 
         // Browse courses - published public courses (excluding enrolled and invited)
-        $enrolledCourseIds = $user->enrollments()->pluck('course_id')->toArray();
-        $invitedCourseIds = $user->pendingInvitations()->pluck('course_id')->toArray();
-        $excludeIds = array_merge($enrolledCourseIds, $invitedCourseIds);
-
         $browseCourses = Course::query()
             ->published()
             ->visible()
-            ->when(count($excludeIds) > 0, fn ($q) => $q->whereNotIn('id', $excludeIds))
+            ->whereDoesntHave('enrollments', fn ($q) => $q->where('user_id', $user->id))
+            ->whereDoesntHave('invitations', fn ($q) => $q->where('user_id', $user->id)->where('status', 'pending'))
             ->with(['user:id,name', 'category:id,name'])
             ->withCount('enrollments')
             ->orderByDesc('created_at')

@@ -15,9 +15,16 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        // Learners have their own dashboard
         if ($user->isLearner()) {
             return redirect()->route('learner.dashboard');
         }
+
+        // Only staff roles (content_manager, trainer, lms_admin) can access admin dashboard
+        abort_unless(
+            $user->isContentManager() || $user->isTrainer() || $user->isLmsAdmin(),
+            403
+        );
 
         $stats = [
             'programs' => 0,

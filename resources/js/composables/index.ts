@@ -15,17 +15,6 @@ export { useLesson } from './data/useLesson';
 export { useAssessment } from './data/useAssessment';
 
 // =============================================================================
-// Feature Composables
-// Domain-specific business logic
-// =============================================================================
-
-export { useVideoPlayer } from './features/useVideoPlayer';
-export { useFileUpload } from './features/useFileUpload';
-export { useGrading } from './features/useGrading';
-export { useOptimisticUpdate, optimisticUpdate } from './features/useOptimisticUpdate';
-export { useFeatureFlags, usePercentageRollout } from './features/useFeatureFlags';
-
-// =============================================================================
 // UI Composables
 // For managing UI state
 // =============================================================================
