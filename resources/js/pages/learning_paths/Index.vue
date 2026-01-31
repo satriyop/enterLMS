@@ -8,6 +8,7 @@ import SearchInput from '@/components/crud/SearchInput.vue';
 import Pagination from '@/components/crud/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatDuration, difficultyLabel } from '@/lib/formatters';
 import { type BreadcrumbItem, type PaginatedResponse, DifficultyLevel } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Plus, BookOpen, Layers, Eye, Pencil, Trash2, LayoutGrid, List, CheckCircle, Clock } from 'lucide-vue-next';
@@ -67,30 +68,6 @@ const statusBadge = (learningPath: LearningPathListItem) => {
     return learningPath.is_published
         ? { label: 'Terbit', variant: 'default' as const }
         : { label: 'Draft', variant: 'secondary' as const };
-};
-
-const difficultyLabel = (level: string) => {
-    switch (level) {
-        case 'beginner':
-            return 'Pemula';
-        case 'intermediate':
-            return 'Menengah';
-        case 'advanced':
-            return 'Lanjutan';
-        case 'expert':
-            return 'Ahli';
-        default:
-            return level;
-    }
-};
-
-const formatDuration = (minutes: number) => {
-    if (!minutes) return '0 menit';
-    if (minutes < 60) return `${minutes} menit`;
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    if (remainingMinutes === 0) return `${hours} jam`;
-    return `${hours}j ${remainingMinutes}m`;
 };
 
 const getLearningPathActions = (learningPath: LearningPathListItem) => [

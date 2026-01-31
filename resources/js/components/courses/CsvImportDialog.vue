@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
+import type { Page } from '@inertiajs/core';
 import {
     Dialog,
     DialogContent,
@@ -85,8 +86,8 @@ const submitImport = () => {
     router.post(`/courses/${props.courseId}/invitations/bulk`, formData, {
         preserveScroll: true,
         forceFormData: true,
-        onSuccess: (page: any) => {
-            const results = page.props.flash?.importResults;
+        onSuccess: (page: Page) => {
+            const results = (page.props.flash as Record<string, unknown>)?.importResults as { success: number; failed: number; errors?: string[] } | undefined;
             if (results) {
                 importResults.value = results;
                 if (results.failed === 0) {

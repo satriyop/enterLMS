@@ -21,6 +21,8 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatDate } from '@/lib/date';
+import { getInitials } from '@/lib/string';
 import type { BreadcrumbItem, PaginationLink, UserRole } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Plus, Users, MoreVertical, Pencil, Trash2, BookOpen, GraduationCap } from 'lucide-vue-next';
@@ -99,23 +101,6 @@ const getRoleBadge = (userRole: UserRole) => {
         default:
             return { label: userRole, variant: 'outline' as const };
     }
-};
-
-const getInitials = (name: string) => {
-    return name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-};
-
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    });
 };
 
 // =============================================================================
@@ -247,7 +232,7 @@ const deleteUser = (user: UserListItem) => {
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-muted-foreground">
-                                        {{ formatDate(user.created_at) }}
+                                        {{ formatDate(user.created_at, 'short') }}
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <DropdownMenu>

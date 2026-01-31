@@ -10,11 +10,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Link } from '@inertiajs/vue3';
 import { MoreVertical, Play } from 'lucide-vue-next';
+import type { Component } from 'vue';
 
 interface Action {
     label: string;
     href?: string;
-    icon?: any;
+    icon?: Component;
     variant?: 'default' | 'destructive';
     onClick?: () => void;
 }
@@ -26,7 +27,7 @@ interface Props {
     thumbnailUrl?: string;
     href?: string;
     badges?: { label: string; variant?: 'default' | 'secondary' | 'outline' | 'destructive' }[];
-    meta?: { icon?: any; label: string }[];
+    meta?: { icon?: Component; label: string }[];
     actions?: Action[];
 }
 

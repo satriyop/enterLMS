@@ -289,21 +289,24 @@ class Course extends Model
     /**
      * Get user IDs that should be excluded from invitations.
      *
+     * Uses UNION to combine active enrollments and pending invitations in a single query.
+     *
      * @return array<int>
      */
     public function getExcludedUserIdsForInvitation(): array
     {
-        $enrolledUserIds = $this->enrollments()
+        return DB::table('enrollments')
+            ->where('course_id', $this->id)
             ->where('status', 'active')
+            ->select('user_id')
+            ->union(
+                DB::table('course_invitations')
+                    ->where('course_id', $this->id)
+                    ->where('status', 'pending')
+                    ->select('user_id')
+            )
             ->pluck('user_id')
-            ->toArray();
-
-        $pendingInvitationUserIds = CourseInvitation::where('course_id', $this->id)
-            ->where('status', 'pending')
-            ->pluck('user_id')
-            ->toArray();
-
-        return array_merge($enrolledUserIds, $pendingInvitationUserIds);
+            ->all();
     }
 
     /**
