@@ -209,7 +209,7 @@ class MediaUploadTest extends TestCase
             'collection_name' => 'invalid_collection',
         ]);
 
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
     }
 
     public function test_content_managers_can_delete_their_media(): void
@@ -346,7 +346,7 @@ class MediaUploadTest extends TestCase
             'collection_name' => 'video',
         ]);
 
-        $response->assertStatus(404);
+        $response->assertNotFound();
     }
 
     protected function assertStringContains(string $needle, string $haystack): void

@@ -1,92 +1,78 @@
 <?php
 
-namespace Tests\Feature\Settings;
-
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
-use Tests\TestCase;
 
-class TwoFactorAuthenticationTest extends TestCase
-{
-    use RefreshDatabase;
-
-    public function test_two_factor_settings_page_can_be_rendered()
-    {
-        if (! Features::canManageTwoFactorAuthentication()) {
-            $this->markTestSkipped('Two-factor authentication is not enabled.');
-        }
-
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => true,
-        ]);
-
-        $user = User::factory()->withoutTwoFactor()->create();
-
-        $this->actingAs($user)
-            ->withSession(['auth.password_confirmed_at' => time()])
-            ->get(route('two-factor.show'))
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('settings/TwoFactor')
-                ->where('twoFactorEnabled', false)
-            );
+it('can render two factor settings page', function () {
+    if (! Features::canManageTwoFactorAuthentication()) {
+        $this->markTestSkipped('Two-factor authentication is not enabled.');
     }
 
-    public function test_two_factor_settings_page_requires_password_confirmation_when_enabled()
-    {
-        if (! Features::canManageTwoFactorAuthentication()) {
-            $this->markTestSkipped('Two-factor authentication is not enabled.');
-        }
+    Features::twoFactorAuthentication([
+        'confirm' => true,
+        'confirmPassword' => true,
+    ]);
 
-        $user = User::factory()->create();
+    $user = User::factory()->withoutTwoFactor()->create();
 
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => true,
-        ]);
+    $this->actingAs($user)
+        ->withSession(['auth.password_confirmed_at' => time()])
+        ->get(route('two-factor.show'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('settings/TwoFactor')
+            ->where('twoFactorEnabled', false)
+        );
+});
 
-        $response = $this->actingAs($user)
-            ->get(route('two-factor.show'));
-
-        $response->assertRedirect(route('password.confirm'));
+it('requires password confirmation when enabled', function () {
+    if (! Features::canManageTwoFactorAuthentication()) {
+        $this->markTestSkipped('Two-factor authentication is not enabled.');
     }
 
-    public function test_two_factor_settings_page_does_not_requires_password_confirmation_when_disabled()
-    {
-        if (! Features::canManageTwoFactorAuthentication()) {
-            $this->markTestSkipped('Two-factor authentication is not enabled.');
-        }
+    $user = User::factory()->create();
 
-        $user = User::factory()->create();
+    Features::twoFactorAuthentication([
+        'confirm' => true,
+        'confirmPassword' => true,
+    ]);
 
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => false,
-        ]);
+    $this->actingAs($user)
+        ->get(route('two-factor.show'))
+        ->assertRedirect(route('password.confirm'));
+});
 
-        $this->actingAs($user)
-            ->get(route('two-factor.show'))
-            ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('settings/TwoFactor')
-            );
+it('does not require password confirmation when disabled', function () {
+    if (! Features::canManageTwoFactorAuthentication()) {
+        $this->markTestSkipped('Two-factor authentication is not enabled.');
     }
 
-    public function test_two_factor_settings_page_returns_forbidden_response_when_two_factor_is_disabled()
-    {
-        if (! Features::canManageTwoFactorAuthentication()) {
-            $this->markTestSkipped('Two-factor authentication is not enabled.');
-        }
+    $user = User::factory()->create();
 
-        config(['fortify.features' => []]);
+    Features::twoFactorAuthentication([
+        'confirm' => true,
+        'confirmPassword' => false,
+    ]);
 
-        $user = User::factory()->create();
+    $this->actingAs($user)
+        ->get(route('two-factor.show'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('settings/TwoFactor')
+        );
+});
 
-        $this->actingAs($user)
-            ->withSession(['auth.password_confirmed_at' => time()])
-            ->get(route('two-factor.show'))
-            ->assertForbidden();
+it('returns forbidden when two factor feature is disabled', function () {
+    if (! Features::canManageTwoFactorAuthentication()) {
+        $this->markTestSkipped('Two-factor authentication is not enabled.');
     }
-}
+
+    config(['fortify.features' => []]);
+
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->withSession(['auth.password_confirmed_at' => time()])
+        ->get(route('two-factor.show'))
+        ->assertForbidden();
+});

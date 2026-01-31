@@ -187,7 +187,7 @@ class MediaControllerTest extends TestCase
     {
         $response = $this->actingAs($this->contentManager)->postJson('/media', []);
 
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
         $response->assertJsonValidationErrors(['file', 'mediable_type', 'mediable_id']);
     }
 
@@ -201,7 +201,7 @@ class MediaControllerTest extends TestCase
             'mediable_id' => $course->id,
         ]);
 
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
         $response->assertJsonValidationErrors(['file']);
     }
 
@@ -215,7 +215,7 @@ class MediaControllerTest extends TestCase
             'mediable_id' => $course->id,
         ]);
 
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
         $response->assertJsonValidationErrors(['mediable_type']);
     }
 
@@ -230,7 +230,7 @@ class MediaControllerTest extends TestCase
             'collection_name' => 'invalid_collection',
         ]);
 
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
         $response->assertJsonValidationErrors(['collection_name']);
     }
 
@@ -243,7 +243,7 @@ class MediaControllerTest extends TestCase
             'collection_name' => 'thumbnail',
         ]);
 
-        $response->assertStatus(404);
+        $response->assertNotFound();
         $response->assertJson([
             'message' => 'Model tidak ditemukan.',
         ]);

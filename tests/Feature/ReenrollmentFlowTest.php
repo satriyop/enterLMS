@@ -4,7 +4,9 @@ use App\Domain\Enrollment\Events\UserReenrolled;
 use App\Domain\Enrollment\States\ActiveState;
 use App\Domain\Enrollment\States\DroppedState;
 use App\Models\Course;
+use App\Models\CourseSection;
 use App\Models\Enrollment;
+use App\Models\Lesson;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
@@ -47,6 +49,8 @@ describe('Re-enrollment Flow', function () {
 
             $user = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->public()->create();
+            $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            $lesson = Lesson::factory()->create(['course_section_id' => $section->id]);
 
             // Create a dropped enrollment with progress
             $enrollment = Enrollment::factory()->create([
@@ -55,7 +59,7 @@ describe('Re-enrollment Flow', function () {
                 'status' => DroppedState::$name,
                 'progress_percentage' => 50,
                 'started_at' => now()->subDays(5),
-                'last_lesson_id' => 1,
+                'last_lesson_id' => $lesson->id,
             ]);
 
             $response = $this->actingAs($user)

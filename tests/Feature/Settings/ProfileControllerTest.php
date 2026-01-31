@@ -1,175 +1,135 @@
 <?php
 
-namespace Tests\Feature\Settings;
-
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class ProfileControllerTest extends TestCase
-{
-    use RefreshDatabase;
+it('redirects guests to login', function () {
+    $this->get(route('profile.edit'))
+        ->assertRedirect(route('login'));
+});
 
-    public function test_guest_cannot_access_profile_page(): void
-    {
-        $response = $this->get(route('profile.edit'));
+it('shows profile page to authenticated user', function () {
+    $user = User::factory()->create(['role' => 'learner']);
 
-        $response->assertRedirect(route('login'));
-    }
-
-    public function test_authenticated_user_can_view_profile_page(): void
-    {
-        $user = User::factory()->create(['role' => 'learner']);
-
-        $response = $this->actingAs($user)->get(route('profile.edit'));
-
-        $response->assertOk();
-        $response->assertInertia(fn ($page) => $page
+    $this->actingAs($user)
+        ->get(route('profile.edit'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
             ->component('settings/Profile')
             ->has('mustVerifyEmail')
         );
-    }
+});
 
-    public function test_user_can_update_profile_name_and_email(): void
-    {
-        $user = User::factory()->create([
-            'name' => 'Nama Lama',
-            'email' => 'lama@example.com',
-            'role' => 'learner',
-        ]);
+it('can update profile name and email', function () {
+    $user = User::factory()->create([
+        'name' => 'Nama Lama',
+        'email' => 'lama@example.com',
+        'role' => 'learner',
+    ]);
 
-        $response = $this->actingAs($user)->patch(route('profile.update'), [
+    $this->actingAs($user)
+        ->patch(route('profile.update'), [
             'name' => 'Nama Baru',
             'email' => 'baru@example.com',
-        ]);
+        ])
+        ->assertRedirect(route('profile.edit'));
 
-        $response->assertRedirect(route('profile.edit'));
+    $user->refresh();
+    expect($user->name)->toBe('Nama Baru');
+    expect($user->email)->toBe('baru@example.com');
+});
 
-        $user->refresh();
-        $this->assertEquals('Nama Baru', $user->name);
-        $this->assertEquals('baru@example.com', $user->email);
-    }
+it('resets email verification when email changed', function () {
+    $user = User::factory()->create([
+        'email' => 'lama@example.com',
+        'email_verified_at' => now(),
+        'role' => 'learner',
+    ]);
 
-    public function test_email_verification_is_reset_when_email_changed(): void
-    {
-        $user = User::factory()->create([
-            'email' => 'lama@example.com',
-            'email_verified_at' => now(),
-            'role' => 'learner',
-        ]);
-
-        $response = $this->actingAs($user)->patch(route('profile.update'), [
+    $this->actingAs($user)
+        ->patch(route('profile.update'), [
             'name' => $user->name,
             'email' => 'baru@example.com',
-        ]);
+        ])
+        ->assertRedirect(route('profile.edit'));
 
-        $response->assertRedirect(route('profile.edit'));
+    expect($user->refresh()->email_verified_at)->toBeNull();
+});
 
-        $user->refresh();
-        $this->assertNull($user->email_verified_at);
-    }
+it('does not reset email verification when email unchanged', function () {
+    $verifiedAt = now();
+    $user = User::factory()->create([
+        'email' => 'test@example.com',
+        'email_verified_at' => $verifiedAt,
+        'role' => 'learner',
+    ]);
 
-    public function test_email_verification_not_reset_when_email_unchanged(): void
-    {
-        $verifiedAt = now();
-        $user = User::factory()->create([
-            'email' => 'test@example.com',
-            'email_verified_at' => $verifiedAt,
-            'role' => 'learner',
-        ]);
-
-        $response = $this->actingAs($user)->patch(route('profile.update'), [
+    $this->actingAs($user)
+        ->patch(route('profile.update'), [
             'name' => 'Nama Baru',
             'email' => 'test@example.com',
-        ]);
+        ])
+        ->assertRedirect(route('profile.edit'));
 
-        $response->assertRedirect(route('profile.edit'));
+    $user->refresh();
+    expect($user->email_verified_at)->not->toBeNull();
+    expect($user->email_verified_at->timestamp)->toBe($verifiedAt->timestamp);
+});
 
-        $user->refresh();
-        $this->assertNotNull($user->email_verified_at);
-        $this->assertEquals($verifiedAt->timestamp, $user->email_verified_at->timestamp);
-    }
+it('cannot use duplicate email', function () {
+    User::factory()->create(['email' => 'sudah-ada@example.com']);
+    $user = User::factory()->create(['email' => 'user@example.com', 'role' => 'learner']);
 
-    public function test_user_cannot_use_duplicate_email(): void
-    {
-        $existingUser = User::factory()->create([
-            'email' => 'sudah-ada@example.com',
-        ]);
-
-        $user = User::factory()->create([
-            'email' => 'user@example.com',
-            'role' => 'learner',
-        ]);
-
-        $response = $this->actingAs($user)->patch(route('profile.update'), [
+    $this->actingAs($user)
+        ->patch(route('profile.update'), [
             'name' => $user->name,
             'email' => 'sudah-ada@example.com',
-        ]);
+        ])
+        ->assertSessionHasErrors('email');
 
-        $response->assertSessionHasErrors('email');
+    expect($user->refresh()->email)->toBe('user@example.com');
+});
 
-        $user->refresh();
-        $this->assertEquals('user@example.com', $user->email);
-    }
+it('requires name', function () {
+    $user = User::factory()->create(['role' => 'learner']);
 
-    public function test_name_is_required(): void
-    {
-        $user = User::factory()->create(['role' => 'learner']);
+    $this->actingAs($user)
+        ->patch(route('profile.update'), ['name' => '', 'email' => $user->email])
+        ->assertSessionHasErrors('name');
+});
 
-        $response = $this->actingAs($user)->patch(route('profile.update'), [
-            'name' => '',
-            'email' => $user->email,
-        ]);
+it('requires email', function () {
+    $user = User::factory()->create(['role' => 'learner']);
 
-        $response->assertSessionHasErrors('name');
-    }
+    $this->actingAs($user)
+        ->patch(route('profile.update'), ['name' => $user->name, 'email' => ''])
+        ->assertSessionHasErrors('email');
+});
 
-    public function test_email_is_required(): void
-    {
-        $user = User::factory()->create(['role' => 'learner']);
+it('requires valid email', function () {
+    $user = User::factory()->create(['role' => 'learner']);
 
-        $response = $this->actingAs($user)->patch(route('profile.update'), [
-            'name' => $user->name,
-            'email' => '',
-        ]);
+    $this->actingAs($user)
+        ->patch(route('profile.update'), ['name' => $user->name, 'email' => 'bukan-email'])
+        ->assertSessionHasErrors('email');
+});
 
-        $response->assertSessionHasErrors('email');
-    }
+it('can delete account', function () {
+    $user = User::factory()->create(['role' => 'learner']);
 
-    public function test_email_must_be_valid(): void
-    {
-        $user = User::factory()->create(['role' => 'learner']);
+    $this->actingAs($user)
+        ->delete(route('profile.destroy'), ['password' => 'password'])
+        ->assertRedirect('/');
 
-        $response = $this->actingAs($user)->patch(route('profile.update'), [
-            'name' => $user->name,
-            'email' => 'bukan-email',
-        ]);
+    $this->assertGuest();
+    $this->assertDatabaseMissing('users', ['id' => $user->id]);
+});
 
-        $response->assertSessionHasErrors('email');
-    }
+it('requires correct password to delete account', function () {
+    $user = User::factory()->create(['role' => 'learner']);
 
-    public function test_user_can_delete_their_account(): void
-    {
-        $user = User::factory()->create(['role' => 'learner']);
+    $this->actingAs($user)
+        ->delete(route('profile.destroy'), ['password' => 'password-salah'])
+        ->assertSessionHasErrors('password');
 
-        $response = $this->actingAs($user)->delete(route('profile.destroy'), [
-            'password' => 'password',
-        ]);
-
-        $response->assertRedirect('/');
-        $this->assertGuest();
-        $this->assertDatabaseMissing('users', ['id' => $user->id]);
-    }
-
-    public function test_user_must_provide_correct_password_to_delete_account(): void
-    {
-        $user = User::factory()->create(['role' => 'learner']);
-
-        $response = $this->actingAs($user)->delete(route('profile.destroy'), [
-            'password' => 'password-salah',
-        ]);
-
-        $response->assertSessionHasErrors('password');
-        $this->assertDatabaseHas('users', ['id' => $user->id]);
-    }
-}
+    $this->assertDatabaseHas('users', ['id' => $user->id]);
+});

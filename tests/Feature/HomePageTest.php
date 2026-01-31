@@ -17,7 +17,7 @@ class HomePageTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Welcome')
             ->has('canRegister')
@@ -49,7 +49,7 @@ class HomePageTest extends TestCase
 
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Welcome')
             ->where('featuredCourses.0.id', $publishedCourse->id)
@@ -62,7 +62,7 @@ class HomePageTest extends TestCase
 
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Welcome')
             ->has('categories', 3)
@@ -73,7 +73,7 @@ class HomePageTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Welcome')
             ->has('stats', 4)
@@ -99,7 +99,7 @@ class HomePageTest extends TestCase
 
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Welcome')
             ->has('featuredCourses', 1)
