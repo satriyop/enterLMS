@@ -207,8 +207,8 @@ class EnrollmentLifecycleTest extends TestCase
         $response = $this->actingAs($this->learner)
             ->delete("/courses/{$this->publicCourse->id}/unenroll");
 
-        $response->assertRedirect();
-        $response->assertSessionHas('error');
+        // Policy rejects drop on non-active enrollments
+        $response->assertForbidden();
 
         $enrollment->refresh();
         $this->assertEquals('completed', $enrollment->status);

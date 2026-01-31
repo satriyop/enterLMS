@@ -81,6 +81,8 @@ class EnrollmentController extends Controller
             return back()->with('error', 'Tidak ada pendaftaran yang dibatalkan untuk kursus ini.');
         }
 
+        Gate::authorize('reactivate', $droppedEnrollment);
+
         $preserveProgress = $request->boolean('preserve_progress', true);
 
         $droppedEnrollment->reactivate($preserveProgress);
@@ -104,6 +106,8 @@ class EnrollmentController extends Controller
         $enrollment = Enrollment::query()
             ->forUserAndCourse($user, $course)
             ->firstOrFail();
+
+        Gate::authorize('drop', $enrollment);
 
         try {
             $enrollment->drop();
