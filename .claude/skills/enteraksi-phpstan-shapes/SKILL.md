@@ -210,33 +210,33 @@ public static function fromArray(array $data): static
 public function listCourses(array $options = []): array
 ```
 
-### 5. Spatie Data Class with fromModel
+### 5. JsonResource with Typed Arrays
 
 ```php
-use App\Models\LessonProgress;
-use Spatie\LaravelData\Data;
-use Spatie\TypeScriptTransformer\Attributes\TypeScript;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-#[TypeScript]
-class LessonProgressData extends Data
+class DashboardEnrollmentResource extends JsonResource
 {
-    public function __construct(
-        public int $id,
-        public int $enrollment_id,
-        public int $lesson_id,
-        public bool $is_completed,
-        public int $progress_percentage,
-        public int $time_spent_seconds,
-        // ... more properties
-    ) {}
-
-    public static function fromModel(LessonProgress $progress): self
+    /**
+     * @return array{
+     *     id: int,
+     *     course_id: int,
+     *     status: string,
+     *     progress_percentage: int,
+     *     enrolled_at: string|null,
+     *     completed_at: string|null
+     * }
+     */
+    public function toArray(Request $request): array
     {
-        return new self(
-            id: $progress->id,
-            enrollment_id: $progress->enrollment_id,
-            // ...
-        );
+        return [
+            'id' => $this->id,
+            'course_id' => $this->course_id,
+            'status' => (string) $this->status,
+            'progress_percentage' => $this->progress_percentage,
+            'enrolled_at' => $this->enrolled_at?->toIso8601String(),
+            'completed_at' => $this->completed_at?->toIso8601String(),
+        ];
     }
 }
 ```
@@ -384,7 +384,7 @@ New code must pass PHPStan. Existing errors are in baseline:
 phpstan.neon                                          # Configuration
 phpstan-baseline.neon                                 # Existing errors
 app/Domain/Progress/DTOs/ProgressResult.php           # Complex nested example
-app/Data/Progress/LessonProgressData.php              # Spatie Data class example
+app/Http/Resources/Dashboard/DashboardEnrollmentResource.php  # JsonResource example
 app/Domain/Enrollment/DTOs/CreateEnrollmentDTO.php    # Simple DTO example
 app/Domain/Assessment/DTOs/GradingResult.php          # Mixed types example
 ```

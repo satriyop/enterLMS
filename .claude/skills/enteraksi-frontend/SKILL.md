@@ -15,30 +15,25 @@ triggers:
   - dark mode
   - tailwind
   - shadcn
+  - status badge
+  - constants
+  - formatters
 ---
 
 # Enteraksi Frontend Patterns
-
-## When to Use This Skill
-
-- Creating Vue 3 components or pages
-- Writing TypeScript types/interfaces
-- Using Inertia.js for navigation and forms
-- Creating composables for shared logic
-- Using Wayfinder for type-safe routes
-- Implementing dark mode support
 
 ## Tech Stack
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| Vue | 3.x | Frontend framework (Composition API) |
+| Vue | 3.x | Composition API (`<script setup>`) |
 | TypeScript | 5.x | Type safety |
 | Inertia.js | v2 | SPA bridge to Laravel |
 | Tailwind CSS | v4 | Utility-first styling |
-| Shadcn/vue | - | UI components (reka-ui based) |
+| Shadcn/vue | - | UI primitives (reka-ui based) |
 | Lucide | - | Icons (`lucide-vue-next`) |
 | Wayfinder | v0 | Type-safe Laravel routes |
+| Pinia | - | Complex state management (limited use) |
 
 ## Directory Structure
 
@@ -46,471 +41,292 @@ triggers:
 resources/js/
 ├── app.ts                    # Inertia app setup
 ├── layouts/
-│   └── AppLayout.vue         # Main layout with sidebar
+│   ├── AppLayout.vue         # Main layout (sidebar)
+│   └── AuthLayout.vue        # Auth pages layout
 ├── pages/                    # Inertia pages (mapped to routes)
-│   ├── Dashboard.vue
-│   ├── courses/
-│   │   ├── Index.vue         # List page
-│   │   ├── Create.vue        # Create form
-│   │   ├── Edit.vue          # Edit form
-│   │   └── Show.vue          # Detail page
-│   └── {domain}/
+│   ├── courses/              # Index, Create, Edit, Show, Detail, Browse
+│   ├── assessments/          # Index, Create, Edit, Show, Attempt, Grade
+│   ├── learning_paths/       # Index, Create, Edit, Show
+│   ├── learner/              # Dashboard, learning path views
+│   ├── admin/users/          # User management
+│   ├── auth/                 # Login, Register, 2FA, etc.
+│   └── settings/             # Profile, Password, Appearance
 ├── components/
-│   ├── ui/                   # Shadcn components
-│   │   ├── button/Button.vue
-│   │   └── ...
-│   ├── crud/                 # CRUD page components
-│   │   ├── PageHeader.vue
-│   │   └── FormSection.vue
-│   └── {domain}/             # Domain-specific components
+│   ├── ui/                   # Shadcn components (button, card, input, etc.)
+│   ├── crud/                 # CRUD page components (PageHeader, DataCard, etc.)
+│   ├── features/shared/      # StatusBadge, shared feature components
+│   └── {domain}/             # Domain-specific (courses, assessments, etc.)
 ├── composables/
-│   ├── index.ts              # Export barrel
-│   ├── data/                 # Data-fetching composables
-│   ├── features/             # Feature-specific composables
-│   └── ui/                   # UI utility composables
+│   ├── index.ts              # Barrel export
+│   ├── data/                 # useCourse, useCourses, useEnrollment
+│   ├── features/             # useVideoPlayer, useFileUpload, useGrading
+│   └── ui/                   # useModal, useToast, useTabs, usePagination
+├── stores/                   # Pinia stores (courseEditor, assessmentAttempt, lessonViewer)
 ├── types/
 │   ├── index.d.ts            # Main type exports
-│   ├── models/               # Domain model types
-│   │   ├── common.ts         # Shared types (IDs, timestamps)
-│   │   ├── course.ts
-│   │   └── user.ts
-│   └── api/                  # API response types
-└── lib/
-    ├── utils.ts              # cn(), debounce, etc.
-    ├── formatters.ts         # formatDate, formatDuration
-    ├── constants.ts          # Enums, static values
-    └── icons.ts              # Icon mappings
+│   └── models/               # Domain model types (common, course, enrollment, etc.)
+├── lib/
+│   ├── utils.ts              # cn(), debounce
+│   ├── constants.ts          # Status colors, file limits, timing constants
+│   ├── formatters.ts         # Label formatters (Indonesian), duration, currency
+│   ├── icons.ts              # Icon mappings
+│   └── string.ts             # String utilities
+└── actions/                  # Wayfinder-generated route actions (auto-generated)
 ```
 
 ## Key Patterns
 
-### 1. Page Props Pattern
+### 1. Page Props - Inline Interface Per Page
+
+Each page defines its own Props interface. No shared `AppPageProps` wrapper:
 
 ```typescript
-// Define page props interface
-import type { AppPageProps, Course, Category } from '@/types';
+// pages/courses/Index.vue
+interface CourseListItem {
+    id: number;
+    title: string;
+    slug: string;
+    status: string;
+    lessons_count: number;
+    // ...
+}
 
-const props = defineProps<AppPageProps<{
-    course: Course;
-    categories: Category[];
-    can: {
-        edit: boolean;
-        delete: boolean;
+interface Props {
+    courses: {
+        data: CourseListItem[];
+        links: PaginationLink[];
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
     };
-}>>();
+    filters: {
+        search?: string;
+        status?: string;
+        category_id?: string;
+    };
+    categories: Category[];
+}
 
-// Access props
-props.course.title
-props.auth.user  // Always available from AppPageProps
-props.flash?.success
+const props = defineProps<Props>();
 ```
 
-### 2. Inertia Form Component (Vue 3)
+### 2. Navigation & Filtering with Wayfinder + router.get()
 
-```vue
-<script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
-import { store } from '@/actions/App/Http/Controllers/CourseController';
+Pages use `router.get()` with Wayfinder URLs for filtering and navigation:
 
-// Wayfinder generates type-safe routes
-const formAction = store.form();  // { action: '/courses', method: 'post' }
-</script>
+```typescript
+import { router } from '@inertiajs/vue3';
+import { index, create, show } from '@/actions/App/Http/Controllers/CourseController';
 
-<template>
-    <Form
-        v-bind="formAction"
-        #default="{ errors, processing, wasSuccessful }"
-    >
-        <input type="text" name="title" />
-        <div v-if="errors.title" class="text-red-500">{{ errors.title }}</div>
+// Filter with debounced search
+const search = ref(props.filters.search ?? '');
+const status = ref(props.filters.status ?? '');
+let searchTimeout: ReturnType<typeof setTimeout>;
 
-        <Button type="submit" :disabled="processing">
-            {{ processing ? 'Menyimpan...' : 'Simpan' }}
-        </Button>
-    </Form>
-</template>
+watch(search, (value) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        router.get(index().url, {
+            search: value,
+            status: status.value,
+        }, {
+            preserveState: true,
+            replace: true,
+        });
+    }, 300);
+});
+
+// Navigation
+<Link :href="create().url">Buat Kursus</Link>
+<Link :href="show.url(course.id)">{{ course.title }}</Link>
+
+// Destructive actions
+router.delete(destroy.url(course.id));
+router.put(publish.url(course.id));
 ```
 
 ### 3. Wayfinder Route Actions
 
 ```typescript
 // Import controller actions (tree-shakable)
-import { show, store, update, index } from '@/actions/App/Http/Controllers/CourseController';
+import { show, store, index } from '@/actions/App/Http/Controllers/CourseController';
 
-// Get route object with URL and method
 show(1)              // { url: '/courses/1', method: 'get' }
-show.url(1)          // '/courses/1' (just URL string)
-
-// For Inertia forms
+show.url(1)          // '/courses/1'
 store.form()         // { action: '/courses', method: 'post' }
-update.form(course.id)
+index({ query: { page: 2 } })
 
-// With query params
-index({ query: { page: 2, filter: 'active' } })
-
-// Named routes (for non-controller routes)
+// Named routes
 import { show as courseShow } from '@/routes/course';
-courseShow(1)        // For 'course.show' named route
 ```
 
-### 4. Composable Pattern
+### 4. Status Display: Constants + Formatters + StatusBadge
+
+**Centralized status colors** in `lib/constants.ts`:
+```typescript
+export const COURSE_STATUS_COLORS: Record<CourseStatus, { bg: string; text: string; border: string }> = {
+    draft: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: '...' },
+    published: { bg: 'bg-green-100 dark:bg-green-900', text: '...', border: '...' },
+    archived: { bg: 'bg-red-100 dark:bg-red-900', text: '...', border: '...' },
+};
+// Also: ENROLLMENT_STATUS_COLORS, DIFFICULTY_COLORS, ASSESSMENT_STATUS_COLORS,
+//        ATTEMPT_STATUS_COLORS, VISIBILITY_COLORS, CONTENT_TYPE_COLORS
+```
+
+**Indonesian label formatters** in `lib/formatters.ts`:
+```typescript
+courseStatusLabel('published')    // 'Dipublikasikan'
+enrollmentStatusLabel('active')  // 'Aktif'
+difficultyLabel('beginner')      // 'Pemula'
+visibilityLabel('public')        // 'Publik'
+contentTypeLabel('video')        // 'Video'
+formatDuration(90, 'long')       // '1 jam 30 menit'
+formatCurrency(50000)            // 'Rp 50.000'
+```
+
+**StatusBadge component** (`components/features/shared/StatusBadge.vue`):
+```typescript
+interface Props {
+    type: 'course' | 'enrollment' | 'difficulty' | 'assessment' | 'attempt' | 'visibility';
+    status: string;
+    size?: 'sm' | 'md' | 'lg';
+    showIcon?: boolean;
+}
+// Usage: <StatusBadge type="course" :status="course.status" />
+```
+
+**Inline badges via DataCard**:
+```typescript
+const statusBadge = (courseStatus: string) => {
+    switch (courseStatus) {
+        case 'published': return { label: 'Terbit', variant: 'default' as const };
+        case 'draft': return { label: 'Draft', variant: 'secondary' as const };
+        case 'archived': return { label: 'Arsip', variant: 'outline' as const };
+        default: return { label: courseStatus, variant: 'secondary' as const };
+    }
+};
+
+<DataCard :badges="[statusBadge(course.status)]" />
+```
+
+### 5. Composable Organization
 
 ```typescript
-// composables/useLessonProgress.ts
-import axios from 'axios';
-import { ref, onUnmounted } from 'vue';
-import type { LessonProgress } from '@/types';
+// Data composables - API/data fetching logic
+import { useCourse, useCourses, useEnrollment } from '@/composables';
 
-interface UseLessonProgressOptions {
-    courseId: number;
-    lessonId: number;
-    enrollmentId: number | null;
-    initialProgress: LessonProgress | null;
-}
+// Feature composables - domain-specific logic
+import { useVideoPlayer, useFileUpload, useGrading } from '@/composables';
 
-export function useLessonProgress(options: UseLessonProgressOptions) {
-    const { courseId, lessonId, enrollmentId, initialProgress } = options;
+// UI composables - generic UI utilities
+import { useModal, useToast, useTabs, usePagination, useConfirmation } from '@/composables';
+```
 
-    // State
-    const isCompleted = ref(initialProgress?.is_completed ?? false);
+Composable pattern:
+```typescript
+export function useLessonProgress(options: { courseId: number; lessonId: number }) {
+    const isCompleted = ref(false);
     const isSaving = ref(false);
 
-    // Methods
-    const saveProgress = async (page: number, total: number) => {
-        if (!enrollmentId || isSaving.value) return;
+    const saveProgress = async (page: number, total: number) => { /* ... */ };
 
-        isSaving.value = true;
-        try {
-            await axios.patch(`/courses/${courseId}/lessons/${lessonId}/progress`, {
-                current_page: page,
-                total_pages: total,
-            });
-        } finally {
-            isSaving.value = false;
-        }
-    };
+    onUnmounted(() => { /* cleanup */ });
 
-    // Cleanup on unmount
-    onUnmounted(() => {
-        // cleanup timers, etc.
-    });
-
-    // Return reactive state and methods
-    return {
-        isCompleted,
-        isSaving,
-        saveProgress,
-    };
+    return { isCompleted, isSaving, saveProgress };
 }
 ```
 
-### 5. TypeScript Model Types
+### 6. TypeScript Types
 
+Types organized by model in `types/models/`:
 ```typescript
-// types/models/course.ts
-import type { Timestamps, CourseId, UserId, CourseStatus } from './common';
-import type { User } from './user';
+// types/models/common.ts - Shared types
+export type CourseStatus = 'draft' | 'published' | 'archived';
+export type EnrollmentStatus = 'pending' | 'active' | 'completed' | 'suspended' | 'cancelled';
+export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
 
-export interface Course extends Timestamps {
-    id: CourseId;
-    user_id: UserId;
-    title: string;
-    slug: string;
-    short_description: string | null;
-    status: CourseStatus;
+// types/models/course.ts - Course-specific
+export interface Course { id: number; title: string; status: CourseStatus; /* ... */ }
+export interface CourseListItem { /* lighter type for lists */ }
 
-    // Model accessors (computed in backend)
-    duration?: number;
-    is_editable?: boolean;
-
-    // Relations (conditionally loaded)
-    user?: User;
-    sections?: CourseSection[];
-
-    // Aggregates
-    lessons_count?: number;
-}
-
-// Lighter type for list pages
-export interface CourseListItem {
-    id: CourseId;
-    title: string;
-    slug: string;
-    status: CourseStatus;
-    lessons_count: number;
-    user: { id: UserId; name: string };
-}
-
-// Type guards
-export function isPublished(course: Course): boolean {
-    return course.status === 'published';
-}
+// Type guards exported from types
+export function isActive(enrollment: Enrollment): boolean { /* ... */ }
+export function isCompleted(enrollment: Enrollment): boolean { /* ... */ }
 ```
 
-### 6. cn() Utility for Tailwind
+### 7. CRUD Component Layer
 
+Presentational components for list pages:
+- `PageHeader` - Title + breadcrumbs + action slot
+- `DataCard` - Card for grid/list items (title, badges, meta, actions)
+- `FilterTabs` - Status filter tabs
+- `SearchInput` - Search field
+- `Pagination` - Pagination controls
+- `FormSection` - Form section wrapper
+- `EmptyState` - Empty state with icon + action button
+
+### 8. Pinia Stores (Limited Use)
+
+Only for complex editing interfaces:
 ```typescript
-// lib/utils.ts
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-export function cn(...inputs: ClassValue[]): string {
-    return twMerge(clsx(inputs));
-}
-
-// Usage in component
-<div :class="cn('px-4 py-2', isActive && 'bg-blue-500', className)" />
+// stores/courseEditor.ts - Course editing state
+// stores/assessmentAttempt.ts - Assessment attempt tracking
+// stores/lessonViewer.ts - Lesson viewing state
 ```
 
-### 7. Dark Mode Support
+Simple page state uses `ref()` + `watch()` directly. Provide/Inject for deep component trees.
 
-```typescript
-// composables/useAppearance.ts
-import { ref, watch } from 'vue';
+### 9. API Resources (Backend → Frontend)
 
-export type Appearance = 'light' | 'dark' | 'system';
-
-const appearance = ref<Appearance>('system');
-
-export function useAppearance() {
-    const setAppearance = (mode: Appearance) => {
-        appearance.value = mode;
-        // Apply to DOM
-    };
-
-    return { appearance, setAppearance };
-}
-
-// Initialize on app load
-export function initializeTheme() {
-    // Check localStorage, system preference
-}
-```
-
-```vue
-<!-- Component with dark mode -->
-<template>
-    <div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        Content adapts to theme
-    </div>
-</template>
-```
-
-### 8. Layout Pattern
-
-```vue
-<!-- pages/courses/Index.vue -->
-<script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
-import type { AppPageProps, CourseListItem } from '@/types';
-
-defineOptions({ layout: AppLayout });
-
-const props = defineProps<AppPageProps<{
-    courses: CourseListItem[];
-}>>();
-</script>
-
-<template>
-    <div class="space-y-6">
-        <PageHeader title="Kursus Saya" />
-        <!-- content -->
-    </div>
-</template>
-```
-
-### 9. Shadcn Button with CVA
-
-```vue
-<!-- components/ui/button/Button.vue -->
-<script setup lang="ts">
-import { type ButtonVariants, buttonVariants } from '.';
-import { cn } from '@/lib/utils';
-
-interface Props {
-    variant?: ButtonVariants['variant'];
-    size?: ButtonVariants['size'];
-    class?: string;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-    variant: 'default',
-    size: 'default',
-});
-</script>
-
-<template>
-    <button :class="cn(buttonVariants({ variant, size }), props.class)">
-        <slot />
-    </button>
-</template>
-```
-
-```typescript
-// components/ui/button/index.ts
-import { cva, type VariantProps } from 'class-variance-authority';
-
-export const buttonVariants = cva(
-    'inline-flex items-center justify-center rounded-md font-medium transition-colors',
-    {
-        variants: {
-            variant: {
-                default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-                destructive: 'bg-destructive text-destructive-foreground',
-                outline: 'border border-input bg-background hover:bg-accent',
-                ghost: 'hover:bg-accent',
-                link: 'text-primary underline-offset-4 hover:underline',
-            },
-            size: {
-                default: 'h-10 px-4 py-2',
-                sm: 'h-9 px-3',
-                lg: 'h-11 px-8',
-                icon: 'h-10 w-10',
-            },
-        },
-        defaultVariants: {
-            variant: 'default',
-            size: 'default',
-        },
-    }
-);
-
-export type ButtonVariants = VariantProps<typeof buttonVariants>;
-```
-
-## Icon Usage
-
-```vue
-<script setup lang="ts">
-import { Plus, Edit, Trash2 } from 'lucide-vue-next';
-</script>
-
-<template>
-    <Button>
-        <Plus class="mr-2 h-4 w-4" />
-        Tambah
-    </Button>
-</template>
-```
-
-### 10. API Resources with Inertia
-
-**Problem:** Controller transformation methods bloat controllers. API Resources can help but have Inertia-specific gotchas.
-
-**Resource Structure:**
-```
-app/Http/Resources/
-├── LearningPath/
-│   ├── LearningPathBrowseResource.php   # List page (minimal)
-│   ├── LearningPathShowResource.php     # Detail page (full)
-│   └── LearningPathCourseResource.php   # Nested course data
-├── Enrollment/
-│   ├── PathEnrollmentIndexResource.php
-│   └── PathEnrollmentBasicResource.php
-└── Progress/
-    └── PathProgressResource.php
-```
-
-**Critical: Disable Wrapping for Inertia**
+JsonResource in `app/Http/Resources/`:
 ```php
-// app/Http/Resources/LearningPath/LearningPathBrowseResource.php
 class LearningPathBrowseResource extends JsonResource
 {
-    // REQUIRED: Disable 'data' wrapping for Inertia
-    public static $wrap = null;
+    public static $wrap = null;  // REQUIRED for Inertia
 
-    public function toArray(Request $request): array
-    {
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            // ... fields
-            'creator' => $this->whenLoaded('creator', fn () => [
-                'id' => $this->creator->id,
-                'name' => $this->creator->name,
-            ]),
-        ];
-    }
+    public function toArray(Request $request): array { /* ... */ }
 }
-```
 
-**Critical: Pagination with Resources**
-
-Using `::collection()` loses pagination when `$wrap = null`. Use `->through()` instead:
-
-```php
-// ❌ WRONG: Pagination lost
-'learningPaths' => LearningPathBrowseResource::collection($paginatedPaths),
-// Test expects 'learningPaths.current_page' - FAILS!
-
-// ✅ CORRECT: Preserves pagination structure
+// CRITICAL: For paginated data, use ->through() not ::collection()
 'learningPaths' => $paginatedPaths->through(
     fn ($path) => (new LearningPathBrowseResource($path))->resolve()
 ),
-// Test expects 'learningPaths.data', 'learningPaths.current_page' - PASSES!
 ```
 
-**For non-paginated single resources:**
-```php
-// Single resource - works fine
-'learningPath' => new LearningPathShowResource($learningPath),
-'enrollment' => $enrollment ? new PathEnrollmentBasicResource($enrollment) : null,
+### 10. Layout Pattern
+
+```vue
+<script setup lang="ts">
+import AppLayout from '@/layouts/AppLayout.vue';
+
+defineOptions({ layout: AppLayout });
+</script>
 ```
 
-**DTO Resources (non-Eloquent):**
-```php
-// For DTOs like PathProgressResult
-class PathProgressResource extends JsonResource
-{
-    public static $wrap = null;
+### 11. Dark Mode
 
-    public function toArray(Request $request): array
-    {
-        // Access DTO via $this->resource
-        $baseResponse = $this->resource->toResponse();
-        // ... transform and enrich
-        return $baseResponse;
-    }
-}
+All components include `dark:` variants:
+```html
+<div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 ```
 
-## Gotchas & Best Practices
+## Constants Reference
 
-1. **Always type page props** - Use `AppPageProps<{...}>` wrapper
-2. **Wayfinder for routes** - Never hardcode URLs
-3. **Composables return refs** - Use `ref()` not raw values
-4. **Dark mode: always add dark: variants** - Especially for backgrounds, text
-5. **cn() for conditional classes** - Never string concatenation
-6. **Types in types/ directory** - Not inline in components
-7. **defineModel for two-way binding** - For form components
-8. **LucideIcon type for icon props** - `import type { LucideIcon } from 'lucide-vue-next'`
-9. **API Resources: `$wrap = null`** - Required for Inertia compatibility
-10. **Paginated Resources: use `->through()`** - `::collection()` loses pagination metadata
+| Constant | Location | Purpose |
+|----------|----------|---------|
+| `COURSE_STATUS_COLORS` | `lib/constants.ts` | Tailwind classes per status |
+| `ENROLLMENT_STATUS_COLORS` | `lib/constants.ts` | Enrollment badge colors |
+| `DEBOUNCE` | `lib/constants.ts` | search: 300ms, autosave: 1000ms |
+| `STORAGE_KEYS` | `lib/constants.ts` | localStorage key names |
+| `BREAKPOINTS` | `lib/constants.ts` | Tailwind breakpoint values |
 
-## Quick Reference
+## Gotchas
 
-```bash
-# Files to reference
-resources/js/app.ts                      # Inertia setup
-resources/js/types/index.d.ts            # Type exports
-resources/js/types/models/course.ts      # Model type example
-resources/js/lib/utils.ts                # cn() and utilities
-resources/js/composables/useLessonProgress.ts  # Composable example
-resources/js/components/ui/button/       # Shadcn component example
-resources/js/layouts/AppLayout.vue       # Main layout
-
-# API Resources (backend)
-app/Http/Resources/LearningPath/         # API Resource examples
-app/Http/Resources/Enrollment/           # Enrollment resources
-app/Http/Resources/Progress/             # Progress resources
-app/Http/Controllers/LearningPathEnrollmentController.php  # Resource usage
-
-# Generate Wayfinder types
-php artisan wayfinder:generate
-
-# Build frontend
-npm run build
-
-# Dev with HMR
-npm run dev
-```
+1. **No Inertia Form component usage** - Pages use `router.get()` / `router.post()` directly
+2. **Wayfinder for ALL routes** - Never hardcode URLs
+3. **`$wrap = null` on Resources** - Required for Inertia compatibility
+4. **`->through()` for pagination** - `::collection()` loses pagination metadata with `$wrap = null`
+5. **Indonesian labels everywhere** - All user-facing text in Bahasa Indonesia
+6. **Dark mode on everything** - Every new component needs `dark:` variants
+7. **cn() for conditional classes** - Never string concatenation

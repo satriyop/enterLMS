@@ -515,6 +515,6 @@ isPathCompleted()              // checks required only
 
 ## Related Skills
 
-- `enteraksi-models` - Spatie states, model relationships
+- `enteraksi-state-machines` - Spatie states, model relationships
 - `enteraksi-testing` - Testing patterns
 - `laravel-learnings` - General Laravel patterns

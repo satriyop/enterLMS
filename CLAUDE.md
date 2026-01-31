@@ -49,22 +49,23 @@ This project has detailed architectural patterns documented in `.claude/skills/`
 
 | Skill | Use When |
 |-------|----------|
-| `enteraksi-architecture` | Creating services, DTOs, value objects, DomainServiceProvider bindings |
+| `enteraksi-architecture` | Creating services, rich models, DTOs, JsonResource, DomainServiceProvider |
 | `enteraksi-state-machines` | Working with CourseState, EnrollmentState, status transitions |
 | `enteraksi-events` | Domain events, listeners, audit logging |
-| `enteraksi-strategies` | Grading strategies, progress calculators, strategy pattern |
+| `enteraksi-strategies` | Grading strategies, progress calculators, prerequisite evaluators |
 | `enteraksi-testing` | Pest tests, factory states, policy tests, global helpers |
-| `enteraksi-frontend` | Vue 3 + Inertia pages, composables, TypeScript types |
-| `enteraksi-crud` | CRUD pages, controllers, FormRequests, PageHeader/FormSection |
+| `enteraksi-frontend` | Vue 3 + Inertia pages, composables, TypeScript types, constants/formatters |
+| `enteraksi-crud` | CRUD pages, controllers, FormRequests, PageHeader/DataCard/FilterTabs |
 | `enteraksi-component-architecture` | Extracting Vue components, refactoring large pages |
 | `enteraksi-learning-path` | Learning path enrollment, cross-domain sync, progress tracking |
-| `enteraksi-n1-prevention` | N+1 queries, accessor traps, RequiresEagerLoading trait, controller transformation |
+| `enteraksi-n1-prevention` | N+1 queries, accessor traps, RequiresEagerLoading trait |
 | `enteraksi-batch-loading` | Batch loading, DB aggregation, replacing loop queries |
 | `enteraksi-eloquent-gotchas` | fresh() vs refresh(), transaction patterns, stale data |
 | `enteraksi-concurrency` | Race conditions, pessimistic locking, concurrent enrollment handling |
 | `enteraksi-resource-scoping` | Nested route authorization, scoped validation rules, ownership verification |
-| `enteraksi-policy-context` | Policy authorization with required context DTOs, FormRequest authorize, testing policies |
+| `enteraksi-policy-context` | Policy authorization with context DTOs, FormRequest authorize |
 | `enteraksi-db-indexing` | Slow queries, composite indexes, query optimization |
+| `enteraksi-debugging` | Root cause analysis, type errors, data transformation issues |
 | `enteraksi-phpstan-shapes` | PHPDoc array shapes, static analysis, fromArray type hints |
 
 **Always check relevant skills before implementing features.**
@@ -92,10 +93,12 @@ app/
 
 ### Key Patterns Used
 - **State Machines**: `spatie/laravel-model-states` for Course, Enrollment status
-- **Strategy Pattern**: Grading strategies, progress calculators (tagged services)
+- **Strategy Pattern**: Grading strategies, progress calculators, prerequisite evaluators (tagged services)
 - **Domain Events**: `UserEnrolled`, `CoursePublished`, etc. with audit logging
-- **Service Layer**: Contracts → Implementations, injected via DomainServiceProvider
-- **DTOs & Value Objects**: Immutable data transfer, validated value objects
+- **Rich Models**: Models own state transitions (`$enrollment->drop()`, `$enrollment->complete()`)
+- **Service Layer**: Services return Models, injected directly (no contracts for single-impl)
+- **JsonResource**: `app/Http/Resources/` for API/Inertia transformation
+- **Input DTOs**: Standalone readonly classes for service parameters
 
 ---
 
@@ -805,6 +808,8 @@ Fortify is a headless authentication backend that provides authentication routes
 | See CRUD components | `resources/js/components/crud/` |
 | Add TypeScript types | `resources/js/types/models/` |
 | See composable patterns | `resources/js/composables/` |
+| See status colors/labels | `resources/js/lib/constants.ts`, `resources/js/lib/formatters.ts` |
+| Add API/Inertia resource | `app/Http/Resources/` |
 | Configure static analysis | `phpstan.neon`, `phpstan-baseline.neon` |
 | See DTO array shape examples | `app/Domain/Progress/DTOs/ProgressResult.php` |
 
@@ -821,4 +826,4 @@ Fortify is a headless authentication backend that provides authentication routes
 9. **PHPStan errors** - New code must pass `./vendor/bin/phpstan analyse`. Add array shapes to DTOs' `fromArray()` methods
 10. **Nested route scoping** - Route model binding doesn't auto-scope children to parents. Always verify ownership (`$child->parent_id === $parent->id`) or use `Rule::exists()->where()` for submitted IDs
 11. **RequiresEagerLoading throws in tests** - Models using `RequiresEagerLoading` trait throw when accessing counts/averages without eager loading. Reload with `Course::withCount('lessons')->find($id)` in tests
-12. **Value object results in tests** - Result DTOs contain value objects, not models. Use camelCase (`$result->enrollment->userId`), fetch model for relationships (`LearningPathEnrollment::find($result->enrollment->id)`)
+12. **Services return Models** - Services return Eloquent models, not DTOs. Controllers transform using `JsonResource` for API/Inertia responses
