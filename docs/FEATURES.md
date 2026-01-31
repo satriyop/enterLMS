@@ -470,7 +470,8 @@ Enrollment is handled by `EnrollmentService` which manages the enrollment lifecy
    - User not already enrolled
    - Course is public OR user has pending invitation
 4. Controller calls EnrollmentService:
-   $result = $service->enroll($user, $course);
+   $enrollment = $service->enroll(new CreateEnrollmentDTO(...));
+   - Returns Enrollment model directly
    - Creates enrollment with status = 'active'
    - Dispatches UserEnrolled event
    - Triggers SendWelcomeNotification listener
@@ -773,6 +774,24 @@ courses()->attach($courseId, [
 
 ---
 
+### Publish/Unpublish Learning Path
+
+**Routes:**
+- `PUT /learning-paths/{learning_path}/publish`
+- `PUT /learning-paths/{learning_path}/unpublish`
+**Controller:** `LearningPathController@publish`, `@unpublish`
+**Policy:** `LearningPathPolicy@publish`
+
+**Flow:**
+```
+1. Admin views learning path
+2. Clicks "Publish" or "Unpublish"
+3. Policy checks: must be creator or lms_admin
+4. Updates is_published and published_at
+```
+
+---
+
 ### Reorder Learning Path Courses
 
 **Route:** `POST /learning-paths/{learning_path}/reorder`
@@ -783,6 +802,109 @@ courses()->attach($courseId, [
 1. Drag course to new position
 2. Send array of course IDs in order
 3. Controller updates pivot.position for each
+```
+
+---
+
+### Browse Learning Paths (Learner)
+
+**Route:** `GET /learner/learning-paths/browse`
+**Controller:** `LearningPathEnrollmentController@browse`
+
+**Flow:**
+```
+1. Learner navigates to Browse Learning Paths
+2. Controller loads published paths with course counts, difficulty
+3. Shows enrollment status for each path (enrolled/not enrolled)
+4. Learner can filter/search paths
+```
+
+---
+
+### Enroll in Learning Path
+
+**Route:** `POST /learner/learning-paths/{learningPath}/enroll`
+**Controller:** `LearningPathEnrollmentController@enroll`
+
+**Flow:**
+```
+1. Learner views published learning path
+2. Clicks "Enroll" button
+3. Controller calls PathEnrollmentService:
+   a. Check if already enrolled (reactivate if dropped)
+   b. Create LearningPathEnrollment with state='active'
+   c. Initialize LearningPathCourseProgress for each course:
+      - First course: state='available', create course Enrollment
+      - Other courses: state='locked', no course enrollment yet
+   d. Dispatch PathEnrollmentCreated event
+4. Redirect to progress page
+```
+
+**Cascade Enrollment:**
+- Path enrollment auto-creates course Enrollment for the first available course
+- Subsequent courses are enrolled when prerequisites are met (course unlocking)
+
+**Re-enrollment:**
+- If a dropped enrollment exists, it's reactivated instead of creating a new one
+- Progress can be preserved or reset based on configuration
+
+---
+
+### View Learning Path Progress
+
+**Route:** `GET /learner/learning-paths/{learningPath}/progress`
+**Controller:** `LearningPathEnrollmentController@progress`
+
+**Flow:**
+```
+1. Enrolled learner views their path progress
+2. Controller loads:
+   - LearningPathEnrollment with courseProgress
+   - Each course's state (locked/available/in_progress/completed)
+   - Overall progress percentage
+3. Shows visual progress through courses in order
+```
+
+**Course Progress States:**
+| State | Description |
+|-------|-------------|
+| `locked` | Prerequisites not met, cannot access |
+| `available` | Can start, course enrollment created |
+| `in_progress` | User has started the course |
+| `completed` | Course finished |
+
+---
+
+### Drop from Learning Path
+
+**Route:** `DELETE /learner/learning-paths/{learningPath}/drop`
+**Controller:** `LearningPathEnrollmentController@drop`
+
+**Flow:**
+```
+1. Enrolled learner clicks "Drop" on learning path
+2. Controller:
+   a. Find active enrollment
+   b. Call $pathEnrollment->drop($reason)
+   c. Sets state='dropped', dropped_at=now()
+   d. Dispatches PathDropped event
+3. Course enrollments are NOT automatically dropped
+4. Redirect to learning paths index
+```
+
+---
+
+### Cross-Domain Sync: Course Drop → Path Progress
+
+When a user drops a course enrollment that's part of a learning path:
+
+```
+1. UserDropped event dispatched (from Enrollment domain)
+2. UpdatePathProgressOnCourseDrop listener (LearningPath domain):
+   a. Find all LearningPathCourseProgress linked to dropped enrollment
+   b. Revert course progress state to 'available'
+   c. Recalculate path progress percentage
+   d. If path was 'completed', revert to 'active'
 ```
 
 ---
@@ -904,15 +1026,27 @@ courses()->attach($courseId, [
 | `/courses/{course}/assessments/{assessment}/attempts/{attempt}/submit` | POST | AssessmentController@submitAttempt |
 | `/courses/{course}/assessments/{assessment}/attempts/{attempt}/grade` | POST | AssessmentController@submitGrade |
 
-#### Learning Paths
+#### Learning Paths (Admin CRUD)
 | Route | Method | Controller |
 |-------|--------|------------|
 | `/learning-paths` | GET | LearningPathController@index |
 | `/learning-paths` | POST | LearningPathController@store |
 | `/learning-paths/{learning_path}` | GET | LearningPathController@show |
 | `/learning-paths/{learning_path}` | PUT | LearningPathController@update |
+| `/learning-paths/{learning_path}` | DELETE | LearningPathController@destroy |
 | `/learning-paths/{learning_path}/publish` | PUT | LearningPathController@publish |
+| `/learning-paths/{learning_path}/unpublish` | PUT | LearningPathController@unpublish |
 | `/learning-paths/{learning_path}/reorder` | POST | LearningPathController@reorder |
+
+#### Learning Paths (Learner Enrollment)
+| Route | Method | Controller |
+|-------|--------|------------|
+| `/learner/learning-paths` | GET | LearningPathEnrollmentController@index |
+| `/learner/learning-paths/browse` | GET | LearningPathEnrollmentController@browse |
+| `/learner/learning-paths/{learningPath}` | GET | LearningPathEnrollmentController@show |
+| `/learner/learning-paths/{learningPath}/enroll` | POST | LearningPathEnrollmentController@enroll |
+| `/learner/learning-paths/{learningPath}/progress` | GET | LearningPathEnrollmentController@progress |
+| `/learner/learning-paths/{learningPath}/drop` | DELETE | LearningPathEnrollmentController@drop |
 
 ---
 

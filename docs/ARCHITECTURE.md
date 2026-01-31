@@ -51,7 +51,9 @@
 | PHP | PHP | 8.4 |
 | Authentication | Laravel Fortify | v1 |
 | Database | MySQL/SQLite | - |
-| Testing | PHPUnit | 11 |
+| State Machines | spatie/laravel-model-states | - |
+| Static Analysis | Larastan (PHPStan) | v3 |
+| Testing | Pest (PHPUnit) | v3 (v11) |
 | Code Style | Laravel Pint | v1 |
 
 ### Frontend
@@ -82,16 +84,18 @@ enteraksi/
 │   ├── Actions/Fortify/        # Authentication actions
 │   ├── Domain/                 # Domain-Driven Design layer
 │   │   ├── Assessment/         # Grading strategies, DTOs
-│   │   ├── Course/             # State machine, events
+│   │   ├── Course/             # State machine, events, services
 │   │   ├── Enrollment/         # Service, states, events
+│   │   ├── LearningPath/       # Path enrollment, prerequisites, progress
 │   │   ├── Progress/           # Tracking service, calculators
-│   │   └── Shared/             # Base contracts, value objects
+│   │   └── Shared/             # Base contracts, value objects, logging
 │   ├── Http/
-│   │   ├── Controllers/        # 22 controllers
+│   │   ├── Controllers/        # 20 controllers
 │   │   ├── Middleware/         # HandleAppearance, HandleInertiaRequests
-│   │   └── Requests/           # 19 form request classes
-│   ├── Models/                 # 17 Eloquent models
-│   ├── Policies/               # 7 authorization policies
+│   │   ├── Requests/           # Form request classes
+│   │   └── Resources/          # JsonResource for API/Inertia responses
+│   ├── Models/                 # 20 Eloquent models (rich models with behavior)
+│   ├── Policies/               # Authorization policies
 │   ├── Providers/              # AppServiceProvider, FortifyServiceProvider
 │   └── Services/               # MediaSeederHelper, TipTapRenderer
 ├── bootstrap/
@@ -99,25 +103,27 @@ enteraksi/
 ├── config/
 │   └── fortify.php             # Authentication features config
 ├── database/
-│   ├── factories/              # 16 model factories
-│   ├── migrations/             # 24 migration files
-│   └── seeders/                # 4 seeders (Database, Category, Tag, Course)
+│   ├── factories/              # 19 model factories
+│   ├── migrations/             # 38 migration files
+│   └── seeders/                # 6 seeders
 ├── resources/
 │   ├── css/                    # Tailwind CSS v4
 │   └── js/
-│       ├── components/         # 150+ Vue components
-│       ├── composables/        # 4 composables
-│       ├── layouts/            # 8 layout components
-│       ├── pages/              # 35 page components
+│       ├── components/         # Vue components (ui, crud, features, domain)
+│       ├── composables/        # 20 composables (data, ui, utils, root)
+│       ├── layouts/            # Layout components
+│       ├── lib/                # Constants, formatters, utilities
+│       ├── pages/              # Inertia page components
+│       ├── stores/             # Pinia stores (complex editors only)
 │       └── types/              # TypeScript definitions
 ├── routes/
 │   ├── web.php                 # Main routes
 │   ├── courses.php             # Course-related routes
-│   ├── learning_paths.php      # Learning path routes
+│   ├── learning_paths.php      # Learning path + enrollment routes
 │   └── settings.php            # User settings routes
 ├── tests/
 │   ├── Feature/                # Feature tests (integration)
-│   └── Unit/                   # Unit tests (766 total tests)
+│   └── Unit/                   # Unit tests
 └── .ai/                        # AI planning & documentation
 ```
 
@@ -125,7 +131,7 @@ enteraksi/
 
 ## Backend Architecture
 
-### Controllers (22 total)
+### Controllers (20 total)
 
 #### Core Controllers
 | Controller | File | Purpose |
@@ -163,7 +169,8 @@ enteraksi/
 #### Learning Paths
 | Controller | File | Purpose |
 |------------|------|---------|
-| `LearningPathController` | `LearningPathController.php` | Learning path CRUD, course ordering |
+| `LearningPathController` | `LearningPathController.php` | Learning path CRUD, publish/unpublish, course ordering |
+| `LearningPathEnrollmentController` | `LearningPathEnrollmentController.php` | Learner enrollment, progress, browse, drop |
 
 #### Settings
 | Controller | File | Purpose |
@@ -172,12 +179,12 @@ enteraksi/
 | `Settings/PasswordController` | `Settings/PasswordController.php` | Password change |
 | `Settings/TwoFactorAuthenticationController` | `Settings/TwoFactorAuthenticationController.php` | 2FA setup |
 
-### Models (17 total)
+### Models (20 total)
 
 See [DATA-MODEL.md](./DATA-MODEL.md) for complete model documentation including:
-- All 17 models with relationships
+- All 20 models with relationships
 - Casts, scopes, and accessors
-- Custom methods
+- Rich behavior methods (state transitions, event dispatching)
 - Database schema
 
 ### Request Validation
@@ -208,7 +215,7 @@ The application uses Domain-Driven Design patterns in `app/Domain/` for complex 
 ```
 app/Domain/
 ├── Assessment/
-│   ├── Contracts/              # GradingStrategyContract
+│   ├── Contracts/              # GradingStrategyContract (strategy interface)
 │   ├── DTOs/                   # GradingResult
 │   ├── Exceptions/             # MaxAttemptsReachedException
 │   ├── Services/               # GradingStrategyResolver
@@ -216,44 +223,82 @@ app/Domain/
 │   └── ValueObjects/           # Score
 ├── Course/
 │   ├── Events/                 # CoursePublished, CourseArchived, CourseUnpublished
+│   ├── Services/               # CourseInvitationService, InvitationAcceptanceService
 │   └── States/                 # DraftState, PublishedState, ArchivedState
 ├── Enrollment/
-│   ├── Contracts/              # EnrollmentServiceContract
-│   ├── DTOs/                   # CreateEnrollmentDTO, EnrollmentResult
-│   ├── Events/                 # UserEnrolled, EnrollmentCompleted, UserDropped
+│   ├── DTOs/                   # CreateEnrollmentDTO, EnrollmentContext
+│   ├── Events/                 # UserEnrolled, EnrollmentCompleted, UserDropped, UserReenrolled
 │   ├── Exceptions/             # AlreadyEnrolledException, CourseNotPublishedException
 │   ├── Listeners/              # SendWelcomeNotification, SendCompletionCongratulations
 │   ├── Notifications/          # WelcomeToCourseMail, CourseCompletedMail
-│   ├── Services/               # EnrollmentService
+│   ├── Services/               # EnrollmentService (concrete, no contract)
 │   └── States/                 # ActiveState, CompletedState, DroppedState
+├── LearningPath/
+│   ├── Contracts/              # PrerequisiteEvaluatorContract (strategy interface)
+│   ├── DTOs/                   # PathProgressResult, PathEnrollmentResult
+│   ├── Events/                 # PathCompleted, PathDropped, PathEnrollmentCreated
+│   ├── Exceptions/             # PathNotPublishedException
+│   ├── Listeners/              # UpdatePathProgressOnCourseDrop
+│   ├── Notifications/          # PathCompletedMail
+│   ├── Services/               # PathEnrollmentService, PathProgressService
+│   ├── States/                 # ActivePathState, CompletedPathState, DroppedPathState,
+│   │                           # LockedCourseState, AvailableCourseState, InProgressCourseState, CompletedCourseState
+│   └── Strategies/             # Sequential, ImmediatePrevious, NoPrerequisite, PricingAware
 ├── Progress/
-│   ├── Contracts/              # ProgressTrackingServiceContract, ProgressCalculatorContract
+│   ├── Contracts/              # ProgressCalculatorContract (strategy interface)
 │   ├── DTOs/                   # ProgressResult, ProgressUpdateDTO
 │   ├── Events/                 # LessonCompleted, ProgressUpdated
-│   ├── Services/               # ProgressTrackingService, ProgressCalculatorFactory
-│   └── Strategies/             # LessonBased, AssessmentInclusive, Weighted calculators
+│   ├── Listeners/              # RecalculateCourseProgress
+│   ├── Services/               # ProgressTrackingService (concrete), ProgressCalculatorFactory
+│   ├── Strategies/             # LessonBased, AssessmentInclusive, Weighted calculators
+│   └── ValueObjects/           # Percentage
 └── Shared/
     ├── Contracts/              # DomainEvent, StrategyContract
-    ├── DTOs/                   # DataTransferObject base
     ├── Exceptions/             # DomainException, InvalidStateTransitionException
     ├── Listeners/              # LogDomainEvent
     ├── Services/               # DomainLogger, MetricsService, HealthCheckService
     └── ValueObjects/           # Duration, Percentage
 ```
 
+> **Important:** Only strategy interfaces use contracts (GradingStrategyContract, ProgressCalculatorContract, PrerequisiteEvaluatorContract). Service classes like EnrollmentService and ProgressTrackingService are injected as concrete classes directly—no service contracts.
+
 ### Key Design Patterns
 
-#### State Machine Pattern (Course, Enrollment)
+#### Rich Models with Behavior
 
-Courses and enrollments use state machines for lifecycle management:
+Models own their state transitions and dispatch events:
+
+```php
+// Course lifecycle (methods on model)
+$course->publish($admin);   // Sets status, published_at, published_by
+$course->unpublish();       // Reverts to draft
+$course->archive();         // Archives course
+
+// Enrollment lifecycle (methods dispatch events in DB::transaction)
+$enrollment->drop($reason);          // → DroppedState, dispatches UserDropped
+$enrollment->complete();              // → CompletedState, dispatches EnrollmentCompleted (idempotent)
+$enrollment->reactivate($preserve);   // → ActiveState, dispatches UserReenrolled
+
+// Learning Path enrollment
+$pathEnrollment->drop($reason);   // → DroppedPathState, dispatches PathDropped
+$pathEnrollment->complete();       // → CompletedPathState, dispatches PathCompleted
+```
+
+#### State Machine Pattern (spatie/laravel-model-states)
+
+Course, Enrollment, and LearningPath entities use Spatie state machines:
 
 ```php
 // Course states: draft → published ↔ archived
-$course->state()->canTransitionTo('published'); // Check if transition allowed
-$course->state()->transitionTo('published', $publishedBy); // Execute transition
+$course->isDraft();          // Check state
+$course->canBeEdited();      // Delegates to state class
 
-// Enrollment states: active → completed | dropped
-$enrollment->state()->transitionTo('completed');
+// Enrollment states: active → completed | dropped → active (re-enrollment)
+$enrollment->isActive();
+$enrollment->canAccessContent();   // Delegates to state class
+
+// Learning Path states: active → completed | dropped
+// Course Progress states: locked → available → in_progress → completed
 ```
 
 #### Strategy Pattern (Progress Calculation, Grading)
@@ -277,18 +322,25 @@ Grading strategies handle different question types:
 
 #### Service Layer Pattern
 
-Domain services encapsulate complex business logic:
+Domain services are concrete classes injected via constructor (no service contracts):
 
 ```php
-// Enrollment Service
-$result = app(EnrollmentServiceContract::class)->enroll($user, $course);
+// In controller constructor
+public function __construct(
+    protected EnrollmentService $enrollmentService,
+    protected ProgressTrackingService $progressService,
+) {}
 
-// Progress Tracking Service
-$service = app(ProgressTrackingServiceContract::class);
-$service->markLessonComplete($enrollment, $lesson);
-$service->updatePageProgress($enrollment, $lesson, $page, $totalPages);
-$service->updateMediaProgress($enrollment, $lesson, $position, $duration);
-$progress = $service->calculateProgress($enrollment);
+// Services return Eloquent Models directly
+$enrollment = $this->enrollmentService->enroll(new CreateEnrollmentDTO(
+    userId: $user->id,
+    courseId: $course->id,
+));
+
+// Progress tracking
+$this->progressService->markLessonComplete($enrollment, $lesson);
+$this->progressService->updatePageProgress($enrollment, $lesson, $page, $totalPages);
+$progress = $this->progressService->calculateProgress($enrollment);
 ```
 
 ### Domain Events
@@ -300,10 +352,14 @@ Events are dispatched for significant state changes:
 | `UserEnrolled` | User enrolls in course |
 | `EnrollmentCompleted` | Course completion (100% progress) |
 | `UserDropped` | User drops from course |
+| `UserReenrolled` | Dropped enrollment reactivated |
 | `LessonCompleted` | Lesson marked complete |
 | `ProgressUpdated` | Progress percentage changes |
 | `CoursePublished` | Course published by admin |
 | `CourseArchived` | Course archived |
+| `PathEnrollmentCreated` | User enrolls in learning path |
+| `PathCompleted` | All required path courses completed |
+| `PathDropped` | User drops from learning path |
 
 ---
 
@@ -365,12 +421,14 @@ Located in `resources/js/components/`:
 
 ### Composables
 
-| Composable | Purpose |
-|------------|---------|
-| `useAppearance` | Theme management (dark/light/system) |
-| `useInitials` | Generate user avatar initials |
-| `useLessonPagination` | Lesson pagination logic |
-| `useTwoFactorAuth` | 2FA setup and verification |
+Organized in `data/`, `ui/`, `utils/`, and root directories:
+
+| Category | Composables |
+|----------|-------------|
+| **Data** | `useCourse`, `useCourses`, `useEnrollment`, `useLesson`, `useAssessment` |
+| **UI** | `useModal`, `useConfirmation`, `useToast`, `useSearch`, `usePagination`, `useTabs` |
+| **Utils** | `useEventListener`, `useDebouncedWatch` |
+| **Root** | `useAppearance`, `useInitials`, `useTwoFactorAuth`, `useLessonProgress`, `useLessonMediaProgress`, `useLessonPagination`, `useAssessmentTimer` |
 
 ### Data Flow Pattern
 
@@ -446,25 +504,32 @@ $user->canManageCourses(); // content_manager, trainer, lms_admin
 
 ### Domain Services
 
-| Service | Contract | Purpose |
-|---------|----------|---------|
-| `EnrollmentService` | `EnrollmentServiceContract` | Enroll users, manage enrollment lifecycle |
-| `ProgressTrackingService` | `ProgressTrackingServiceContract` | Track lesson/course progress, mark completions |
-| `GradingStrategyResolver` | `GradingStrategyResolverContract` | Resolve grading strategy by question type |
-| `ProgressCalculatorFactory` | - | Create progress calculator by strategy name |
+Services are concrete classes—no service contracts. Only strategy interfaces use contracts.
+
+| Service | Domain | Purpose |
+|---------|--------|---------|
+| `EnrollmentService` | Enrollment | Enroll users, check eligibility, manage re-enrollment |
+| `ProgressTrackingService` | Progress | Track lesson/course progress, mark completions |
+| `PathEnrollmentService` | LearningPath | Path enrollment, cascade course enrollment |
+| `PathProgressService` | LearningPath | Path progress calculation, course unlocking |
+| `CourseInvitationService` | Course | Invitation creation, bulk import |
+| `InvitationAcceptanceService` | Course | Accept/decline invitations |
+| `GradingStrategyResolver` | Assessment | Resolve grading strategy by question type |
+| `ProgressCalculatorFactory` | Progress | Create progress calculator by strategy name |
 
 **Usage Example:**
 ```php
-// Inject via dependency injection or service container
-$enrollmentService = app(EnrollmentServiceContract::class);
-$progressService = app(ProgressTrackingServiceContract::class);
+// Inject concrete classes in controller constructor
+public function __construct(
+    protected EnrollmentService $enrollmentService,
+) {}
 
-// Enroll user
-$result = $enrollmentService->enroll($user, $course);
-
-// Track progress
-$progressService->markLessonComplete($enrollment, $lesson);
-$progress = $progressService->calculateProgress($enrollment);
+// Services return Eloquent Models directly
+$enrollment = $this->enrollmentService->enroll(new CreateEnrollmentDTO(
+    userId: $user->id,
+    courseId: $course->id,
+));
+// $enrollment is an Enrollment model instance
 ```
 
 ### Utility Services

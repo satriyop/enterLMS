@@ -97,7 +97,9 @@
 | Question | has | QuestionOption | 1:N |
 | Assessment | has | AssessmentAttempt | 1:N |
 | AssessmentAttempt | contains | AttemptAnswer | 1:N |
-| LearningPath | contains | Course | N:M (pivot with position) |
+| LearningPath | contains | Course | N:M (via LearningPathCourse pivot) |
+| LearningPathEnrollment | tracks progress of | Course | 1:N (via LearningPathCourseProgress) |
+| LearningPathCourseProgress | links to | Enrollment | N:1 (course_enrollment_id) |
 
 ---
 
@@ -147,7 +149,7 @@ canManageCourses(): bool  // content_manager, trainer, or lms_admin
 
 **File:** `app/Models/Course.php`
 **Table:** `courses`
-**Traits:** HasFactory, SoftDeletes
+**Traits:** HasFactory, HasStates (spatie/laravel-model-states), SoftDeletes, RequiresEagerLoading
 
 #### Attributes
 | Column | Type | Description |
@@ -162,11 +164,14 @@ canManageCourses(): bool  // content_manager, trainer, or lms_admin
 | prerequisites | json | Array of prerequisites |
 | category_id | bigint | FK → categories |
 | thumbnail_path | string | Storage path |
-| status | enum | `draft`, `published`, `archived` |
+| status | CourseState | `draft`, `published`, `archived` (Spatie state) |
 | visibility | enum | `public`, `restricted`, `hidden` |
 | difficulty_level | enum | `beginner`, `intermediate`, `advanced` |
 | estimated_duration_minutes | int | Auto-calculated |
 | manual_duration_minutes | int | Manual override |
+| price | float | Course price (commercial mode) |
+| currency | string | Currency code (default: IDR) |
+| is_paid | boolean | Whether course is paid |
 | published_at | timestamp | Publication date |
 | published_by | bigint | FK → users |
 
@@ -187,27 +192,50 @@ media()         → MorphMany(Media)
 
 #### Scopes
 ```php
-published()      // status = 'published'
-draft()          // status = 'draft'
-archived()       // status = 'archived'
-visible()        // visibility = 'public'
-forUser($user)   // user_id = $user->id
+published()                            // status = 'published'
+draft()                                // status = 'draft'
+archived()                             // status = 'archived'
+visible()                              // visibility = 'public'
+forUser($user)                         // user_id = $user->id
+search(?string $search)                // Full-text search (MySQL) or LIKE fallback
+filterByCategory(?int $categoryId)     // Category filter
+filterByDifficulty(?string $difficulty) // Difficulty filter
 ```
 
-#### Accessors (Appended)
+#### State Methods
+```php
+isDraft(): bool               // $this->status instanceof DraftState
+isPublished(): bool           // $this->status instanceof PublishedState
+isArchived(): bool            // $this->status instanceof ArchivedState
+canBeEdited(): bool           // Delegates to state class
+canAcceptEnrollments(): bool  // Delegates to state class
+```
+
+#### Behavior Methods
+```php
+publish(User $user): void     // Sets status, published_at, published_by
+unpublish(): void             // Reverts to draft
+archive(): void               // Archives course
+```
+
+#### Accessors (require eager loading)
 ```php
 duration         // manual_duration_minutes ?? estimated_duration_minutes ?? 0
-totalLessons     // Count of lessons
-isEditable       // status !== 'published'
+totalLessons     // Requires ->withCount('lessons')
+isEditable       // Delegates to canBeEdited()
 thumbnailUrl     // Full storage URL
-averageRating    // Rounded average of ratings
-ratingsCount     // Count of ratings
+averageRating    // Requires ->withAvg('ratings', 'rating')
+ratingsCount     // Requires ->withCount('ratings')
 ```
 
-#### Methods
+> **Note:** Course uses `RequiresEagerLoading` trait. Accessors like `totalLessons`, `averageRating`, `ratingsCount` throw in dev/testing if not eager loaded with `withCount()`/`withAvg()`.
+
+#### Other Methods
 ```php
-calculateEstimatedDuration(): int  // Sum of lesson durations
+calculateEstimatedDuration(): int  // Sum of lesson durations (single SQL query)
 updateEstimatedDuration(): void    // Recalculate and save
+isPaid(): bool                     // Check if paid in current LMS mode
+getExcludedUserIdsForInvitation(): array  // UNION query for invitation exclusions
 ```
 
 ---
@@ -327,6 +355,7 @@ durationFormatted  // HH:MM:SS or MM:SS
 
 **File:** `app/Models/Enrollment.php`
 **Table:** `enrollments`
+**Traits:** HasFactory, HasStates (spatie/laravel-model-states)
 
 #### Attributes
 | Column | Type | Description |
@@ -334,11 +363,13 @@ durationFormatted  // HH:MM:SS or MM:SS
 | id | bigint | Primary key |
 | user_id | bigint | FK → users |
 | course_id | bigint | FK → courses |
-| status | enum | `active`, `inactive`, `completed`, `dropped` |
+| status | EnrollmentState | `active`, `completed`, `dropped` (Spatie state) |
 | progress_percentage | decimal | 0-100 |
 | enrolled_at | timestamp | Enrollment date |
 | started_at | timestamp | First lesson accessed |
 | completed_at | timestamp | Course completion |
+| dropped_at | timestamp | Drop date |
+| drop_reason | string | Reason for dropping |
 | invited_by | bigint | FK → users (if invited) |
 | last_lesson_id | bigint | FK → lessons |
 
@@ -353,27 +384,38 @@ lessonProgress() → HasMany(LessonProgress)
 
 #### Scopes
 ```php
-active()        // status = 'active'
-completed()     // status = 'completed'
-forUser($user)  // user_id = $user->id
+active()                          // status = 'active'
+completed()                       // status = 'completed'
+forUser($user)                    // user_id = $user->id
+forUserAndCourse($user, $course)  // Combined scope
 ```
 
-#### Accessors
+#### State Query Methods
 ```php
-isCompleted  // status === 'completed'
-isActive     // status === 'active'
+isActive(): bool           // $this->status instanceof ActiveState
+isCompleted(): bool        // $this->status instanceof CompletedState
+isDropped(): bool          // $this->status instanceof DroppedState
+canAccessContent(): bool   // Delegates to state class
+canTrackProgress(): bool   // Delegates to state class
 ```
 
-#### Methods
+#### Behavior Methods (dispatch events in DB::transaction)
+```php
+drop(?string $reason): self         // → DroppedState, dispatches UserDropped
+complete(): self                     // → CompletedState, dispatches EnrollmentCompleted (idempotent)
+reactivate(bool $preserveProgress, ?int $invitedBy): self  // → ActiveState, dispatches UserReenrolled
+```
+
+#### Other Methods
 ```php
 getProgressForLesson(Lesson $lesson): ?LessonProgress
+getActiveForUserAndCourse(User $user, Course $course): ?self  // Static
 ```
 
-> **Note:** Progress tracking is now handled by `ProgressTrackingService`. Use:
+> **Note:** Progress tracking is handled by `ProgressTrackingService` (inject via constructor):
 > ```php
-> $service = app(ProgressTrackingServiceContract::class);
-> $service->getOrCreateProgress($enrollment, $lesson);
-> $service->calculateProgress($enrollment);
+> $this->progressService->getOrCreateProgress($enrollment, $lesson);
+> $this->progressService->calculateProgress($enrollment);
 > ```
 
 ---
@@ -419,12 +461,11 @@ timeSpentFormatted   // Indonesian format (detik, menit, jam)
 isMediaBased(): bool
 ```
 
-> **Note:** Progress updates are now handled by `ProgressTrackingService`. Use:
+> **Note:** Progress updates are handled by `ProgressTrackingService` (inject via constructor):
 > ```php
-> $service = app(ProgressTrackingServiceContract::class);
-> $service->updatePageProgress($enrollment, $lesson, $page, $totalPages);
-> $service->updateMediaProgress($enrollment, $lesson, $position, $duration);
-> $service->markLessonComplete($enrollment, $lesson);
+> $this->progressService->updatePageProgress($enrollment, $lesson, $page, $totalPages);
+> $this->progressService->updateMediaProgress($enrollment, $lesson, $position, $duration);
+> $this->progressService->markLessonComplete($enrollment, $lesson);
 > ```
 
 ---
@@ -773,6 +814,131 @@ published()  // is_published = true
 
 ---
 
+### 18. LearningPathCourse (Pivot)
+
+**File:** `app/Models/LearningPathCourse.php`
+**Table:** `learning_path_course`
+**Extends:** Pivot
+
+#### Attributes
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key (incrementing pivot) |
+| learning_path_id | bigint | FK → learning_paths |
+| course_id | bigint | FK → courses |
+| position | int | Display order |
+| is_required | boolean | Required for path completion |
+| prerequisites | json | Array of prerequisite descriptions |
+| min_completion_percentage | int | Minimum completion % required |
+
+#### Relationships
+```php
+learningPath() → BelongsTo(LearningPath)
+course()       → BelongsTo(Course)
+```
+
+---
+
+### 19. LearningPathEnrollment
+
+**File:** `app/Models/LearningPathEnrollment.php`
+**Table:** `learning_path_enrollments`
+**Traits:** HasFactory, HasStates (spatie/laravel-model-states)
+
+#### Attributes
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| user_id | bigint | FK → users |
+| learning_path_id | bigint | FK → learning_paths |
+| state | PathEnrollmentState | `active`, `completed`, `dropped` (Spatie state) |
+| progress_percentage | int | 0-100 |
+| enrolled_at | timestamp | Enrollment date |
+| completed_at | timestamp | Completion date |
+| dropped_at | timestamp | Drop date |
+| drop_reason | string | Reason for dropping |
+
+#### Relationships
+```php
+user()           → BelongsTo(User)
+learningPath()   → BelongsTo(LearningPath)
+courseProgress()  → HasMany(LearningPathCourseProgress)
+```
+
+#### Scopes
+```php
+active()                // state = 'active'
+completed()             // state = 'completed'
+forUser($user)          // user_id = $user->id
+forPath($path)          // learning_path_id = $path->id
+```
+
+#### State Query Methods
+```php
+isActive(): bool           // $this->state instanceof ActivePathState
+isCompleted(): bool        // $this->state instanceof CompletedPathState
+isDropped(): bool          // $this->state instanceof DroppedPathState
+canAccessContent(): bool   // Delegates to state class
+canUnlockCourses(): bool   // Delegates to state class
+```
+
+#### Behavior Methods
+```php
+drop(?string $reason): self   // → DroppedPathState, dispatches PathDropped
+complete(): self               // → CompletedPathState, dispatches PathCompleted (idempotent)
+```
+
+---
+
+### 20. LearningPathCourseProgress
+
+**File:** `app/Models/LearningPathCourseProgress.php`
+**Table:** `learning_path_course_progress`
+**Traits:** HasFactory, HasStates (spatie/laravel-model-states)
+
+#### Attributes
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| learning_path_enrollment_id | bigint | FK → learning_path_enrollments |
+| course_id | bigint | FK → courses |
+| state | CourseProgressState | `locked`, `available`, `in_progress`, `completed` |
+| position | int | Course order in path |
+| course_enrollment_id | bigint | FK → enrollments (linked course enrollment) |
+| unlocked_at | timestamp | When course became available |
+| started_at | timestamp | When user started course |
+| completed_at | timestamp | When course was completed |
+
+#### Relationships
+```php
+enrollment()       → BelongsTo(LearningPathEnrollment)
+course()           → BelongsTo(Course)
+courseEnrollment()  → BelongsTo(Enrollment)  // Linked course enrollment
+pathCourse()       → BelongsTo(LearningPathCourse)  // Access is_required, prerequisites
+```
+
+#### State Methods
+```php
+isLocked(): bool       // Prerequisites not met
+isAvailable(): bool    // Can start, has enrollment
+isInProgress(): bool   // User started course
+isCompleted(): bool    // Course finished
+canStart(): bool       // Delegates to state
+blocksNext(): bool     // Delegates to state
+```
+
+#### Scopes
+```php
+locked()      // state = 'locked'
+available()   // state = 'available'
+inProgress()  // state = 'in_progress'
+completed()   // state = 'completed'
+unlocked()    // state IN ('available', 'in_progress', 'completed')
+ordered()     // ORDER BY position
+```
+
+---
+
 ## Database Schema
 
 ### Migration Files (Chronological)
@@ -816,6 +982,8 @@ published()  // is_published = true
 | `CategorySeeder` | Course categories | 6 Indonesian categories (IT, Business, Language, Design, Finance, Soft Skills) |
 | `TagSeeder` | Content tags | 37 tags covering tech, business, design |
 | `CourseSeeder` | Full course structure | 5 courses with sections, lessons, media |
+| `BankingCourseSeeder` | Banking compliance courses | OJK regulation courses |
+| `LearningPathSeeder` | Learning paths | Multi-course sequences |
 
 ### Test Users
 
@@ -883,6 +1051,13 @@ LearningPath::factory()->beginner()->create();
 LearningPath::factory()->expert()->create();
 ```
 
+#### LearningPathEnrollmentFactory
+```php
+LearningPathEnrollment::factory()->active()->create();
+LearningPathEnrollment::factory()->completed()->create();
+LearningPathEnrollment::factory()->dropped()->create();
+```
+
 ---
 
 ## Quick Reference: Common Queries
@@ -900,34 +1075,32 @@ Course::with(['sections.lessons.media', 'category', 'tags'])
     ->find($courseId);
 ```
 
-### Track lesson progress (using service)
+### Track lesson progress (inject ProgressTrackingService)
 ```php
-$service = app(ProgressTrackingServiceContract::class);
-
 // Get or create progress
-$progress = $service->getOrCreateProgress($enrollment, $lesson);
+$progress = $this->progressService->getOrCreateProgress($enrollment, $lesson);
 
 // Update page progress
-$service->updatePageProgress($enrollment, $lesson, $currentPage, $totalPages);
+$this->progressService->updatePageProgress($enrollment, $lesson, $currentPage, $totalPages);
 
 // Update media progress
-$service->updateMediaProgress($enrollment, $lesson, $positionSeconds, $durationSeconds);
+$this->progressService->updateMediaProgress($enrollment, $lesson, $positionSeconds, $durationSeconds);
 
 // Mark lesson complete
-$service->markLessonComplete($enrollment, $lesson);
+$this->progressService->markLessonComplete($enrollment, $lesson);
 
 // Calculate course progress
-$percentage = $service->calculateProgress($enrollment);
+$percentage = $this->progressService->calculateProgress($enrollment);
 ```
 
-### Enroll user (using service)
+### Enroll user (inject EnrollmentService)
 ```php
-$service = app(EnrollmentServiceContract::class);
-$result = $service->enroll($user, $course);
-
-if ($result->success) {
-    $enrollment = $result->enrollment;
-}
+// Services return Eloquent Models directly
+$enrollment = $this->enrollmentService->enroll(new CreateEnrollmentDTO(
+    userId: $user->id,
+    courseId: $course->id,
+));
+// $enrollment is an Enrollment model instance
 ```
 
 ### Check if user can attempt assessment
