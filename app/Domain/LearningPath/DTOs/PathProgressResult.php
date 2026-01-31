@@ -42,7 +42,7 @@ final readonly class PathProgressResult
         );
     }
 
-    public function toResponse(): array
+    public function toArray(): array
     {
         return [
             'path_enrollment_id' => $this->pathEnrollmentId,

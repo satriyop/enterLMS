@@ -77,7 +77,7 @@ final readonly class AssessmentStats
         return $this->total > 0;
     }
 
-    public function toResponse(): array
+    public function toArray(): array
     {
         return [
             'total' => $this->total,

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Course\Services\LessonViewPresenter;
 use App\Http\Requests\Lesson\StoreLessonRequest;
 use App\Http\Requests\Lesson\UpdateLessonRequest;
 use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Lesson;
-use App\Services\LessonViewPresenter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;

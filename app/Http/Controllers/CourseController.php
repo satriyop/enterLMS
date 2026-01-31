@@ -139,7 +139,7 @@ class CourseController extends Controller
         $course->loadAvg('ratings', 'rating');
 
         $assessmentStats = $enrollment
-            ? $this->progressService->getAssessmentStats($enrollment)->toResponse()
+            ? $this->progressService->getAssessmentStats($enrollment)->toArray()
             : null;
 
         $ratings = $course->ratings()

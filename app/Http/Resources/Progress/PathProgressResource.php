@@ -24,7 +24,7 @@ class PathProgressResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $baseResponse = $this->resource->toResponse();
+        $baseResponse = $this->resource->toArray();
         $courses = $baseResponse['courses'];
 
         // Batch load all course data in 1 query

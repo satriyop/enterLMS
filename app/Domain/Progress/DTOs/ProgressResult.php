@@ -102,7 +102,7 @@ final readonly class ProgressResult
         );
     }
 
-    public function toResponse(): array
+    public function toArray(): array
     {
         $response = [
             'progress' => $this->progress,
@@ -112,7 +112,7 @@ final readonly class ProgressResult
         ];
 
         if ($this->assessmentStats !== null) {
-            $response['assessment_stats'] = $this->assessmentStats->toResponse();
+            $response['assessment_stats'] = $this->assessmentStats->toArray();
         }
 
         return $response;

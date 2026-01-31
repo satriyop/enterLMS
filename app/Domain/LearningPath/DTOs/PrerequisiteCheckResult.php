@@ -36,7 +36,7 @@ final readonly class PrerequisiteCheckResult
         );
     }
 
-    public function toResponse(): array
+    public function toArray(): array
     {
         return [
             'is_met' => $this->isMet,
