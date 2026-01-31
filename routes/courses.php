@@ -37,10 +37,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Enrollments
     Route::post('courses/{course}/enroll', [EnrollmentController::class, 'store'])
+        ->middleware('throttle:10,1')
         ->name('courses.enroll');
     Route::post('courses/{course}/reenroll', [EnrollmentController::class, 'reenroll'])
+        ->middleware('throttle:10,1')
         ->name('courses.reenroll');
     Route::delete('courses/{course}/unenroll', [EnrollmentController::class, 'destroy'])
+        ->middleware('throttle:10,1')
         ->name('courses.unenroll');
 
     // Course Ratings
@@ -67,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Learner Search API (for invitation autocomplete)
     Route::get('api/users/search', [CourseInvitationController::class, 'searchLearners'])
+        ->middleware('throttle:30,1')
         ->name('api.users.search');
 
     // Sections

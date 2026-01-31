@@ -23,6 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Enroll in Learning Path
         Route::post('learning-paths/{learningPath}/enroll', [LearningPathEnrollmentController::class, 'enroll'])
+            ->middleware('throttle:10,1')
             ->name('learning-paths.enroll');
 
         // View Progress (uses learningPath ID, controller finds enrollment)
