@@ -24,7 +24,7 @@ class LearningPathController extends Controller
 
         $user = $request->user();
 
-        $query = LearningPath::with(['creator', 'courses'])
+        $query = LearningPath::with('creator')->withCount('courses')
             ->when($request->search, function ($query, $search) {
                 $query->where('title', 'like', '%'.$search.'%')
                     ->orWhere('description', 'like', '%'.$search.'%');
@@ -97,7 +97,7 @@ class LearningPathController extends Controller
         Gate::authorize('view', $learning_path);
 
         $learning_path->load(['creator', 'courses' => function ($query) {
-            $query->with(['sections', 'enrollments'])->orderBy('position');
+            $query->withCount(['sections', 'enrollments'])->orderBy('position');
         }]);
 
         return Inertia::render('learning_paths/Show', [

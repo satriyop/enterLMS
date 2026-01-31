@@ -31,14 +31,24 @@ class QuestionManagementService
         $existingQuestionIds = $assessment->questions()->pluck('id')->toArray();
         $submittedQuestionIds = [];
 
+        // Batch-load all submitted questions in one query instead of N individual queries
+        $submittedIds = collect($questionsData)
+            ->pluck('id')
+            ->filter(fn ($id) => $id !== null && $id > 0)
+            ->values()
+            ->all();
+
+        $existingQuestions = $assessment->questions()
+            ->whereIn('id', $submittedIds)
+            ->get()
+            ->keyBy('id');
+
         foreach ($questionsData as $questionData) {
             /** @var Question|null $question */
             $question = null;
 
             if (isset($questionData['id']) && $questionData['id'] > 0) {
-                $question = Question::where('id', $questionData['id'])
-                    ->where('assessment_id', $assessment->id)
-                    ->first();
+                $question = $existingQuestions->get($questionData['id']);
             }
 
             if ($question instanceof Question) {

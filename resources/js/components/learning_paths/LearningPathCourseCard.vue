@@ -4,6 +4,7 @@
 // Displays a course card within a learning path with progress
 // =============================================================================
 
+import { show as showCourse } from '@/actions/App/Http/Controllers/CourseController';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from '@inertiajs/vue3';
@@ -108,13 +109,13 @@ const getProgress = () => {
         </div>
 
         <div class="mt-4 flex gap-2">
-            <Link :href="'/courses/' + course.id">
+            <Link :href="showCourse(course.id).url">
                 <Button variant="outline" size="sm" class="gap-2">
                     <Eye class="h-4 w-4" />
                     Lihat Kursus
                 </Button>
             </Link>
-            <Link :href="'/courses/' + course.id + '/lessons'">
+            <Link :href="showCourse(course.id).url + '/lessons'">
                 <Button size="sm" class="gap-2">
                     <BookOpen class="h-4 w-4" />
                     Mulai Belajar

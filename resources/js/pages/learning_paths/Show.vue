@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { show, edit } from '@/actions/App/Http/Controllers/LearningPathController';
+import { index as learningPathIndex } from '@/routes/learning-paths';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import LearningPathCourseCard from '@/components/learning_paths/LearningPathCourseCard.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatDuration, difficultyLabel } from '@/lib/formatters';
 import { type BreadcrumbItem, DifficultyLevel } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowLeft, Pencil, BookOpen, Clock } from 'lucide-vue-next';
@@ -64,35 +66,13 @@ const props = defineProps<Props>();
 const breadcrumbItems: BreadcrumbItem[] = [
     {
         title: 'Jalur Pembelajaran',
-        href: '/learning-paths',
+        href: learningPathIndex().url,
     },
     {
         title: props.learningPath.title,
         href: show(props.learningPath.id).url,
     },
 ];
-
-const formatDuration = (minutes: number | null | undefined) => {
-    if (!minutes) return 'Not specified';
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}h ${mins}m`;
-};
-
-const difficultyLabel = (level: string) => {
-    switch (level) {
-        case 'beginner':
-            return 'Beginner';
-        case 'intermediate':
-            return 'Intermediate';
-        case 'advanced':
-            return 'Advanced';
-        case 'expert':
-            return 'Expert';
-        default:
-            return level;
-    }
-};
 </script>
 
 <template>
@@ -103,7 +83,7 @@ const difficultyLabel = (level: string) => {
             <!-- Header -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center gap-4">
-                    <Link :href="'/learning-paths'">
+                    <Link :href="learningPathIndex().url">
                         <Button variant="ghost" size="icon">
                             <ArrowLeft class="h-4 w-4" />
                         </Button>

@@ -17,17 +17,7 @@ class CourseInvitationService
      */
     public function getExcludedUserIds(Course $course): array
     {
-        $enrolledUserIds = $course->enrollments()
-            ->where('status', 'active')
-            ->pluck('user_id')
-            ->toArray();
-
-        $pendingInvitationUserIds = CourseInvitation::where('course_id', $course->id)
-            ->where('status', 'pending')
-            ->pluck('user_id')
-            ->toArray();
-
-        return array_merge($enrolledUserIds, $pendingInvitationUserIds);
+        return $course->getExcludedUserIdsForInvitation();
     }
 
     /**
