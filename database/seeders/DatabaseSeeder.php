@@ -19,6 +19,11 @@ class DatabaseSeeder extends Seeder
             'role' => 'learner',
         ]);
 
+        // Create additional learners for seeding enrollments
+        User::factory()->count(4)->create([
+            'role' => 'learner',
+        ]);
+
         User::factory()->create([
             'name' => 'Content Manager',
             'email' => 'content@example.com',
@@ -43,6 +48,8 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             BankingCourseSeeder::class,
             LearningPathSeeder::class,
+            EnrollmentSeeder::class,
+            AssessmentSeeder::class,
         ]);
     }
 }

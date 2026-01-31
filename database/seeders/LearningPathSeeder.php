@@ -144,8 +144,7 @@ class LearningPathSeeder extends Seeder
         $enrollmentService = app(PathEnrollmentService::class);
         $progressService = app(PathProgressService::class);
 
-        $result = $enrollmentService->enroll($testUser, $firstPath);
-        $enrollment = $result->enrollment;
+        $enrollment = $enrollmentService->enroll($testUser, $firstPath);
 
         // Backdate the enrollment
         $enrollment->update(['enrolled_at' => now()->subDays(7)]);
