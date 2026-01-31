@@ -26,19 +26,21 @@ interface Invitation {
 interface Props {
     courseId: number;
     invitations: Invitation[];
+    invitationsTotal?: number;
     canInvite?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
+    invitationsTotal: 0,
     canInvite: true,
 });
 
 const handleInvitationSuccess = () => {
-    router.reload({ only: ['invitations'], preserveScroll: true });
+    router.reload({ only: ['invitations', 'invitationsTotal'], preserveScroll: true });
 };
 
 const handleInvitationDeleted = (invitationId: number) => {
-    router.reload({ only: ['invitations'], preserveScroll: true });
+    router.reload({ only: ['invitations', 'invitationsTotal'], preserveScroll: true });
 };
 </script>
 
@@ -77,7 +79,7 @@ const handleInvitationDeleted = (invitationId: number) => {
 
         <FormSection
             title="Daftar Undangan"
-            :description="`${invitations.length} undangan telah dikirim`"
+            :description="`${invitationsTotal} undangan telah dikirim`"
         >
             <InvitationsList
                 :course-id="courseId"

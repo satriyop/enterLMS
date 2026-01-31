@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Progress\Services\ProgressTrackingService;
 use App\Domain\Progress\DTOs\ProgressUpdateDTO;
+use App\Domain\Progress\Services\ProgressTrackingService;
 use App\Http\Requests\LessonProgress\UpdateMediaProgressRequest;
 use App\Http\Requests\LessonProgress\UpdatePaginationProgressRequest;
 use App\Models\Course;
@@ -11,6 +11,7 @@ use App\Models\Enrollment;
 use App\Models\Lesson;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LessonProgressController extends Controller
 {
@@ -30,10 +31,7 @@ class LessonProgressController extends Controller
             return $this->enrollmentNotFoundResponse();
         }
 
-        // Validate lesson belongs to course
-        if ($lesson->section->course->id !== $course->id) {
-            abort(404);
-        }
+        $this->validateLessonBelongsToCourse($course, $lesson);
 
         // Validate page number against total if provided
         $currentPage = $validated['current_page'];
@@ -76,10 +74,7 @@ class LessonProgressController extends Controller
             return $this->enrollmentNotFoundResponse();
         }
 
-        // Validate lesson belongs to course
-        if ($lesson->section->course->id !== $course->id) {
-            abort(404);
-        }
+        $this->validateLessonBelongsToCourse($course, $lesson);
 
         // Validate position doesn't exceed duration
         $position = min($validated['position_seconds'], $validated['duration_seconds']);
@@ -115,10 +110,7 @@ class LessonProgressController extends Controller
             return $this->enrollmentNotFoundResponse();
         }
 
-        // Validate lesson belongs to course
-        if ($lesson->section->course->id !== $course->id) {
-            abort(404);
-        }
+        $this->validateLessonBelongsToCourse($course, $lesson);
 
         // Use service to complete lesson
         $result = $this->progressService->completeLesson($enrollment, $lesson);
@@ -151,5 +143,22 @@ class LessonProgressController extends Controller
         return response()->json([
             'message' => 'Anda tidak terdaftar di kursus ini.',
         ], 403);
+    }
+
+    /**
+     * Validate that a lesson belongs to a course via its section.
+     * Uses a single JOIN query instead of lazy-loading section->course.
+     */
+    private function validateLessonBelongsToCourse(Course $course, Lesson $lesson): void
+    {
+        $belongsToCourse = DB::table('lessons')
+            ->join('course_sections', 'lessons.course_section_id', '=', 'course_sections.id')
+            ->where('lessons.id', $lesson->id)
+            ->where('course_sections.course_id', $course->id)
+            ->exists();
+
+        if (! $belongsToCourse) {
+            abort(404);
+        }
     }
 }

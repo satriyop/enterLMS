@@ -33,7 +33,6 @@ class Media extends Model
         'is_video',
         'is_audio',
         'is_document',
-        'is_image',
     ];
 
     protected function casts(): array

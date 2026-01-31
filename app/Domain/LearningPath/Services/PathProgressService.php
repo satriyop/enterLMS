@@ -246,36 +246,33 @@ class PathProgressService
      * Get required course completion statistics for a path enrollment.
      *
      * If no courses are explicitly marked as required, all courses are considered required.
+     * Uses a single query with conditional aggregation instead of 3-5 separate queries.
      *
      * @return array{total: int, completed: int}
      */
     protected function getRequiredCourseStats(LearningPathEnrollment $enrollment): array
     {
-        // Check if any courses are explicitly marked as required
-        $hasExplicitRequired = $enrollment->courseProgress()
-            ->whereHas('pathCourse', fn ($q) => $q->where('is_required', true))
-            ->exists();
+        $stats = DB::table('learning_path_course_progress as cp')
+            ->join('learning_path_course as lpc', function ($join) use ($enrollment) {
+                $join->on('cp.course_id', '=', 'lpc.course_id')
+                    ->where('lpc.learning_path_id', $enrollment->learning_path_id);
+            })
+            ->where('cp.learning_path_enrollment_id', $enrollment->id)
+            ->selectRaw(
+                'SUM(CASE WHEN lpc.is_required = 1 THEN 1 ELSE 0 END) as required_total, '.
+                'SUM(CASE WHEN lpc.is_required = 1 AND cp.state = ? THEN 1 ELSE 0 END) as required_completed, '.
+                'COUNT(*) as all_total, '.
+                'SUM(CASE WHEN cp.state = ? THEN 1 ELSE 0 END) as all_completed',
+                [CompletedCourseState::$name, CompletedCourseState::$name]
+            )
+            ->first();
 
-        if ($hasExplicitRequired) {
-            // Count only explicitly required courses
-            $total = $enrollment->courseProgress()
-                ->whereHas('pathCourse', fn ($q) => $q->where('is_required', true))
-                ->count();
+        $hasRequired = ((int) ($stats->required_total ?? 0)) > 0;
 
-            $completed = $enrollment->courseProgress()
-                ->where('state', CompletedCourseState::$name)
-                ->whereHas('pathCourse', fn ($q) => $q->where('is_required', true))
-                ->count();
-        } else {
-            // No explicit required courses - all courses are required
-            $total = $enrollment->courseProgress()->count();
-
-            $completed = $enrollment->courseProgress()
-                ->where('state', CompletedCourseState::$name)
-                ->count();
-        }
-
-        return ['total' => $total, 'completed' => $completed];
+        return [
+            'total' => $hasRequired ? (int) $stats->required_total : (int) ($stats->all_total ?? 0),
+            'completed' => $hasRequired ? (int) $stats->required_completed : (int) ($stats->all_completed ?? 0),
+        ];
     }
 
     public function startCourse(LearningPathEnrollment $enrollment, Course $course): void

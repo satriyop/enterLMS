@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Course;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,6 +20,8 @@ class HomeController extends Controller
             ->visible()
             ->with(['user:id,name', 'category:id,name,slug'])
             ->withCount(['sections', 'lessons', 'enrollments'])
+            ->withAvg('ratings', 'rating')
+            ->withCount('ratings')
             ->orderBy('created_at', 'desc')
             ->limit(8)
             ->get()
@@ -28,6 +32,8 @@ class HomeController extends Controller
             ->visible()
             ->with(['user:id,name', 'category:id,name,slug'])
             ->withCount(['sections', 'lessons', 'enrollments'])
+            ->withAvg('ratings', 'rating')
+            ->withCount('ratings')
             ->orderByDesc('enrollments_count')
             ->limit(8)
             ->get()
@@ -48,28 +54,50 @@ class HomeController extends Controller
                 'icon' => $this->getCategoryIcon($category->slug),
             ]);
 
-        $stats = [
-            [
-                'label' => 'Kursus Tersedia',
-                'value' => Course::published()->visible()->count() ?: '50+',
-                'icon' => 'courses',
-            ],
-            [
-                'label' => 'Siswa Terdaftar',
-                'value' => '1,000+',
-                'icon' => 'students',
-            ],
-            [
-                'label' => 'Instruktur Ahli',
-                'value' => '25+',
-                'icon' => 'instructors',
-            ],
-            [
-                'label' => 'Jam Konten',
-                'value' => '500+',
-                'icon' => 'hours',
-            ],
-        ];
+        $stats = Cache::remember('home_stats', 3600, function () {
+            $counts = DB::table('courses')
+                ->where('status', 'published')
+                ->where('visibility', 'visible')
+                ->selectRaw('COUNT(*) as courses_count')
+                ->first();
+
+            $studentsCount = DB::table('enrollments')->distinct('user_id')->count('user_id');
+
+            $instructorsCount = DB::table('courses')
+                ->where('status', 'published')
+                ->distinct('user_id')
+                ->count('user_id');
+
+            $totalMinutes = DB::table('courses')
+                ->where('status', 'published')
+                ->where('visibility', 'visible')
+                ->sum('duration');
+
+            $totalHours = (int) round($totalMinutes / 60);
+
+            return [
+                [
+                    'label' => 'Kursus Tersedia',
+                    'value' => number_format($counts->courses_count),
+                    'icon' => 'courses',
+                ],
+                [
+                    'label' => 'Siswa Terdaftar',
+                    'value' => number_format($studentsCount),
+                    'icon' => 'students',
+                ],
+                [
+                    'label' => 'Instruktur Ahli',
+                    'value' => number_format($instructorsCount),
+                    'icon' => 'instructors',
+                ],
+                [
+                    'label' => 'Jam Konten',
+                    'value' => number_format($totalHours),
+                    'icon' => 'hours',
+                ],
+            ];
+        });
 
         return Inertia::render('Welcome', [
             'canRegister' => Features::enabled(Features::registration()),
@@ -99,8 +127,8 @@ class HomeController extends Controller
                 'name' => $course->category->name,
                 'slug' => $course->category->slug,
             ] : null,
-            'rating' => 4.5,
-            'reviews_count' => rand(10, 500),
+            'rating' => round((float) ($course->ratings_avg_rating ?? 0), 1),
+            'reviews_count' => $course->ratings_count ?? 0,
             'students_count' => $course->enrollments_count ?? 0,
             'estimated_duration_minutes' => $course->duration,
             'lessons_count' => $course->lessons_count ?? 0,

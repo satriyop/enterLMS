@@ -83,6 +83,7 @@ interface CourseInvitation {
 interface Props {
     course: CourseDetails;
     invitations?: CourseInvitation[];
+    invitationsTotal?: number;
     can: {
         update: boolean;
         delete: boolean;
@@ -97,6 +98,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
     invitations: () => [],
+    invitationsTotal: 0,
 });
 
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -127,7 +129,7 @@ const tabs = computed(() => {
         tabList.push({
             value: 'invitations',
             label: 'Undangan Peserta',
-            count: props.invitations.length,
+            count: props.invitationsTotal,
         });
     }
 
@@ -213,6 +215,7 @@ const tabs = computed(() => {
                             <CourseInvitationsTab
                                 :course-id="course.id"
                                 :invitations="invitations"
+                                :invitations-total="invitationsTotal"
                                 :can-invite="can.invite ?? false"
                             />
                         </div>

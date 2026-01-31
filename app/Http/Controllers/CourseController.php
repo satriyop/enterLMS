@@ -150,13 +150,18 @@ class CourseController extends Controller
 
         $viewName = $user->isLearner() ? 'courses/Detail' : 'courses/Show';
 
+        $invitationQuery = CourseInvitation::query()
+            ->where('course_id', $course->id);
+
+        $invitationsTotal = $user->isLearner() ? 0 : $invitationQuery->count();
+
         $invitations = $user->isLearner()
             ? []
             : CourseInvitationResource::collection(
-                CourseInvitation::query()
-                    ->where('course_id', $course->id)
+                $invitationQuery->clone()
                     ->with(['user:id,name,email', 'inviter:id,name'])
                     ->latest()
+                    ->limit(10)
                     ->get()
             )->resolve();
 
@@ -170,6 +175,7 @@ class CourseController extends Controller
             'averageRating' => $course->average_rating,
             'ratingsCount' => $course->ratings_count,
             'invitations' => $invitations,
+            'invitationsTotal' => $invitationsTotal,
             'can' => [
                 'update' => Gate::allows('update', $course),
                 'delete' => Gate::allows('delete', $course),
