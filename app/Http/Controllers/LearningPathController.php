@@ -10,6 +10,7 @@ use App\Models\LearningPath;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -88,7 +89,7 @@ class LearningPathController extends Controller
         }
 
         return redirect()->route('learning-paths.index')
-            ->with('success', 'Learning path created successfully.');
+            ->with('success', 'Jalur belajar berhasil dibuat.');
     }
 
     public function show(LearningPath $learning_path): Response
@@ -153,7 +154,7 @@ class LearningPathController extends Controller
         }
 
         return redirect()->route('learning-paths.show', $learning_path)
-            ->with('success', 'Learning path updated successfully.');
+            ->with('success', 'Jalur belajar berhasil diperbarui.');
     }
 
     public function destroy(LearningPath $learning_path): RedirectResponse
@@ -163,7 +164,7 @@ class LearningPathController extends Controller
         $learning_path->delete();
 
         return redirect()->route('learning-paths.index')
-            ->with('success', 'Learning path deleted successfully.');
+            ->with('success', 'Jalur belajar berhasil dihapus.');
     }
 
     public function publish(LearningPath $learning_path): RedirectResponse
@@ -177,7 +178,7 @@ class LearningPathController extends Controller
         ]);
 
         return redirect()->route('learning-paths.show', $learning_path)
-            ->with('success', 'Learning path published successfully.');
+            ->with('success', 'Jalur belajar berhasil dipublikasikan.');
     }
 
     public function unpublish(LearningPath $learning_path): RedirectResponse
@@ -191,7 +192,7 @@ class LearningPathController extends Controller
         ]);
 
         return redirect()->route('learning-paths.show', $learning_path)
-            ->with('success', 'Learning path unpublished successfully.');
+            ->with('success', 'Jalur belajar berhasil dibatalkan publikasinya.');
     }
 
     public function reorder(ReorderPathCoursesRequest $request, LearningPath $learning_path): RedirectResponse
@@ -199,14 +200,22 @@ class LearningPathController extends Controller
         Gate::authorize('reorder', $learning_path);
 
         $validated = $request->validated();
+        $courseOrder = $validated['course_order'];
 
-        foreach ($validated['course_order'] as $item) {
-            $learning_path->courses()->updateExistingPivot($item['id'], [
-                'position' => $item['position'],
-            ]);
+        if (! empty($courseOrder)) {
+            $cases = collect($courseOrder)
+                ->map(fn ($item) => 'WHEN '.(int) $item['id'].' THEN '.(int) $item['position'])
+                ->join(' ');
+
+            $courseIds = collect($courseOrder)->pluck('id')->all();
+
+            DB::table('learning_path_course')
+                ->where('learning_path_id', $learning_path->id)
+                ->whereIn('course_id', $courseIds)
+                ->update(['position' => DB::raw("CASE course_id {$cases} END")]);
         }
 
         return redirect()->route('learning-paths.show', $learning_path)
-            ->with('success', 'Course order updated successfully.');
+            ->with('success', 'Urutan kursus berhasil diperbarui.');
     }
 }

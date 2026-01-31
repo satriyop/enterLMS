@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property int $id
@@ -55,7 +56,7 @@ class Lesson extends Model
         'is_free_preview',
     ];
 
-    protected $appends = ['youtube_video_id', 'rich_content_html'];
+    protected $appends = ['youtube_video_id'];
 
     protected function casts(): array
     {
@@ -141,12 +142,23 @@ class Lesson extends Model
         );
     }
 
+    /**
+     * @param  array<int, int>  $lessonIds  Ordered array of lesson IDs
+     */
     public static function bulkUpdateOrder(CourseSection $section, array $lessonIds): void
     {
-        foreach ($lessonIds as $order => $id) {
-            self::where('id', $id)->where('course_section_id', $section->id)
-                ->update(['order' => $order + 1]);
+        if (empty($lessonIds)) {
+            return;
         }
+
+        $cases = collect($lessonIds)
+            ->map(fn ($id, $order) => 'WHEN '.(int) $id.' THEN '.($order + 1))
+            ->join(' ');
+
+        DB::table('lessons')
+            ->where('course_section_id', $section->id)
+            ->whereIn('id', $lessonIds)
+            ->update(['order' => DB::raw("CASE id {$cases} END")]);
     }
 
     protected static function boot(): void

@@ -10,6 +10,7 @@ use App\Models\Course;
 use App\Models\Question;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -84,9 +85,17 @@ class QuestionController extends Controller
         Gate::authorize('update', [$assessment, $course]);
 
         $validated = $request->validated();
+        $questionIds = $validated['question_ids'];
 
-        foreach ($validated['question_ids'] as $index => $questionId) {
-            $assessment->questions()->where('id', $questionId)->update(['order' => $index]);
+        if (! empty($questionIds)) {
+            $cases = collect($questionIds)
+                ->map(fn ($id, $index) => 'WHEN '.(int) $id.' THEN '.$index)
+                ->join(' ');
+
+            DB::table('questions')
+                ->where('assessment_id', $assessment->id)
+                ->whereIn('id', $questionIds)
+                ->update(['order' => DB::raw("CASE id {$cases} END")]);
         }
 
         return back()->with('success', 'Urutan pertanyaan berhasil diperbarui.');

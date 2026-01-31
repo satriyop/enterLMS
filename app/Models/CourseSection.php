@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RequiresEagerLoading;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,7 +27,7 @@ use Illuminate\Support\Facades\DB;
  */
 class CourseSection extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, RequiresEagerLoading, SoftDeletes;
 
     protected $fillable = [
         'course_id',
@@ -65,9 +66,12 @@ class CourseSection extends Model
         return $this->hasMany(Lesson::class)->orderBy('order');
     }
 
+    /**
+     * Requires: ->withCount('lessons') in your query.
+     */
     public function getTotalLessonsAttribute(): int
     {
-        return $this->lessons()->count();
+        return $this->getEagerCount('lessons');
     }
 
     public function getDurationAttribute(): int
@@ -99,11 +103,22 @@ class CourseSection extends Model
         ]);
     }
 
+    /**
+     * @param  array<int, int>  $sectionIds  Ordered array of section IDs
+     */
     public static function bulkUpdateOrder(Course $course, array $sectionIds): void
     {
-        foreach ($sectionIds as $order => $id) {
-            self::where('id', $id)->where('course_id', $course->id)
-                ->update(['order' => $order + 1]);
+        if (empty($sectionIds)) {
+            return;
         }
+
+        $cases = collect($sectionIds)
+            ->map(fn ($id, $order) => 'WHEN '.(int) $id.' THEN '.($order + 1))
+            ->join(' ');
+
+        DB::table('course_sections')
+            ->where('course_id', $course->id)
+            ->whereIn('id', $sectionIds)
+            ->update(['order' => DB::raw("CASE id {$cases} END")]);
     }
 }

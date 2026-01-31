@@ -35,6 +35,7 @@ class LessonController extends Controller
 
         $course->load(['category', 'user', 'sections.lessons']);
         $lesson->load(['section', 'media']);
+        $lesson->append('rich_content_html');
 
         $user = $request->user();
         $enrollment = Enrollment::query()
