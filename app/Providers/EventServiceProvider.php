@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Domain\Assessment\Events\AssessmentAttemptStarted;
+use App\Domain\Assessment\Events\AssessmentAttemptSubmitted;
+use App\Domain\Assessment\Events\AssessmentGraded;
 use App\Domain\Course\Events\CourseArchived;
 use App\Domain\Course\Events\CoursePublished;
 use App\Domain\Course\Events\CourseUnpublished;
@@ -35,6 +38,17 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
+        // Assessment Events
+        AssessmentAttemptStarted::class => [
+            LogDomainEvent::class,
+        ],
+        AssessmentAttemptSubmitted::class => [
+            LogDomainEvent::class,
+        ],
+        AssessmentGraded::class => [
+            LogDomainEvent::class,
+        ],
+
         // Course Events
         CoursePublished::class => [
             LogDomainEvent::class,

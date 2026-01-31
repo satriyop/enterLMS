@@ -115,7 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('media', [MediaController::class, 'store'])->name('media.store');
     Route::delete('media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
 
-    // Assessments
+    // Assessments (CRUD + publishing)
     Route::prefix('courses/{course}/assessments')->group(function () {
         Route::get('/', [\App\Http\Controllers\AssessmentController::class, 'index'])->name('assessments.index');
         Route::get('create', [\App\Http\Controllers\AssessmentController::class, 'create'])->name('assessments.create');
@@ -127,12 +127,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('{assessment}/publish', [\App\Http\Controllers\AssessmentController::class, 'publish'])->name('assessments.publish');
         Route::post('{assessment}/unpublish', [\App\Http\Controllers\AssessmentController::class, 'unpublish'])->name('assessments.unpublish');
         Route::post('{assessment}/archive', [\App\Http\Controllers\AssessmentController::class, 'archive'])->name('assessments.archive');
-        Route::post('{assessment}/start', [\App\Http\Controllers\AssessmentController::class, 'startAttempt'])->name('assessments.start');
-        Route::get('{assessment}/attempts/{attempt}', [\App\Http\Controllers\AssessmentController::class, 'attempt'])->name('assessments.attempt');
-        Route::post('{assessment}/attempts/{attempt}/submit', [\App\Http\Controllers\AssessmentController::class, 'submitAttempt'])->name('assessments.attempt.submit');
-        Route::get('{assessment}/attempts/{attempt}/complete', [\App\Http\Controllers\AssessmentController::class, 'attemptComplete'])->name('assessments.attempt.complete');
-        Route::get('{assessment}/attempts/{attempt}/grade', [\App\Http\Controllers\AssessmentController::class, 'grade'])->name('assessments.grade');
-        Route::post('{assessment}/attempts/{attempt}/grade', [\App\Http\Controllers\AssessmentController::class, 'submitGrade'])->name('assessments.grade.submit');
+
+        // Assessment Attempts (start, submit, view, grade)
+        Route::post('{assessment}/start', [\App\Http\Controllers\AssessmentAttemptController::class, 'start'])->name('assessments.start');
+        Route::get('{assessment}/attempts/{attempt}', [\App\Http\Controllers\AssessmentAttemptController::class, 'show'])->name('assessments.attempt');
+        Route::post('{assessment}/attempts/{attempt}/submit', [\App\Http\Controllers\AssessmentAttemptController::class, 'submit'])->name('assessments.attempt.submit');
+        Route::get('{assessment}/attempts/{attempt}/complete', [\App\Http\Controllers\AssessmentAttemptController::class, 'complete'])->name('assessments.attempt.complete');
+        Route::get('{assessment}/attempts/{attempt}/grade', [\App\Http\Controllers\AssessmentAttemptController::class, 'grade'])->name('assessments.grade');
+        Route::post('{assessment}/attempts/{attempt}/grade', [\App\Http\Controllers\AssessmentAttemptController::class, 'submitGrade'])->name('assessments.grade.submit');
 
         // Questions
         Route::get('{assessment}/questions', [\App\Http\Controllers\QuestionController::class, 'index'])->name('assessments.questions.index');
