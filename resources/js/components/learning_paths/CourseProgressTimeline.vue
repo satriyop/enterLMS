@@ -18,7 +18,7 @@ import {
     RotateCcw,
 } from 'lucide-vue-next';
 import { formatDuration } from '@/lib/utils';
-import type { CourseProgressItem, CourseProgressStatus } from '@/types/learning-path';
+import type { CourseProgressItem, CourseProgressStatus } from '@/types';
 
 // =============================================================================
 // Types

@@ -26,6 +26,8 @@ import {
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import { formatDuration, difficultyLabel, DIFFICULTY_COLORS } from '@/lib/utils';
+import LearningPathEnrollmentController from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
+import CourseController from '@/actions/App/Http/Controllers/CourseController';
 import type { DifficultyLevel } from '@/types';
 import type {
     LearningPathDetail,
@@ -34,7 +36,7 @@ import type {
     CourseProgressItem,
     CourseProgressStatus,
     COURSE_PROGRESS_STATUS_COLORS,
-} from '@/types/learning-path';
+} from '@/types';
 
 // =============================================================================
 // Types
@@ -77,7 +79,7 @@ const getDifficultyColor = (level: DifficultyLevel) => {
 
 const enroll = () => {
     isEnrolling.value = true;
-    router.post(`/learner/learning-paths/${props.learningPath.id}/enroll`, {}, {
+    router.post(LearningPathEnrollmentController.enroll(props.learningPath.id).url, {}, {
         preserveScroll: true,
         onFinish: () => {
             isEnrolling.value = false;
@@ -140,7 +142,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
             <nav class="mb-6 text-sm text-muted-foreground">
                 <ol class="flex items-center gap-2">
                     <li>
-                        <Link href="/learner/learning-paths" class="hover:text-foreground">
+                        <Link :href="LearningPathEnrollmentController.index().url" class="hover:text-foreground">
                             Learning Path
                         </Link>
                     </li>
@@ -283,7 +285,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                         </span>
                                         <Link
                                             v-else-if="isEnrolled"
-                                            :href="`/courses/${course.course_id}`"
+                                            :href="CourseController.show(course.course_id).url"
                                         >
                                             <Button size="sm" variant="ghost">
                                                 {{ getCourseActionLabel(getCourseStatus(course.course_id)?.status ?? 'available') }}
@@ -334,7 +336,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                 </p>
                             </div>
                             <div v-else-if="isActive">
-                                <Link :href="`/learner/learning-paths/${learningPath.id}/progress`">
+                                <Link :href="LearningPathEnrollmentController.progress(learningPath.id).url">
                                     <Button class="w-full" size="lg">
                                         <Play class="mr-2 h-5 w-5" />
                                         Lanjutkan Belajar
@@ -342,7 +344,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                 </Link>
                             </div>
                             <div v-else-if="isCompleted">
-                                <Link :href="`/learner/learning-paths/${learningPath.id}/progress`">
+                                <Link :href="LearningPathEnrollmentController.progress(learningPath.id).url">
                                     <Button class="w-full" variant="outline" size="lg">
                                         <CheckCircle class="mr-2 h-5 w-5" />
                                         Lihat Progress

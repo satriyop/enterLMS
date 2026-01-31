@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, BookOpen, CheckCircle, Route } from 'lucide-vue-next';
 import { formatDuration, difficultyLabel, DIFFICULTY_COLORS } from '@/lib/utils';
 import type { DifficultyLevel } from '@/types';
-import type { LearningPathItem } from '@/types/learning-path';
+import type { LearningPathItem } from '@/types';
 
 // =============================================================================
 // Types

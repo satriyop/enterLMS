@@ -268,6 +268,80 @@ export interface CourseFilters {
 }
 
 // =============================================================================
+// Course Invitation Types
+// =============================================================================
+
+/**
+ * Course invitation model - matches database columns.
+ */
+export interface CourseInvitation extends Timestamps {
+    id: number;
+    course_id: CourseId;
+    user_id: UserId;
+    invited_by: UserId;
+    status: 'pending' | 'accepted' | 'declined' | 'expired';
+    message: string | null;
+    invited_at: string;
+    expires_at: string | null;
+    responded_at: string | null;
+
+    // Relations (conditionally loaded)
+    user?: User;
+    invited_by_user?: User;
+    course?: Course;
+}
+
+/**
+ * Invitation for display (with user info).
+ */
+export interface CourseInvitationWithUser {
+    id: number;
+    user: {
+        id: number;
+        name: string;
+        email: string;
+    };
+    status: 'pending' | 'accepted' | 'declined' | 'expired';
+    message: string | null;
+    invited_by: string;
+    invited_at: string;
+    expires_at: string | null;
+    responded_at: string | null;
+}
+
+// =============================================================================
+// Course Rating Types
+// =============================================================================
+
+/**
+ * Course rating model - matches database columns.
+ */
+export interface CourseRating extends Timestamps {
+    id: number;
+    course_id: CourseId;
+    user_id: UserId;
+    rating: number;
+    review: string | null;
+
+    // Relations (conditionally loaded)
+    user?: UserSummary;
+    course?: Course;
+}
+
+/**
+ * Rating with user info for display.
+ */
+export interface CourseRatingWithUser {
+    id: number;
+    course_id: number;
+    user_id: number;
+    rating: number;
+    review: string | null;
+    created_at: string;
+    user: UserSummary;
+}
+
+// =============================================================================
 // Permission/Capability Types
 // =============================================================================
 

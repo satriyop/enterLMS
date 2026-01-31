@@ -33,11 +33,12 @@ import {
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import { formatDuration, formatDate } from '@/lib/utils';
+import LearningPathEnrollmentController from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
 import type {
     LearningPathDetail,
     LearningPathEnrollment,
     PathProgressData,
-} from '@/types/learning-path';
+} from '@/types';
 
 // =============================================================================
 // Types
@@ -70,7 +71,7 @@ const isActive = computed(() => props.enrollment.state === 'active');
 
 const dropEnrollment = () => {
     isDropping.value = true;
-    router.delete(`/learner/learning-paths/${props.learningPath.id}/drop`, {
+    router.delete(LearningPathEnrollmentController.drop(props.learningPath.id).url, {
         preserveScroll: true,
         onFinish: () => {
             isDropping.value = false;
@@ -91,13 +92,13 @@ const dropEnrollment = () => {
             <nav class="mb-6 text-sm text-muted-foreground">
                 <ol class="flex items-center gap-2">
                     <li>
-                        <Link href="/learner/learning-paths" class="hover:text-foreground">
+                        <Link :href="LearningPathEnrollmentController.index().url" class="hover:text-foreground">
                             Learning Path
                         </Link>
                     </li>
                     <ChevronRight class="h-4 w-4" />
                     <li>
-                        <Link :href="`/learner/learning-paths/${learningPath.id}`" class="hover:text-foreground">
+                        <Link :href="LearningPathEnrollmentController.show(learningPath.id).url" class="hover:text-foreground">
                             {{ learningPath.title }}
                         </Link>
                     </li>
@@ -198,7 +199,7 @@ const dropEnrollment = () => {
 
             <!-- Actions -->
             <div class="flex flex-col gap-4 sm:flex-row sm:justify-between">
-                <Link :href="`/learner/learning-paths/${learningPath.id}`">
+                <Link :href="LearningPathEnrollmentController.show(learningPath.id).url">
                     <Button variant="outline">
                         <ChevronRight class="mr-2 h-4 w-4 rotate-180" />
                         Kembali ke Detail

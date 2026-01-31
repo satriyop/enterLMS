@@ -13,8 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { Route, Search, Filter, X } from 'lucide-vue-next';
 import { ref, computed, watch } from 'vue';
+import LearningPathEnrollmentController from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
 import type { DifficultyLevel, PaginationLink } from '@/types';
-import type { LearningPathItem } from '@/types/learning-path';
+import type { LearningPathItem } from '@/types';
 
 // =============================================================================
 // Page-Specific Types
@@ -54,7 +55,7 @@ const applyFilters = () => {
     if (searchQuery.value) params.search = searchQuery.value;
     if (selectedDifficulty.value) params.difficulty = selectedDifficulty.value;
 
-    router.get('/learner/learning-paths/browse', params, {
+    router.get(LearningPathEnrollmentController.browse().url, params, {
         preserveState: true,
         preserveScroll: true,
     });
@@ -63,7 +64,7 @@ const applyFilters = () => {
 const clearFilters = () => {
     searchQuery.value = '';
     selectedDifficulty.value = '';
-    router.get('/learner/learning-paths/browse', {}, { preserveState: true });
+    router.get(LearningPathEnrollmentController.browse().url, {}, { preserveState: true });
 };
 
 const hasActiveFilters = computed(() => {

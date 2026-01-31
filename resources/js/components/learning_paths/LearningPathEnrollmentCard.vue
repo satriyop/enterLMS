@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, CheckCircle, Play, Route } from 'lucide-vue-next';
 import { formatDuration } from '@/lib/utils';
-import type { LearningPathEnrollmentItem, LEARNING_PATH_STATE_COLORS, enrollmentStateLabel } from '@/types/learning-path';
+import type { LearningPathEnrollmentItem, LEARNING_PATH_STATE_COLORS, enrollmentStateLabel } from '@/types';
 
 // =============================================================================
 // Types

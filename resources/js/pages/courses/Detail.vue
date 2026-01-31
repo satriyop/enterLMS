@@ -4,8 +4,7 @@
 // Uses CourseContentOutline, CourseRatingsSection, CourseEnrollmentCard, CourseMetaCard
 // =============================================================================
 
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -13,8 +12,8 @@ import CourseContentOutline from '@/components/courses/CourseContentOutline.vue'
 import CourseRatingsSection from '@/components/courses/CourseRatingsSection.vue';
 import CourseEnrollmentCard from '@/components/courses/CourseEnrollmentCard.vue';
 import CourseMetaCard from '@/components/courses/CourseMetaCard.vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, AlertTriangle, Clock, Users } from 'lucide-vue-next';
+import { Head, Link } from '@inertiajs/vue3';
+import { BookOpen, AlertTriangle } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { formatDuration, difficultyLabel, difficultyColor } from '@/lib/utils';
 import type {
@@ -116,9 +115,6 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const page = usePage();
-const appName = computed(() => page.props.name || 'E-Learning');
-
 // =============================================================================
 // Computed
 // =============================================================================
@@ -154,9 +150,7 @@ const firstLessonId = computed(() => {
 <template>
     <Head :title="course.title" />
 
-    <div class="min-h-screen bg-background">
-        <Navbar :app-name="appName" />
-
+    <PublicLayout>
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Breadcrumb -->
             <nav class="mb-6 text-sm">
@@ -298,7 +292,5 @@ const firstLessonId = computed(() => {
                 </div>
             </div>
         </main>
-
-        <Footer :app-name="appName" />
-    </div>
+    </PublicLayout>
 </template>

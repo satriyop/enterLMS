@@ -14,6 +14,7 @@ import MyLearningCard from '@/components/courses/MyLearningCard.vue';
 import FeaturedCoursesCarousel from '@/components/courses/FeaturedCoursesCarousel.vue';
 import CourseInvitationCard from '@/components/courses/CourseInvitationCard.vue';
 import BrowseCourseCard from '@/components/courses/BrowseCourseCard.vue';
+import CourseController from '@/actions/App/Http/Controllers/CourseController';
 import type { DifficultyLevel } from '@/types';
 
 // =============================================================================
@@ -141,7 +142,7 @@ const appName = computed(() => page.props.name || 'E-Learning');
                 <section v-if="browseCourses.length > 0">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-xl font-bold">Jelajahi Kursus</h2>
-                        <Link href="/courses" class="text-sm text-primary hover:underline">
+                        <Link :href="CourseController.index().url" class="text-sm text-primary hover:underline">
                             Lihat Semua
                         </Link>
                     </div>

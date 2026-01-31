@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 import BrowseCourseCard from '@/components/courses/BrowseCourseCard.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { BookOpen, Search, Filter, X } from 'lucide-vue-next';
 import { ref, computed, watch } from 'vue';
 import type { Category, DifficultyLevel, PaginationLink, UserSummary } from '@/types';
@@ -63,9 +62,6 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const page = usePage();
-const appName = computed(() => page.props.name || 'E-Learning');
-
 const searchQuery = ref(props.filters.search || '');
 const selectedCategory = ref(props.filters.category_id || '');
 const selectedDifficulty = ref(props.filters.difficulty_level || '');
@@ -105,9 +101,7 @@ watch(searchQuery, () => {
 <template>
     <Head title="Jelajahi Kursus" />
 
-    <div class="min-h-screen bg-background">
-        <Navbar :app-name="appName" />
-
+    <PublicLayout>
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Header -->
             <div class="mb-8">
@@ -227,7 +221,5 @@ watch(searchQuery, () => {
                 </template>
             </div>
         </main>
-
-        <Footer :app-name="appName" />
-    </div>
+    </PublicLayout>
 </template>

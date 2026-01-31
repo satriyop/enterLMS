@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type DifficultyLevel } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Form, Head, Link } from '@inertiajs/vue3';
 import { Loader2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 
@@ -81,19 +81,11 @@ const breadcrumbItems: BreadcrumbItem[] = [
 ];
 
 // =============================================================================
-// Form
+// Form State
 // =============================================================================
 
-const form = useForm({
-    title: props.learningPath.title,
-    description: props.learningPath.description ?? '',
-    objectives: props.learningPath.objectives || [''],
-    estimated_duration: props.learningPath.estimated_duration,
-    difficulty_level: props.learningPath.difficulty_level || 'beginner',
-    thumbnail: null as File | null,
-    courses: [] as SelectedCourse[],
-    _method: 'PUT',
-});
+const objectives = ref<string[]>(props.learningPath.objectives || ['']);
+const selectedDifficulty = ref<DifficultyLevel | 'expert'>(props.learningPath.difficulty_level || 'beginner');
 
 // =============================================================================
 // Course Management
@@ -135,18 +127,6 @@ const handleRemoveCourse = (course: SelectedCourse) => {
     const index = selectedCourses.value.findIndex(c => c.id === course.id);
     if (index !== -1) selectedCourses.value.splice(index, 1);
 };
-
-// =============================================================================
-// Submit
-// =============================================================================
-
-const submit = () => {
-    form.courses = selectedCourses.value;
-    form.post(update(props.learningPath.id).url, {
-        preserveScroll: true,
-        onError: (errors) => console.log('Validation errors:', errors),
-    });
-};
 </script>
 
 <template>
@@ -166,38 +146,53 @@ const submit = () => {
                     <CardTitle>Informasi Jalur Pembelajaran</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form class="space-y-6" @submit.prevent="submit">
+                    <Form
+                        v-bind="update(learningPath.id).form()"
+                        class="space-y-6"
+                        enctype="multipart/form-data"
+                        #default="{ errors, processing }"
+                    >
+                        <input type="hidden" name="_method" value="PUT" />
+
                         <div class="grid gap-2">
                             <Label for="title">Judul *</Label>
-                            <Input id="title" v-model="form.title" type="text" required autofocus />
-                            <InputError :message="form.errors.title" />
+                            <Input id="title" name="title" type="text" :value="learningPath.title" required autofocus />
+                            <InputError :message="errors.title" />
                         </div>
 
                         <div class="grid gap-2">
                             <Label for="description">Deskripsi</Label>
                             <textarea
                                 id="description"
-                                v-model="form.description"
+                                name="description"
                                 class="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                                 rows="4"
+                                :value="learningPath.description ?? ''"
                             />
-                            <InputError :message="form.errors.description" />
+                            <InputError :message="errors.description" />
                         </div>
 
-                        <LearningPathObjectivesField v-model="form.objectives" :error="form.errors.objectives" />
+                        <LearningPathObjectivesField v-model="objectives" :error="errors.objectives" />
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="grid gap-2">
                                 <Label for="estimated_duration">Durasi Perkiraan (menit)</Label>
-                                <Input id="estimated_duration" v-model="form.estimated_duration" type="number" min="1" />
-                                <InputError :message="form.errors.estimated_duration" />
+                                <Input
+                                    id="estimated_duration"
+                                    name="estimated_duration"
+                                    type="number"
+                                    min="1"
+                                    :value="learningPath.estimated_duration"
+                                />
+                                <InputError :message="errors.estimated_duration" />
                             </div>
 
                             <div class="grid gap-2">
                                 <Label for="difficulty_level">Tingkat Kesulitan</Label>
+                                <input type="hidden" name="difficulty_level" :value="selectedDifficulty" />
                                 <select
                                     id="difficulty_level"
-                                    v-model="form.difficulty_level"
+                                    v-model="selectedDifficulty"
                                     class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     <option value="beginner">Pemula</option>
@@ -205,7 +200,7 @@ const submit = () => {
                                     <option value="advanced">Lanjutan</option>
                                     <option value="expert">Ahli</option>
                                 </select>
-                                <InputError :message="form.errors.difficulty_level" />
+                                <InputError :message="errors.difficulty_level" />
                             </div>
                         </div>
 
@@ -213,11 +208,11 @@ const submit = () => {
                             <Label for="thumbnail">Thumbnail</Label>
                             <Input
                                 id="thumbnail"
+                                name="thumbnail"
                                 type="file"
                                 accept="image/*"
-                                @input="form.thumbnail = ($event.target as HTMLInputElement).files?.[0] ?? null"
                             />
-                            <InputError :message="form.errors.thumbnail" />
+                            <InputError :message="errors.thumbnail" />
                         </div>
 
                         <LearningPathCoursesManager
@@ -227,16 +222,46 @@ const submit = () => {
                             @remove-course="handleRemoveCourse"
                         />
 
+                        <!-- Hidden input for courses array -->
+                        <input
+                            v-for="(course, index) in selectedCourses"
+                            :key="course.id"
+                            type="hidden"
+                            :name="`courses[${index}][id]`"
+                            :value="course.id"
+                        />
+                        <input
+                            v-for="(course, index) in selectedCourses"
+                            :key="`${course.id}-required`"
+                            type="hidden"
+                            :name="`courses[${index}][is_required]`"
+                            :value="course.is_required ? 1 : 0"
+                        />
+                        <input
+                            v-for="(course, index) in selectedCourses"
+                            :key="`${course.id}-completion`"
+                            type="hidden"
+                            :name="`courses[${index}][min_completion_percentage]`"
+                            :value="course.min_completion_percentage"
+                        />
+                        <input
+                            v-for="(course, index) in selectedCourses"
+                            :key="`${course.id}-prereqs`"
+                            type="hidden"
+                            :name="`courses[${index}][prerequisites]`"
+                            :value="course.prerequisites ? JSON.stringify(course.prerequisites) : ''"
+                        />
+
                         <div class="flex justify-end gap-4 mt-6">
                             <Link :href="show(learningPath.id).url">
                                 <Button type="button" variant="outline">Batal</Button>
                             </Link>
-                            <Button type="submit" :disabled="form.processing">
-                                <Loader2 v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
+                            <Button type="submit" :disabled="processing">
+                                <Loader2 v-if="processing" class="mr-2 h-4 w-4 animate-spin" />
                                 Perbarui Jalur Pembelajaran
                             </Button>
                         </div>
-                    </form>
+                    </Form>
                 </CardContent>
             </Card>
         </div>

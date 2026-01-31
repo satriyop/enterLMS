@@ -16,8 +16,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type ContentType, type Media } from '@/types';
-import { Head, useForm, router } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Form, Head, router } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import { contentTypeLabel } from '@/lib/formatters';
 
 // =============================================================================
@@ -72,20 +72,16 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 ]);
 
 // =============================================================================
-// Form
+// Form State
 // =============================================================================
 
-const form = useForm({
-    title: props.lesson?.title ?? '',
-    description: props.lesson?.description ?? '',
-    content_type: props.lesson?.content_type ?? 'text' as ContentType,
-    rich_content: props.lesson?.rich_content ?? null,
-    youtube_url: props.lesson?.youtube_url ?? '',
-    conference_url: props.lesson?.conference_url ?? '',
-    conference_type: props.lesson?.conference_type ?? 'zoom',
-    estimated_duration_minutes: props.lesson?.estimated_duration_minutes ?? null,
-    is_free_preview: props.lesson?.is_free_preview ?? false,
-});
+const contentType = ref<ContentType>(props.lesson?.content_type ?? 'text');
+const richContent = ref<Record<string, unknown> | null>(props.lesson?.rich_content ?? null);
+const youtubeUrl = ref<string>(props.lesson?.youtube_url ?? '');
+const conferenceUrl = ref<string>(props.lesson?.conference_url ?? '');
+const conferenceType = ref<'zoom' | 'google_meet' | 'other'>(props.lesson?.conference_type ?? 'zoom');
+const estimatedDurationMinutes = ref<number | null>(props.lesson?.estimated_duration_minutes ?? null);
+const isFreePreview = ref<boolean>(props.lesson?.is_free_preview ?? false);
 
 // =============================================================================
 // Computed
@@ -100,7 +96,9 @@ const videoMedia = computed(() => getMediaByCollection('video'));
 const audioMedia = computed(() => getMediaByCollection('audio'));
 const documentMedia = computed(() => getMediaByCollection('document'));
 
-const selectedContentTypeLabel = computed(() => contentTypeLabel(form.content_type));
+const selectedContentTypeLabel = computed(() => contentTypeLabel(contentType.value));
+
+const formAction = computed(() => isEditMode.value && props.lesson ? update(props.lesson.id).form() : store(props.section.id).form());
 
 // =============================================================================
 // Methods
@@ -117,18 +115,6 @@ const handleMediaDeleted = () => {
 const handleMediaError = (message: string) => {
     alert(message);
 };
-
-const submitForm = () => {
-    if (isEditMode.value && props.lesson) {
-        form.patch(update(props.lesson.id).url, {
-            preserveScroll: true,
-        });
-    } else {
-        form.post(store(props.section.id).url, {
-            preserveScroll: true,
-        });
-    }
-};
 </script>
 
 <template>
@@ -143,7 +129,13 @@ const submitForm = () => {
                 back-label="Kembali ke Kursus"
             />
 
-            <form class="grid gap-6 lg:grid-cols-3" @submit.prevent="submitForm">
+            <Form
+                v-bind="formAction"
+                class="grid gap-6 lg:grid-cols-3"
+                #default="{ errors, processing }"
+            >
+                <input v-if="isEditMode" type="hidden" name="_method" value="PATCH" />
+
                 <div class="space-y-6 lg:col-span-2">
                     <!-- Basic Info -->
                     <FormSection title="Informasi Dasar" description="Informasi utama tentang materi pembelajaran">
@@ -154,51 +146,59 @@ const submitForm = () => {
                                 </Label>
                                 <Input
                                     id="title"
-                                    v-model="form.title"
+                                    name="title"
+                                    :value="lesson?.title ?? ''"
                                     placeholder="Contoh: Pengenalan JavaScript"
                                     class="h-11"
                                     required
                                 />
-                                <InputError :message="form.errors.title" />
+                                <InputError :message="errors.title" />
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="description" class="text-sm font-medium">Deskripsi</Label>
                                 <textarea
                                     id="description"
-                                    v-model="form.description"
+                                    name="description"
                                     rows="3"
                                     class="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
                                     placeholder="Deskripsi singkat tentang materi ini"
+                                    :value="lesson?.description ?? ''"
                                 />
-                                <InputError :message="form.errors.description" />
+                                <InputError :message="errors.description" />
                             </div>
                         </div>
                     </FormSection>
 
                     <!-- Content Type Selector -->
                     <FormSection title="Tipe Konten" description="Pilih jenis konten untuk materi ini">
-                        <LessonContentTypeSelector v-model="form.content_type" />
-                        <InputError :message="form.errors.content_type" />
+                        <input type="hidden" name="content_type" :value="contentType" />
+                        <LessonContentTypeSelector v-model="contentType" />
+                        <InputError :message="errors.content_type" />
                     </FormSection>
 
                     <!-- Content Editor -->
                     <FormSection :title="`Konten ${selectedContentTypeLabel}`">
+                        <input type="hidden" name="rich_content" :value="richContent ? JSON.stringify(richContent) : ''" />
+                        <input type="hidden" name="youtube_url" :value="youtubeUrl" />
+                        <input type="hidden" name="conference_url" :value="conferenceUrl" />
+                        <input type="hidden" name="conference_type" :value="conferenceType" />
+
                         <LessonContentEditor
-                            :content-type="form.content_type"
+                            :content-type="contentType"
                             :lesson-id="lesson?.id ?? null"
-                            :rich-content="form.rich_content"
-                            :youtube-url="form.youtube_url"
-                            :conference-url="form.conference_url"
-                            :conference-type="form.conference_type"
+                            :rich-content="richContent"
+                            :youtube-url="youtubeUrl"
+                            :conference-url="conferenceUrl"
+                            :conference-type="conferenceType"
                             :existing-video-media="videoMedia"
                             :existing-audio-media="audioMedia"
                             :existing-document-media="documentMedia"
-                            :errors="form.errors"
-                            @update:rich-content="form.rich_content = $event"
-                            @update:youtube-url="form.youtube_url = $event"
-                            @update:conference-url="form.conference_url = $event"
-                            @update:conference-type="form.conference_type = $event"
+                            :errors="errors"
+                            @update:rich-content="richContent = $event"
+                            @update:youtube-url="youtubeUrl = $event"
+                            @update:conference-url="conferenceUrl = $event"
+                            @update:conference-type="conferenceType = $event"
                             @media-uploaded="handleMediaUploaded"
                             @media-deleted="handleMediaDeleted"
                             @media-error="handleMediaError"
@@ -207,16 +207,19 @@ const submitForm = () => {
                 </div>
 
                 <!-- Sidebar -->
+                <input type="hidden" name="estimated_duration_minutes" :value="estimatedDurationMinutes ?? ''" />
+                <input type="hidden" name="is_free_preview" :value="isFreePreview ? 1 : 0" />
+
                 <LessonSettingsSidebar
                     :cancel-href="editCourse(section.course.id).url"
-                    :estimated-duration-minutes="form.estimated_duration_minutes"
-                    :is-free-preview="form.is_free_preview"
-                    :is-processing="form.processing"
-                    :errors="form.errors"
-                    @update:estimated-duration-minutes="form.estimated_duration_minutes = $event"
-                    @update:is-free-preview="form.is_free_preview = $event"
+                    :estimated-duration-minutes="estimatedDurationMinutes"
+                    :is-free-preview="isFreePreview"
+                    :is-processing="processing"
+                    :errors="errors"
+                    @update:estimated-duration-minutes="estimatedDurationMinutes = $event"
+                    @update:is-free-preview="isFreePreview = $event"
                 />
-            </form>
+            </Form>
         </div>
     </AppLayout>
 </template>
