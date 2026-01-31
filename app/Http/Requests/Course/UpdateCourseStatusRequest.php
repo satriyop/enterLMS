@@ -3,13 +3,14 @@
 namespace App\Http\Requests\Course;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UpdateCourseStatusRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('setStatus', $this->route('course'));
     }
 
     public function rules(): array

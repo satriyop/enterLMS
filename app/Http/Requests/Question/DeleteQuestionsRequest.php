@@ -3,12 +3,13 @@
 namespace App\Http\Requests\Question;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class DeleteQuestionsRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('update', [$this->route('assessment'), $this->route('course')]);
     }
 
     public function rules(): array

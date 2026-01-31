@@ -58,8 +58,6 @@ class CoursePublishController extends Controller
      */
     public function updateStatus(UpdateCourseStatusRequest $request, Course $course): RedirectResponse
     {
-        Gate::authorize('setStatus', $course);
-
         $course->updateStatus($request->validated('status'), $request->user());
 
         return redirect()
@@ -72,8 +70,6 @@ class CoursePublishController extends Controller
      */
     public function updateVisibility(UpdateCourseVisibilityRequest $request, Course $course): RedirectResponse
     {
-        Gate::authorize('setVisibility', $course);
-
         $validated = $request->validated();
 
         $course->update($validated);

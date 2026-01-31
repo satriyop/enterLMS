@@ -3,13 +3,18 @@
 namespace App\Http\Requests\Assessment;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class BulkGradeAnswersRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('grade', [
+            $this->route('attempt'),
+            $this->route('assessment'),
+            $this->route('course'),
+        ]);
     }
 
     public function rules(): array

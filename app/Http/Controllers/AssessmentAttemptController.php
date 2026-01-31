@@ -146,8 +146,6 @@ class AssessmentAttemptController extends Controller
      */
     public function submitGrade(BulkGradeAnswersRequest $request, Course $course, Assessment $assessment, AssessmentAttempt $attempt): RedirectResponse
     {
-        Gate::authorize('grade', [$attempt, $assessment, $course]);
-
         $validated = $request->validated();
 
         $this->submissionService->submitBulkGrades($attempt, $validated['grades'], $assessment);

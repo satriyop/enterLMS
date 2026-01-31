@@ -3,19 +3,26 @@
 namespace App\Http\Requests\LearningPath;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class ReorderPathCoursesRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('reorder', $this->route('learning_path'));
     }
 
     public function rules(): array
     {
+        $learningPathId = $this->route('learning_path')->id;
+
         return [
             'course_order' => ['required', 'array'],
-            'course_order.*.id' => ['required', 'exists:courses,id'],
+            'course_order.*.id' => [
+                'required',
+                Rule::exists('learning_path_course', 'course_id')->where('learning_path_id', $learningPathId),
+            ],
             'course_order.*.position' => ['required', 'integer', 'min:0'],
         ];
     }

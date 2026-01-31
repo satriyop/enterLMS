@@ -82,8 +82,6 @@ class QuestionController extends Controller
      */
     public function reorder(ReorderQuestionsRequest $request, Course $course, Assessment $assessment): RedirectResponse
     {
-        Gate::authorize('update', [$assessment, $course]);
-
         $validated = $request->validated();
         $questionIds = $validated['question_ids'];
 

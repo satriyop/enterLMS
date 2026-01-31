@@ -3,19 +3,28 @@
 namespace App\Http\Requests\Question;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class ReorderQuestionsRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('update', [$this->route('assessment'), $this->route('course')]);
     }
 
     public function rules(): array
     {
+        $assessmentId = $this->route('assessment')->id;
+
         return [
             'questions' => ['required', 'array'],
-            'questions.*.id' => ['sometimes', 'integer', 'nullable'],
+            'questions.*.id' => [
+                'sometimes',
+                'integer',
+                'nullable',
+                Rule::exists('questions', 'id')->where('assessment_id', $assessmentId),
+            ],
             'questions.*.position' => ['required', 'integer', 'min:0'],
         ];
     }

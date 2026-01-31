@@ -7,7 +7,6 @@ use App\Http\Requests\Section\ReorderSectionLessonsRequest;
 use App\Models\Course;
 use App\Models\CourseSection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Gate;
 
 class CourseReorderController extends Controller
 {
@@ -16,8 +15,6 @@ class CourseReorderController extends Controller
      */
     public function sections(ReorderCourseSectionsRequest $request, Course $course): JsonResponse
     {
-        Gate::authorize('update', $course);
-
         $validated = $request->validated();
 
         CourseSection::bulkUpdateOrder($course, $validated['sections']);
@@ -32,8 +29,6 @@ class CourseReorderController extends Controller
      */
     public function lessons(ReorderSectionLessonsRequest $request, CourseSection $section): JsonResponse
     {
-        Gate::authorize('update', $section->course);
-
         $validated = $request->validated();
 
         \App\Models\Lesson::bulkUpdateOrder($section, $validated['lessons']);

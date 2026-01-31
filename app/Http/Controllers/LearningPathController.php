@@ -197,8 +197,6 @@ class LearningPathController extends Controller
 
     public function reorder(ReorderPathCoursesRequest $request, LearningPath $learning_path): RedirectResponse
     {
-        Gate::authorize('reorder', $learning_path);
-
         $validated = $request->validated();
         $courseOrder = $validated['course_order'];
 

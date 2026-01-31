@@ -3,19 +3,27 @@
 namespace App\Http\Requests\Section;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class ReorderCourseSectionsRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('update', $this->route('course'));
     }
 
     public function rules(): array
     {
+        $courseId = $this->route('course')->id;
+
         return [
             'sections' => ['required', 'array'],
-            'sections.*' => ['required', 'integer', 'exists:course_sections,id'],
+            'sections.*' => [
+                'required',
+                'integer',
+                Rule::exists('course_sections', 'id')->where('course_id', $courseId),
+            ],
         ];
     }
 
