@@ -208,11 +208,12 @@ class CourseInvitationAdminTest extends TestCase
     public function test_search_learners_returns_matching_users(): void
     {
         $admin = User::factory()->create(['role' => 'lms_admin']);
+        $course = Course::factory()->published()->create();
         $learner1 = User::factory()->create(['role' => 'learner', 'name' => 'Ahmad Wijaya', 'email' => 'ahmad@example.com']);
         $learner2 = User::factory()->create(['role' => 'learner', 'name' => 'Siti Rahayu', 'email' => 'siti@example.com']);
         User::factory()->create(['role' => 'content_manager', 'name' => 'Ahmad Manager']);
 
-        $response = $this->actingAs($admin)->get('/api/users/search?q=ahmad');
+        $response = $this->actingAs($admin)->get("/api/users/search?q=ahmad&course_id={$course->id}");
 
         $response->assertOk();
         $response->assertJsonCount(1);
@@ -245,6 +246,57 @@ class CourseInvitationAdminTest extends TestCase
         $response->assertOk();
         $response->assertJsonCount(1);
         $response->assertJsonFragment(['name' => 'Available User']);
+    }
+
+    public function test_learner_cannot_search_learners(): void
+    {
+        $learner = User::factory()->create(['role' => 'learner']);
+        $course = Course::factory()->published()->create();
+
+        $response = $this->actingAs($learner)->getJson("/api/users/search?q=test&course_id={$course->id}");
+
+        $response->assertForbidden();
+    }
+
+    public function test_content_manager_cannot_search_learners_for_others_course(): void
+    {
+        $contentManager1 = User::factory()->create(['role' => 'content_manager']);
+        $contentManager2 = User::factory()->create(['role' => 'content_manager']);
+        $course = Course::factory()->published()->create(['user_id' => $contentManager2->id]);
+
+        $response = $this->actingAs($contentManager1)->getJson("/api/users/search?q=test&course_id={$course->id}");
+
+        $response->assertForbidden();
+    }
+
+    public function test_course_owner_can_search_learners(): void
+    {
+        $contentManager = User::factory()->create(['role' => 'content_manager']);
+        $course = Course::factory()->published()->create(['user_id' => $contentManager->id]);
+        User::factory()->create(['role' => 'learner', 'name' => 'Test Learner']);
+
+        $response = $this->actingAs($contentManager)->getJson("/api/users/search?q=Test&course_id={$course->id}");
+
+        $response->assertOk();
+        $response->assertJsonFragment(['name' => 'Test Learner']);
+    }
+
+    public function test_search_learners_requires_course_id(): void
+    {
+        $admin = User::factory()->create(['role' => 'lms_admin']);
+
+        $response = $this->actingAs($admin)->getJson('/api/users/search?q=test');
+
+        $response->assertUnprocessable();
+    }
+
+    public function test_search_learners_rejects_invalid_course_id(): void
+    {
+        $admin = User::factory()->create(['role' => 'lms_admin']);
+
+        $response = $this->actingAs($admin)->getJson('/api/users/search?q=test&course_id=99999');
+
+        $response->assertUnprocessable();
     }
 
     public function test_bulk_import_invitations_from_csv(): void

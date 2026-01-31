@@ -89,20 +89,21 @@ class CourseInvitationController extends Controller
      */
     public function searchLearners(Request $request): JsonResponse
     {
+        $request->validate([
+            'course_id' => ['required', 'integer', 'exists:courses,id'],
+            'q' => ['nullable', 'string'],
+        ]);
+
+        $course = Course::findOrFail($request->integer('course_id'));
+        Gate::authorize('create', [CourseInvitation::class, $course]);
+
         $query = $request->get('q', '');
-        $courseId = $request->get('course_id');
 
         if (strlen($query) < 2) {
             return response()->json([]);
         }
 
-        $excludeUserIds = [];
-        if ($courseId) {
-            $course = Course::find($courseId);
-            if ($course) {
-                $excludeUserIds = $course->getExcludedUserIdsForInvitation();
-            }
-        }
+        $excludeUserIds = $course->getExcludedUserIdsForInvitation();
 
         $learners = User::where('role', 'learner')
             ->whereNotIn('id', $excludeUserIds)

@@ -228,6 +228,10 @@ class Course extends Model
             return $query;
         }
 
+        if (DB::getDriverName() === 'mysql') {
+            return $query->whereFullText(['title', 'short_description'], $search);
+        }
+
         return $query->where(function ($q) use ($search) {
             $q->where('title', 'like', "%{$search}%")
                 ->orWhere('short_description', 'like', "%{$search}%");
