@@ -13,6 +13,8 @@ import { DEBOUNCE } from '@/lib/constants';
 // =============================================================================
 
 interface UseSearchOptions {
+    /** Target URL for search requests (default: window.location.pathname) */
+    url?: string | (() => string);
     /** URL parameter name for search query */
     paramName?: string;
     /** Debounce delay in milliseconds */
@@ -23,6 +25,8 @@ interface UseSearchOptions {
     initial?: string;
     /** Only preserve these props during search */
     only?: string[];
+    /** Additional query parameters to include with every search */
+    extraParams?: () => Record<string, string | undefined>;
 }
 
 // =============================================================================
@@ -31,11 +35,13 @@ interface UseSearchOptions {
 
 export function useSearch(options: UseSearchOptions = {}) {
     const {
+        url,
         paramName = 'search',
         debounceMs = DEBOUNCE.search,
         minLength = 1,
         initial = '',
         only,
+        extraParams,
     } = options;
 
     // State
@@ -46,6 +52,14 @@ export function useSearch(options: UseSearchOptions = {}) {
     const hasQuery = computed(() => query.value.length >= minLength);
 
     /**
+     * Resolve the target URL
+     */
+    function resolveUrl(): string {
+        if (typeof url === 'function') return url();
+        return url ?? window.location.pathname;
+    }
+
+    /**
      * Perform the actual search request
      */
     const performSearch = debounce((searchQuery: string) => {
@@ -53,9 +67,10 @@ export function useSearch(options: UseSearchOptions = {}) {
 
         const data: Record<string, string | undefined> = {
             [paramName]: searchQuery || undefined, // undefined removes param
+            ...extraParams?.(),
         };
 
-        router.get(window.location.pathname, data, {
+        router.get(resolveUrl(), data, {
             preserveState: true,
             preserveScroll: true,
             only,

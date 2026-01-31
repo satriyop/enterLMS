@@ -6,17 +6,17 @@ import DataCard from '@/components/crud/DataCard.vue';
 import FilterTabs from '@/components/crud/FilterTabs.vue';
 import SearchInput from '@/components/crud/SearchInput.vue';
 import Pagination from '@/components/crud/Pagination.vue';
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import {
     type BreadcrumbItem,
     type PaginatedResponse,
-    type PaginationLink,
     AssessmentStatus,
     AssessmentVisibility,
 } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { Plus, FileText, Clock, CheckCircle, Users, Eye, Pencil, Trash2, LayoutGrid, List, PlayCircle } from 'lucide-vue-next';
+import { Head, router } from '@inertiajs/vue3';
+import { useSearch } from '@/composables/ui/useSearch';
+import { useViewMode } from '@/composables/ui/useViewMode';
+import { FileText, Clock, CheckCircle, Users, Eye, Pencil, LayoutGrid, List, PlayCircle } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
 
 // =============================================================================
@@ -45,15 +45,13 @@ interface AssessmentCourse {
     title: string;
 }
 
-interface Filters {
-    search?: string;
-    status?: string;
-}
-
 interface Props {
     course: AssessmentCourse;
     assessments: PaginatedResponse<AssessmentListItem>;
-    filters: Filters;
+    filters: {
+        search?: string;
+        status?: string;
+    };
 }
 
 const props = defineProps<Props>();
@@ -69,9 +67,23 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const searchQuery = ref(props.filters.search || '');
-const statusFilter = ref(props.filters.status || '');
-const viewMode = ref<'grid' | 'list'>('grid');
+// =============================================================================
+// State
+// =============================================================================
+
+const status = ref(props.filters.status ?? '');
+
+const { query: search } = useSearch({
+    url: () => AssessmentController.index(props.course).url,
+    initial: props.filters.search ?? '',
+    extraParams: () => ({ status: status.value || undefined }),
+});
+
+const { viewMode, setMode, containerClasses } = useViewMode({ key: 'assessments' });
+
+// =============================================================================
+// Computed
+// =============================================================================
 
 const statusTabs = computed(() => [
     { value: '', label: 'Semua', count: undefined },
@@ -80,34 +92,12 @@ const statusTabs = computed(() => [
     { value: 'archived', label: 'Diarsipkan' },
 ]);
 
-const getStatusBadge = (status: string) => {
-    switch (status) {
-        case 'published':
-            return { text: 'Dipublikasikan', class: 'bg-green-100 text-green-800' };
-        case 'draft':
-            return { text: 'Draft', class: 'bg-yellow-100 text-yellow-800' };
-        case 'archived':
-            return { text: 'Diarsipkan', class: 'bg-gray-100 text-gray-800' };
-        default:
-            return { text: status, class: 'bg-gray-100 text-gray-800' };
-    }
-};
+// =============================================================================
+// Helpers
+// =============================================================================
 
-const getVisibilityBadge = (visibility: string) => {
-    switch (visibility) {
-        case 'public':
-            return { text: 'Publik', class: 'bg-blue-100 text-blue-800' };
-        case 'restricted':
-            return { text: 'Terbatas', class: 'bg-purple-100 text-purple-800' };
-        case 'hidden':
-            return { text: 'Tersembunyi', class: 'bg-gray-100 text-gray-800' };
-        default:
-            return { text: visibility, class: 'bg-gray-100 text-gray-800' };
-    }
-};
-
-const getAssessmentBadge = (status: string) => {
-    switch (status) {
+const getAssessmentBadge = (assessmentStatus: string) => {
+    switch (assessmentStatus) {
         case 'published':
             return { label: 'Dipublikasikan', variant: 'default' as const };
         case 'draft':
@@ -115,42 +105,37 @@ const getAssessmentBadge = (status: string) => {
         case 'archived':
             return { label: 'Diarsipkan', variant: 'outline' as const };
         default:
-            return { label: status, variant: 'secondary' as const };
+            return { label: assessmentStatus, variant: 'secondary' as const };
     }
 };
 
-const getAssessmentMeta = (assessment: Assessment) => [
+const getAssessmentMeta = (assessment: AssessmentListItem) => [
     { icon: FileText, label: `${assessment.questions_count} pertanyaan` },
     { icon: Users, label: `${assessment.attempts_count} percobaan` },
     { icon: Clock, label: assessment.time_limit_minutes ? `${assessment.time_limit_minutes} menit` : 'Tidak ada batas waktu' },
     { icon: CheckCircle, label: `Nilai kelulusan: ${assessment.passing_score}%` },
 ];
 
-const getAssessmentActions = (assessment: Assessment) => {
+const getAssessmentActions = (assessment: AssessmentListItem) => {
     const actions = [
-        { label: 'Lihat', href: `/courses/${props.course.id}/assessments/${assessment.id}`, icon: Eye },
+        { label: 'Lihat', href: AssessmentController.show(props.course, assessment).url, icon: Eye },
     ];
-    
+
     if (assessment.status !== 'published') {
-        actions.push({ label: 'Edit', href: `/courses/${props.course.id}/assessments/${assessment.id}/edit`, icon: Pencil });
+        actions.push({ label: 'Edit', href: AssessmentController.edit(props.course, assessment).url, icon: Pencil });
     } else {
         actions.push({ label: 'Mulai', href: `/courses/${props.course.id}/assessments/${assessment.id}/start`, icon: PlayCircle });
     }
-    
+
     return actions;
 };
 
-let searchTimeout: ReturnType<typeof setTimeout>;
+// =============================================================================
+// Watchers
+// =============================================================================
 
-watch(searchQuery, (value) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        router.get(AssessmentController.index(props.course).url, { search: value, status: statusFilter.value }, { preserveState: true, replace: true });
-    }, 300);
-});
-
-watch(statusFilter, (value) => {
-    router.get(AssessmentController.index(props.course).url, { search: searchQuery.value, status: value }, { preserveState: true, replace: true });
+watch(status, (value) => {
+    router.get(AssessmentController.index(props.course).url, { search: search.value, status: value }, { preserveState: true, replace: true });
 });
 </script>
 
@@ -167,18 +152,18 @@ watch(statusFilter, (value) => {
             />
 
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <FilterTabs v-model="statusFilter" :tabs="statusTabs" />
+                <FilterTabs v-model="status" :tabs="statusTabs" />
 
                 <div class="flex items-center gap-3">
                     <div class="w-full lg:w-80">
-                        <SearchInput v-model="searchQuery" placeholder="Cari penilaian..." />
+                        <SearchInput v-model="search" placeholder="Cari penilaian..." />
                     </div>
                     <div class="hidden items-center gap-1 rounded-lg border p-1 sm:flex">
                         <button
                             type="button"
                             class="rounded-md p-2 transition-colors"
                             :class="viewMode === 'grid' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
-                            @click="viewMode = 'grid'"
+                            @click="setMode('grid')"
                         >
                             <LayoutGrid class="h-4 w-4" />
                         </button>
@@ -186,7 +171,7 @@ watch(statusFilter, (value) => {
                             type="button"
                             class="rounded-md p-2 transition-colors"
                             :class="viewMode === 'list' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
-                            @click="viewMode = 'list'"
+                            @click="setMode('list')"
                         >
                             <List class="h-4 w-4" />
                         </button>
@@ -204,13 +189,7 @@ watch(statusFilter, (value) => {
             />
 
             <template v-else>
-                <div
-                    :class="
-                        viewMode === 'grid'
-                            ? 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                            : 'flex flex-col gap-4'
-                    "
-                >
+                <div :class="containerClasses()">
                     <DataCard
                         v-for="assessment in assessments.data"
                         :key="assessment.id"

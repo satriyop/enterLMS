@@ -25,6 +25,9 @@ import { formatDate } from '@/lib/date';
 import { getInitials } from '@/lib/string';
 import type { BreadcrumbItem, PaginationLink, UserRole } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
+import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
+import { useConfirmation } from '@/composables/ui/useConfirmation';
+import { useSearch } from '@/composables/ui/useSearch';
 import { Plus, Users, MoreVertical, Pencil, Trash2, BookOpen, GraduationCap } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
 
@@ -69,8 +72,15 @@ const breadcrumbItems: BreadcrumbItem[] = [
 // State
 // =============================================================================
 
-const search = ref(props.filters.search ?? '');
 const role = ref(props.filters.role ?? '');
+
+const { query: search } = useSearch({
+    url: () => UserController.index().url,
+    initial: props.filters.search ?? '',
+    extraParams: () => ({ role: role.value || undefined }),
+});
+
+const confirmation = useConfirmation();
 
 // =============================================================================
 // Computed
@@ -107,15 +117,6 @@ const getRoleBadge = (userRole: UserRole) => {
 // Watchers
 // =============================================================================
 
-let searchTimeout: ReturnType<typeof setTimeout>;
-
-watch(search, (value) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        router.get(UserController.index().url, { search: value, role: role.value }, { preserveState: true, replace: true });
-    }, 300);
-});
-
 watch(role, (value) => {
     router.get(UserController.index().url, { search: search.value, role: value }, { preserveState: true, replace: true });
 });
@@ -124,8 +125,13 @@ watch(role, (value) => {
 // Actions
 // =============================================================================
 
-const deleteUser = (user: UserListItem) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus pengguna "${user.name}"?`)) {
+const deleteUser = async (user: UserListItem) => {
+    const confirmed = await confirmation.confirm({
+        title: 'Hapus Pengguna',
+        message: `Apakah Anda yakin ingin menghapus pengguna "${user.name}"?`,
+        destructive: true,
+    });
+    if (confirmed) {
         router.delete(UserController.destroy(user.id).url);
     }
 };
@@ -277,5 +283,16 @@ const deleteUser = (user: UserListItem) => {
                 />
             </template>
         </div>
+
+        <ConfirmationDialog
+            :open="confirmation.isOpen.value"
+            :title="confirmation.title.value"
+            :message="confirmation.message.value"
+            :confirm-label="confirmation.confirmLabel.value"
+            :cancel-label="confirmation.cancelLabel.value"
+            :destructive="confirmation.isDestructive.value"
+            @confirm="confirmation.handleConfirm"
+            @cancel="confirmation.handleCancel"
+        />
     </AppLayout>
 </template>

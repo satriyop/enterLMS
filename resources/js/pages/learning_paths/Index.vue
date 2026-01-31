@@ -11,6 +11,10 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { formatDuration, difficultyLabel } from '@/lib/formatters';
 import { type BreadcrumbItem, type PaginatedResponse, DifficultyLevel } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
+import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
+import { useConfirmation } from '@/composables/ui/useConfirmation';
+import { useSearch } from '@/composables/ui/useSearch';
+import { useViewMode } from '@/composables/ui/useViewMode';
 import { Plus, BookOpen, Layers, Eye, Pencil, Trash2, LayoutGrid, List, CheckCircle, Clock } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
 
@@ -54,9 +58,17 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const search = ref(props.filters.search ?? '');
 const status = ref(props.filters.status ?? '');
-const viewMode = ref<'grid' | 'list'>('grid');
+
+const { query: search } = useSearch({
+    url: () => index().url,
+    initial: props.filters.search ?? '',
+    extraParams: () => ({ status: status.value || undefined }),
+});
+
+const { viewMode, setMode, containerClasses } = useViewMode({ key: 'learning-paths' });
+
+const confirmation = useConfirmation();
 
 const statusTabs = computed(() => [
     { value: '', label: 'Semua', count: undefined },
@@ -88,15 +100,6 @@ const getLearningPathMeta = (learningPath: LearningPathListItem) => [
     { icon: Clock, label: formatDuration(learningPath.estimated_duration) },
 ];
 
-let searchTimeout: ReturnType<typeof setTimeout>;
-
-watch(search, (value) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        router.get(index().url, { search: value, status: status.value }, { preserveState: true, replace: true });
-    }, 300);
-});
-
 watch(status, (value) => {
     router.get(index().url, { search: search.value, status: value }, { preserveState: true, replace: true });
 });
@@ -109,8 +112,13 @@ const unpublishLearningPath = (learningPath: LearningPathListItem) => {
     router.put(unpublish(learningPath.id).url, {}, { preserveScroll: true });
 };
 
-const deleteLearningPath = (learningPath: LearningPathListItem) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus jalur pembelajaran "${learningPath.title}"?`)) {
+const deleteLearningPath = async (learningPath: LearningPathListItem) => {
+    const confirmed = await confirmation.confirm({
+        title: 'Hapus Jalur Pembelajaran',
+        message: `Apakah Anda yakin ingin menghapus jalur pembelajaran "${learningPath.title}"?`,
+        destructive: true,
+    });
+    if (confirmed) {
         router.delete(destroy(learningPath.id).url);
     }
 };
@@ -147,7 +155,7 @@ const deleteLearningPath = (learningPath: LearningPathListItem) => {
                             type="button"
                             class="rounded-md p-2 transition-colors"
                             :class="viewMode === 'grid' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
-                            @click="viewMode = 'grid'"
+                            @click="setMode('grid')"
                         >
                             <LayoutGrid class="h-4 w-4" />
                         </button>
@@ -155,7 +163,7 @@ const deleteLearningPath = (learningPath: LearningPathListItem) => {
                             type="button"
                             class="rounded-md p-2 transition-colors"
                             :class="viewMode === 'list' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
-                            @click="viewMode = 'list'"
+                            @click="setMode('list')"
                         >
                             <List class="h-4 w-4" />
                         </button>
@@ -173,13 +181,7 @@ const deleteLearningPath = (learningPath: LearningPathListItem) => {
             />
 
             <template v-else>
-                <div
-                    :class="
-                        viewMode === 'grid'
-                            ? 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                            : 'flex flex-col gap-4'
-                    "
-                >
+                <div :class="containerClasses()">
                     <DataCard
                         v-for="learningPath in learningPaths.data"
                         :key="learningPath.id"
@@ -205,5 +207,16 @@ const deleteLearningPath = (learningPath: LearningPathListItem) => {
                 />
             </template>
         </div>
+
+        <ConfirmationDialog
+            :open="confirmation.isOpen.value"
+            :title="confirmation.title.value"
+            :message="confirmation.message.value"
+            :confirm-label="confirmation.confirmLabel.value"
+            :cancel-label="confirmation.cancelLabel.value"
+            :destructive="confirmation.isDestructive.value"
+            @confirm="confirmation.handleConfirm"
+            @cancel="confirmation.handleCancel"
+        />
     </AppLayout>
 </template>
