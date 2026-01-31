@@ -55,9 +55,17 @@ class EnrollmentSeeder extends Seeder
         $trainerUser = User::where('role', 'trainer')->first();
 
         foreach ($learners as $learner) {
-            // Each learner gets 2-4 enrollments
-            $numEnrollments = rand(2, 4);
-            $selectedCourses = $publishedCourses->random(min($numEnrollments, $publishedCourses->count()));
+            // Skip courses where this learner already has an enrollment
+            $existingCourseIds = Enrollment::where('user_id', $learner->id)->pluck('course_id');
+            $availableCourses = $publishedCourses->reject(fn ($c) => $existingCourseIds->contains($c->id));
+
+            if ($availableCourses->isEmpty()) {
+                continue;
+            }
+
+            // Each learner gets 2-4 enrollments (unique courses only)
+            $numEnrollments = rand(2, min(4, $availableCourses->count()));
+            $selectedCourses = $availableCourses->shuffle()->take($numEnrollments);
 
             foreach ($selectedCourses as $course) {
                 $enrollmentType = $this->randomEnrollmentType();

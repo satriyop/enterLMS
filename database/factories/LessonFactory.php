@@ -18,21 +18,28 @@ class LessonFactory extends Factory
     public function definition(): array
     {
         $titles = [
-            'Apa itu ' . fake('id_ID')->word() . '?',
-            'Memahami Konsep ' . fake('id_ID')->word(),
-            'Praktik: ' . fake('id_ID')->words(3, true),
-            'Studi Kasus: ' . fake('id_ID')->words(2, true),
-            'Tips dan Trik ' . fake('id_ID')->word(),
+            'Apa itu '.fake('id_ID')->word().'?',
+            'Memahami Konsep '.fake('id_ID')->word(),
+            'Praktik: '.fake('id_ID')->words(3, true),
+            'Studi Kasus: '.fake('id_ID')->words(2, true),
+            'Tips dan Trik '.fake('id_ID')->word(),
             'Kesalahan Umum yang Harus Dihindari',
             'Ringkasan dan Kesimpulan',
             'Quiz: Uji Pemahaman Anda',
         ];
 
+        static $orderCounters = [];
+
         return [
             'course_section_id' => CourseSection::factory(),
             'title' => fake()->randomElement($titles),
             'description' => fake('id_ID')->sentence(),
-            'order' => fake()->numberBetween(1, 10),
+            'order' => function (array $attributes) use (&$orderCounters) {
+                $sectionId = $attributes['course_section_id'];
+                $orderCounters[$sectionId] = ($orderCounters[$sectionId] ?? 0) + 1;
+
+                return $orderCounters[$sectionId];
+            },
             'content_type' => fake()->randomElement(['text', 'video', 'youtube']),
             'rich_content' => null,
             'youtube_url' => null,

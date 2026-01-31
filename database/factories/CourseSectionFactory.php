@@ -28,11 +28,18 @@ class CourseSectionFactory extends Factory
             'Bonus: Tips dan Trik',
         ];
 
+        static $orderCounters = [];
+
         return [
             'course_id' => Course::factory(),
             'title' => fake()->randomElement($titles),
             'description' => fake('id_ID')->sentence(),
-            'order' => fake()->numberBetween(1, 10),
+            'order' => function (array $attributes) use (&$orderCounters) {
+                $courseId = $attributes['course_id'];
+                $orderCounters[$courseId] = ($orderCounters[$courseId] ?? 0) + 1;
+
+                return $orderCounters[$courseId];
+            },
             'estimated_duration_minutes' => fake()->numberBetween(15, 120),
         ];
     }
