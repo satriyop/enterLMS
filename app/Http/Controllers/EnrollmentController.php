@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\CourseInvitation;
 use App\Models\Enrollment;
-use App\Support\Helpers\DatabaseHelper;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,11 +59,6 @@ class EnrollmentController extends Controller
             return back()->with('error', 'Anda sudah terdaftar di kursus ini.');
         } catch (\App\Domain\Enrollment\Exceptions\CourseNotPublishedException) {
             return back()->with('error', 'Kursus ini belum dipublikasikan.');
-        } catch (QueryException $e) {
-            if (DatabaseHelper::isDuplicateKeyException($e)) {
-                return back()->with('error', 'Anda sudah terdaftar di kursus ini.');
-            }
-            throw $e;
         }
     }
 
@@ -152,11 +145,6 @@ class EnrollmentController extends Controller
             return back()->with('error', 'Anda sudah terdaftar di kursus ini.');
         } catch (\App\Domain\Enrollment\Exceptions\CourseNotPublishedException) {
             return back()->with('error', 'Kursus ini belum dipublikasikan.');
-        } catch (QueryException $e) {
-            if (DatabaseHelper::isDuplicateKeyException($e)) {
-                return back()->with('error', 'Anda sudah terdaftar di kursus ini.');
-            }
-            throw $e;
         }
     }
 

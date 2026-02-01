@@ -98,6 +98,12 @@ export interface Course extends SoftDeletes {
     difficulty_level: DifficultyLevel;
     estimated_duration_minutes: number | null;
     manual_duration_minutes: number | null;
+    price: number | null;
+    currency: string;
+    is_paid: boolean;
+    payment_gateway: string | null;
+    pricing_tiers: Record<string, unknown>[] | null;
+    price_valid_until: string | null;
     published_at: string | null;
     published_by: UserId | null;
 

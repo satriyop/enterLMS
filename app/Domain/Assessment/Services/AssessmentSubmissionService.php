@@ -5,6 +5,7 @@ namespace App\Domain\Assessment\Services;
 use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
 use App\Models\Question;
+use Illuminate\Support\Facades\Log;
 
 class AssessmentSubmissionService
 {
@@ -26,6 +27,12 @@ class AssessmentSubmissionService
             $question = $questions->get($answerData['question_id']);
 
             if (! $question instanceof Question) {
+                Log::warning('Assessment submission: answer for non-existent question skipped', [
+                    'question_id' => $answerData['question_id'],
+                    'attempt_id' => $attempt->id,
+                    'assessment_id' => $assessment->id,
+                ]);
+
                 continue;
             }
 

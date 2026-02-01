@@ -11,7 +11,9 @@ use App\Domain\Enrollment\States\DroppedState;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\User;
+use App\Support\Helpers\DatabaseHelper;
 use DateTimeInterface;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -49,20 +51,27 @@ class EnrollmentService
             );
         }
 
-        return DB::transaction(function () use ($userId, $courseId, $invitedBy, $enrolledAt) {
-            $enrollment = Enrollment::create([
-                'user_id' => $userId,
-                'course_id' => $courseId,
-                'status' => ActiveState::$name,
-                'progress_percentage' => 0,
-                'enrolled_at' => $enrolledAt ?? now(),
-                'invited_by' => $invitedBy,
-            ]);
+        try {
+            return DB::transaction(function () use ($userId, $courseId, $invitedBy, $enrolledAt) {
+                $enrollment = Enrollment::create([
+                    'user_id' => $userId,
+                    'course_id' => $courseId,
+                    'status' => ActiveState::$name,
+                    'progress_percentage' => 0,
+                    'enrolled_at' => $enrolledAt ?? now(),
+                    'invited_by' => $invitedBy,
+                ]);
 
-            UserEnrolled::dispatch($enrollment);
+                UserEnrolled::dispatch($enrollment);
 
-            return $enrollment;
-        });
+                return $enrollment;
+            });
+        } catch (QueryException $e) {
+            if (DatabaseHelper::isDuplicateKeyException($e)) {
+                throw new AlreadyEnrolledException($userId, $courseId);
+            }
+            throw $e;
+        }
     }
 
     public function canEnroll(User $user, Course $course): bool

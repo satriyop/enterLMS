@@ -56,8 +56,6 @@ class Lesson extends Model
         'is_free_preview',
     ];
 
-    protected $appends = ['youtube_video_id'];
-
     protected function casts(): array
     {
         return [
