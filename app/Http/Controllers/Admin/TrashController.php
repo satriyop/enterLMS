@@ -19,6 +19,8 @@ use Inertia\Response;
 class TrashController extends Controller
 {
     /**
+     * All models must use SoftDeletes trait.
+     *
      * @var array<string, class-string<\Illuminate\Database\Eloquent\Model>>
      */
     protected array $restorableModels = [
@@ -54,7 +56,7 @@ class TrashController extends Controller
             abort(404);
         }
 
-        /** @phpstan-ignore staticMethod.notFound (onlyTrashed from SoftDeletes) */
+        /** @phpstan-ignore staticMethod.notFound (onlyTrashed via SoftDeletes — PHPStan can't resolve class-string intersection types) */
         $record = $modelClass::onlyTrashed()->findOrFail($id);
         $record->restore();
 
@@ -70,7 +72,7 @@ class TrashController extends Controller
             abort(404);
         }
 
-        /** @phpstan-ignore staticMethod.notFound (onlyTrashed from SoftDeletes) */
+        /** @phpstan-ignore staticMethod.notFound (onlyTrashed via SoftDeletes — PHPStan can't resolve class-string intersection types) */
         $record = $modelClass::onlyTrashed()->findOrFail($id);
 
         // Clean up course thumbnails

@@ -70,6 +70,7 @@ class LearningPath extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    /** @return BelongsToMany<Course, $this, LearningPathCourse, 'pivot'> */
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'learning_path_course')

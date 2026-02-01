@@ -31,22 +31,27 @@ class LearningPathDetailResource extends JsonResource
                 'name' => $this->creator->name,
             ]),
             /** @phpstan-ignore return.type, argument.unresolvableType */
-            'courses' => $this->whenLoaded('courses', fn () => $this->courses->map(fn (\App\Models\Course $course) => [
-                'id' => $course->id,
-                'title' => $course->title,
-                'slug' => $course->slug,
-                'description' => $course->short_description,
-                'estimated_duration' => $course->manual_duration_minutes ?? $course->estimated_duration_minutes ?? 0,
-                'difficulty_level' => $course->difficulty_level,
-                'thumbnail_url' => $course->thumbnail_path,
-                'sections_count' => $course->sections_count ?? 0,
-                'enrollments_count' => $course->enrollments_count ?? 0,
-                'pivot' => [
-                    'is_required' => $course->pivot->is_required ?? true, /** @phpstan-ignore property.notFound */
-                    'min_completion_percentage' => $course->pivot->min_completion_percentage, /** @phpstan-ignore property.notFound */
-                    'prerequisites' => $course->pivot->prerequisites, /** @phpstan-ignore property.notFound */
-                ],
-            ])),
+            'courses' => $this->whenLoaded('courses', fn () => $this->courses->map(function (\App\Models\Course $course) {
+                /** @var \App\Models\LearningPathCourse $pivot */
+                $pivot = $course->pivot;
+
+                return [
+                    'id' => $course->id,
+                    'title' => $course->title,
+                    'slug' => $course->slug,
+                    'description' => $course->short_description,
+                    'estimated_duration' => $course->manual_duration_minutes ?? $course->estimated_duration_minutes ?? 0,
+                    'difficulty_level' => $course->difficulty_level,
+                    'thumbnail_url' => $course->thumbnail_path,
+                    'sections_count' => $course->sections_count ?? 0,
+                    'enrollments_count' => $course->enrollments_count ?? 0,
+                    'pivot' => [
+                        'is_required' => $pivot->is_required ?? true,
+                        'min_completion_percentage' => $pivot->min_completion_percentage,
+                        'prerequisites' => $pivot->prerequisites,
+                    ],
+                ];
+            })),
         ];
     }
 }
