@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ class UserController extends Controller
         $users = $query->latest()->paginate(15)->withQueryString();
 
         return Inertia::render('admin/users/Index', [
-            'users' => $users,
+            'users' => UserResource::collection($users),
             'filters' => $request->only(['search', 'role']),
         ]);
     }
@@ -88,7 +89,7 @@ class UserController extends Controller
         $user->loadCount(['courses', 'enrollments']);
 
         return Inertia::render('admin/users/Edit', [
-            'user' => $user,
+            'user' => new UserResource($user),
             'canEditRole' => auth()->id() !== $user->id,
         ]);
     }

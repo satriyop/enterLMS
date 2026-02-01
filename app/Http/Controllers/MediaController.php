@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Media\StoreMediaRequest;
+use App\Http\Resources\MediaResource;
 use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Media;
@@ -28,12 +29,7 @@ class MediaController extends Controller
             ], 404);
         }
 
-        // Check authorization
-        if ($mediable instanceof Course) {
-            Gate::authorize('update', $mediable);
-        } elseif ($mediable instanceof Lesson) {
-            Gate::authorize('update', $mediable);
-        }
+        Gate::authorize('create', [Media::class, $mediable]);
 
         $file = $request->file('file');
         $collection = $validated['collection_name'] ?? 'default';
@@ -78,21 +74,7 @@ class MediaController extends Controller
 
         return response()->json([
             'message' => 'File berhasil diunggah.',
-            'media' => [
-                'id' => $media->id,
-                'name' => $media->name,
-                'file_name' => $media->file_name,
-                'mime_type' => $media->mime_type,
-                'size' => $media->size,
-                'human_readable_size' => $media->human_readable_size,
-                'url' => $media->url,
-                'duration_seconds' => $media->duration_seconds,
-                'duration_formatted' => $media->duration_formatted,
-                'is_image' => $media->is_image,
-                'is_video' => $media->is_video,
-                'is_audio' => $media->is_audio,
-                'is_document' => $media->is_document,
-            ],
+            'media' => new MediaResource($media),
         ], 201);
     }
 
@@ -101,14 +83,9 @@ class MediaController extends Controller
      */
     public function destroy(Media $media): JsonResponse
     {
-        $mediable = $media->mediable;
+        Gate::authorize('delete', $media);
 
-        // Check authorization
-        if ($mediable instanceof Course) {
-            Gate::authorize('update', $mediable);
-        } elseif ($mediable instanceof Lesson) {
-            Gate::authorize('update', $mediable);
-        }
+        $mediable = $media->mediable;
 
         // Delete file from storage
         Storage::disk($media->disk)->delete($media->path);

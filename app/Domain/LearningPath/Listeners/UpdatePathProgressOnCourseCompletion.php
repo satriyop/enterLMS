@@ -26,7 +26,7 @@ class UpdatePathProgressOnCourseCompletion implements ShouldQueue
         // Find all path progress records linked to this course enrollment
         $pathProgresses = LearningPathCourseProgress::query()
             ->where('course_enrollment_id', $courseEnrollment->id)
-            ->with('enrollment')
+            ->with('enrollment.user')
             ->get();
 
         foreach ($pathProgresses as $pathProgress) {

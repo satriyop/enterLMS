@@ -442,7 +442,7 @@ describe('No Prerequisite Mode - Basic Behavior', function () {
 
         // Fetch model to access relationships
 
-        $courseProgress = $enrollment->courseProgress()->get();
+        $courseProgress = $enrollment->courseProgress()->with('courseEnrollment')->get();
 
         foreach ($courseProgress as $progress) {
             expect($progress->course_enrollment_id)->not->toBeNull();

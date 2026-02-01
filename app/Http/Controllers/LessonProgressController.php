@@ -9,9 +9,11 @@ use App\Http\Requests\LessonProgress\UpdatePaginationProgressRequest;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
+use App\Models\LessonProgress;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class LessonProgressController extends Controller
 {
@@ -24,6 +26,8 @@ class LessonProgressController extends Controller
      */
     public function update(UpdatePaginationProgressRequest $request, Course $course, Lesson $lesson): JsonResponse
     {
+        Gate::authorize('update', [LessonProgress::class, $course]);
+
         $validated = $request->validated();
 
         $enrollment = $this->getActiveEnrollment($request, $course);
@@ -67,6 +71,8 @@ class LessonProgressController extends Controller
      */
     public function updateMedia(UpdateMediaProgressRequest $request, Course $course, Lesson $lesson): JsonResponse
     {
+        Gate::authorize('update', [LessonProgress::class, $course]);
+
         $validated = $request->validated();
 
         $enrollment = $this->getActiveEnrollment($request, $course);
@@ -105,6 +111,8 @@ class LessonProgressController extends Controller
      */
     public function complete(Request $request, Course $course, Lesson $lesson): JsonResponse
     {
+        Gate::authorize('complete', [LessonProgress::class, $course]);
+
         $enrollment = $this->getActiveEnrollment($request, $course);
         if (! $enrollment) {
             return $this->enrollmentNotFoundResponse();

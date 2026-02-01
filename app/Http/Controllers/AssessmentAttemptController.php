@@ -9,6 +9,8 @@ use App\Domain\Assessment\Exceptions\MaxAttemptsReachedException;
 use App\Domain\Assessment\Services\AssessmentSubmissionService;
 use App\Http\Requests\Assessment\BulkGradeAnswersRequest;
 use App\Http\Requests\Assessment\SubmitAssessmentAnswersRequest;
+use App\Http\Resources\AssessmentAttemptResource;
+use App\Http\Resources\AssessmentResource;
 use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
 use App\Models\Course;
@@ -75,8 +77,8 @@ class AssessmentAttemptController extends Controller
 
         return Inertia::render('assessments/Attempt', [
             'course' => $course,
-            'assessment' => $assessment,
-            'attempt' => $attempt,
+            'assessment' => new AssessmentResource($assessment),
+            'attempt' => new AssessmentAttemptResource($attempt),
             'can' => [
                 'submit' => $attempt->isInProgress(),
             ],
@@ -116,8 +118,8 @@ class AssessmentAttemptController extends Controller
 
         return Inertia::render('assessments/AttemptComplete', [
             'course' => $course,
-            'assessment' => $assessment,
-            'attempt' => $attempt,
+            'assessment' => new AssessmentResource($assessment),
+            'attempt' => new AssessmentAttemptResource($attempt),
         ]);
     }
 
@@ -133,8 +135,8 @@ class AssessmentAttemptController extends Controller
 
         return Inertia::render('assessments/Grade', [
             'course' => $course,
-            'assessment' => $assessment,
-            'attempt' => $attempt,
+            'assessment' => new AssessmentResource($assessment),
+            'attempt' => new AssessmentAttemptResource($attempt),
             'can' => [
                 'submit' => $attempt->isSubmitted(),
             ],

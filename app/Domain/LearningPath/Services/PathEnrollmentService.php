@@ -159,6 +159,7 @@ class PathEnrollmentService
      */
     protected function relinkCourseEnrollments(LearningPathEnrollment $enrollment): void
     {
+        $enrollment->loadMissing('user', 'courseProgress.course');
         $user = $enrollment->user;
 
         foreach ($enrollment->courseProgress as $progress) {
@@ -272,6 +273,7 @@ class PathEnrollmentService
     ): void {
         /** @var \Illuminate\Database\Eloquent\Collection<int, Course> $courses */
         $courses = $path->courses()->orderBy('learning_path_course.position')->get();
+        $enrollment->loadMissing('user');
         $user = $enrollment->user;
         $noPrerequisites = $path->prerequisite_mode === 'none';
 

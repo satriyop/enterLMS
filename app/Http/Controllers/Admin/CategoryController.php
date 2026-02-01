@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class CategoryController extends Controller
             ->withQueryString();
 
         return Inertia::render('admin/categories/Index', [
-            'categories' => $categories,
+            'categories' => CategoryResource::collection($categories),
             'filters' => $request->only(['search']),
         ]);
     }
@@ -60,7 +61,7 @@ class CategoryController extends Controller
         Gate::authorize('update', $category);
 
         return Inertia::render('admin/categories/Edit', [
-            'category' => $category,
+            'category' => new CategoryResource($category),
             'parentCategories' => Category::whereNull('parent_id')
                 ->where('id', '!=', $category->id)
                 ->orderBy('name')

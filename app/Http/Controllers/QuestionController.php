@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Assessment\Services\QuestionManagementService;
 use App\Http\Requests\Question\BulkUpdateQuestionsRequest;
 use App\Http\Requests\Question\ReorderQuestionsRequest;
+use App\Http\Resources\AssessmentResource;
 use App\Models\Assessment;
 use App\Models\Course;
 use App\Models\Question;
@@ -32,7 +33,7 @@ class QuestionController extends Controller
 
         return Inertia::render('assessments/Questions', [
             'course' => $course,
-            'assessment' => $assessment,
+            'assessment' => new AssessmentResource($assessment),
         ]);
     }
 

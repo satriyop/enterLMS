@@ -143,6 +143,7 @@ class PathProgressService
     public function unlockNextCourses(LearningPathEnrollment $enrollment): array
     {
         $unlockedCourses = [];
+        $enrollment->loadMissing('user', 'learningPath');
         $evaluator = $this->evaluatorFactory->make($enrollment->learningPath);
 
         /** @var \Illuminate\Database\Eloquent\Collection<int, LearningPathCourseProgress> $lockedProgresses */
@@ -157,7 +158,7 @@ class PathProgressService
             $result = $evaluator->evaluate($enrollment, $progress->course);
 
             if ($result->isMet) {
-                $this->unlockCourse($progress);
+                $this->unlockCourse($progress, $enrollment);
                 $unlockedCourses[] = $progress->course;
 
                 CourseUnlockedInPath::dispatch(
@@ -299,14 +300,13 @@ class PathProgressService
         }
     }
 
-    protected function unlockCourse(LearningPathCourseProgress $progress): void
+    protected function unlockCourse(LearningPathCourseProgress $progress, LearningPathEnrollment $enrollment): void
     {
         if (! $progress->isLocked()) {
             return;
         }
 
-        // Get the user from the path enrollment
-        $user = $progress->enrollment->user;
+        $user = $enrollment->user;
         $course = $progress->course;
 
         // Create/reuse course enrollment

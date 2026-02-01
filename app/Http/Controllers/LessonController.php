@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Course\Services\LessonViewPresenter;
 use App\Http\Requests\Lesson\StoreLessonRequest;
 use App\Http\Requests\Lesson\UpdateLessonRequest;
+use App\Http\Resources\LessonResource;
 use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Enrollment;
@@ -47,7 +48,7 @@ class LessonController extends Controller
 
         return Inertia::render('lessons/Show', [
             'course' => $course,
-            'lesson' => $lesson,
+            'lesson' => new LessonResource($lesson),
             'enrollment' => $enrollment,
             ...$navigationData,
         ]);
@@ -96,7 +97,7 @@ class LessonController extends Controller
 
         return Inertia::render('lessons/Edit', [
             'section' => $lesson->section,
-            'lesson' => $lesson,
+            'lesson' => new LessonResource($lesson),
         ]);
     }
 

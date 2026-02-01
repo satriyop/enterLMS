@@ -72,7 +72,10 @@ describe('PathProgressService', function () {
             expect($unlockedCourses[0]->id)->toBe($courses[1]->id);
 
             // Refresh and check second course progress
-            $courseProgress = $pathEnrollment->courseProgress()->orderBy('position')->get();
+            $courseProgress = $pathEnrollment->courseProgress()
+                ->with('courseEnrollment')
+                ->orderBy('position')
+                ->get();
 
             expect($courseProgress[1]->isAvailable())->toBeTrue();
             expect($courseProgress[1]->course_enrollment_id)->not->toBeNull();

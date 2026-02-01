@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tag\StoreTagRequest;
 use App\Http\Requests\Tag\UpdateTagRequest;
+use App\Http\Resources\TagResource;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ class TagController extends Controller
             ->withQueryString();
 
         return Inertia::render('admin/tags/Index', [
-            'tags' => $tags,
+            'tags' => TagResource::collection($tags),
             'filters' => $request->only(['search']),
         ]);
     }
@@ -58,7 +59,7 @@ class TagController extends Controller
         Gate::authorize('update', $tag);
 
         return Inertia::render('admin/tags/Edit', [
-            'tag' => $tag,
+            'tag' => new TagResource($tag),
         ]);
     }
 

@@ -24,14 +24,14 @@ class CourseInvitationResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => [
+            'user' => $this->whenLoaded('user', fn () => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,
                 'email' => $this->user->email,
-            ],
+            ]),
             'status' => $this->status,
             'message' => $this->message,
-            'invited_by' => $this->inviter->name,
+            'invited_by' => $this->whenLoaded('inviter', fn () => $this->inviter->name),
             'invited_at' => $this->created_at->toISOString(),
             'expires_at' => $this->expires_at?->toISOString(),
             'responded_at' => $this->responded_at?->toISOString(),

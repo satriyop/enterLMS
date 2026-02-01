@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\LessonResource;
 use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class LessonPreviewController extends Controller
 
         return Inertia::render('courses/LessonPreview', [
             'course' => $course,
-            'lesson' => $lesson,
+            'lesson' => new LessonResource($lesson),
             'enrollment' => $enrollment,
         ]);
     }

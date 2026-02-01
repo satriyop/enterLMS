@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Domain\Enrollment\DTOs\EnrollmentContext;
 use App\Http\Requests\Assessment\StoreAssessmentRequest;
 use App\Http\Requests\Assessment\UpdateAssessmentRequest;
+use App\Http\Resources\AssessmentAttemptResource;
+use App\Http\Resources\AssessmentResource;
 use App\Models\Assessment;
 use App\Models\Course;
 use Illuminate\Http\RedirectResponse;
@@ -49,7 +51,7 @@ class AssessmentController extends Controller
 
         return Inertia::render('assessments/Index', [
             'course' => $course,
-            'assessments' => $assessments,
+            'assessments' => AssessmentResource::collection($assessments),
             'filters' => $request->only(['search', 'status']),
         ]);
     }
@@ -105,9 +107,9 @@ class AssessmentController extends Controller
 
         return Inertia::render('assessments/Show', [
             'course' => $course,
-            'assessment' => $assessment,
+            'assessment' => new AssessmentResource($assessment),
             'canAttempt' => $canAttempt,
-            'latestAttempt' => $latestAttempt,
+            'latestAttempt' => $latestAttempt ? new AssessmentAttemptResource($latestAttempt) : null,
             'can' => [
                 'update' => Gate::allows('update', [$assessment, $course]),
                 'delete' => Gate::allows('delete', [$assessment, $course]),
@@ -128,7 +130,7 @@ class AssessmentController extends Controller
 
         return Inertia::render('assessments/Edit', [
             'course' => $course,
-            'assessment' => $assessment,
+            'assessment' => new AssessmentResource($assessment),
             'can' => [
                 'publish' => Gate::allows('publish', [$assessment, $course]),
                 'delete' => Gate::allows('delete', [$assessment, $course]),

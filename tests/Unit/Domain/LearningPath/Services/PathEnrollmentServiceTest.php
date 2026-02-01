@@ -85,7 +85,10 @@ describe('PathEnrollmentService', function () {
 
             $enrollment = $this->service->enroll($user, $path);
 
-            $courseProgress = $enrollment->courseProgress()->orderBy('position')->get();
+            $courseProgress = $enrollment->courseProgress()
+                ->with('courseEnrollment')
+                ->orderBy('position')
+                ->get();
 
             // First course should have a course enrollment linked
             expect($courseProgress[0]->course_enrollment_id)->not->toBeNull();

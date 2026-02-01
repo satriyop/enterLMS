@@ -1,10 +1,28 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Access to an undefined property App\\Models\\AssessmentAttempt\:\:\$total_points\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domain/Assessment/Events/AssessmentAttemptSubmitted.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AssessmentAttempt\:\:\$total_points\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domain/Assessment/Events/AssessmentGraded.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$option_text\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Domain/Assessment/Strategies/TrueFalseGradingStrategy.php
+
+		-
+			message: '#^Parameter \#1 \$attempt of event class App\\Domain\\Assessment\\Events\\AssessmentAttemptStarted constructor expects App\\Models\\AssessmentAttempt in App\\Domain\\Assessment\\Events\\AssessmentAttemptStarted\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/AssessmentAttemptController.php
 
 		-
 			message: '#^Parameter \$csvData of method App\\Domain\\Course\\Services\\CourseInvitationService\:\:importFromCsv\(\) expects array\<array\<string, string\>\>, array\<list\<string\|null\>\> given\.$#'
@@ -19,82 +37,64 @@ parameters:
 			path: app/Http/Controllers/EnrollmentController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$duration_formatted\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/MediaController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$duration_seconds\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/MediaController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$file_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/MediaController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$human_readable_size\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/MediaController.php
+			path: app/Http/Resources/AssessmentAttemptResource.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/MediaController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_audio\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/MediaController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_document\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/MediaController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_image\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/MediaController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_video\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/MediaController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$mime_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/MediaController.php
+			path: app/Http/Resources/AssessmentAttemptResource.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/MediaController.php
+			path: app/Http/Resources/AssessmentAttemptResource.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$size\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/MediaController.php
+			message: '#^Cannot call method toISOString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: app/Http/Resources/AssessmentAttemptResource.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$url\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/AssessmentResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/AssessmentResource.php
+
+		-
+			message: '#^Cannot call method toISOString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Resources/AssessmentResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/MediaController.php
+			path: app/Http/Resources/CategoryResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CategoryResource.php
+
+		-
+			message: '#^Anonymous function should return Illuminate\\Support\\Collection\<int, array\{id\: int, title\: string, content_type\: string, is_free_preview\: bool, order\: int, estimated_duration_minutes\: int\|null\}\> but returns Illuminate\\Support\\Collection\<int, array\{id\: int, title\: string, content_type\: string, is_free_preview\: bool, order\: int, estimated_duration_minutes\: int\|null\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Resources/CourseSectionResource.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>estimated_duration_minutes" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
@@ -181,6 +181,36 @@ parameters:
 			path: database/factories/LearningPathFactory.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$max_attempts\.$#'
+			identifier: property.notFound
+			count: 1
+			path: database/seeders/AssessmentSeeder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: database/seeders/AssessmentSeeder.php
+
+		-
+			message: '#^Method Database\\Seeders\\AssessmentSeeder\:\:createAssessment\(\) should return App\\Models\\Assessment but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
+			count: 1
+			path: database/seeders/AssessmentSeeder.php
+
+		-
+			message: '#^Parameter \#1 \$assessment of method Database\\Seeders\\AssessmentSeeder\:\:createAttempt\(\) expects App\\Models\\Assessment, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/seeders/AssessmentSeeder.php
+
+		-
+			message: '#^Parameter \#1 \$question of method Database\\Seeders\\AssessmentSeeder\:\:createQuestionOptions\(\) expects App\\Models\\Question, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/seeders/AssessmentSeeder.php
+
+		-
 			message: '#^Parameter \#1 \$lessonId of method App\\Services\\MediaSeederHelper\:\:copyAudio\(\) expects string, int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -217,7 +247,31 @@ parameters:
 			path: database/seeders/CourseSeeder.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\LearningPathEnrollment\:\:\$enrollment\.$#'
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: database/seeders/EnrollmentSeeder.php
+
+		-
+			message: '#^Parameter \#2 \$max of function rand expects int, float given\.$#'
+			identifier: argument.type
+			count: 2
+			path: database/seeders/EnrollmentSeeder.php
+
+		-
+			message: '#^Property Database\\Seeders\\EnrollmentSeeder\:\:\$dropReasons is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: database/seeders/EnrollmentSeeder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$course\.$#'
+			identifier: property.notFound
+			count: 2
+			path: database/seeders/LearningPathSeeder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$courseEnrollment\.$#'
 			identifier: property.notFound
 			count: 1
 			path: database/seeders/LearningPathSeeder.php
