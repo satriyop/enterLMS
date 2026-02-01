@@ -27,9 +27,11 @@ class CourseSectionResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'order' => $this->order,
-            'lessons' => $this->whenLoaded('lessons', fn () => $this->lessons->map(fn ($lesson) => [
+            'description' => $this->description,
+            'lessons' => $this->whenLoaded('lessons', fn () => $this->lessons->sortBy('order')->values()->map(fn ($lesson) => [
                 'id' => $lesson->id,
                 'title' => $lesson->title,
+                'description' => $lesson->description,
                 'content_type' => $lesson->content_type,
                 'is_free_preview' => $lesson->is_free_preview,
                 'order' => $lesson->order,

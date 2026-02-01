@@ -7,7 +7,14 @@ use App\Domain\Enrollment\Services\EnrollmentService;
 use App\Domain\Progress\Services\ProgressTrackingService;
 use App\Http\Requests\Course\StoreCourseRequest;
 use App\Http\Requests\Course\UpdateCourseRequest;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\Course\CourseEditResource;
+use App\Http\Resources\Course\CourseListResource;
+use App\Http\Resources\Course\CourseRatingResource;
+use App\Http\Resources\Course\CourseShowResource;
+use App\Http\Resources\Course\EnrollmentSummaryResource;
 use App\Http\Resources\CourseInvitationResource;
+use App\Http\Resources\TagResource;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseInvitation;
@@ -57,6 +64,11 @@ class CourseController extends Controller
             $query->where('status', $status);
         }
 
+        // Trashed filter (admin only)
+        if ($request->boolean('trashed') && $user->isLmsAdmin()) {
+            $query->onlyTrashed();
+        }
+
         $courses = $query->latest()->paginate(12)->withQueryString();
 
         $viewName = $user->isLearner() ? 'courses/Browse' : 'courses/Index';
@@ -66,9 +78,9 @@ class CourseController extends Controller
             : [];
 
         return Inertia::render($viewName, [
-            'courses' => $courses,
-            'categories' => Category::orderBy('name')->get(),
-            'filters' => $request->only(['search', 'status', 'category_id', 'difficulty_level']),
+            'courses' => CourseListResource::collection($courses),
+            'categories' => CategoryResource::collection(Category::orderBy('name')->get())->resolve(),
+            'filters' => $request->only(['search', 'status', 'category_id', 'difficulty_level', 'trashed']),
             'enrollmentMap' => $enrollmentMap,
         ]);
     }
@@ -81,8 +93,8 @@ class CourseController extends Controller
         Gate::authorize('create', Course::class);
 
         return Inertia::render('courses/Create', [
-            'categories' => Category::orderBy('name')->get(),
-            'tags' => Tag::orderBy('name')->get(),
+            'categories' => CategoryResource::collection(Category::orderBy('name')->get())->resolve(),
+            'tags' => TagResource::collection(Tag::orderBy('name')->get())->resolve(),
         ]);
     }
 
@@ -165,13 +177,15 @@ class CourseController extends Controller
                     ->get()
             )->resolve();
 
+        $userRating = $user->courseRatings()->where('course_id', $course->id)->first();
+
         return Inertia::render($viewName, [
-            'course' => $course,
-            'enrollment' => $enrollment,
+            'course' => new CourseShowResource($course),
+            'enrollment' => $enrollment ? new EnrollmentSummaryResource($enrollment) : null,
             'isUnderRevision' => $enrollment && $course->status === 'draft',
             'assessmentStats' => $assessmentStats,
-            'userRating' => $user->courseRatings()->where('course_id', $course->id)->first(),
-            'ratings' => $ratings,
+            'userRating' => $userRating ? new CourseRatingResource($userRating) : null,
+            'ratings' => CourseRatingResource::collection($ratings)->resolve(),
             'averageRating' => $course->average_rating,
             'ratingsCount' => $course->ratings_count,
             'invitations' => $invitations,
@@ -181,7 +195,7 @@ class CourseController extends Controller
                 'delete' => Gate::allows('delete', $course),
                 'publish' => Gate::allows('publish', $course),
                 'enroll' => Gate::allows('enroll', [$course, $enrollmentContext]),
-                'rate' => $enrollment && ! $user->courseRatings()->where('course_id', $course->id)->exists(),
+                'rate' => $enrollment && ! $userRating,
                 'invite' => Gate::allows('create', [CourseInvitation::class, $course]),
             ],
         ]);
@@ -199,9 +213,9 @@ class CourseController extends Controller
         $activeEnrollmentsCount = $course->enrollments()->where('status', 'active')->count();
 
         return Inertia::render('courses/Edit', [
-            'course' => $course,
-            'categories' => Category::orderBy('name')->get(),
-            'tags' => Tag::orderBy('name')->get(),
+            'course' => new CourseEditResource($course),
+            'categories' => CategoryResource::collection(Category::orderBy('name')->get())->resolve(),
+            'tags' => TagResource::collection(Tag::orderBy('name')->get())->resolve(),
             'activeEnrollmentsCount' => $activeEnrollmentsCount,
             'can' => [
                 'publish' => Gate::allows('publish', $course),
@@ -239,20 +253,48 @@ class CourseController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Soft-delete the specified resource.
      */
     public function destroy(Course $course): RedirectResponse
     {
         Gate::authorize('delete', $course);
 
-        if ($course->thumbnail_path) {
-            Storage::disk('public')->delete($course->thumbnail_path);
-        }
-
         $course->delete();
 
         return redirect()
             ->route('courses.index')
-            ->with('success', 'Kursus berhasil dihapus.');
+            ->with('success', 'Kursus berhasil dihapus. Anda dapat memulihkannya dari tempat sampah.');
+    }
+
+    /**
+     * Restore a soft-deleted course.
+     */
+    public function restore(Course $course): RedirectResponse
+    {
+        Gate::authorize('restore', $course);
+
+        $course->restore();
+
+        return redirect()
+            ->route('courses.show', $course)
+            ->with('success', 'Kursus berhasil dipulihkan.');
+    }
+
+    /**
+     * Permanently delete a course and its thumbnail.
+     */
+    public function forceDelete(Course $course): RedirectResponse
+    {
+        Gate::authorize('forceDelete', $course);
+
+        if ($course->thumbnail_path) {
+            Storage::disk('public')->delete($course->thumbnail_path);
+        }
+
+        $course->forceDelete();
+
+        return redirect()
+            ->route('courses.index')
+            ->with('success', 'Kursus berhasil dihapus secara permanen.');
     }
 }

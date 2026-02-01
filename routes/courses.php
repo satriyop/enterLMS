@@ -35,6 +35,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Course CRUD
     Route::resource('courses', CourseController::class);
 
+    // Trash management (soft-deleted courses)
+    Route::post('courses/{course}/restore', [CourseController::class, 'restore'])
+        ->withTrashed()
+        ->name('courses.restore');
+    Route::delete('courses/{course}/force-delete', [CourseController::class, 'forceDelete'])
+        ->withTrashed()
+        ->name('courses.force-delete');
+
     // Enrollments
     Route::post('courses/{course}/enroll', [EnrollmentController::class, 'store'])
         ->middleware('throttle:10,1')

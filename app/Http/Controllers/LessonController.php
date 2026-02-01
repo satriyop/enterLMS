@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Domain\Course\Services\LessonViewPresenter;
 use App\Http\Requests\Lesson\StoreLessonRequest;
 use App\Http\Requests\Lesson\UpdateLessonRequest;
+use App\Http\Resources\Course\CourseShowResource;
+use App\Http\Resources\Course\EnrollmentSummaryResource;
 use App\Http\Resources\LessonResource;
 use App\Models\Course;
 use App\Models\CourseSection;
@@ -47,9 +49,9 @@ class LessonController extends Controller
         $navigationData = $this->presenter->getLessonViewData($course, $lesson, $enrollment);
 
         return Inertia::render('lessons/Show', [
-            'course' => $course,
+            'course' => new CourseShowResource($course),
             'lesson' => new LessonResource($lesson),
-            'enrollment' => $enrollment,
+            'enrollment' => $enrollment ? new EnrollmentSummaryResource($enrollment) : null,
             ...$navigationData,
         ]);
     }
@@ -61,8 +63,17 @@ class LessonController extends Controller
     {
         Gate::authorize('create', [Lesson::class, $section]);
 
+        $section->load('course');
+
         return Inertia::render('lessons/Edit', [
-            'section' => $section->load('course'),
+            'section' => [
+                'id' => $section->id,
+                'title' => $section->title,
+                'course' => [
+                    'id' => $section->course->id,
+                    'title' => $section->course->title,
+                ],
+            ],
             'lesson' => null,
         ]);
     }
@@ -96,7 +107,14 @@ class LessonController extends Controller
         $lesson->load(['section.course', 'media']);
 
         return Inertia::render('lessons/Edit', [
-            'section' => $lesson->section,
+            'section' => [
+                'id' => $lesson->section->id,
+                'title' => $lesson->section->title,
+                'course' => [
+                    'id' => $lesson->section->course->id,
+                    'title' => $lesson->section->course->title,
+                ],
+            ],
             'lesson' => new LessonResource($lesson),
         ]);
     }

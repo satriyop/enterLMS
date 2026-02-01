@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Course\CourseShowResource;
+use App\Http\Resources\Course\EnrollmentSummaryResource;
 use App\Http\Resources\LessonResource;
 use App\Models\Course;
 use App\Models\Lesson;
@@ -45,9 +47,9 @@ class LessonPreviewController extends Controller
         $enrollment = $user?->enrollments()->where('course_id', $course->id)->first();
 
         return Inertia::render('courses/LessonPreview', [
-            'course' => $course,
+            'course' => new CourseShowResource($course),
             'lesson' => new LessonResource($lesson),
-            'enrollment' => $enrollment,
+            'enrollment' => $enrollment ? new EnrollmentSummaryResource($enrollment) : null,
         ]);
     }
 }

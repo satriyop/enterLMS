@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LearningPath\ReorderPathCoursesRequest;
 use App\Http\Requests\LearningPath\StoreLearningPathRequest;
 use App\Http\Requests\LearningPath\UpdateLearningPathRequest;
+use App\Http\Resources\LearningPath\AvailableCourseResource;
+use App\Http\Resources\LearningPath\LearningPathDetailResource;
+use App\Http\Resources\LearningPath\LearningPathEditResource;
+use App\Http\Resources\LearningPath\LearningPathIndexResource;
 use App\Models\Course;
 use App\Models\LearningPath;
 use Illuminate\Http\RedirectResponse;
@@ -45,7 +49,7 @@ class LearningPathController extends Controller
             ->withQueryString();
 
         return Inertia::render('learning_paths/Index', [
-            'learningPaths' => $learningPaths,
+            'learningPaths' => LearningPathIndexResource::collection($learningPaths),
             'filters' => $request->only(['search']),
         ]);
     }
@@ -57,7 +61,7 @@ class LearningPathController extends Controller
         $courses = Course::published()->orderBy('title')->get();
 
         return Inertia::render('learning_paths/Create', [
-            'courses' => $courses,
+            'courses' => AvailableCourseResource::collection($courses)->resolve(),
         ]);
     }
 
@@ -101,7 +105,7 @@ class LearningPathController extends Controller
         }]);
 
         return Inertia::render('learning_paths/Show', [
-            'learningPath' => $learning_path,
+            'learningPath' => new LearningPathDetailResource($learning_path),
         ]);
     }
 
@@ -116,8 +120,8 @@ class LearningPathController extends Controller
         $availableCourses = Course::published()->orderBy('title')->get();
 
         return Inertia::render('learning_paths/Edit', [
-            'learningPath' => $learning_path,
-            'availableCourses' => $availableCourses,
+            'learningPath' => new LearningPathEditResource($learning_path),
+            'availableCourses' => AvailableCourseResource::collection($availableCourses)->resolve(),
         ]);
     }
 

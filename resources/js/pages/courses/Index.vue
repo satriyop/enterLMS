@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { index, create, show, edit, destroy } from '@/actions/App/Http/Controllers/CourseController';
+import { index, create, show, edit, destroy, restore, forceDelete } from '@/actions/App/Http/Controllers/CourseController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import DataCard from '@/components/crud/DataCard.vue';
@@ -16,12 +16,12 @@ import {
     type DifficultyLevel,
     type PaginationLink,
 } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
 import { useConfirmation } from '@/composables/ui/useConfirmation';
 import { useSearch } from '@/composables/ui/useSearch';
 import { useViewMode } from '@/composables/ui/useViewMode';
-import { Plus, BookOpen, Clock, Layers, Eye, Pencil, Trash2, LayoutGrid, List } from 'lucide-vue-next';
+import { Plus, BookOpen, Clock, Layers, Eye, Pencil, Trash2, RotateCcw, LayoutGrid, List } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
 import { formatDuration, difficultyLabel, courseStatusLabel, statusBadgeVariant } from '@/lib/utils';
 
@@ -60,11 +60,16 @@ interface Props {
         search?: string;
         status?: string;
         category_id?: string;
+        trashed?: string;
     };
     categories: Category[];
 }
 
 const props = defineProps<Props>();
+
+const page = usePage();
+const isAdmin = computed(() => page.props.auth?.user?.role === 'lms_admin');
+const isTrashed = computed(() => status.value === 'trashed');
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -73,24 +78,35 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const status = ref(props.filters.status ?? '');
+const status = ref(props.filters.trashed ? 'trashed' : (props.filters.status ?? ''));
 
 const { query: search } = useSearch({
     url: () => index().url,
     initial: props.filters.search ?? '',
-    extraParams: () => ({ status: status.value || undefined }),
+    extraParams: () => (status.value === 'trashed'
+        ? { trashed: '1' }
+        : { status: status.value || undefined }
+    ),
 });
 
 const { viewMode, setMode, containerClasses } = useViewMode({ key: 'courses' });
 
 const confirmation = useConfirmation();
 
-const statusTabs = computed(() => [
-    { value: '', label: 'Semua', count: undefined },
-    { value: 'draft', label: 'Draft' },
-    { value: 'published', label: 'Terbit' },
-    { value: 'archived', label: 'Arsip' },
-]);
+const statusTabs = computed(() => {
+    const tabs = [
+        { value: '', label: 'Semua', count: undefined },
+        { value: 'draft', label: 'Draft' },
+        { value: 'published', label: 'Terbit' },
+        { value: 'archived', label: 'Arsip' },
+    ];
+
+    if (isAdmin.value) {
+        tabs.push({ value: 'trashed', label: 'Terhapus', count: undefined });
+    }
+
+    return tabs;
+});
 
 const statusBadge = (courseStatus: string) => ({
     label: courseStatusLabel(courseStatus),
@@ -100,11 +116,19 @@ const statusBadge = (courseStatus: string) => ({
 /** Format duration for display in course meta */
 const getFormattedDuration = (minutes: number) => formatDuration(minutes, 'long');
 
-const getCourseActions = (course: CourseListItem) => [
-    { label: 'Lihat', href: show(course.id).url, icon: Eye },
-    { label: 'Edit', href: edit(course.id).url, icon: Pencil },
-    { label: 'Hapus', icon: Trash2, variant: 'destructive' as const, onClick: () => deleteCourse(course) },
-];
+const getCourseActions = (course: CourseListItem) => {
+    if (isTrashed.value) {
+        return [
+            { label: 'Pulihkan', icon: RotateCcw, onClick: () => restoreCourse(course) },
+            { label: 'Hapus Permanen', icon: Trash2, variant: 'destructive' as const, onClick: () => forceDeleteCourse(course) },
+        ];
+    }
+    return [
+        { label: 'Lihat', href: show(course.id).url, icon: Eye },
+        { label: 'Edit', href: edit(course.id).url, icon: Pencil },
+        { label: 'Hapus', icon: Trash2, variant: 'destructive' as const, onClick: () => deleteCourse(course) },
+    ];
+};
 
 const getCourseMeta = (course: CourseListItem) => [
     { icon: Layers, label: `${course.sections_count ?? 0} seksi` },
@@ -113,7 +137,13 @@ const getCourseMeta = (course: CourseListItem) => [
 ];
 
 watch(status, (value) => {
-    router.get(index().url, { search: search.value, status: value }, { preserveState: true, replace: true });
+    const params: Record<string, string | undefined> = { search: search.value || undefined };
+    if (value === 'trashed') {
+        params.trashed = '1';
+    } else {
+        params.status = value || undefined;
+    }
+    router.get(index().url, params, { preserveState: true, replace: true });
 });
 
 const deleteCourse = async (course: CourseListItem) => {
@@ -124,6 +154,27 @@ const deleteCourse = async (course: CourseListItem) => {
     });
     if (confirmed) {
         router.delete(destroy(course.id).url);
+    }
+};
+
+const restoreCourse = async (course: CourseListItem) => {
+    const confirmed = await confirmation.confirm({
+        title: 'Pulihkan Kursus',
+        message: `Apakah Anda yakin ingin memulihkan kursus "${course.title}"?`,
+    });
+    if (confirmed) {
+        router.post(restore(course.id).url);
+    }
+};
+
+const forceDeleteCourse = async (course: CourseListItem) => {
+    const confirmed = await confirmation.confirm({
+        title: 'Hapus Permanen',
+        message: `Apakah Anda yakin ingin menghapus kursus "${course.title}" secara permanen? Tindakan ini tidak dapat dibatalkan.`,
+        destructive: true,
+    });
+    if (confirmed) {
+        router.delete(forceDelete(course.id).url);
     }
 };
 </script>
@@ -177,11 +228,11 @@ const deleteCourse = async (course: CourseListItem) => {
 
             <EmptyState
                 v-if="courses.data.length === 0"
-                :icon="BookOpen"
-                title="Belum ada kursus"
-                description="Mulai perjalanan mengajar Anda dengan membuat kursus pertama."
-                action-label="Buat Kursus Baru"
-                :action-href="create().url"
+                :icon="isTrashed ? Trash2 : BookOpen"
+                :title="isTrashed ? 'Tidak ada kursus di tempat sampah' : 'Belum ada kursus'"
+                :description="isTrashed ? 'Kursus yang dihapus akan muncul di sini.' : 'Mulai perjalanan mengajar Anda dengan membuat kursus pertama.'"
+                :action-label="isTrashed ? undefined : 'Buat Kursus Baru'"
+                :action-href="isTrashed ? undefined : create().url"
             />
 
             <template v-else>
