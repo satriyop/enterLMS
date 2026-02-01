@@ -27,7 +27,7 @@ class PurgeOldTrashedRecords extends Command
     /**
      * Models processed in parent→child order so cascading deletes work naturally.
      *
-     * @var array<int, class-string<\Illuminate\Database\Eloquent\Model&SoftDeletes>>
+     * @var list<class-string<\Illuminate\Database\Eloquent\Model>>
      */
     protected array $models = [
         User::class,
@@ -61,6 +61,7 @@ class PurgeOldTrashedRecords extends Command
         $this->newLine();
 
         foreach ($this->models as $modelClass) {
+            /** @phpstan-ignore staticMethod.notFound (onlyTrashed from SoftDeletes) */
             $query = $modelClass::onlyTrashed()->where('deleted_at', '<', $cutoff);
             $count = $query->count();
 

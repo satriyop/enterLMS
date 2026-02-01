@@ -28,6 +28,7 @@ class CourseSectionResource extends JsonResource
             'title' => $this->title,
             'order' => $this->order,
             'description' => $this->description,
+            /** @phpstan-ignore return.type */
             'lessons' => $this->whenLoaded('lessons', fn () => $this->lessons->sortBy('order')->values()->map(fn ($lesson) => [
                 'id' => $lesson->id,
                 'title' => $lesson->title,

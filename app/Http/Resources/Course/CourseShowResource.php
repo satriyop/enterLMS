@@ -40,7 +40,8 @@ class CourseShowResource extends JsonResource
                 'name' => $this->category->name,
                 'slug' => $this->category->slug,
             ]),
-            'tags' => $this->whenLoaded('tags', fn () => $this->tags->map(fn ($tag) => [
+            /** @phpstan-ignore argument.type */
+            'tags' => $this->whenLoaded('tags', fn () => $this->tags->map(fn (\App\Models\Tag $tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,

@@ -38,6 +38,7 @@ class Question extends Model
         });
 
         static::restoring(function (Question $question) {
+            /** @phpstan-ignore method.notFound (onlyTrashed from SoftDeletes) */
             $question->options()->onlyTrashed()->restore();
         });
     }

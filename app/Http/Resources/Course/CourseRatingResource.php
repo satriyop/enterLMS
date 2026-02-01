@@ -23,10 +23,15 @@ class CourseRatingResource extends JsonResource
             'rating' => $this->rating,
             'review' => $this->review,
             'created_at' => $this->created_at,
-            'user' => $this->whenLoaded('user', fn () => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-            ]),
+            'user' => $this->whenLoaded('user', function () {
+                /** @var \App\Models\User $user */
+                $user = $this->user;
+
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                ];
+            }),
         ];
     }
 }

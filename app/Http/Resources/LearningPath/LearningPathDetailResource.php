@@ -30,7 +30,8 @@ class LearningPathDetailResource extends JsonResource
             'creator' => $this->whenLoaded('creator', fn () => [
                 'name' => $this->creator->name,
             ]),
-            'courses' => $this->whenLoaded('courses', fn () => $this->courses->map(fn ($course) => [
+            /** @phpstan-ignore return.type, argument.unresolvableType */
+            'courses' => $this->whenLoaded('courses', fn () => $this->courses->map(fn (\App\Models\Course $course) => [
                 'id' => $course->id,
                 'title' => $course->title,
                 'slug' => $course->slug,
@@ -41,9 +42,9 @@ class LearningPathDetailResource extends JsonResource
                 'sections_count' => $course->sections_count ?? 0,
                 'enrollments_count' => $course->enrollments_count ?? 0,
                 'pivot' => [
-                    'is_required' => $course->pivot->is_required ?? true,
-                    'min_completion_percentage' => $course->pivot->min_completion_percentage,
-                    'prerequisites' => $course->pivot->prerequisites,
+                    'is_required' => $course->pivot->is_required ?? true, /** @phpstan-ignore property.notFound */
+                    'min_completion_percentage' => $course->pivot->min_completion_percentage, /** @phpstan-ignore property.notFound */
+                    'prerequisites' => $course->pivot->prerequisites, /** @phpstan-ignore property.notFound */
                 ],
             ])),
         ];

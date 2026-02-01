@@ -119,7 +119,7 @@ trait RequiresEagerLoading
             'attribute' => $attributeName,
             'suggestion' => $suggestion,
             'trace' => collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10))
-                ->map(fn ($frame) => ($frame['class'] ?? '').($frame['type'] ?? '').($frame['function'] ?? '').'()')
+                ->map(fn ($frame) => ($frame['class'] ?? '').($frame['type'] ?? '').$frame['function'].'()')
                 ->filter()
                 ->take(5)
                 ->values()

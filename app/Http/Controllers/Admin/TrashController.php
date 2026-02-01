@@ -54,6 +54,7 @@ class TrashController extends Controller
             abort(404);
         }
 
+        /** @phpstan-ignore staticMethod.notFound (onlyTrashed from SoftDeletes) */
         $record = $modelClass::onlyTrashed()->findOrFail($id);
         $record->restore();
 
@@ -69,6 +70,7 @@ class TrashController extends Controller
             abort(404);
         }
 
+        /** @phpstan-ignore staticMethod.notFound (onlyTrashed from SoftDeletes) */
         $record = $modelClass::onlyTrashed()->findOrFail($id);
 
         // Clean up course thumbnails
@@ -92,12 +94,12 @@ class TrashController extends Controller
             'course' => [
                 'label' => 'Kursus',
                 'query' => fn () => Course::onlyTrashed()->select('id', 'title', 'user_id', 'deleted_at')->with('user:id,name')->latest('deleted_at')->limit(50)->get(),
-                'map' => fn ($item) => ['id' => $item->id, 'title' => $item->title, 'detail' => $item->user?->name ?? '-', 'deleted_at' => $item->deleted_at->toIso8601String()],
+                'map' => fn ($item) => ['id' => $item->id, 'title' => $item->title, 'detail' => $item->user->name ?? '-', 'deleted_at' => $item->deleted_at->toIso8601String()],
             ],
             'assessment' => [
                 'label' => 'Penilaian',
                 'query' => fn () => Assessment::onlyTrashed()->select('id', 'title', 'course_id', 'deleted_at')->with('course:id,title')->latest('deleted_at')->limit(50)->get(),
-                'map' => fn ($item) => ['id' => $item->id, 'title' => $item->title, 'detail' => $item->course?->title ?? '-', 'deleted_at' => $item->deleted_at->toIso8601String()],
+                'map' => fn ($item) => ['id' => $item->id, 'title' => $item->title, 'detail' => $item->course->title ?? '-', 'deleted_at' => $item->deleted_at->toIso8601String()],
             ],
             'learning_path' => [
                 'label' => 'Jalur Belajar',
@@ -107,12 +109,12 @@ class TrashController extends Controller
             'section' => [
                 'label' => 'Bagian Kursus',
                 'query' => fn () => CourseSection::onlyTrashed()->select('id', 'title', 'course_id', 'deleted_at')->with('course:id,title')->latest('deleted_at')->limit(50)->get(),
-                'map' => fn ($item) => ['id' => $item->id, 'title' => $item->title, 'detail' => $item->course?->title ?? '-', 'deleted_at' => $item->deleted_at->toIso8601String()],
+                'map' => fn ($item) => ['id' => $item->id, 'title' => $item->title, 'detail' => $item->course->title ?? '-', 'deleted_at' => $item->deleted_at->toIso8601String()],
             ],
             'lesson' => [
                 'label' => 'Pelajaran',
                 'query' => fn () => Lesson::onlyTrashed()->select('id', 'title', 'course_section_id', 'deleted_at')->with('section:id,title')->latest('deleted_at')->limit(50)->get(),
-                'map' => fn ($item) => ['id' => $item->id, 'title' => $item->title, 'detail' => $item->section?->title ?? '-', 'deleted_at' => $item->deleted_at->toIso8601String()],
+                'map' => fn ($item) => ['id' => $item->id, 'title' => $item->title, 'detail' => $item->section->title ?? '-', 'deleted_at' => $item->deleted_at->toIso8601String()],
             ],
             'user' => [
                 'label' => 'Pengguna',

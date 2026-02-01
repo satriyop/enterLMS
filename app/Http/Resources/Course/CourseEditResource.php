@@ -30,7 +30,8 @@ class CourseEditResource extends JsonResource
             'status' => (string) $this->status,
             'manual_duration_minutes' => $this->manual_duration_minutes,
             'estimated_duration_minutes' => $this->estimated_duration_minutes,
-            'tags' => $this->whenLoaded('tags', fn () => $this->tags->map(fn ($tag) => [
+            /** @phpstan-ignore argument.type */
+            'tags' => $this->whenLoaded('tags', fn () => $this->tags->map(fn (\App\Models\Tag $tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,

@@ -29,6 +29,7 @@ class Assessment extends Model
         });
 
         static::restoring(function (Assessment $assessment) {
+            /** @phpstan-ignore method.notFound (onlyTrashed from SoftDeletes) */
             $assessment->questions()->onlyTrashed()->restore();
         });
     }
