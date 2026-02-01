@@ -3,7 +3,7 @@
 // Single course data management
 // =============================================================================
 
-import { ref, computed, type Ref } from 'vue';
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import type { Course, CourseWithCurriculum, CourseSection, Lesson } from '@/types';
 import { show } from '@/actions/App/Http/Controllers/CourseController';

@@ -26,7 +26,7 @@ import {
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import { formatDuration, difficultyLabel, DIFFICULTY_COLORS } from '@/lib/utils';
-import { enroll, index as pathIndex, show as pathShow, progress as pathProgress } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
+import { enroll, index as pathIndex, progress as pathProgress } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
 import { show as courseShow } from '@/actions/App/Http/Controllers/CourseController';
 import type { DifficultyLevel } from '@/types';
 import type {
@@ -35,7 +35,6 @@ import type {
     PathProgressData,
     CourseProgressItem,
     CourseProgressStatus,
-    COURSE_PROGRESS_STATUS_COLORS,
 } from '@/types';
 
 // =============================================================================

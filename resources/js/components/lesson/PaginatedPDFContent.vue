@@ -78,11 +78,11 @@ const loadPdfJs = async () => {
         document.head.appendChild(script);
     });
 
-    // @ts-ignore - PDF.js adds itself to window
+    // @ts-expect-error PDF.js adds itself to window
     pdfjsLib = window.pdfjsLib;
 
     // Set worker
-    // @ts-ignore
+    // @ts-expect-error PDF.js worker config
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
     return pdfjsLib;

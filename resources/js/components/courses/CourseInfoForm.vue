@@ -65,6 +65,8 @@ const props = withDefaults(defineProps<Props>(), {
 // State
 // =============================================================================
 
+const shortDescription = ref(props.course.short_description ?? '');
+const longDescription = ref(props.course.long_description ?? '');
 const objectives = ref<string[]>(
     props.course.objectives?.length > 0 ? [...props.course.objectives] : ['']
 );
@@ -130,11 +132,12 @@ const removePrerequisite = (idx: number) => {
                         <textarea
                             id="short_description"
                             name="short_description"
+                            v-model="shortDescription"
                             class="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                             placeholder="Deskripsi singkat tentang kursus"
                             required
                             :disabled="!editable"
-                        >{{ course.short_description }}</textarea>
+                        />
                         <InputError :message="errors.short_description" />
                     </div>
 
@@ -143,10 +146,11 @@ const removePrerequisite = (idx: number) => {
                         <textarea
                             id="long_description"
                             name="long_description"
+                            v-model="longDescription"
                             class="flex min-h-32 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                             placeholder="Deskripsi lengkap tentang kursus"
                             :disabled="!editable"
-                        >{{ course.long_description }}</textarea>
+                        />
                         <InputError :message="errors.long_description" />
                     </div>
                 </CardContent>

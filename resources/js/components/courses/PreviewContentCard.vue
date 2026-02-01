@@ -8,7 +8,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
     PlayCircle,
-    FileText,
     Headphones,
     FileDown,
     BookOpen,

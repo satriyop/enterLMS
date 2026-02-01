@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, Play, Clock, CheckCircle } from 'lucide-vue-next';
 import { Link } from '@inertiajs/vue3';

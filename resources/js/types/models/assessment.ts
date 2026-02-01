@@ -5,7 +5,6 @@
  */
 
 import type {
-    Timestamps,
     SoftDeletes,
     AssessmentId,
     CourseId,

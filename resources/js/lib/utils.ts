@@ -41,7 +41,6 @@ export function toUrl(href: NonNullable<InertiaLinkProps['href']>): string {
 /**
  * Debounce function execution
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<T extends (...args: any[]) => any>(
     fn: T,
     delay: number
@@ -57,7 +56,6 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Throttle function execution
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function throttle<T extends (...args: any[]) => any>(
     fn: T,
     limit: number

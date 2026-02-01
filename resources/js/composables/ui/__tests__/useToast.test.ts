@@ -5,7 +5,7 @@ describe('useToast', () => {
     beforeEach(() => {
         vi.useFakeTimers();
         // Clear any existing toasts
-        const { toasts, clear } = useToast();
+        const { clear } = useToast();
         clear();
     });
 

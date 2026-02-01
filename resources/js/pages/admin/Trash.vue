@@ -23,7 +23,7 @@ import type { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
 import { useConfirmation } from '@/composables/ui/useConfirmation';
-import { Trash2, RotateCcw, MoreVertical, Archive } from 'lucide-vue-next';
+import { Trash2, RotateCcw, MoreVertical } from 'lucide-vue-next';
 import { ref, computed, watch } from 'vue';
 
 // =============================================================================

@@ -3,7 +3,7 @@
 // Automatically cleans up event listeners on component unmount
 // =============================================================================
 
-import { onMounted, onUnmounted, watch, unref, type Ref, isRef } from 'vue';
+import { onMounted, onUnmounted, watch, type Ref, isRef } from 'vue';
 
 type Target = Window | Document | HTMLElement | Ref<HTMLElement | null | undefined>;
 

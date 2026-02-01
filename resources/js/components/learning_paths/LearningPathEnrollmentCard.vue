@@ -10,8 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, CheckCircle, Play, Route } from 'lucide-vue-next';
-import { formatDuration } from '@/lib/utils';
-import type { LearningPathEnrollmentItem, LEARNING_PATH_STATE_COLORS, enrollmentStateLabel } from '@/types';
+import type { LearningPathEnrollmentItem } from '@/types';
 
 // =============================================================================
 // Types

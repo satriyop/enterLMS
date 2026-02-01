@@ -3,7 +3,7 @@
 // Development-only debugging utilities for state management
 // =============================================================================
 
-import { ref, watch, type Ref, type ComputedRef } from 'vue';
+import { watch, type Ref, type ComputedRef } from 'vue';
 
 // =============================================================================
 // Types

@@ -184,7 +184,7 @@ export function useTabs<T extends string>(
         window.addEventListener('hashchange', handleHashChange);
 
         // Update hash when tab changes
-        watch(currentTab, (newTab, oldTab) => {
+        watch(currentTab, (newTab) => {
             if (newTab && window.location.hash !== `#${newTab}`) {
                 window.location.hash = newTab;
             }

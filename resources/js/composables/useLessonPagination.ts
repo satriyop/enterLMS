@@ -2,14 +2,6 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 
-interface LessonProgress {
-    current_page: number;
-    total_pages: number | null;
-    highest_page_reached: number;
-    is_completed: boolean;
-    pagination_metadata: Record<string, unknown> | null;
-}
-
 interface UseLessonPaginationOptions {
     courseId: number;
     lessonId: number;
@@ -41,7 +33,6 @@ export function useLessonPagination(options: UseLessonPaginationOptions) {
 
     // Time tracking
     const startTime = ref(Date.now());
-    const timeSpentSeconds = ref(0);
 
     // Auto-save timer
     let autoSaveTimer: ReturnType<typeof setInterval> | null = null;

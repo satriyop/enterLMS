@@ -11,7 +11,6 @@ import type {
     LessonProgress,
     LessonNavItem,
     ContentType,
-    Media,
 } from '@/types';
 
 // =============================================================================

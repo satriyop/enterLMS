@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { show, edit } from '@/actions/App/Http/Controllers/LearningPathController';
 import { index as learningPathIndex } from '@/routes/learning-paths';
-import PageHeader from '@/components/crud/PageHeader.vue';
 import LearningPathCourseCard from '@/components/learning_paths/LearningPathCourseCard.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

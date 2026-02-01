@@ -82,32 +82,6 @@ const needsDarkBackground = computed(() => {
     return ['video', 'youtube'].includes(props.contentType);
 });
 
-/** Icon for content type placeholder */
-const placeholderIcon = computed(() => {
-    const icons = {
-        video: PlayCircle,
-        youtube: PlayCircle,
-        audio: Headphones,
-        document: FileDown,
-        text: FileText,
-        conference: VideoCall,
-    };
-    return icons[props.contentType] || BookOpen;
-});
-
-/** Placeholder message for unavailable content */
-const placeholderMessage = computed(() => {
-    const messages: Record<string, string> = {
-        video: 'Video belum tersedia',
-        youtube: 'Video YouTube belum tersedia',
-        audio: 'Audio belum tersedia',
-        document: 'Dokumen belum tersedia',
-        text: 'Konten teks belum tersedia',
-        conference: 'Informasi konferensi akan segera tersedia',
-    };
-    return messages[props.contentType] || 'Konten belum tersedia';
-});
-
 // =============================================================================
 // Event Handlers
 // =============================================================================

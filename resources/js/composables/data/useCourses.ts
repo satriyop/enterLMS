@@ -3,7 +3,7 @@
 // Course list with filtering and pagination
 // =============================================================================
 
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import type { FormDataConvertible } from '@inertiajs/core';
 import type { Course, CourseListItem, CourseFilters } from '@/types';

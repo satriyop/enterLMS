@@ -9,9 +9,6 @@ import type { FormDataConvertible } from '@inertiajs/core';
 import type {
     Assessment,
     AssessmentAttempt,
-    Question,
-    QuestionForAttempt,
-    AttemptAnswer,
     SubmitAnswerData,
 } from '@/types';
 

@@ -18,7 +18,6 @@ import type {
     Assessment,
     AssessmentAttempt,
     QuestionForAttempt,
-    SubmitAnswerData,
 } from '@/types';
 
 // =============================================================================

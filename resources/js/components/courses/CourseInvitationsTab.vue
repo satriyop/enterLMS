@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import FormSection from '@/components/crud/FormSection.vue';
 import { Separator } from '@/components/ui/separator';
 import InviteLearnerForm from './InviteLearnerForm.vue';
 import CsvImportDialog from './CsvImportDialog.vue';
 import InvitationsList from './InvitationsList.vue';
-import { Mail, Users, Upload } from 'lucide-vue-next';
+import { Upload } from 'lucide-vue-next';
 
 interface Invitation {
     id: number;
@@ -39,7 +38,7 @@ const handleInvitationSuccess = () => {
     router.reload({ only: ['invitations', 'invitationsTotal'] });
 };
 
-const handleInvitationDeleted = (invitationId: number) => {
+const handleInvitationDeleted = (_invitationId: number) => {
     router.reload({ only: ['invitations', 'invitationsTotal'] });
 };
 </script>

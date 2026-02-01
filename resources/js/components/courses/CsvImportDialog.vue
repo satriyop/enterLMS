@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import InputError from '@/components/InputError.vue';
-import { Upload, FileText, CheckCircle, XCircle, Calendar, AlertCircle } from 'lucide-vue-next';
+import { Upload, FileText, CheckCircle, Calendar, AlertCircle } from 'lucide-vue-next';
 
 interface Props {
     courseId: number;

@@ -5,7 +5,7 @@
  * They help ensure type safety between backend and frontend.
  */
 
-import type { Paginated, CategoryId } from '../models/common';
+import type { Paginated } from '../models/common';
 import type { User } from '../models/user';
 import type { Course, CourseFilters, Category, Tag, CourseSection, CoursePermissions } from '../models/course';
 import type { Lesson, LessonProgress, Media } from '../models/lesson';

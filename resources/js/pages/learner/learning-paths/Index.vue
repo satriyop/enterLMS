@@ -10,7 +10,7 @@ import LearningPathEnrollmentCard from '@/components/learning_paths/LearningPath
 import { Button } from '@/components/ui/button';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { Route, Search } from 'lucide-vue-next';
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { index, browse } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
 import type { PaginationLink } from '@/types';
 import type { LearningPathEnrollmentItem, LearningPathEnrollmentState } from '@/types';

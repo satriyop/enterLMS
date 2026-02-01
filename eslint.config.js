@@ -13,6 +13,23 @@ export default defineConfigWithVueTs(
         rules: {
             'vue/multi-word-component-names': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
+            // Inertia's <Link> is a thin wrapper around <a> — v-html is safe
+            'vue/no-v-text-v-html-on-component': ['error', { allow: ['Link'] }],
+            // Allow unused args prefixed with _ (common convention)
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                { argsIgnorePattern: '^_' },
+            ],
+        },
+    },
+    // Vue 3 <script setup> — `props` from defineProps is used in templates
+    {
+        files: ['**/*.vue'],
+        rules: {
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                { varsIgnorePattern: '^props$', argsIgnorePattern: '^_' },
+            ],
         },
     },
     prettier,

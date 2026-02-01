@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 import axios from 'axios';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { ChevronDown, Search, User } from 'lucide-vue-next';
+import { Search, User } from 'lucide-vue-next';
 
 interface Learner {
     id: number;
@@ -76,13 +75,6 @@ const clearSelection = () => {
     emit('update:modelValue', null);
     learners.value = [];
 };
-
-const displayValue = computed(() => {
-    if (selectedLearner.value) {
-        return selectedLearner.value.name;
-    }
-    return searchQuery.value;
-});
 
 const getInitials = (name: string) => {
     return name
