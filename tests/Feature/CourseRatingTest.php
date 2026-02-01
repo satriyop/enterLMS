@@ -202,7 +202,7 @@ class CourseRatingTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseMissing('course_ratings', [
+        $this->assertSoftDeleted('course_ratings', [
             'id' => $rating->id,
         ]);
     }
@@ -234,7 +234,7 @@ class CourseRatingTest extends TestCase
 
         $response->assertRedirect();
 
-        $this->assertDatabaseMissing('course_ratings', [
+        $this->assertSoftDeleted('course_ratings', [
             'id' => $rating->id,
         ]);
     }

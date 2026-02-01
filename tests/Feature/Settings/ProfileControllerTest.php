@@ -121,7 +121,7 @@ it('can delete account', function () {
         ->assertRedirect('/');
 
     $this->assertGuest();
-    $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    $this->assertSoftDeleted('users', ['id' => $user->id]);
 });
 
 it('requires correct password to delete account', function () {

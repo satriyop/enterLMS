@@ -1,5 +1,4 @@
 <?php
-namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Course;
@@ -7,240 +6,232 @@ use App\Models\CourseSection;
 use App\Models\Lesson;
 use App\Models\Tag;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Inertia\Testing\AssertableInertia;
 
-class CourseTest extends TestCase
-{
-    use RefreshDatabase;
+it('redirects guests to login from courses index', function () {
+    $this->get('/courses')->assertRedirect('/login');
+});
 
-    public function test_guests_cannot_access_courses_index(): void
-    {
-        $response = $this->get('/courses');
+it('allows learners to access courses index', function () {
+    $user = User::factory()->create(['role' => 'learner']);
 
-        $response->assertRedirect('/login');
-    }
+    $this->actingAs($user)->get('/courses')
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('courses/Browse')
+            ->has('courses')
+            ->has('categories')
+            ->has('filters')
+        );
+});
 
-    public function test_learners_cannot_access_courses_index(): void
-    {
-        $user = User::factory()->create(['role' => 'learner']);
+it('allows content managers to access courses index', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
 
-        $response = $this->actingAs($user)->get('/courses');
+    $this->actingAs($user)->get('/courses')
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('courses/Index')
+            ->has('courses')
+            ->has('categories')
+            ->has('filters')
+        );
+});
 
-        $response->assertOk();
-    }
+it('allows lms admins to access courses index', function () {
+    $user = User::factory()->create(['role' => 'lms_admin']);
 
-    public function test_content_managers_can_access_courses_index(): void
-    {
-        $user = User::factory()->create(['role' => 'content_manager']);
+    $this->actingAs($user)->get('/courses')
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('courses/Index')
+        );
+});
 
-        $response = $this->actingAs($user)->get('/courses');
+it('allows content managers to create courses', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
+    $category = Category::factory()->create();
 
-        $response->assertOk();
-    }
+    $this->actingAs($user)->post('/courses', [
+        'title' => 'Test Course',
+        'short_description' => 'This is a test course description.',
+        'difficulty_level' => 'beginner',
+        'visibility' => 'public',
+        'category_id' => $category->id,
+    ])->assertRedirect();
 
-    public function test_lms_admins_can_access_courses_index(): void
-    {
-        $user = User::factory()->create(['role' => 'lms_admin']);
+    $this->assertDatabaseHas('courses', [
+        'title' => 'Test Course',
+        'user_id' => $user->id,
+        'status' => 'draft',
+    ]);
+});
 
-        $response = $this->actingAs($user)->get('/courses');
+it('allows content managers to update their own courses', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
+    $course = Course::factory()->draft()->create(['user_id' => $user->id]);
 
-        $response->assertOk();
-    }
+    $this->actingAs($user)->put("/courses/{$course->id}", [
+        'title' => 'Updated Course Title',
+        'short_description' => $course->short_description,
+        'difficulty_level' => $course->difficulty_level,
+        'visibility' => $course->visibility,
+    ])->assertRedirect();
 
-    public function test_content_managers_can_create_courses(): void
-    {
-        $user     = User::factory()->create(['role' => 'content_manager']);
-        $category = Category::factory()->create();
+    $this->assertDatabaseHas('courses', [
+        'id' => $course->id,
+        'title' => 'Updated Course Title',
+    ]);
+});
 
-        $response = $this->actingAs($user)->post('/courses', [
-            'title'             => 'Test Course',
-            'short_description' => 'This is a test course description.',
-            'difficulty_level'  => 'beginner',
-            'visibility'        => 'public',
-            'category_id'       => $category->id,
-        ]);
+it('forbids content managers from updating others courses', function () {
+    $owner = User::factory()->create(['role' => 'content_manager']);
+    $other = User::factory()->create(['role' => 'content_manager']);
+    $course = Course::factory()->draft()->create(['user_id' => $owner->id]);
 
-        $response->assertRedirect();
-        $this->assertDatabaseHas('courses', [
-            'title'   => 'Test Course',
-            'user_id' => $user->id,
-            'status'  => 'draft',
-        ]);
-    }
+    $this->actingAs($other)->put("/courses/{$course->id}", [
+        'title' => 'Hijacked Title',
+        'short_description' => $course->short_description,
+        'difficulty_level' => $course->difficulty_level,
+        'visibility' => $course->visibility,
+    ])->assertForbidden();
+});
 
-    public function test_content_managers_can_update_their_own_courses(): void
-    {
-        $user   = User::factory()->create(['role' => 'content_manager']);
-        $course = Course::factory()->draft()->create(['user_id' => $user->id]);
+it('allows lms admins to update any course', function () {
+    $owner = User::factory()->create(['role' => 'content_manager']);
+    $admin = User::factory()->create(['role' => 'lms_admin']);
+    $course = Course::factory()->draft()->create(['user_id' => $owner->id]);
 
-        $response = $this->actingAs($user)->put("/courses/{$course->id}", [
-            'title'             => 'Updated Course Title',
-            'short_description' => $course->short_description,
-            'difficulty_level'  => $course->difficulty_level,
-            'visibility'        => $course->visibility,
-        ]);
+    $this->actingAs($admin)->put("/courses/{$course->id}", [
+        'title' => 'Admin Updated Title',
+        'short_description' => $course->short_description,
+        'difficulty_level' => $course->difficulty_level,
+        'visibility' => $course->visibility,
+    ])->assertRedirect();
 
-        $response->assertRedirect();
-        $this->assertDatabaseHas('courses', [
-            'id'    => $course->id,
-            'title' => 'Updated Course Title',
-        ]);
-    }
+    $this->assertDatabaseHas('courses', [
+        'id' => $course->id,
+        'title' => 'Admin Updated Title',
+    ]);
+});
 
-    public function test_content_managers_cannot_update_others_courses(): void
-    {
-        $owner  = User::factory()->create(['role' => 'content_manager']);
-        $other  = User::factory()->create(['role' => 'content_manager']);
-        $course = Course::factory()->draft()->create(['user_id' => $owner->id]);
+it('forbids content managers from publishing courses', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
+    $course = Course::factory()->draft()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($other)->put("/courses/{$course->id}", [
-            'title'             => 'Hijacked Title',
-            'short_description' => $course->short_description,
-            'difficulty_level'  => $course->difficulty_level,
-            'visibility'        => $course->visibility,
-        ]);
+    $this->actingAs($user)->post("/courses/{$course->id}/publish")
+        ->assertForbidden();
+});
 
-        $response->assertForbidden();
-    }
+it('allows lms admins to publish courses', function () {
+    $owner = User::factory()->create(['role' => 'content_manager']);
+    $admin = User::factory()->create(['role' => 'lms_admin']);
+    $course = Course::factory()->draft()->create(['user_id' => $owner->id]);
 
-    public function test_lms_admins_can_update_any_course(): void
-    {
-        $owner  = User::factory()->create(['role' => 'content_manager']);
-        $admin  = User::factory()->create(['role' => 'lms_admin']);
-        $course = Course::factory()->draft()->create(['user_id' => $owner->id]);
+    $this->actingAs($admin)->post("/courses/{$course->id}/publish")
+        ->assertRedirect();
 
-        $response = $this->actingAs($admin)->put("/courses/{$course->id}", [
-            'title'             => 'Admin Updated Title',
-            'short_description' => $course->short_description,
-            'difficulty_level'  => $course->difficulty_level,
-            'visibility'        => $course->visibility,
-        ]);
+    $this->assertDatabaseHas('courses', [
+        'id' => $course->id,
+        'status' => 'published',
+        'published_by' => $admin->id,
+    ]);
+});
 
-        $response->assertRedirect();
-        $this->assertDatabaseHas('courses', [
-            'id'    => $course->id,
-            'title' => 'Admin Updated Title',
-        ]);
-    }
+it('allows lms admins to unpublish courses', function () {
+    $owner = User::factory()->create(['role' => 'content_manager']);
+    $admin = User::factory()->create(['role' => 'lms_admin']);
+    $course = Course::factory()->published()->create(['user_id' => $owner->id]);
 
-    public function test_content_managers_cannot_publish_courses(): void
-    {
-        $user   = User::factory()->create(['role' => 'content_manager']);
-        $course = Course::factory()->draft()->create(['user_id' => $user->id]);
+    $this->actingAs($admin)->post("/courses/{$course->id}/unpublish")
+        ->assertRedirect();
 
-        $response = $this->actingAs($user)->post("/courses/{$course->id}/publish");
+    $this->assertDatabaseHas('courses', [
+        'id' => $course->id,
+        'status' => 'draft',
+    ]);
+});
 
-        $response->assertForbidden();
-    }
+it('allows content managers to delete their own draft courses', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
+    $course = Course::factory()->draft()->create(['user_id' => $user->id]);
 
-    public function test_lms_admins_can_publish_courses(): void
-    {
-        $owner  = User::factory()->create(['role' => 'content_manager']);
-        $admin  = User::factory()->create(['role' => 'lms_admin']);
-        $course = Course::factory()->draft()->create(['user_id' => $owner->id]);
+    $this->actingAs($user)->delete("/courses/{$course->id}")
+        ->assertRedirect();
 
-        $response = $this->actingAs($admin)->post("/courses/{$course->id}/publish");
+    $this->assertSoftDeleted('courses', ['id' => $course->id]);
+});
 
-        $response->assertRedirect();
-        $this->assertDatabaseHas('courses', [
-            'id'           => $course->id,
-            'status'       => 'published',
-            'published_by' => $admin->id,
-        ]);
-    }
+it('forbids content managers from deleting published courses', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
+    $course = Course::factory()->published()->create(['user_id' => $user->id]);
 
-    public function test_lms_admins_can_unpublish_courses(): void
-    {
-        $owner  = User::factory()->create(['role' => 'content_manager']);
-        $admin  = User::factory()->create(['role' => 'lms_admin']);
-        $course = Course::factory()->published()->create(['user_id' => $owner->id]);
+    $this->actingAs($user)->delete("/courses/{$course->id}")
+        ->assertForbidden();
+});
 
-        $response = $this->actingAs($admin)->post("/courses/{$course->id}/unpublish");
+it('allows lms admins to delete any course', function () {
+    $owner = User::factory()->create(['role' => 'content_manager']);
+    $admin = User::factory()->create(['role' => 'lms_admin']);
+    $course = Course::factory()->published()->create(['user_id' => $owner->id]);
 
-        $response->assertRedirect();
-        $this->assertDatabaseHas('courses', [
-            'id'     => $course->id,
-            'status' => 'draft',
-        ]);
-    }
+    $this->actingAs($admin)->delete("/courses/{$course->id}")
+        ->assertRedirect();
 
-    public function test_content_managers_can_delete_their_own_draft_courses(): void
-    {
-        $user   = User::factory()->create(['role' => 'content_manager']);
-        $course = Course::factory()->draft()->create(['user_id' => $user->id]);
+    $this->assertSoftDeleted('courses', ['id' => $course->id]);
+});
 
-        $response = $this->actingAs($user)->delete("/courses/{$course->id}");
+it('allows courses to have sections and lessons', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
+    $course = Course::factory()->create(['user_id' => $user->id]);
+    $section = CourseSection::factory()->create(['course_id' => $course->id]);
+    $lesson = Lesson::factory()->text()->create(['course_section_id' => $section->id]);
 
-        $response->assertRedirect();
-        $this->assertSoftDeleted('courses', ['id' => $course->id]);
-    }
+    expect($course->sections)->toHaveCount(1);
+    expect($section->lessons)->toHaveCount(1);
+    expect($course->sections->first()->lessons->first()->title)->toBe($lesson->title);
+});
 
-    public function test_content_managers_cannot_delete_published_courses(): void
-    {
-        $user   = User::factory()->create(['role' => 'content_manager']);
-        $course = Course::factory()->published()->create(['user_id' => $user->id]);
+it('allows courses to have tags', function () {
+    $course = Course::factory()->create();
+    $tags = Tag::factory()->count(3)->create();
+    $course->tags()->attach($tags);
 
-        $response = $this->actingAs($user)->delete("/courses/{$course->id}");
+    expect($course->tags)->toHaveCount(3);
+});
 
-        $response->assertForbidden();
-    }
+it('filters courses index by status', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
+    Course::factory()->draft()->create(['user_id' => $user->id, 'title' => 'Draft Course']);
+    Course::factory()->published()->create(['user_id' => $user->id, 'title' => 'Published Course']);
 
-    public function test_lms_admins_can_delete_any_course(): void
-    {
-        $owner  = User::factory()->create(['role' => 'content_manager']);
-        $admin  = User::factory()->create(['role' => 'lms_admin']);
-        $course = Course::factory()->published()->create(['user_id' => $owner->id]);
+    $this->actingAs($user)->get('/courses?status=draft')
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('courses/Index')
+            ->has('filters', fn (AssertableInertia $filters) => $filters
+                ->where('status', 'draft')
+                ->etc()
+            )
+            ->where('courses.data.0.title', 'Draft Course')
+            ->has('courses.data', 1)
+        );
+});
 
-        $response = $this->actingAs($admin)->delete("/courses/{$course->id}");
+it('filters courses index by search', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
+    Course::factory()->create(['user_id' => $user->id, 'title' => 'Laravel Course']);
+    Course::factory()->create(['user_id' => $user->id, 'title' => 'Python Course']);
 
-        $response->assertRedirect();
-        $this->assertSoftDeleted('courses', ['id' => $course->id]);
-    }
-
-    public function test_course_can_have_sections_and_lessons(): void
-    {
-        $user    = User::factory()->create(['role' => 'content_manager']);
-        $course  = Course::factory()->create(['user_id' => $user->id]);
-        $section = CourseSection::factory()->create(['course_id' => $course->id]);
-        $lesson  = Lesson::factory()->text()->create(['course_section_id' => $section->id]);
-
-        $this->assertCount(1, $course->sections);
-        $this->assertCount(1, $section->lessons);
-        $this->assertEquals($lesson->title, $course->sections->first()->lessons->first()->title);
-    }
-
-    public function test_course_can_have_tags(): void
-    {
-        $course = Course::factory()->create();
-        $tags   = Tag::factory()->count(3)->create();
-
-        $course->tags()->attach($tags);
-
-        $this->assertCount(3, $course->tags);
-    }
-
-    public function test_courses_index_filters_by_status(): void
-    {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        Course::factory()->draft()->create(['user_id' => $user->id, 'title' => 'Draft Course']);
-        Course::factory()->published()->create(['user_id' => $user->id, 'title' => 'Published Course']);
-
-        $response = $this->actingAs($user)->get('/courses?status=draft');
-
-        $response->assertOk();
-        $response->assertSee('Draft Course');
-    }
-
-    public function test_courses_index_filters_by_search(): void
-    {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        Course::factory()->create(['user_id' => $user->id, 'title' => 'Laravel Course']);
-        Course::factory()->create(['user_id' => $user->id, 'title' => 'Python Course']);
-
-        $response = $this->actingAs($user)->get('/courses?search=Laravel');
-
-        $response->assertOk();
-        $response->assertSee('Laravel Course');
-    }
-}
+    $this->actingAs($user)->get('/courses?search=Laravel')
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('courses/Index')
+            ->has('filters', fn (AssertableInertia $filters) => $filters
+                ->where('search', 'Laravel')
+                ->etc()
+            )
+            ->where('courses.data.0.title', 'Laravel Course')
+            ->has('courses.data', 1)
+        );
+});

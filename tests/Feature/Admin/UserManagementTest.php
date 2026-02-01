@@ -326,7 +326,7 @@ it('allows lms_admin to delete other user', function () {
         ->assertRedirect(route('admin.users.index'))
         ->assertSessionHas('success');
 
-    $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    $this->assertSoftDeleted('users', ['id' => $user->id]);
 });
 
 it('prevents lms_admin from deleting self', function () {

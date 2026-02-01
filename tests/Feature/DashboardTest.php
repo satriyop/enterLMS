@@ -1,54 +1,62 @@
 <?php
 
-namespace Tests\Feature;
-
+use App\Models\Course;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Inertia\Testing\AssertableInertia;
 
-class DashboardTest extends TestCase
-{
-    use RefreshDatabase;
+it('redirects guests to the login page', function () {
+    $this->get(route('dashboard'))
+        ->assertRedirect(route('login'));
+});
 
-    public function test_guests_are_redirected_to_the_login_page()
-    {
-        $response = $this->get(route('dashboard'));
-        $response->assertRedirect(route('login'));
-    }
+it('redirects learners to learner dashboard', function () {
+    $user = User::factory()->create(['role' => 'learner']);
 
-    public function test_learners_are_redirected_to_learner_dashboard()
-    {
-        $user = User::factory()->create(['role' => 'learner']);
-        $this->actingAs($user);
+    $this->actingAs($user)->get(route('dashboard'))
+        ->assertRedirect(route('learner.dashboard'));
+});
 
-        $response = $this->get(route('dashboard'));
-        $response->assertRedirect(route('learner.dashboard'));
-    }
+it('renders dashboard for content managers with stats', function () {
+    $user = User::factory()->create(['role' => 'content_manager']);
+    Course::factory()->count(2)->create(['user_id' => $user->id]);
 
-    public function test_content_managers_can_visit_the_dashboard()
-    {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        $this->actingAs($user);
+    $this->actingAs($user)->get(route('dashboard'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Dashboard')
+            ->has('stats', fn (AssertableInertia $stats) => $stats
+                ->where('courses', 2)
+                ->where('learners', 0)
+                ->where('programs', 0)
+            )
+        );
+});
 
-        $response = $this->get(route('dashboard'));
-        $response->assertOk();
-    }
+it('renders dashboard for trainers', function () {
+    $user = User::factory()->create(['role' => 'trainer']);
 
-    public function test_trainers_can_visit_the_dashboard()
-    {
-        $user = User::factory()->create(['role' => 'trainer']);
-        $this->actingAs($user);
+    $this->actingAs($user)->get(route('dashboard'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Dashboard')
+            ->has('stats')
+        );
+});
 
-        $response = $this->get(route('dashboard'));
-        $response->assertOk();
-    }
+it('renders dashboard for lms admins with global stats', function () {
+    $admin = User::factory()->create(['role' => 'lms_admin']);
+    $owner = User::factory()->create(['role' => 'content_manager']);
+    Course::factory()->count(3)->create(['user_id' => $owner->id]);
+    User::factory()->count(2)->create(['role' => 'learner']);
 
-    public function test_lms_admins_can_visit_the_dashboard()
-    {
-        $user = User::factory()->create(['role' => 'lms_admin']);
-        $this->actingAs($user);
-
-        $response = $this->get(route('dashboard'));
-        $response->assertOk();
-    }
-}
+    $this->actingAs($admin)->get(route('dashboard'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Dashboard')
+            ->has('stats', fn (AssertableInertia $stats) => $stats
+                ->where('courses', 3)
+                ->where('learners', 2)
+                ->where('programs', 0)
+            )
+        );
+});

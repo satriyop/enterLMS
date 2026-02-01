@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Factories;
 
 use App\Models\AssessmentAttempt;
@@ -14,15 +15,15 @@ class AttemptAnswerFactory extends Factory
     public function definition(): array
     {
         return [
-            'attempt_id'  => AssessmentAttempt::factory(),
+            'assessment_attempt_id' => AssessmentAttempt::factory(),
             'question_id' => Question::factory(),
             'answer_text' => $this->faker->sentence,
-            'file_path'   => null,
-            'is_correct'  => null,
-            'score'       => null,
-            'feedback'    => null,
-            'graded_by'   => null,
-            'graded_at'   => null,
+            'file_path' => null,
+            'is_correct' => null,
+            'score' => null,
+            'feedback' => null,
+            'graded_by' => null,
+            'graded_at' => null,
         ];
     }
 
@@ -31,10 +32,10 @@ class AttemptAnswerFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'is_correct' => true,
-                'score'      => $this->faker->numberBetween(1, 5),
-                'feedback'   => $this->faker->optional()->paragraph,
-                'graded_by'  => User::factory(),
-                'graded_at'  => now(),
+                'score' => $this->faker->numberBetween(1, 5),
+                'feedback' => $this->faker->optional()->paragraph,
+                'graded_by' => User::factory(),
+                'graded_at' => now(),
             ];
         });
     }
@@ -44,10 +45,10 @@ class AttemptAnswerFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'is_correct' => false,
-                'score'      => 0,
-                'feedback'   => $this->faker->optional()->paragraph,
-                'graded_by'  => User::factory(),
-                'graded_at'  => now(),
+                'score' => 0,
+                'feedback' => $this->faker->optional()->paragraph,
+                'graded_by' => User::factory(),
+                'graded_at' => now(),
             ];
         });
     }
@@ -57,7 +58,7 @@ class AttemptAnswerFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'answer_text' => null,
-                'file_path'   => 'assessment_answers/' . $this->faker->uuid . '.pdf',
+                'file_path' => 'assessment_answers/'.$this->faker->uuid.'.pdf',
             ];
         });
     }

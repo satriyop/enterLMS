@@ -26,7 +26,7 @@ class BulkGradeAnswersRequest extends FormRequest
             'grades.*.answer_id' => [
                 'required',
                 'integer',
-                Rule::exists('attempt_answers', 'id')->where('attempt_id', $attempt->id),
+                Rule::exists('attempt_answers', 'id')->where('assessment_attempt_id', $attempt->id),
             ],
             'grades.*.score' => ['required', 'numeric', 'min:0'],
             'grades.*.feedback' => ['nullable', 'string', 'max:1000'],

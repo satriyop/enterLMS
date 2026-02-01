@@ -11,6 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { dashboard, login, register } from '@/routes';
 import { Link, usePage } from '@inertiajs/vue3';
+import NotificationBell from '@/components/NotificationBell.vue';
 import { Menu, X, Search, Moon, Sun } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import { useAppearance } from '@/composables/useAppearance';
@@ -123,6 +124,7 @@ const toggleTheme = () => {
                     </Button>
 
                     <template v-if="user">
+                        <NotificationBell />
                         <DropdownMenu>
                             <DropdownMenuTrigger as-child>
                                 <Button variant="ghost" class="relative h-9 w-9 rounded-full">

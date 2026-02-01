@@ -6,6 +6,7 @@
 
 import Navbar from '@/components/home/Navbar.vue';
 import Footer from '@/components/home/Footer.vue';
+import FlashMessages from '@/components/FlashMessages.vue';
 import { Badge } from '@/components/ui/badge';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Mail } from 'lucide-vue-next';
@@ -15,6 +16,7 @@ import FeaturedCoursesCarousel from '@/components/courses/FeaturedCoursesCarouse
 import CourseInvitationCard from '@/components/courses/CourseInvitationCard.vue';
 import BrowseCourseCard from '@/components/courses/BrowseCourseCard.vue';
 import CourseController from '@/actions/App/Http/Controllers/CourseController';
+import MyLearningController from '@/actions/App/Http/Controllers/MyLearningController';
 import type { DifficultyLevel } from '@/types';
 
 // =============================================================================
@@ -81,6 +83,8 @@ const appName = computed(() => page.props.name || 'E-Learning');
         <Navbar :app-name="appName" />
 
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <FlashMessages />
+
             <div class="flex flex-col gap-8">
                 <!-- Featured Courses Carousel -->
                 <FeaturedCoursesCarousel :courses="featuredCourses" />
@@ -92,7 +96,7 @@ const appName = computed(() => page.props.name || 'E-Learning');
                             <BookOpen class="h-5 w-5" />
                             Pembelajaran Saya
                         </h2>
-                        <Link href="/my-learning" class="text-sm text-primary hover:underline">
+                        <Link :href="MyLearningController().url" class="text-sm text-primary hover:underline">
                             Lihat Semua
                         </Link>
                     </div>

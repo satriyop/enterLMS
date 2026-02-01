@@ -438,7 +438,7 @@ describe('Resource Isolation', function () {
                 ->delete(route('courses.ratings.destroy', [$course, $rating]))
                 ->assertRedirect();
 
-            $this->assertDatabaseMissing('course_ratings', ['id' => $rating->id]);
+            $this->assertSoftDeleted('course_ratings', ['id' => $rating->id]);
         });
 
     });

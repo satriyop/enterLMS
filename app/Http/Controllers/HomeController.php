@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\HomeCourseResource;
 use App\Models\Category;
 use App\Models\Course;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
@@ -15,29 +15,21 @@ class HomeController extends Controller
 {
     public function index(): Response
     {
-        $featuredCourses = Course::query()
+        $baseQuery = Course::query()
             ->published()
             ->visible()
             ->with(['user:id,name', 'category:id,name,slug'])
             ->withCount(['sections', 'lessons', 'enrollments'])
             ->withAvg('ratings', 'rating')
-            ->withCount('ratings')
-            ->orderBy('created_at', 'desc')
-            ->limit(8)
-            ->get()
-            ->map(fn (Course $course) => $this->formatCourseForFrontend($course));
+            ->withCount('ratings');
 
-        $popularCourses = Course::query()
-            ->published()
-            ->visible()
-            ->with(['user:id,name', 'category:id,name,slug'])
-            ->withCount(['sections', 'lessons', 'enrollments'])
-            ->withAvg('ratings', 'rating')
-            ->withCount('ratings')
-            ->orderByDesc('enrollments_count')
-            ->limit(8)
-            ->get()
-            ->map(fn (Course $course) => $this->formatCourseForFrontend($course));
+        $featuredCourses = HomeCourseResource::collection(
+            (clone $baseQuery)->latest()->limit(8)->get()
+        )->resolve();
+
+        $popularCourses = HomeCourseResource::collection(
+            (clone $baseQuery)->orderByDesc('enrollments_count')->limit(8)->get()
+        )->resolve();
 
         $categories = Category::query()
             ->whereNull('parent_id')
@@ -55,47 +47,33 @@ class HomeController extends Controller
             ]);
 
         $stats = Cache::remember('home_stats', 3600, function () {
-            $counts = DB::table('courses')
+            $coursesCount = DB::table('courses')
                 ->where('status', 'published')
                 ->where('visibility', 'visible')
-                ->selectRaw('COUNT(*) as courses_count')
-                ->first();
+                ->count();
 
-            $studentsCount = DB::table('enrollments')->distinct('user_id')->count('user_id');
+            $studentsCount = DB::table('enrollments')
+                ->whereNull('deleted_at')
+                ->distinct('user_id')
+                ->count('user_id');
 
             $instructorsCount = DB::table('courses')
                 ->where('status', 'published')
                 ->distinct('user_id')
                 ->count('user_id');
 
-            $totalMinutes = DB::table('courses')
-                ->where('status', 'published')
-                ->where('visibility', 'visible')
-                ->sum('duration');
-
-            $totalHours = (int) round($totalMinutes / 60);
+            $totalHours = (int) round(
+                DB::table('courses')
+                    ->where('status', 'published')
+                    ->where('visibility', 'visible')
+                    ->sum('duration') / 60
+            );
 
             return [
-                [
-                    'label' => 'Kursus Tersedia',
-                    'value' => number_format($counts->courses_count),
-                    'icon' => 'courses',
-                ],
-                [
-                    'label' => 'Siswa Terdaftar',
-                    'value' => number_format($studentsCount),
-                    'icon' => 'students',
-                ],
-                [
-                    'label' => 'Instruktur Ahli',
-                    'value' => number_format($instructorsCount),
-                    'icon' => 'instructors',
-                ],
-                [
-                    'label' => 'Jam Konten',
-                    'value' => number_format($totalHours),
-                    'icon' => 'hours',
-                ],
+                ['label' => 'Kursus Tersedia', 'value' => number_format($coursesCount), 'icon' => 'courses'],
+                ['label' => 'Siswa Terdaftar', 'value' => number_format($studentsCount), 'icon' => 'students'],
+                ['label' => 'Instruktur Ahli', 'value' => number_format($instructorsCount), 'icon' => 'instructors'],
+                ['label' => 'Jam Konten', 'value' => number_format($totalHours), 'icon' => 'hours'],
             ];
         });
 
@@ -106,36 +84,6 @@ class HomeController extends Controller
             'categories' => $categories,
             'stats' => $stats,
         ]);
-    }
-
-    private function formatCourseForFrontend(Course $course): array
-    {
-        return [
-            'id' => $course->id,
-            'title' => $course->title,
-            'slug' => $course->slug,
-            'short_description' => $course->short_description,
-            'thumbnail_url' => $course->thumbnail_path
-                ? Storage::url($course->thumbnail_path)
-                : null,
-            'instructor' => $course->user ? [
-                'id' => $course->user->id,
-                'name' => $course->user->name,
-            ] : null,
-            'category' => $course->category ? [
-                'id' => $course->category->id,
-                'name' => $course->category->name,
-                'slug' => $course->category->slug,
-            ] : null,
-            'rating' => round((float) ($course->ratings_avg_rating ?? 0), 1),
-            'reviews_count' => $course->ratings_count ?? 0,
-            'students_count' => $course->enrollments_count ?? 0,
-            'estimated_duration_minutes' => $course->duration,
-            'lessons_count' => $course->lessons_count ?? 0,
-            'difficulty_level' => $course->difficulty_level,
-            'is_bestseller' => ($course->enrollments_count ?? 0) > 100,
-            'is_new' => $course->created_at?->isAfter(now()->subDays(30)),
-        ];
     }
 
     private function getCategoryIcon(string $slug): string

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAppearance } from '@/composables/useAppearance';
 import type { BreadcrumbItemType } from '@/types';
+import NotificationBell from '@/components/NotificationBell.vue';
 import { Moon, Sun } from 'lucide-vue-next';
 
 withDefaults(
@@ -33,6 +34,7 @@ const toggleTheme = () => {
             </template>
         </div>
         <div class="flex items-center gap-2">
+            <NotificationBell />
             <Button
                 variant="ghost"
                 size="icon"

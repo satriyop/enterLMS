@@ -52,7 +52,7 @@ it('can delete their account', function () {
         ->assertRedirect(route('home'));
 
     $this->assertGuest();
-    expect($user->fresh())->toBeNull();
+    $this->assertSoftDeleted('users', ['id' => $user->id]);
 });
 
 it('requires correct password to delete account', function () {
