@@ -5,6 +5,7 @@
 
 import { ref, computed, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
+import type { FormDataConvertible } from '@inertiajs/core';
 import type { Course, CourseListItem, CourseFilters } from '@/types';
 import { debounce } from '@/lib/utils';
 import { DEBOUNCE } from '@/lib/constants';
@@ -100,7 +101,7 @@ export function useCourses(options: UseCoursesOptions = {}) {
             }
         });
 
-        await router.get(url, queryParams, {
+        await router.get(url, queryParams as Record<string, FormDataConvertible>, {
             preserveState: true,
             preserveScroll: true,
             only,

@@ -33,6 +33,13 @@ export * from './models/learning-path';
 // API/Inertia response types
 export * from './api/responses';
 
+// Re-export specific types that are commonly used
+export type { Paginated, SimplePaginated } from './models/common';
+export type { CourseVisibility as AssessmentVisibility } from './models/common';
+
+// Legacy alias for PaginatedResponse (for backwards compatibility)
+export type { Paginated as PaginatedResponse } from './models/common';
+
 // =============================================================================
 // Inertia-specific types (kept from original for compatibility)
 // =============================================================================

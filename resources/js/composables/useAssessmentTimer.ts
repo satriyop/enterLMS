@@ -3,7 +3,7 @@
 // Manages timer state for assessment attempts
 // =============================================================================
 
-import { ref, onUnmounted } from 'vue';
+import { ref, onUnmounted, type Ref } from 'vue';
 
 // =============================================================================
 // Types
@@ -20,11 +20,17 @@ interface UseAssessmentTimerOptions {
 
 interface AssessmentTimerReturn {
     /** Formatted elapsed time (HH:MM:SS) */
-    timeElapsed: Readonly<typeof timeElapsed>;
-    /** Formatted remaining time (HH:MM:SS), empty if no limit */
-    timeLeft: Readonly<typeof timeLeft>;
-    /** Whether time has run out */
-    isTimeUp: Readonly<typeof isTimeUp>;
+    readonly timeElapsed: Ref<string>;
+    /** Whether timer is running */
+    readonly isTimerRunning: Ref<boolean>;
+    /** Formatted time display (MM:SS for elapsed or remaining) */
+    readonly formattedTime: Ref<string>;
+    /** Remaining seconds (null if no limit) */
+    readonly remainingSeconds: Ref<number | null>;
+    /** Whether in warning zone (< 5 min remaining) */
+    readonly isTimeWarning: Ref<boolean>;
+    /** Whether time has expired */
+    readonly isTimeExpired: Ref<boolean>;
     /** Start the timer */
     start: () => void;
     /** Stop the timer */
@@ -40,8 +46,11 @@ export function useAssessmentTimer(options: UseAssessmentTimerOptions): Assessme
 
     // State
     const timeElapsed = ref('00:00:00');
-    const timeLeft = ref('');
-    const isTimeUp = ref(false);
+    const isTimerRunning = ref(false);
+    const formattedTime = ref('00:00');
+    const remainingSeconds = ref<number | null>(null);
+    const isTimeWarning = ref(false);
+    const isTimeExpired = ref(false);
 
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -69,15 +78,19 @@ export function useAssessmentTimer(options: UseAssessmentTimerOptions): Assessme
         // Update remaining time if there's a limit
         if (timeLimitMinutes) {
             const totalLimitSeconds = timeLimitMinutes * 60;
-            const remainingSeconds = Math.max(0, totalLimitSeconds - elapsedSeconds);
+            const remaining = Math.max(0, totalLimitSeconds - elapsedSeconds);
 
-            timeLeft.value = formatTime(remainingSeconds);
+            remainingSeconds.value = remaining;
+            formattedTime.value = formatTime(remaining);
+            isTimeWarning.value = remaining > 0 && remaining <= 300; // 5 minutes
 
             // Check if time is up
-            if (remainingSeconds === 0 && !isTimeUp.value) {
-                isTimeUp.value = true;
+            if (remaining === 0 && !isTimeExpired.value) {
+                isTimeExpired.value = true;
                 onTimeUp?.();
             }
+        } else {
+            formattedTime.value = formatTime(elapsedSeconds);
         }
     };
 
@@ -87,6 +100,7 @@ export function useAssessmentTimer(options: UseAssessmentTimerOptions): Assessme
     const start = () => {
         if (intervalId) return;
 
+        isTimerRunning.value = true;
         // Calculate immediately
         calculateTime();
 
@@ -101,6 +115,7 @@ export function useAssessmentTimer(options: UseAssessmentTimerOptions): Assessme
         if (intervalId) {
             clearInterval(intervalId);
             intervalId = null;
+            isTimerRunning.value = false;
         }
     };
 
@@ -114,8 +129,11 @@ export function useAssessmentTimer(options: UseAssessmentTimerOptions): Assessme
 
     return {
         timeElapsed,
-        timeLeft,
-        isTimeUp,
+        isTimerRunning,
+        formattedTime,
+        remainingSeconds,
+        isTimeWarning,
+        isTimeExpired,
         start,
         stop,
     };

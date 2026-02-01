@@ -3,7 +3,7 @@
 // Promise-based confirmation dialog state management
 // =============================================================================
 
-import { ref, readonly } from 'vue';
+import { ref, readonly, type DeepReadonly, type Ref } from 'vue';
 
 // =============================================================================
 // Types
@@ -24,17 +24,17 @@ interface ConfirmOptions {
 
 interface UseConfirmationReturn {
     /** Whether the confirmation dialog is open */
-    isOpen: ReturnType<typeof readonly<typeof isOpen>>;
+    readonly isOpen: DeepReadonly<Ref<boolean>>;
     /** Dialog title */
-    title: ReturnType<typeof readonly<typeof title>>;
+    readonly title: DeepReadonly<Ref<string>>;
     /** Confirmation message */
-    message: ReturnType<typeof readonly<typeof message>>;
+    readonly message: DeepReadonly<Ref<string>>;
     /** Confirm button label */
-    confirmLabel: ReturnType<typeof readonly<typeof confirmLabel>>;
+    readonly confirmLabel: DeepReadonly<Ref<string>>;
     /** Cancel button label */
-    cancelLabel: ReturnType<typeof readonly<typeof cancelLabel>>;
+    readonly cancelLabel: DeepReadonly<Ref<string>>;
     /** Whether this is a destructive action */
-    isDestructive: ReturnType<typeof readonly<typeof isDestructive>>;
+    readonly isDestructive: DeepReadonly<Ref<boolean>>;
     /** Show confirmation dialog and wait for user response */
     confirm: (options: ConfirmOptions) => Promise<boolean>;
     /** Handle user clicking confirm */

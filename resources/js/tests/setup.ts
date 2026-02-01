@@ -4,7 +4,7 @@
 // =============================================================================
 
 import { config } from '@vue/test-utils';
-import { vi } from 'vitest';
+import { vi, beforeEach } from 'vitest';
 
 // =============================================================================
 // Global Stubs for Inertia Components

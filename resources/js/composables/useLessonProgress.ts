@@ -5,7 +5,7 @@
 
 import axios from 'axios';
 import { ref, onUnmounted } from 'vue';
-import type { LessonProgress } from '@/types';
+import type { LessonProgress, PaginationMetadata } from '@/types';
 
 interface UseLessonProgressOptions {
     courseId: number;
@@ -94,7 +94,7 @@ export function useLessonProgress(options: UseLessonProgressOptions) {
         debouncedSaveProgress(page, total);
     };
 
-    const handlePaginationReady = (totalPages: number, metadata: Record<string, unknown>) => {
+    const handlePaginationReady = (totalPages: number, metadata: PaginationMetadata) => {
         const page = initialProgress?.current_page ?? 1;
         saveProgress(page, totalPages, metadata);
     };

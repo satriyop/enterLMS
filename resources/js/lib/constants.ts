@@ -76,11 +76,6 @@ export const COURSE_STATUS_COLORS: Record<CourseStatus, { bg: string; text: stri
 };
 
 export const ENROLLMENT_STATUS_COLORS: Record<EnrollmentStatus, { bg: string; text: string; border: string }> = {
-    pending: {
-        bg: 'bg-yellow-100 dark:bg-yellow-900',
-        text: 'text-yellow-700 dark:text-yellow-300',
-        border: 'border-yellow-200 dark:border-yellow-800',
-    },
     active: {
         bg: 'bg-blue-100 dark:bg-blue-900',
         text: 'text-blue-700 dark:text-blue-300',
@@ -91,12 +86,7 @@ export const ENROLLMENT_STATUS_COLORS: Record<EnrollmentStatus, { bg: string; te
         text: 'text-green-700 dark:text-green-300',
         border: 'border-green-200 dark:border-green-800',
     },
-    suspended: {
-        bg: 'bg-orange-100 dark:bg-orange-900',
-        text: 'text-orange-700 dark:text-orange-300',
-        border: 'border-orange-200 dark:border-orange-800',
-    },
-    cancelled: {
+    dropped: {
         bg: 'bg-red-100 dark:bg-red-900',
         text: 'text-red-700 dark:text-red-300',
         border: 'border-red-200 dark:border-red-800',
@@ -155,10 +145,10 @@ export const ATTEMPT_STATUS_COLORS: Record<AttemptStatus, { bg: string; text: st
         text: 'text-green-700 dark:text-green-300',
         border: 'border-green-200 dark:border-green-800',
     },
-    expired: {
-        bg: 'bg-red-100 dark:bg-red-900',
-        text: 'text-red-700 dark:text-red-300',
-        border: 'border-red-200 dark:border-red-800',
+    completed: {
+        bg: 'bg-green-100 dark:bg-green-900',
+        text: 'text-green-700 dark:text-green-300',
+        border: 'border-green-200 dark:border-green-800',
     },
 };
 

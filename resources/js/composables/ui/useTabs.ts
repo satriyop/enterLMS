@@ -3,7 +3,7 @@
 // Tab navigation state management
 // =============================================================================
 
-import { ref, computed, watch, type Ref } from 'vue';
+import { ref, computed, watch, onUnmounted, type Ref } from 'vue';
 
 // =============================================================================
 // Types
@@ -174,16 +174,25 @@ export function useTabs<T extends string>(
     // =============================================================================
 
     if (persistToHash && typeof window !== 'undefined') {
-        watch(() => {
-            const handleHashChange = () => {
-                const hash = window.location.hash.slice(1);
-                if (tabs.includes(hash as T)) {
-                    currentTab.value = hash as T;
-                }
-            };
+        const handleHashChange = () => {
+            const hash = window.location.hash.slice(1);
+            if (tabs.includes(hash as T)) {
+                currentTab.value = hash as T;
+            }
+        };
 
-            window.addEventListener('hashchange', handleHashChange);
-            return () => window.removeEventListener('hashchange', handleHashChange);
+        window.addEventListener('hashchange', handleHashChange);
+
+        // Update hash when tab changes
+        watch(currentTab, (newTab, oldTab) => {
+            if (newTab && window.location.hash !== `#${newTab}`) {
+                window.location.hash = newTab;
+            }
+        });
+
+        // Cleanup on unmount
+        onUnmounted(() => {
+            window.removeEventListener('hashchange', handleHashChange);
         });
     }
 

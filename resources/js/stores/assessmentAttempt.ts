@@ -302,7 +302,7 @@ export function provideAssessmentAttempt(
         error.value = null;
 
         // Prepare answers data
-        const answersData: SubmitAnswerData[] = [];
+        const answersData: Array<{ question_id: number; answer: AnswerValue }> = [];
         for (const [questionId, state] of answers.value) {
             answersData.push({
                 question_id: questionId,

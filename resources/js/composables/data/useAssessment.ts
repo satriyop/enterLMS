@@ -5,6 +5,7 @@
 
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
+import type { FormDataConvertible } from '@inertiajs/core';
 import type {
     Assessment,
     AssessmentAttempt,
@@ -223,9 +224,7 @@ export function useAssessment(options: UseAssessmentOptions = {}) {
         error.value = null;
 
         return new Promise((resolve) => {
-            router.post(`/attempts/${currentAttempt.value!.id}/submit`, {
-                answers,
-            }, {
+            router.post(`/attempts/${currentAttempt.value!.id}/submit`, { answers } as unknown as Record<string, FormDataConvertible>, {
                 onSuccess: () => {
                     resolve(true);
                 },
@@ -246,7 +245,7 @@ export function useAssessment(options: UseAssessmentOptions = {}) {
     async function saveAnswer(answer: SubmitAnswerData): Promise<void> {
         if (!currentAttempt.value) return;
 
-        await router.post(`/attempts/${currentAttempt.value.id}/save-answer`, answer, {
+        await router.post(`/attempts/${currentAttempt.value.id}/save-answer`, { ...answer } as Record<string, FormDataConvertible>, {
             preserveState: true,
             preserveScroll: true,
         });

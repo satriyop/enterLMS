@@ -3,7 +3,7 @@
 // Generic modal state management
 // =============================================================================
 
-import { ref, readonly, onUnmounted } from 'vue';
+import { ref, readonly, onUnmounted, type DeepReadonly, type Ref } from 'vue';
 
 // =============================================================================
 // Types
@@ -18,9 +18,9 @@ interface UseModalOptions {
 
 interface UseModalReturn<T> {
     /** Whether the modal is currently open */
-    isOpen: ReturnType<typeof readonly<typeof isOpen>>;
+    readonly isOpen: DeepReadonly<Ref<boolean>>;
     /** Data passed to the modal */
-    data: ReturnType<typeof readonly<typeof data>>;
+    readonly data: DeepReadonly<Ref<T | null>>;
     /** Open the modal with optional data */
     open: (modalData?: T) => void;
     /** Close the modal */
@@ -97,6 +97,8 @@ export function useModal<T = unknown>(options: UseModalOptions = {}): UseModalRe
         document.removeEventListener('keydown', handleEscape);
     });
 
+    // Cast needed: Vue's readonly() on generic Ref<T|null> produces UnwrapRef<T>
+    // which doesn't structurally match DeepReadonly<Ref<T|null>> for generic T
     return {
         isOpen: readonly(isOpen),
         data: readonly(data),
@@ -104,5 +106,5 @@ export function useModal<T = unknown>(options: UseModalOptions = {}): UseModalRe
         close,
         toggle,
         handleClickOutside,
-    };
+    } as UseModalReturn<T>;
 }

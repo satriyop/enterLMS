@@ -11,6 +11,7 @@ import type {
     LessonProgress,
     LessonNavItem,
     ContentType,
+    Media,
 } from '@/types';
 
 // =============================================================================
@@ -107,10 +108,11 @@ export function useLesson(options: UseLessonOptions = {}) {
     );
 
     const mediaUrl = computed(() => {
-        if (!lesson.value?.media?.length) return null;
+        const lessonValue = lesson.value;
+        if (!lessonValue || !('media' in lessonValue) || !lessonValue.media?.length) return null;
 
         // Find the primary media file based on content type
-        const media = lesson.value.media[0];
+        const media = lessonValue.media[0];
         return media?.url ?? null;
     });
 
