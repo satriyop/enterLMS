@@ -4,7 +4,7 @@
 // Displays assessment details, settings, and latest attempt
 // =============================================================================
 
-import AssessmentController from '@/actions/App/Http/Controllers/AssessmentController';
+import { show } from '@/actions/App/Http/Controllers/AssessmentController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import AssessmentInfoCard from '@/components/assessments/AssessmentInfoCard.vue';
 import AssessmentSettingsCard from '@/components/assessments/AssessmentSettingsCard.vue';
@@ -91,7 +91,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Penilaian', href: `/courses/${props.course.id}/assessments` },
     {
         title: props.assessment.title,
-        href: AssessmentController.show({ course: props.course.id, assessment: props.assessment.id }).url,
+        href: show({ course: props.course.id, assessment: props.assessment.id }).url,
     },
 ];
 

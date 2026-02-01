@@ -4,7 +4,7 @@
 // Create and edit tag with slug auto-generation
 // =============================================================================
 
-import TagController from '@/actions/App/Http/Controllers/Admin/TagController';
+import { index, update, store } from '@/actions/App/Http/Controllers/Admin/TagController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import FormSection from '@/components/crud/FormSection.vue';
 import InputError from '@/components/InputError.vue';
@@ -13,19 +13,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { slugify } from '@/lib/string';
-import type { BreadcrumbItem, Timestamps } from '@/types';
+import type { BreadcrumbItem, Tag } from '@/types';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 
 // =============================================================================
 // Page-Specific Types
 // =============================================================================
-
-interface Tag extends Timestamps {
-    id: number;
-    name: string;
-    slug: string;
-}
 
 interface Props {
     tag: Tag | null;
@@ -41,7 +35,7 @@ const isEditing = props.tag !== null;
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Admin', href: '#' },
-    { title: 'Tag', href: TagController.index().url },
+    { title: 'Tag', href: index().url },
     { title: isEditing ? 'Edit' : 'Tambah', href: '#' },
 ];
 
@@ -71,12 +65,12 @@ watch(name, (value) => {
             <PageHeader
                 :title="isEditing ? 'Edit Tag' : 'Tambah Tag'"
                 :description="isEditing ? tag!.name : 'Buat tag baru untuk kategorisasi kursus'"
-                :back-href="TagController.index().url"
+                :back-href="index().url"
                 back-label="Kembali ke Daftar Tag"
             />
 
             <Form
-                v-bind="isEditing ? TagController.update.form(tag!.id) : TagController.store.form()"
+                v-bind="isEditing ? update.form(tag!.id) : store.form()"
                 class="mx-auto w-full max-w-2xl space-y-6"
                 v-slot="{ errors, processing }"
             >
@@ -121,7 +115,7 @@ watch(name, (value) => {
                 </FormSection>
 
                 <div class="flex items-center justify-end gap-3">
-                    <Link :href="TagController.index().url">
+                    <Link :href="index().url">
                         <Button type="button" variant="outline">
                             Batal
                         </Button>

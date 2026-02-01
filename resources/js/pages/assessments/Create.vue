@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AssessmentController from '@/actions/App/Http/Controllers/AssessmentController';
+import { store } from '@/actions/App/Http/Controllers/AssessmentController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import FormSection from '@/components/crud/FormSection.vue';
 import InputError from '@/components/InputError.vue';
@@ -87,7 +87,7 @@ const form = ref<AssessmentFormData>({
             />
 
             <Form
-                v-bind="AssessmentController.store.form(props.course.id)"
+                v-bind="store.form(props.course.id)"
                 :data="form"
                 class="grid gap-6 lg:grid-cols-3"
                 v-slot="{ errors, processing }"

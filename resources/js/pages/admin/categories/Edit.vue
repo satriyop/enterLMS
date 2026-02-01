@@ -4,7 +4,7 @@
 // Create and edit category with slug auto-generation
 // =============================================================================
 
-import CategoryController from '@/actions/App/Http/Controllers/Admin/CategoryController';
+import { index, update, store } from '@/actions/App/Http/Controllers/Admin/CategoryController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import FormSection from '@/components/crud/FormSection.vue';
 import InputError from '@/components/InputError.vue';
@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { slugify } from '@/lib/string';
-import type { BreadcrumbItem, Timestamps } from '@/types';
+import type { BreadcrumbItem, Category, CategorySummary } from '@/types';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 
@@ -29,23 +29,9 @@ import { ref, watch } from 'vue';
 // Page-Specific Types
 // =============================================================================
 
-interface Category extends Timestamps {
-    id: number;
-    name: string;
-    slug: string;
-    description: string | null;
-    parent_id: number | null;
-    order: number;
-}
-
-interface ParentCategory {
-    id: number;
-    name: string;
-}
-
 interface Props {
     category: Category | null;
-    parentCategories: ParentCategory[];
+    parentCategories: CategorySummary[];
 }
 
 // =============================================================================
@@ -58,7 +44,7 @@ const isEditing = props.category !== null;
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Admin', href: '#' },
-    { title: 'Kategori', href: CategoryController.index().url },
+    { title: 'Kategori', href: index().url },
     { title: isEditing ? 'Edit' : 'Tambah', href: '#' },
 ];
 
@@ -89,12 +75,12 @@ watch(name, (value) => {
             <PageHeader
                 :title="isEditing ? 'Edit Kategori' : 'Tambah Kategori'"
                 :description="isEditing ? category!.name : 'Buat kategori baru untuk mengorganisir kursus'"
-                :back-href="CategoryController.index().url"
+                :back-href="index().url"
                 back-label="Kembali ke Daftar Kategori"
             />
 
             <Form
-                v-bind="isEditing ? CategoryController.update.form(category!.id) : CategoryController.store.form()"
+                v-bind="isEditing ? update.form(category!.id) : store.form()"
                 class="mx-auto w-full max-w-2xl space-y-6"
                 v-slot="{ errors, processing }"
             >
@@ -200,7 +186,7 @@ watch(name, (value) => {
                 </FormSection>
 
                 <div class="flex items-center justify-end gap-3">
-                    <Link :href="CategoryController.index().url">
+                    <Link :href="index().url">
                         <Button type="button" variant="outline">
                             Batal
                         </Button>

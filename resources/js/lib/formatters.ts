@@ -6,6 +6,7 @@ import type {
     AssessmentStatus,
     AttemptStatus,
     CourseVisibility,
+    UserRole,
 } from '@/types';
 
 // =============================================================================
@@ -327,4 +328,51 @@ export function attemptStatusBadgeColor(status: string | null | undefined): stri
         expired: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
     };
     return status ? colors[status] ?? 'bg-gray-100 text-gray-800' : '';
+}
+
+// =============================================================================
+// Role Label & Badge Functions
+// =============================================================================
+
+/**
+ * Get human-readable label for user role
+ */
+export function roleLabel(role: UserRole | string | null | undefined): string {
+    const labels: Record<string, string> = {
+        lms_admin: 'Admin LMS',
+        content_manager: 'Pengelola Konten',
+        trainer: 'Pelatih',
+        learner: 'Peserta Didik',
+    };
+    return role ? labels[role] ?? role : '-';
+}
+
+/**
+ * Get Badge component variant for user role
+ */
+export function roleBadgeVariant(role: UserRole | string | null | undefined): 'default' | 'secondary' | 'outline' {
+    const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
+        lms_admin: 'default',
+        content_manager: 'secondary',
+        trainer: 'secondary',
+        learner: 'outline',
+    };
+    return role ? variants[role] ?? 'outline' : 'outline';
+}
+
+// =============================================================================
+// Status Badge Variant Functions
+// =============================================================================
+
+/**
+ * Get Badge component variant for draft/published/archived status.
+ * Works for both course status and assessment status.
+ */
+export function statusBadgeVariant(status: string | null | undefined): 'default' | 'secondary' | 'outline' {
+    const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
+        published: 'default',
+        draft: 'secondary',
+        archived: 'outline',
+    };
+    return status ? variants[status] ?? 'secondary' : 'secondary';
 }

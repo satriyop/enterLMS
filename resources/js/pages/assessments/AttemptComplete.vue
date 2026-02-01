@@ -4,7 +4,7 @@
 // Displays completed attempt results with answers and certificate
 // =============================================================================
 
-import AssessmentController from '@/actions/App/Http/Controllers/AssessmentController';
+import { show as attemptShow, complete as attemptComplete } from '@/actions/App/Http/Controllers/AssessmentAttemptController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import AttemptResultsHero from '@/components/assessments/AttemptResultsHero.vue';
 import AttemptAnswerReviewCard from '@/components/assessments/AttemptAnswerReviewCard.vue';
@@ -80,8 +80,8 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Kursus', href: `/courses/${props.course.id}` },
     { title: 'Penilaian', href: `/courses/${props.course.id}/assessments` },
     { title: props.assessment.title, href: `/courses/${props.course.id}/assessments/${props.assessment.id}` },
-    { title: `Percobaan ${props.attempt.attempt_number}`, href: AssessmentController.attempt().url },
-    { title: 'Selesai', href: AssessmentController.attemptComplete().url },
+    { title: `Percobaan ${props.attempt.attempt_number}`, href: attemptShow(props.course.id, props.assessment.id, props.attempt.id).url },
+    { title: 'Selesai', href: attemptComplete(props.course.id, props.assessment.id, props.attempt.id).url },
 ];
 
 // =============================================================================

@@ -4,7 +4,7 @@
 // Grade participant answers with score, correctness, and feedback
 // =============================================================================
 
-import AssessmentController from '@/actions/App/Http/Controllers/AssessmentController';
+import { grade, submitGrade } from '@/actions/App/Http/Controllers/AssessmentAttemptController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import GradeParticipantCard from '@/components/assessments/GradeParticipantCard.vue';
 import GradeAnswerCard from '@/components/assessments/GradeAnswerCard.vue';
@@ -101,7 +101,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Penilaian', href: `/courses/${props.course.id}/assessments` },
     { title: props.assessment.title, href: `/courses/${props.course.id}/assessments/${props.assessment.id}` },
     { title: `Percobaan ${props.attempt.attempt_number}`, href: `/courses/${props.course.id}/assessments/${props.assessment.id}/attempts/${props.attempt.id}` },
-    { title: 'Penilaian', href: AssessmentController.grade({ course: props.course.id, assessment: props.assessment.id, attempt: props.attempt.id }).url },
+    { title: 'Penilaian', href: grade({ course: props.course.id, assessment: props.assessment.id, attempt: props.attempt.id }).url },
 ];
 
 // =============================================================================
@@ -169,7 +169,7 @@ const recalculateScores = () => {
                     />
 
                     <Form
-                        v-bind="AssessmentController.submitGrade.form({ course: course.id, assessment: assessment.id, attempt: attempt.id })"
+                        v-bind="submitGrade.form({ course: course.id, assessment: assessment.id, attempt: attempt.id })"
                         class="space-y-6"
                         #default="{ errors, processing }"
                     >

@@ -26,8 +26,8 @@ import {
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import { formatDuration, difficultyLabel, DIFFICULTY_COLORS } from '@/lib/utils';
-import LearningPathEnrollmentController from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
-import CourseController from '@/actions/App/Http/Controllers/CourseController';
+import { enroll, index as pathIndex, show as pathShow, progress } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
+import { show as courseShow } from '@/actions/App/Http/Controllers/CourseController';
 import type { DifficultyLevel } from '@/types';
 import type {
     LearningPathDetail,
@@ -77,9 +77,9 @@ const getDifficultyColor = (level: DifficultyLevel) => {
     return colors ? `${colors.bg} ${colors.text}` : '';
 };
 
-const enroll = () => {
+const enrollInPath = () => {
     isEnrolling.value = true;
-    router.post(LearningPathEnrollmentController.enroll(props.learningPath.id).url, {}, {
+    router.post(enroll(props.learningPath.id).url, {}, {
         preserveScroll: true,
         onFinish: () => {
             isEnrolling.value = false;
@@ -142,7 +142,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
             <nav class="mb-6 text-sm text-muted-foreground">
                 <ol class="flex items-center gap-2">
                     <li>
-                        <Link :href="LearningPathEnrollmentController.index().url" class="hover:text-foreground">
+                        <Link :href="pathIndex().url" class="hover:text-foreground">
                             Learning Path
                         </Link>
                     </li>
@@ -285,7 +285,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                         </span>
                                         <Link
                                             v-else-if="isEnrolled"
-                                            :href="CourseController.show(course.course_id).url"
+                                            :href="courseShow(course.course_id).url"
                                         >
                                             <Button size="sm" variant="ghost">
                                                 {{ getCourseActionLabel(getCourseStatus(course.course_id)?.status ?? 'available') }}
@@ -326,7 +326,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                     class="w-full"
                                     size="lg"
                                     :disabled="isEnrolling"
-                                    @click="enroll"
+                                    @click="enrollInPath"
                                 >
                                     <Play v-if="!isEnrolling" class="mr-2 h-5 w-5" />
                                     {{ isEnrolling ? 'Mendaftar...' : 'Daftar Sekarang' }}
@@ -336,7 +336,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                 </p>
                             </div>
                             <div v-else-if="isActive">
-                                <Link :href="LearningPathEnrollmentController.progress(learningPath.id).url">
+                                <Link :href="progress(learningPath.id).url">
                                     <Button class="w-full" size="lg">
                                         <Play class="mr-2 h-5 w-5" />
                                         Lanjutkan Belajar
@@ -344,7 +344,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                 </Link>
                             </div>
                             <div v-else-if="isCompleted">
-                                <Link :href="LearningPathEnrollmentController.progress(learningPath.id).url">
+                                <Link :href="progress(learningPath.id).url">
                                     <Button class="w-full" variant="outline" size="lg">
                                         <CheckCircle class="mr-2 h-5 w-5" />
                                         Lihat Progress

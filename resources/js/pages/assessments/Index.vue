@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AssessmentController from '@/actions/App/Http/Controllers/AssessmentController';
+import { index, show, edit } from '@/actions/App/Http/Controllers/AssessmentController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import DataCard from '@/components/crud/DataCard.vue';
@@ -7,6 +7,7 @@ import FilterTabs from '@/components/crud/FilterTabs.vue';
 import SearchInput from '@/components/crud/SearchInput.vue';
 import Pagination from '@/components/crud/Pagination.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { assessmentStatusLabel, statusBadgeVariant } from '@/lib/formatters';
 import {
     type BreadcrumbItem,
     type PaginatedResponse,
@@ -63,7 +64,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
     {
         title: 'Penilaian',
-        href: AssessmentController.index(props.course).url,
+        href: index(props.course).url,
     },
 ];
 
@@ -74,7 +75,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 const status = ref(props.filters.status ?? '');
 
 const { query: search } = useSearch({
-    url: () => AssessmentController.index(props.course).url,
+    url: () => index(props.course).url,
     initial: props.filters.search ?? '',
     extraParams: () => ({ status: status.value || undefined }),
 });
@@ -96,18 +97,10 @@ const statusTabs = computed(() => [
 // Helpers
 // =============================================================================
 
-const getAssessmentBadge = (assessmentStatus: string) => {
-    switch (assessmentStatus) {
-        case 'published':
-            return { label: 'Dipublikasikan', variant: 'default' as const };
-        case 'draft':
-            return { label: 'Draft', variant: 'secondary' as const };
-        case 'archived':
-            return { label: 'Diarsipkan', variant: 'outline' as const };
-        default:
-            return { label: assessmentStatus, variant: 'secondary' as const };
-    }
-};
+const getAssessmentBadge = (assessmentStatus: string) => ({
+    label: assessmentStatusLabel(assessmentStatus),
+    variant: statusBadgeVariant(assessmentStatus),
+});
 
 const getAssessmentMeta = (assessment: AssessmentListItem) => [
     { icon: FileText, label: `${assessment.questions_count} pertanyaan` },
@@ -118,11 +111,11 @@ const getAssessmentMeta = (assessment: AssessmentListItem) => [
 
 const getAssessmentActions = (assessment: AssessmentListItem) => {
     const actions = [
-        { label: 'Lihat', href: AssessmentController.show(props.course, assessment).url, icon: Eye },
+        { label: 'Lihat', href: show(props.course, assessment).url, icon: Eye },
     ];
 
     if (assessment.status !== 'published') {
-        actions.push({ label: 'Edit', href: AssessmentController.edit(props.course, assessment).url, icon: Pencil });
+        actions.push({ label: 'Edit', href: edit(props.course, assessment).url, icon: Pencil });
     } else {
         actions.push({ label: 'Mulai', href: `/courses/${props.course.id}/assessments/${assessment.id}/start`, icon: PlayCircle });
     }
@@ -135,7 +128,7 @@ const getAssessmentActions = (assessment: AssessmentListItem) => {
 // =============================================================================
 
 watch(status, (value) => {
-    router.get(AssessmentController.index(props.course).url, { search: search.value, status: value }, { preserveState: true, replace: true });
+    router.get(index(props.course).url, { search: search.value, status: value }, { preserveState: true, replace: true });
 });
 </script>
 

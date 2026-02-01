@@ -13,8 +13,8 @@ import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { BookOpen, GraduationCap } from 'lucide-vue-next';
 import { computed } from 'vue';
 import MyLearningController from '@/actions/App/Http/Controllers/MyLearningController';
-import CourseController from '@/actions/App/Http/Controllers/CourseController';
-import type { DifficultyLevel } from '@/types';
+import { index as coursesIndex } from '@/actions/App/Http/Controllers/CourseController';
+import type { DifficultyLevel, PaginationLink } from '@/types';
 
 // =============================================================================
 // Types
@@ -36,12 +36,6 @@ interface EnrollmentItem {
     last_lesson_id: number | null;
     lessons_count: number;
     status: string;
-}
-
-interface PaginationLink {
-    url: string | null;
-    label: string;
-    active: boolean;
 }
 
 interface Props {
@@ -223,7 +217,7 @@ const filterByStatus = (status: string | null) => {
                             : 'Mulai perjalanan belajar Anda dengan mendaftar kursus'
                     }}
                 </p>
-                <Link :href="CourseController.index().url">
+                <Link :href="coursesIndex().url">
                     <button
                         class="rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                     >

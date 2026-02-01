@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { Route, Search } from 'lucide-vue-next';
 import { ref, computed, watch } from 'vue';
-import LearningPathEnrollmentController from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
+import { index, browse } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
 import type { PaginationLink } from '@/types';
 import type { LearningPathEnrollmentItem, LearningPathEnrollmentState } from '@/types';
 
@@ -57,7 +57,7 @@ const applyFilter = (status: string) => {
     const params: Record<string, string> = {};
     if (status) params.status = status;
 
-    router.get(LearningPathEnrollmentController.index().url, params, {
+    router.get(index().url, params, {
         preserveState: true,
         preserveScroll: true,
     });
@@ -82,7 +82,7 @@ const applyFilter = (status: string) => {
                         Kelola dan pantau progres belajar Anda
                     </p>
                 </div>
-                <Link :href="LearningPathEnrollmentController.browse().url">
+                <Link :href="browse().url">
                     <Button>
                         <Search class="mr-2 h-4 w-4" />
                         Jelajahi Learning Path
@@ -132,7 +132,7 @@ const applyFilter = (status: string) => {
                         : 'Anda belum terdaftar di learning path manapun. Mulai jelajahi dan daftar ke learning path untuk memulai perjalanan belajar Anda.'
                     }}
                 </p>
-                <Link v-if="!selectedStatus" :href="LearningPathEnrollmentController.browse().url">
+                <Link v-if="!selectedStatus" :href="browse().url">
                     <Button>
                         <Search class="mr-2 h-4 w-4" />
                         Jelajahi Learning Path

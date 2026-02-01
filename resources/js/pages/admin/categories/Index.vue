@@ -4,7 +4,7 @@
 // Manage categories, view hierarchy, and delete unused categories
 // =============================================================================
 
-import CategoryController from '@/actions/App/Http/Controllers/Admin/CategoryController';
+import { index, create, destroy, edit } from '@/actions/App/Http/Controllers/Admin/CategoryController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import SearchInput from '@/components/crud/SearchInput.vue';
@@ -62,7 +62,7 @@ const props = defineProps<Props>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Admin', href: '#' },
-    { title: 'Kategori', href: CategoryController.index().url },
+    { title: 'Kategori', href: index().url },
 ];
 
 // =============================================================================
@@ -70,7 +70,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 // =============================================================================
 
 const { query: search } = useSearch({
-    url: () => CategoryController.index().url,
+    url: () => index().url,
     initial: props.filters.search ?? '',
 });
 
@@ -91,7 +91,7 @@ const deleteCategory = async (category: CategoryListItem) => {
         destructive: true,
     });
     if (confirmed) {
-        router.delete(CategoryController.destroy(category.id).url);
+        router.delete(destroy(category.id).url);
     }
 };
 </script>
@@ -106,7 +106,7 @@ const deleteCategory = async (category: CategoryListItem) => {
                 description="Kelola kategori kursus dan struktur hierarki"
             >
                 <template #actions>
-                    <Link :href="CategoryController.create().url">
+                    <Link :href="create().url">
                         <Button size="lg" class="gap-2">
                             <Plus class="h-5 w-5" />
                             Tambah Kategori
@@ -127,7 +127,7 @@ const deleteCategory = async (category: CategoryListItem) => {
                 title="Belum ada kategori"
                 description="Tambahkan kategori untuk mengorganisir kursus."
                 action-label="Tambah Kategori"
-                :action-href="CategoryController.create().url"
+                :action-href="create().url"
             />
 
             <template v-else>
@@ -194,7 +194,7 @@ const deleteCategory = async (category: CategoryListItem) => {
                                             <DropdownMenuContent align="end" class="w-48">
                                                 <DropdownMenuItem
                                                     :as="Link"
-                                                    :href="CategoryController.edit(category.id).url"
+                                                    :href="edit(category.id).url"
                                                 >
                                                     <Pencil class="mr-2 h-4 w-4" />
                                                     Edit

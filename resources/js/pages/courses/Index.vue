@@ -23,7 +23,7 @@ import { useSearch } from '@/composables/ui/useSearch';
 import { useViewMode } from '@/composables/ui/useViewMode';
 import { Plus, BookOpen, Clock, Layers, Eye, Pencil, Trash2, LayoutGrid, List } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
-import { formatDuration, difficultyLabel, courseStatusLabel } from '@/lib/utils';
+import { formatDuration, difficultyLabel, courseStatusLabel, statusBadgeVariant } from '@/lib/utils';
 
 // =============================================================================
 // Page-Specific Types
@@ -92,18 +92,10 @@ const statusTabs = computed(() => [
     { value: 'archived', label: 'Arsip' },
 ]);
 
-const statusBadge = (courseStatus: string) => {
-    switch (courseStatus) {
-        case 'published':
-            return { label: 'Terbit', variant: 'default' as const };
-        case 'draft':
-            return { label: 'Draft', variant: 'secondary' as const };
-        case 'archived':
-            return { label: 'Arsip', variant: 'outline' as const };
-        default:
-            return { label: courseStatus, variant: 'secondary' as const };
-    }
-};
+const statusBadge = (courseStatus: string) => ({
+    label: courseStatusLabel(courseStatus),
+    variant: statusBadgeVariant(courseStatus),
+});
 
 /** Format duration for display in course meta */
 const getFormattedDuration = (minutes: number) => formatDuration(minutes, 'long');

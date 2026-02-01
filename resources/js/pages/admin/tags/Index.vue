@@ -4,7 +4,7 @@
 // Manage tags for course categorization
 // =============================================================================
 
-import TagController from '@/actions/App/Http/Controllers/Admin/TagController';
+import { index, create, destroy, edit } from '@/actions/App/Http/Controllers/Admin/TagController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import SearchInput from '@/components/crud/SearchInput.vue';
@@ -56,7 +56,7 @@ const props = defineProps<Props>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Admin', href: '#' },
-    { title: 'Tag', href: TagController.index().url },
+    { title: 'Tag', href: index().url },
 ];
 
 // =============================================================================
@@ -64,7 +64,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 // =============================================================================
 
 const { query: search } = useSearch({
-    url: () => TagController.index().url,
+    url: () => index().url,
     initial: props.filters.search ?? '',
 });
 
@@ -81,7 +81,7 @@ const deleteTag = async (tag: TagListItem) => {
         destructive: true,
     });
     if (confirmed) {
-        router.delete(TagController.destroy(tag.id).url);
+        router.delete(destroy(tag.id).url);
     }
 };
 </script>
@@ -96,7 +96,7 @@ const deleteTag = async (tag: TagListItem) => {
                 description="Kelola tag untuk kategorisasi kursus"
             >
                 <template #actions>
-                    <Link :href="TagController.create().url">
+                    <Link :href="create().url">
                         <Button size="lg" class="gap-2">
                             <Plus class="h-5 w-5" />
                             Tambah Tag
@@ -117,7 +117,7 @@ const deleteTag = async (tag: TagListItem) => {
                 title="Belum ada tag"
                 description="Tambahkan tag untuk kategorisasi kursus."
                 action-label="Tambah Tag"
-                :action-href="TagController.create().url"
+                :action-href="create().url"
             />
 
             <template v-else>
@@ -174,7 +174,7 @@ const deleteTag = async (tag: TagListItem) => {
                                             <DropdownMenuContent align="end" class="w-48">
                                                 <DropdownMenuItem
                                                     :as="Link"
-                                                    :href="TagController.edit(tag.id).url"
+                                                    :href="edit(tag.id).url"
                                                 >
                                                     <Pencil class="mr-2 h-4 w-4" />
                                                     Edit

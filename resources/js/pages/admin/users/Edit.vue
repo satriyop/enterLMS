@@ -4,7 +4,7 @@
 // Edit user details, change role (if not editing self)
 // =============================================================================
 
-import UserController from '@/actions/App/Http/Controllers/Admin/UserController';
+import { index, update } from '@/actions/App/Http/Controllers/Admin/UserController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import FormSection from '@/components/crud/FormSection.vue';
 import InputError from '@/components/InputError.vue';
@@ -42,7 +42,7 @@ const props = defineProps<Props>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Admin', href: '#' },
-    { title: 'Pengguna', href: UserController.index().url },
+    { title: 'Pengguna', href: index().url },
     { title: 'Edit', href: '#' },
 ];
 
@@ -80,7 +80,7 @@ const formattedDate = computed(() => {
             <PageHeader
                 title="Edit Pengguna"
                 :description="user.name"
-                :back-href="UserController.index().url"
+                :back-href="index().url"
                 back-label="Kembali ke Daftar Pengguna"
             />
 
@@ -100,7 +100,7 @@ const formattedDate = computed(() => {
             </Alert>
 
             <Form
-                v-bind="UserController.update.form(user.id)"
+                v-bind="update.form(user.id)"
                 class="mx-auto w-full max-w-2xl space-y-6"
                 v-slot="{ errors, processing }"
             >
@@ -229,7 +229,7 @@ const formattedDate = computed(() => {
                 </FormSection>
 
                 <div class="flex items-center justify-end gap-3">
-                    <Link :href="UserController.index().url">
+                    <Link :href="index().url">
                         <Button type="button" variant="outline">
                             Batal
                         </Button>

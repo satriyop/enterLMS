@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { Route, Search, Filter, X } from 'lucide-vue-next';
 import { ref, computed, watch } from 'vue';
-import LearningPathEnrollmentController from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
+import { browse } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
 import type { DifficultyLevel, PaginationLink } from '@/types';
 import type { LearningPathItem } from '@/types';
 
@@ -55,7 +55,7 @@ const applyFilters = () => {
     if (searchQuery.value) params.search = searchQuery.value;
     if (selectedDifficulty.value) params.difficulty = selectedDifficulty.value;
 
-    router.get(LearningPathEnrollmentController.browse().url, params, {
+    router.get(browse().url, params, {
         preserveState: true,
         preserveScroll: true,
     });
@@ -64,7 +64,7 @@ const applyFilters = () => {
 const clearFilters = () => {
     searchQuery.value = '';
     selectedDifficulty.value = '';
-    router.get(LearningPathEnrollmentController.browse().url, {}, { preserveState: true });
+    router.get(browse().url, {}, { preserveState: true });
 };
 
 const hasActiveFilters = computed(() => {

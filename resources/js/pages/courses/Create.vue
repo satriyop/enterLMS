@@ -4,8 +4,7 @@
 // Create a new course with basic information and settings
 // =============================================================================
 
-import CourseController from '@/actions/App/Http/Controllers/CourseController';
-import { index } from '@/actions/App/Http/Controllers/CourseController';
+import { index, create, store } from '@/actions/App/Http/Controllers/CourseController';
 import CourseFormActions from '@/components/courses/CourseFormActions.vue';
 import CourseSettingsSidebar from '@/components/courses/CourseSettingsSidebar.vue';
 import CourseTagsField from '@/components/courses/CourseTagsField.vue';
@@ -38,7 +37,7 @@ defineProps<Props>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Kursus', href: index().url },
-    { title: 'Buat Kursus', href: CourseController.create().url },
+    { title: 'Buat Kursus', href: create().url },
 ];
 
 // =============================================================================
@@ -62,7 +61,7 @@ const prerequisites = ref<string[]>(['']);
             />
 
             <Form
-                v-bind="CourseController.store.form()"
+                v-bind="store.form()"
                 class="grid gap-6 lg:grid-cols-3"
                 v-slot="{ errors, processing }"
                 enctype="multipart/form-data"

@@ -4,7 +4,7 @@
 // Create a new user with name, email, password, and role
 // =============================================================================
 
-import UserController from '@/actions/App/Http/Controllers/Admin/UserController';
+import { index, create, store } from '@/actions/App/Http/Controllers/Admin/UserController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import FormSection from '@/components/crud/FormSection.vue';
 import InputError from '@/components/InputError.vue';
@@ -29,8 +29,8 @@ import { ref } from 'vue';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Admin', href: '#' },
-    { title: 'Pengguna', href: UserController.index().url },
-    { title: 'Tambah Pengguna', href: UserController.create().url },
+    { title: 'Pengguna', href: index().url },
+    { title: 'Tambah Pengguna', href: create().url },
 ];
 
 // =============================================================================
@@ -55,12 +55,12 @@ const roleOptions = [
             <PageHeader
                 title="Tambah Pengguna Baru"
                 description="Buat akun pengguna baru untuk mengakses LMS"
-                :back-href="UserController.index().url"
+                :back-href="index().url"
                 back-label="Kembali ke Daftar Pengguna"
             />
 
             <Form
-                v-bind="UserController.store.form()"
+                v-bind="store.form()"
                 class="mx-auto w-full max-w-2xl space-y-6"
                 v-slot="{ errors, processing }"
             >
@@ -152,7 +152,7 @@ const roleOptions = [
                 </FormSection>
 
                 <div class="flex items-center justify-end gap-3">
-                    <Link :href="UserController.index().url">
+                    <Link :href="index().url">
                         <Button type="button" variant="outline">
                             Batal
                         </Button>

@@ -4,7 +4,7 @@
 // Uses QuestionEditor and NewQuestionForm components
 // =============================================================================
 
-import AssessmentController from '@/actions/App/Http/Controllers/AssessmentController';
+import { show, questions } from '@/actions/App/Http/Controllers/AssessmentController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import FormSection from '@/components/crud/FormSection.vue';
 import QuestionEditor from '@/components/assessments/QuestionEditor.vue';
@@ -65,9 +65,9 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Penilaian', href: `/courses/${props.course.id}/assessments` },
     {
         title: props.assessment.title,
-        href: AssessmentController.show({ course: props.course.id, assessment: props.assessment.id }).url,
+        href: show({ course: props.course.id, assessment: props.assessment.id }).url,
     },
-    { title: 'Edit Pertanyaan', href: AssessmentController.questions({ course: props.course.id, assessment: props.assessment.id }).url },
+    { title: 'Edit Pertanyaan', href: questions({ course: props.course.id, assessment: props.assessment.id }).url },
 ];
 
 // =============================================================================

@@ -4,7 +4,7 @@
 // Edit assessment information and settings
 // =============================================================================
 
-import AssessmentController from '@/actions/App/Http/Controllers/AssessmentController';
+import { edit, update } from '@/actions/App/Http/Controllers/AssessmentController';
 import AssessmentFormSidebar from '@/components/assessments/AssessmentFormSidebar.vue';
 import AssessmentToggleOption from '@/components/assessments/AssessmentToggleOption.vue';
 import PageHeader from '@/components/crud/PageHeader.vue';
@@ -58,7 +58,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Kursus', href: `/courses/${props.course.id}` },
     { title: 'Penilaian', href: `/courses/${props.course.id}/assessments` },
     { title: props.assessment.title, href: `/courses/${props.course.id}/assessments/${props.assessment.id}` },
-    { title: 'Edit', href: AssessmentController.edit({ course: props.course.id, assessment: props.assessment.id }).url },
+    { title: 'Edit', href: edit({ course: props.course.id, assessment: props.assessment.id }).url },
 ];
 
 // =============================================================================
@@ -95,7 +95,7 @@ const form = ref({
             />
 
             <Form
-                v-bind="AssessmentController.update.form([props.course, props.assessment])"
+                v-bind="update.form([props.course, props.assessment])"
                 class="grid gap-6 lg:grid-cols-3"
                 v-slot="{ errors, processing }"
             >

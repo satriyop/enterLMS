@@ -4,7 +4,7 @@
 // Manage users, roles, and view activity
 // =============================================================================
 
-import UserController from '@/actions/App/Http/Controllers/Admin/UserController';
+import { index, create, destroy, edit } from '@/actions/App/Http/Controllers/Admin/UserController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import FilterTabs from '@/components/crud/FilterTabs.vue';
@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatDate } from '@/lib/date';
+import { roleLabel, roleBadgeVariant } from '@/lib/formatters';
 import { getInitials } from '@/lib/string';
 import type { BreadcrumbItem, PaginationLink, UserRole } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
@@ -65,7 +66,7 @@ const props = defineProps<Props>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Admin', href: '#' },
-    { title: 'Pengguna', href: UserController.index().url },
+    { title: 'Pengguna', href: index().url },
 ];
 
 // =============================================================================
@@ -75,7 +76,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 const role = ref(props.filters.role ?? '');
 
 const { query: search } = useSearch({
-    url: () => UserController.index().url,
+    url: () => index().url,
     initial: props.filters.search ?? '',
     extraParams: () => ({ role: role.value || undefined }),
 });
@@ -98,27 +99,17 @@ const roleTabs = computed(() => [
 // Helpers
 // =============================================================================
 
-const getRoleBadge = (userRole: UserRole) => {
-    switch (userRole) {
-        case 'lms_admin':
-            return { label: 'Admin LMS', variant: 'default' as const };
-        case 'content_manager':
-            return { label: 'Pengelola Konten', variant: 'secondary' as const };
-        case 'trainer':
-            return { label: 'Pelatih', variant: 'secondary' as const };
-        case 'learner':
-            return { label: 'Peserta Didik', variant: 'outline' as const };
-        default:
-            return { label: userRole, variant: 'outline' as const };
-    }
-};
+const getRoleBadge = (userRole: UserRole) => ({
+    label: roleLabel(userRole),
+    variant: roleBadgeVariant(userRole),
+});
 
 // =============================================================================
 // Watchers
 // =============================================================================
 
 watch(role, (value) => {
-    router.get(UserController.index().url, { search: search.value, role: value }, { preserveState: true, replace: true });
+    router.get(index().url, { search: search.value, role: value }, { preserveState: true, replace: true });
 });
 
 // =============================================================================
@@ -132,7 +123,7 @@ const deleteUser = async (user: UserListItem) => {
         destructive: true,
     });
     if (confirmed) {
-        router.delete(UserController.destroy(user.id).url);
+        router.delete(destroy(user.id).url);
     }
 };
 </script>
@@ -147,7 +138,7 @@ const deleteUser = async (user: UserListItem) => {
                 description="Kelola pengguna, peran, dan lihat aktivitas"
             >
                 <template #actions>
-                    <Link :href="UserController.create().url">
+                    <Link :href="create().url">
                         <Button size="lg" class="gap-2">
                             <Plus class="h-5 w-5" />
                             Tambah Pengguna
@@ -170,7 +161,7 @@ const deleteUser = async (user: UserListItem) => {
                 title="Belum ada pengguna"
                 description="Tambahkan pengguna baru untuk mulai mengelola akses LMS."
                 action-label="Tambah Pengguna"
-                :action-href="UserController.create().url"
+                :action-href="create().url"
             />
 
             <template v-else>
@@ -250,7 +241,7 @@ const deleteUser = async (user: UserListItem) => {
                                             <DropdownMenuContent align="end" class="w-48">
                                                 <DropdownMenuItem
                                                     :as="Link"
-                                                    :href="UserController.edit(user.id).url"
+                                                    :href="edit(user.id).url"
                                                 >
                                                     <Pencil class="mr-2 h-4 w-4" />
                                                     Edit
