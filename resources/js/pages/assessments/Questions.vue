@@ -4,7 +4,8 @@
 // Uses QuestionEditor and NewQuestionForm components
 // =============================================================================
 
-import { show, questions } from '@/actions/App/Http/Controllers/AssessmentController';
+import { show } from '@/actions/App/Http/Controllers/AssessmentController';
+import { index as questionsRoute } from '@/actions/App/Http/Controllers/QuestionController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import FormSection from '@/components/crud/FormSection.vue';
 import QuestionEditor from '@/components/assessments/QuestionEditor.vue';
@@ -67,7 +68,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
         title: props.assessment.title,
         href: show({ course: props.course.id, assessment: props.assessment.id }).url,
     },
-    { title: 'Edit Pertanyaan', href: questions({ course: props.course.id, assessment: props.assessment.id }).url },
+    { title: 'Edit Pertanyaan', href: questionsRoute({ course: props.course.id, assessment: props.assessment.id }).url },
 ];
 
 // =============================================================================

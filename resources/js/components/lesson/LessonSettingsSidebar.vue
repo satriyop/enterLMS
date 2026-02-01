@@ -48,7 +48,7 @@ const emit = defineEmits<{
                     </Label>
                     <Input
                         id="estimated_duration_minutes"
-                        :model-value="estimatedDurationMinutes"
+                        :model-value="estimatedDurationMinutes ?? undefined"
                         type="number"
                         min="1"
                         placeholder="Contoh: 15"

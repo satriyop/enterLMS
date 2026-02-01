@@ -50,10 +50,9 @@ const loadYouTubeAPI = (): Promise<void> => {
         }
 
         // Create callback
-        const callbackName = 'onYouTubeIframeAPIReady';
-        const existingCallback = (window as Record<string, unknown>)[callbackName] as (() => void) | undefined;
+        const existingCallback = window.onYouTubeIframeAPIReady;
 
-        (window as Record<string, unknown>)[callbackName] = () => {
+        window.onYouTubeIframeAPIReady = () => {
             if (existingCallback) {
                 existingCallback();
             }

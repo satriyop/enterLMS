@@ -265,8 +265,9 @@ watch(
                                 </PinInput>
                                 <InputError
                                     :message="
-                                        errors?.confirmTwoFactorAuthentication
-                                            ?.code
+                                        typeof errors === 'object' && errors !== null && 'confirmTwoFactorAuthentication' in errors
+                                            ? ((errors.confirmTwoFactorAuthentication as unknown as Record<string, unknown>)?.code as string)
+                                            : undefined
                                     "
                                 />
                             </div>

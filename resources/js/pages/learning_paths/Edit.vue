@@ -147,7 +147,8 @@ const handleRemoveCourse = (course: SelectedCourse) => {
                 </CardHeader>
                 <CardContent>
                     <Form
-                        v-bind="update(learningPath.id).form()"
+                        :action="update(learningPath.id).url"
+                        method="post"
                         class="space-y-6"
                         enctype="multipart/form-data"
                         #default="{ errors, processing }"

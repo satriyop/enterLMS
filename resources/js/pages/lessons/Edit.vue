@@ -98,7 +98,12 @@ const documentMedia = computed(() => getMediaByCollection('document'));
 
 const selectedContentTypeLabel = computed(() => contentTypeLabel(contentType.value));
 
-const formAction = computed(() => isEditMode.value && props.lesson ? update(props.lesson.id).form() : store(props.section.id).form());
+const formAction = computed(() => {
+    if (isEditMode.value && props.lesson) {
+        return { action: update(props.lesson.id).url, method: 'post' as const };
+    }
+    return { action: store(props.section.id).url, method: 'post' as const };
+});
 
 // =============================================================================
 // Methods
@@ -198,7 +203,7 @@ const handleMediaError = (message: string) => {
                             @update:rich-content="richContent = $event"
                             @update:youtube-url="youtubeUrl = $event"
                             @update:conference-url="conferenceUrl = $event"
-                            @update:conference-type="conferenceType = $event"
+                            @update:conference-type="conferenceType = $event as 'zoom' | 'google_meet' | 'other'"
                             @media-uploaded="handleMediaUploaded"
                             @media-deleted="handleMediaDeleted"
                             @media-error="handleMediaError"

@@ -42,13 +42,13 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-    'update:richContent': [value: Record<string, unknown> | null];
-    'update:youtubeUrl': [value: string];
-    'update:conferenceUrl': [value: string];
-    'update:conferenceType': [value: string];
-    mediaUploaded: [];
-    mediaDeleted: [];
-    mediaError: [message: string];
+    (e: 'update:richContent', value: Record<string, unknown> | null): void;
+    (e: 'update:youtubeUrl', value: string): void;
+    (e: 'update:conferenceUrl', value: string): void;
+    (e: 'update:conferenceType', value: string): void;
+    (e: 'mediaUploaded'): void;
+    (e: 'mediaDeleted'): void;
+    (e: 'mediaError', message: string): void;
 }>();
 
 // =============================================================================
@@ -152,7 +152,7 @@ const youtubeEmbedUrl = computed(() => {
                 type="url"
                 placeholder="https://www.youtube.com/watch?v=..."
                 class="h-11"
-                @update:model-value="emit('update:youtubeUrl', $event)"
+                @update:model-value="(value) => emit('update:youtubeUrl', value as string)"
             />
             <InputError :message="errors.youtube_url" />
             <p class="text-xs text-muted-foreground">
@@ -231,7 +231,7 @@ const youtubeEmbedUrl = computed(() => {
                 type="url"
                 placeholder="https://zoom.us/j/... atau https://meet.google.com/..."
                 class="h-11"
-                @update:model-value="emit('update:conferenceUrl', $event)"
+                @update:model-value="(value) => emit('update:conferenceUrl', value as string)"
             />
             <InputError :message="errors.conference_url" />
             <p class="text-xs text-muted-foreground">

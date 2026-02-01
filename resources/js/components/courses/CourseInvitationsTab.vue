@@ -36,11 +36,11 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const handleInvitationSuccess = () => {
-    router.reload({ only: ['invitations', 'invitationsTotal'], preserveScroll: true });
+    router.reload({ only: ['invitations', 'invitationsTotal'] });
 };
 
 const handleInvitationDeleted = (invitationId: number) => {
-    router.reload({ only: ['invitations', 'invitationsTotal'], preserveScroll: true });
+    router.reload({ only: ['invitations', 'invitationsTotal'] });
 };
 </script>
 

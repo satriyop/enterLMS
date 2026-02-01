@@ -197,13 +197,13 @@ const deleteLearningPath = async (learningPath: LearningPathListItem) => {
                 </div>
 
                 <Pagination
-                    v-if="learningPaths.last_page > 1"
-                    :links="learningPaths.links"
-                    :current-page="learningPaths.current_page"
-                    :last-page="learningPaths.last_page"
-                    :from="learningPaths.from"
-                    :to="learningPaths.to"
-                    :total="learningPaths.total"
+                    v-if="learningPaths.meta.last_page > 1"
+                    :links="learningPaths.meta.links"
+                    :current-page="learningPaths.meta.current_page"
+                    :last-page="learningPaths.meta.last_page"
+                    :from="learningPaths.meta.from ?? 0"
+                    :to="learningPaths.meta.to ?? 0"
+                    :total="learningPaths.meta.total"
                 />
             </template>
         </div>

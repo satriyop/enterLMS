@@ -25,6 +25,8 @@ const descriptions: Record<number, string> = {
 
 const title = computed(() => titles[props.status] ?? 'Terjadi Kesalahan');
 const description = computed(() => descriptions[props.status] ?? 'Terjadi kesalahan yang tidak terduga.');
+
+const goBack = () => window.history.back();
 </script>
 
 <template>
@@ -50,7 +52,7 @@ const description = computed(() => descriptions[props.status] ?? 'Terjadi kesala
                 <button
                     type="button"
                     class="inline-flex items-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent"
-                    @click="$router?.go(-1) ?? history.back()"
+                    @click="goBack"
                 >
                     Kembali
                 </button>

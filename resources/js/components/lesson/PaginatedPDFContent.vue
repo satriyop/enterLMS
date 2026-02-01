@@ -99,6 +99,9 @@ const loadDocument = async () => {
 
         const loadingTask = lib.getDocument(props.pdfUrl);
         pdfDoc = await loadingTask.promise;
+
+        if (!pdfDoc) throw new Error('Failed to load PDF document');
+
         totalPages.value = pdfDoc.numPages;
 
         // Ensure initial page is within bounds

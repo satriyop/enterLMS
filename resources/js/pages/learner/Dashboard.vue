@@ -23,6 +23,16 @@ import type { DifficultyLevel } from '@/types';
 // Types
 // =============================================================================
 
+interface UserSummary {
+    id: number;
+    name: string;
+}
+
+interface Category {
+    id: number;
+    name: string;
+}
+
 interface CourseItem {
     id: number;
     course_id?: number;
@@ -31,9 +41,12 @@ interface CourseItem {
     short_description: string;
     thumbnail_path: string | null;
     difficulty_level: DifficultyLevel;
-    duration: number;
-    instructor: string;
-    category: string | null;
+    duration?: number;
+    estimated_duration_minutes?: number;
+    manual_duration_minutes?: number | null;
+    instructor?: string;
+    user?: UserSummary;
+    category?: string | Category | null;
     enrollments_count?: number;
     progress_percentage?: number;
     enrolled_at?: string;
@@ -70,10 +83,42 @@ interface Props {
 // Component Setup
 // =============================================================================
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const page = usePage();
 const appName = computed(() => page.props.name || 'E-Learning');
+
+// Map CourseItem to FeaturedCourse format
+const featuredCoursesFormatted = computed(() =>
+    props.featuredCourses.map(course => ({
+        id: course.id,
+        title: course.title,
+        short_description: course.short_description,
+        thumbnail_path: course.thumbnail_path,
+        duration: (course.duration ?? course.estimated_duration_minutes ?? 0) as number,
+        instructor: (course.instructor ?? course.user?.name ?? '') as string,
+        category: typeof course.category === 'string' ? course.category : course.category?.name ?? null,
+        enrollments_count: course.enrollments_count,
+    }))
+);
+
+// Map CourseItem to BrowseCourse format
+const browseCoursesFormatted = computed(() =>
+    props.browseCourses.map(course => ({
+        id: course.id,
+        title: course.title,
+        slug: course.slug,
+        short_description: course.short_description,
+        thumbnail_path: course.thumbnail_path,
+        difficulty_level: course.difficulty_level,
+        estimated_duration_minutes: course.estimated_duration_minutes ?? 0,
+        manual_duration_minutes: course.manual_duration_minutes ?? null,
+        user: course.user ?? { id: 0, name: '' },
+        category: typeof course.category === 'string' ? { id: 0, name: course.category } : course.category ?? null,
+        lessons_count: course.lessons_count ?? 0,
+        enrollments_count: course.enrollments_count ?? 0,
+    }))
+);
 </script>
 
 <template>
@@ -87,7 +132,7 @@ const appName = computed(() => page.props.name || 'E-Learning');
 
             <div class="flex flex-col gap-8">
                 <!-- Featured Courses Carousel -->
-                <FeaturedCoursesCarousel :courses="featuredCourses" />
+                <FeaturedCoursesCarousel :courses="featuredCoursesFormatted" />
 
                 <!-- My Learning Section -->
                 <section v-if="myLearning.length > 0">
@@ -153,7 +198,7 @@ const appName = computed(() => page.props.name || 'E-Learning');
 
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         <BrowseCourseCard
-                            v-for="course in browseCourses"
+                            v-for="course in browseCoursesFormatted"
                             :key="course.id"
                             :course="course"
                         />

@@ -79,7 +79,7 @@ const formatDate = (dateString: string) => {
 const submitRating = () => {
     if (props.userRating) {
         // Update existing rating
-        ratingForm.patch(update.url(props.courseId, props.userRating.id), {
+        ratingForm.patch(update.url({ course: props.courseId, rating: props.userRating.id }), {
             preserveScroll: true,
             onSuccess: () => {
                 isEditingRating.value = false;
@@ -97,7 +97,7 @@ const deleteRating = () => {
     if (!props.userRating || !confirm('Apakah Anda yakin ingin menghapus rating ini?')) {
         return;
     }
-    router.delete(destroy.url(props.courseId, props.userRating.id), {
+    router.delete(destroy.url({ course: props.courseId, rating: props.userRating.id }), {
         preserveScroll: true,
     });
 };

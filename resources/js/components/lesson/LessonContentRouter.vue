@@ -6,6 +6,13 @@
 
 import { computed } from 'vue';
 import type { ContentType, Media, LessonProgress } from '@/types';
+
+// Local type for pagination metadata (matches PaginatedTextContent)
+interface PaginationMetadata {
+    viewportHeight: number;
+    contentHeight: number;
+    pageBreaks: number[];
+}
 import PaginatedTextContent from './PaginatedTextContent.vue';
 import PaginatedPDFContent from './PaginatedPDFContent.vue';
 import YouTubePlayer from './YouTubePlayer.vue';
@@ -50,16 +57,11 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-    /** Emitted when page changes (for text/document content) */
-    pageChange: [page: number, total: number];
-    /** Emitted when pagination is ready (for text content) */
-    paginationReady: [totalPages: number, metadata: Record<string, unknown>];
-    /** Emitted when document is loaded (for PDF) */
-    documentLoaded: [totalPages: number];
-    /** Emitted when media time updates */
-    mediaTimeUpdate: [currentTime: number, duration: number];
-    /** Emitted when media is paused */
-    mediaPause: [];
+    (e: 'pageChange', page: number, total: number): void;
+    (e: 'paginationReady', totalPages: number, metadata: PaginationMetadata): void;
+    (e: 'documentLoaded', totalPages: number): void;
+    (e: 'mediaTimeUpdate', currentTime: number, duration: number): void;
+    (e: 'mediaPause'): void;
 }>();
 
 // =============================================================================
@@ -114,7 +116,7 @@ const handlePageChange = (page: number, total: number) => {
     emit('pageChange', page, total);
 };
 
-const handlePaginationReady = (totalPages: number, metadata: Record<string, unknown>) => {
+const handlePaginationReady = (totalPages: number, metadata: PaginationMetadata) => {
     emit('paginationReady', totalPages, metadata);
 };
 
@@ -204,7 +206,7 @@ const handleMediaPause = () => {
                 v-if="richContentHtml"
                 :content="richContentHtml"
                 :initial-page="lessonProgress?.current_page ?? 1"
-                :saved-metadata="lessonProgress?.pagination_metadata ?? null"
+                :saved-metadata="(lessonProgress?.pagination_metadata as any) ?? null"
                 :course-id="courseId"
                 :lesson-id="lessonId"
                 @page-change="handlePageChange"

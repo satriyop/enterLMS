@@ -97,7 +97,7 @@ const isEnrolling = ref(false);
 // =============================================================================
 
 const isEnrolled = computed(() => {
-    return props.enrollment && props.enrollment.status === 'active';
+    return Boolean(props.enrollment && props.enrollment.status === 'active');
 });
 
 const allPreviewLessons = computed(() => {

@@ -231,7 +231,7 @@ const recalculateDuration = () => {
     })
     .then(response => {
         if (response.ok) {
-            router.reload({ preserveScroll: true });
+            router.reload();
         } else {
             throw new Error('Failed to recalculate duration');
         }

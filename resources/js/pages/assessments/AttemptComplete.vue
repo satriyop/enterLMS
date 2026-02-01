@@ -80,8 +80,8 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Kursus', href: `/courses/${props.course.id}` },
     { title: 'Penilaian', href: `/courses/${props.course.id}/assessments` },
     { title: props.assessment.title, href: `/courses/${props.course.id}/assessments/${props.assessment.id}` },
-    { title: `Percobaan ${props.attempt.attempt_number}`, href: attemptShow(props.course.id, props.assessment.id, props.attempt.id).url },
-    { title: 'Selesai', href: attemptComplete(props.course.id, props.assessment.id, props.attempt.id).url },
+    { title: `Percobaan ${props.attempt.attempt_number}`, href: attemptShow([props.course.id, props.assessment.id, props.attempt.id]).url },
+    { title: 'Selesai', href: attemptComplete([props.course.id, props.assessment.id, props.attempt.id]).url },
 ];
 
 // =============================================================================

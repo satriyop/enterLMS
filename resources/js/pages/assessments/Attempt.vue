@@ -78,7 +78,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Kursus', href: `/courses/${props.course.id}` },
     { title: 'Penilaian', href: `/courses/${props.course.id}/assessments` },
     { title: props.assessment.title, href: `/courses/${props.course.id}/assessments/${props.assessment.id}` },
-    { title: `Percobaan ${props.attempt.attempt_number}`, href: attemptShow(props.course.id, props.assessment.id, props.attempt.id).url },
+    { title: `Percobaan ${props.attempt.attempt_number}`, href: attemptShow([props.course.id, props.assessment.id, props.attempt.id]).url },
 ];
 
 // =============================================================================
@@ -141,7 +141,7 @@ const scrollToQuestion = (index: number) => {
 
                     <!-- Questions Form -->
                     <Form
-                        v-bind="attemptSubmit(props.course.id, props.assessment.id, props.attempt.id).form()"
+                        v-bind="attemptSubmit([props.course.id, props.assessment.id, props.attempt.id]).form()"
                         class="space-y-6"
                         v-slot="{ errors, processing }"
                         enctype="multipart/form-data"

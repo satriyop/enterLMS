@@ -26,7 +26,7 @@ import {
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import { formatDuration, difficultyLabel, DIFFICULTY_COLORS } from '@/lib/utils';
-import { enroll, index as pathIndex, show as pathShow, progress } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
+import { enroll, index as pathIndex, show as pathShow, progress as pathProgress } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
 import { show as courseShow } from '@/actions/App/Http/Controllers/CourseController';
 import type { DifficultyLevel } from '@/types';
 import type {
@@ -336,7 +336,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                 </p>
                             </div>
                             <div v-else-if="isActive">
-                                <Link :href="progress(learningPath.id).url">
+                                <Link :href="pathProgress(learningPath.id).url">
                                     <Button class="w-full" size="lg">
                                         <Play class="mr-2 h-5 w-5" />
                                         Lanjutkan Belajar
@@ -344,7 +344,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                 </Link>
                             </div>
                             <div v-else-if="isCompleted">
-                                <Link :href="progress(learningPath.id).url">
+                                <Link :href="pathProgress(learningPath.id).url">
                                     <Button class="w-full" variant="outline" size="lg">
                                         <CheckCircle class="mr-2 h-5 w-5" />
                                         Lihat Progress
