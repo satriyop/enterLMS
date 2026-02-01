@@ -35,6 +35,7 @@ class EnrollmentController extends Controller
                     ->where('user_id', $user->id)
                     ->where('course_id', $course->id)
                     ->where('status', 'pending')
+                    ->notExpired()
                     ->lockForUpdate()
                     ->first();
 

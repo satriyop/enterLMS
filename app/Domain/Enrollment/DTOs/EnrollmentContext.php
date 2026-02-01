@@ -47,9 +47,11 @@ readonly class EnrollmentContext
 
         return new self(
             isActivelyEnrolled: $enrollment?->status === 'active',
+            /** @phpstan-ignore method.notFound (notExpired is a valid scope on CourseInvitation) */
             hasPendingInvitation: $user->courseInvitations()
                 ->where('course_id', $course->id)
                 ->where('status', 'pending')
+                ->notExpired()
                 ->exists(),
             hasAnyEnrollment: $enrollment !== null,
         );

@@ -283,14 +283,7 @@ class EdgeCasesAndBusinessRulesTest extends TestCase
 
     // ========== INVITATION EDGE CASES ==========
 
-    /**
-     * NOTE: This test documents current behavior where expired invitations
-     * are NOT checked during enrollment. This is a potential bug/improvement.
-     *
-     * Expected behavior: Expired invitations should not allow enrollment
-     * Current behavior: System ignores expiration date
-     */
-    public function test_expired_invitation_behavior_documented(): void
+    public function test_expired_invitation_rejects_enrollment_for_restricted_course(): void
     {
         $course = Course::factory()->published()->create([
             'visibility' => 'restricted',
@@ -307,21 +300,65 @@ class EdgeCasesAndBusinessRulesTest extends TestCase
         $response = $this->actingAs($this->learner)
             ->post("/courses/{$course->id}/enroll");
 
-        // Current behavior: System allows enrollment even with expired invitation
-        // TODO: Consider implementing expiration check in policy
-        $response->assertRedirect();
-        $this->markTestIncomplete(
-            'Invitation expiration is not currently checked. Consider implementing this check.'
-        );
+        // Expired invitations must NOT allow enrollment to restricted courses
+        $response->assertForbidden();
     }
 
-    public function test_invitation_exactly_at_expiry_boundary(): void
+    public function test_non_expired_invitation_allows_enrollment_for_restricted_course(): void
     {
         $course = Course::factory()->published()->create([
             'visibility' => 'restricted',
         ]);
 
-        // Create invitation expiring now (edge case)
+        // Create valid (not expired) invitation
+        CourseInvitation::factory()->create([
+            'user_id' => $this->learner->id,
+            'course_id' => $course->id,
+            'status' => 'pending',
+            'expires_at' => now()->addDay(),
+        ]);
+
+        $response = $this->actingAs($this->learner)
+            ->post("/courses/{$course->id}/enroll");
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('enrollments', [
+            'user_id' => $this->learner->id,
+            'course_id' => $course->id,
+        ]);
+    }
+
+    public function test_null_expires_at_invitation_allows_enrollment(): void
+    {
+        $course = Course::factory()->published()->create([
+            'visibility' => 'restricted',
+        ]);
+
+        // Create invitation without expiration (null = never expires)
+        CourseInvitation::factory()->create([
+            'user_id' => $this->learner->id,
+            'course_id' => $course->id,
+            'status' => 'pending',
+            'expires_at' => null,
+        ]);
+
+        $response = $this->actingAs($this->learner)
+            ->post("/courses/{$course->id}/enroll");
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('enrollments', [
+            'user_id' => $this->learner->id,
+            'course_id' => $course->id,
+        ]);
+    }
+
+    public function test_invitation_exactly_at_expiry_boundary_is_rejected(): void
+    {
+        $course = Course::factory()->published()->create([
+            'visibility' => 'restricted',
+        ]);
+
+        // Create invitation expiring now (edge case: > comparison means this is expired)
         CourseInvitation::factory()->create([
             'user_id' => $this->learner->id,
             'course_id' => $course->id,
@@ -329,16 +366,11 @@ class EdgeCasesAndBusinessRulesTest extends TestCase
             'expires_at' => now(),
         ]);
 
-        // Behavior depends on implementation (>= vs > comparison)
-        // This documents current behavior
         $response = $this->actingAs($this->learner)
             ->post("/courses/{$course->id}/enroll");
 
-        // Should succeed if expiry is inclusive, fail if exclusive
-        $this->assertTrue(
-            $response->isRedirection() || $response->isForbidden(),
-            'Response should be redirect or forbidden'
-        );
+        // The notExpired() scope uses `> now()`, so exactly-at-expiry is treated as expired
+        $response->assertForbidden();
     }
 
     // ========== DATA INTEGRITY ==========
