@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,10 +31,10 @@ class AssessmentAttempt extends Model
     protected function casts(): array
     {
         return [
-            'started_at'   => 'datetime',
+            'started_at' => 'datetime',
             'submitted_at' => 'datetime',
-            'graded_at'    => 'datetime',
-            'passed'       => 'boolean',
+            'graded_at' => 'datetime',
+            'passed' => 'boolean',
         ];
     }
 
@@ -85,17 +86,18 @@ class AssessmentAttempt extends Model
     public function calculateScore(): void
     {
         $totalScore = $this->answers()->sum('score');
-        $maxScore   = $this->assessment->total_points;
+        $this->assessment->loadSum('questions', 'points');
+        $maxScore = $this->assessment->total_points;
         $percentage = $maxScore > 0 ? round(($totalScore / $maxScore) * 100, 2) : 0;
-        $passed     = $percentage >= $this->assessment->passing_score;
+        $passed = $percentage >= $this->assessment->passing_score;
 
         $this->update([
-            'score'      => $totalScore,
-            'max_score'  => $maxScore,
+            'score' => $totalScore,
+            'max_score' => $maxScore,
             'percentage' => $percentage,
-            'passed'     => $passed,
-            'status'     => 'graded',
-            'graded_at'  => now(),
+            'passed' => $passed,
+            'status' => 'graded',
+            'graded_at' => now(),
         ]);
     }
 

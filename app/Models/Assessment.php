@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Domain\Assessment\Exceptions\MaxAttemptsReachedException;
+use App\Models\Concerns\RequiresEagerLoading;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,24 @@ use Illuminate\Support\Str;
 
 class Assessment extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, RequiresEagerLoading, SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Assessment $assessment) {
+            if ($assessment->isForceDeleting()) {
+                $assessment->questions()->forceDelete();
+                $assessment->attempts()->forceDelete();
+            } else {
+                $assessment->questions()->delete();
+                // Attempts are historical records — preserve on soft-delete
+            }
+        });
+
+        static::restoring(function (Assessment $assessment) {
+            $assessment->questions()->onlyTrashed()->restore();
+        });
+    }
 
     protected $fillable = [
         'course_id',
@@ -93,30 +111,20 @@ class Assessment extends Model
 
     /**
      * Get total questions count.
-     * Uses pre-loaded questions_count if available (via withCount()),
-     * otherwise falls back to query.
+     * Requires withCount('questions') to be loaded on the query.
      */
     public function getTotalQuestionsAttribute(): int
     {
-        if (array_key_exists('questions_count', $this->attributes)) {
-            return (int) $this->attributes['questions_count'];
-        }
-
-        return $this->questions()->count();
+        return $this->getEagerCount('questions');
     }
 
     /**
      * Get total points.
-     * Uses pre-loaded questions_sum_points if available (via withSum()),
-     * otherwise falls back to query.
+     * Requires withSum('questions', 'points') to be loaded on the query.
      */
     public function getTotalPointsAttribute(): int
     {
-        if (array_key_exists('questions_sum_points', $this->attributes)) {
-            return (int) ($this->attributes['questions_sum_points'] ?? 0);
-        }
-
-        return (int) $this->questions()->sum('points');
+        return (int) $this->getEagerSum('questions', 'points');
     }
 
     public function getIsEditableAttribute(): bool

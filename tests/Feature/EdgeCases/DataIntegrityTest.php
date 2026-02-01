@@ -18,6 +18,8 @@ use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
+use App\Models\Question;
+use App\Models\QuestionOption;
 use App\Models\User;
 
 describe('Data Integrity', function () {
@@ -138,6 +140,86 @@ describe('Data Integrity', function () {
             $this->assertNotSoftDeleted('course_sections', ['id' => $section->id]);
             $this->assertNotSoftDeleted('lessons', ['id' => $lesson1->id]);
             $this->assertNotSoftDeleted('lessons', ['id' => $lesson2->id]);
+        });
+
+        it('deleting assessment cascades soft delete to questions', function () {
+            $cm = User::factory()->create(['role' => 'content_manager']);
+            $assessment = Assessment::factory()->create(['user_id' => $cm->id]);
+            $q1 = Question::factory()->create(['assessment_id' => $assessment->id]);
+            $q2 = Question::factory()->create(['assessment_id' => $assessment->id]);
+
+            expect(Question::where('assessment_id', $assessment->id)->count())->toBe(2);
+
+            $assessment->delete();
+
+            expect(Question::where('assessment_id', $assessment->id)->count())->toBe(0);
+            expect(Question::withTrashed()->where('assessment_id', $assessment->id)->count())->toBe(2);
+
+            $this->assertSoftDeleted('questions', ['id' => $q1->id]);
+            $this->assertSoftDeleted('questions', ['id' => $q2->id]);
+        });
+
+        it('restoring assessment restores cascaded questions', function () {
+            $cm = User::factory()->create(['role' => 'content_manager']);
+            $assessment = Assessment::factory()->create(['user_id' => $cm->id]);
+            $q1 = Question::factory()->create(['assessment_id' => $assessment->id]);
+            $q2 = Question::factory()->create(['assessment_id' => $assessment->id]);
+
+            $assessment->delete();
+
+            $this->assertSoftDeleted('questions', ['id' => $q1->id]);
+
+            $assessment->restore();
+
+            $this->assertNotSoftDeleted('questions', ['id' => $q1->id]);
+            $this->assertNotSoftDeleted('questions', ['id' => $q2->id]);
+        });
+
+        it('deleting question cascades soft delete to options', function () {
+            $question = Question::factory()->multipleChoice()->create();
+            $opt1 = QuestionOption::factory()->correct()->create(['question_id' => $question->id]);
+            $opt2 = QuestionOption::factory()->incorrect()->create(['question_id' => $question->id]);
+
+            expect(QuestionOption::where('question_id', $question->id)->count())->toBe(2);
+
+            $question->delete();
+
+            expect(QuestionOption::where('question_id', $question->id)->count())->toBe(0);
+            expect(QuestionOption::withTrashed()->where('question_id', $question->id)->count())->toBe(2);
+
+            $this->assertSoftDeleted('question_options', ['id' => $opt1->id]);
+            $this->assertSoftDeleted('question_options', ['id' => $opt2->id]);
+        });
+
+        it('restoring question restores cascaded options', function () {
+            $question = Question::factory()->multipleChoice()->create();
+            $opt1 = QuestionOption::factory()->correct()->create(['question_id' => $question->id]);
+            $opt2 = QuestionOption::factory()->incorrect()->create(['question_id' => $question->id]);
+
+            $question->delete();
+
+            $this->assertSoftDeleted('question_options', ['id' => $opt1->id]);
+
+            $question->restore();
+
+            $this->assertNotSoftDeleted('question_options', ['id' => $opt1->id]);
+            $this->assertNotSoftDeleted('question_options', ['id' => $opt2->id]);
+        });
+
+        it('force deleting assessment cascades force delete to questions and attempts', function () {
+            $cm = User::factory()->create(['role' => 'content_manager']);
+            $learner = User::factory()->create(['role' => 'learner']);
+            $assessment = Assessment::factory()->create(['user_id' => $cm->id]);
+            $question = Question::factory()->create(['assessment_id' => $assessment->id]);
+            $attempt = AssessmentAttempt::factory()->graded()->create([
+                'assessment_id' => $assessment->id,
+                'user_id' => $learner->id,
+            ]);
+
+            $assessment->forceDelete();
+
+            expect(Question::withTrashed()->where('id', $question->id)->exists())->toBeFalse();
+            expect(AssessmentAttempt::withTrashed()->where('id', $attempt->id)->exists())->toBeFalse();
         });
 
     });

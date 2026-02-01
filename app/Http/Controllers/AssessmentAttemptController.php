@@ -98,6 +98,7 @@ class AssessmentAttemptController extends Controller
 
         $validated = $request->validated();
 
+        $assessment->loadSum('questions', 'points');
         $this->submissionService->submitAttempt($attempt, $validated['answers'], $assessment);
 
         AssessmentAttemptSubmitted::dispatch($attempt->fresh());
@@ -150,6 +151,7 @@ class AssessmentAttemptController extends Controller
     {
         $validated = $request->validated();
 
+        $assessment->loadSum('questions', 'points');
         $this->submissionService->submitBulkGrades($attempt, $validated['grades'], $assessment);
 
         AssessmentGraded::dispatch($attempt->fresh());

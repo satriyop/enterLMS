@@ -45,6 +45,7 @@ describe('AssessmentSubmissionService', function () {
                 ],
             ];
 
+            $assessment->loadSum('questions', 'points');
             $result = $this->service->submitAttempt($attempt, $answers, $assessment);
 
             expect($result['totalScore'])->toEqual(10);
@@ -91,6 +92,7 @@ describe('AssessmentSubmissionService', function () {
                 ],
             ];
 
+            $assessment->loadSum('questions', 'points');
             $result = $this->service->submitAttempt($attempt, $answers, $assessment);
 
             expect($result['totalScore'])->toEqual(0);
@@ -135,6 +137,7 @@ describe('AssessmentSubmissionService', function () {
                 ],
             ];
 
+            $assessment->loadSum('questions', 'points');
             $result = $this->service->submitAttempt($attempt, $answers, $assessment);
 
             expect($result['totalScore'])->toEqual(5);
@@ -176,6 +179,7 @@ describe('AssessmentSubmissionService', function () {
                 ],
             ];
 
+            $assessment->loadSum('questions', 'points');
             $result = $this->service->submitAttempt($attempt, $answers, $assessment);
 
             expect($result['totalScore'])->toEqual(0);
@@ -207,6 +211,7 @@ describe('AssessmentSubmissionService', function () {
                 ],
             ];
 
+            $assessment->loadSum('questions', 'points');
             $result = $this->service->submitAttempt($attempt, $answers, $assessment);
 
             expect($result['totalScore'])->toEqual(0);
@@ -274,6 +279,7 @@ describe('AssessmentSubmissionService', function () {
                 ],
             ];
 
+            $assessment->loadSum('questions', 'points');
             $result = $this->service->submitAttempt($attempt, $answers, $assessment);
 
             expect($result['totalScore'])->toEqual(20);
@@ -312,6 +318,7 @@ describe('AssessmentSubmissionService', function () {
                 ],
             ];
 
+            $assessment->loadSum('questions', 'points');
             $result = $this->service->submitAttempt($attempt, $answers, $assessment);
 
             expect($result['percentage'])->toEqual(100.0);
@@ -364,6 +371,7 @@ describe('AssessmentSubmissionService', function () {
                 ],
             ];
 
+            $assessment->loadSum('questions', 'points');
             $result = $this->service->submitAttempt($attempt, $answers, $assessment);
 
             expect($result['totalScore'])->toEqual(50);
@@ -406,6 +414,7 @@ describe('AssessmentSubmissionService', function () {
                 ],
             ];
 
+            $assessment->loadSum('questions', 'points');
             $result = $this->service->submitBulkGrades($attempt, $grades, $assessment);
 
             expect($result['totalScore'])->toEqual(18);

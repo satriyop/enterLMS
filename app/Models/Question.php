@@ -27,6 +27,21 @@ class Question extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected static function booted(): void
+    {
+        static::deleting(function (Question $question) {
+            if ($question->isForceDeleting()) {
+                $question->options()->forceDelete();
+            } else {
+                $question->options()->delete();
+            }
+        });
+
+        static::restoring(function (Question $question) {
+            $question->options()->onlyTrashed()->restore();
+        });
+    }
+
     protected $fillable = [
         'assessment_id',
         'question_text',
