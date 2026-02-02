@@ -16,17 +16,13 @@ class PathEnrollmentIndexResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $path = $this->learningPath;
-        $completedCourses = $this->courseProgress->where('state', 'completed')->count();
-        $totalCourses = $path->courses->count();
-
         return [
             'id' => $this->id,
-            'learning_path' => new LearningPathBrowseResource($path),
+            'learning_path' => new LearningPathBrowseResource($this->learningPath),
             'state' => (string) $this->state,
             'progress_percentage' => $this->progress_percentage ?? 0,
-            'completed_courses' => $completedCourses,
-            'total_courses' => $totalCourses,
+            'completed_courses' => $this->completed_courses_count,
+            'total_courses' => $this->learningPath->courses->count(),
             'enrolled_at' => $this->enrolled_at?->toIso8601String(),
             'completed_at' => $this->completed_at?->toIso8601String(),
         ];

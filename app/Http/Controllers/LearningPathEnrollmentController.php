@@ -40,7 +40,10 @@ class LearningPathEnrollmentController extends Controller
 
         $enrollmentsQuery = LearningPathEnrollment::query()
             ->forUser($user)
-            ->with(['learningPath.courses', 'learningPath.creator', 'courseProgress'])
+            ->with(['learningPath.courses', 'learningPath.creator'])
+            ->withCount([
+                'courseProgress as completed_courses_count' => fn ($q) => $q->where('state', 'completed'),
+            ])
             ->when($request->status, function ($query, $status) {
                 $query->where('state', $status);
             })

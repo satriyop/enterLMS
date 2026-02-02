@@ -287,7 +287,6 @@ export interface CourseInvitation extends Timestamps {
     invited_by: UserId;
     status: 'pending' | 'accepted' | 'declined' | 'expired';
     message: string | null;
-    invited_at: string;
     expires_at: string | null;
     responded_at: string | null;
 

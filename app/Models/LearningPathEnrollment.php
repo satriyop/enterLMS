@@ -10,6 +10,7 @@ use App\Domain\LearningPath\States\CompletedPathState;
 use App\Domain\LearningPath\States\DroppedPathState;
 use App\Domain\LearningPath\States\PathEnrollmentState;
 use App\Domain\Shared\Exceptions\InvalidStateTransitionException;
+use App\Models\Concerns\RequiresEagerLoading;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -45,7 +46,7 @@ use Spatie\ModelStates\HasStates;
 class LearningPathEnrollment extends Model
 {
     /** @use HasFactory<\Database\Factories\LearningPathEnrollmentFactory> */
-    use HasFactory, HasStates;
+    use HasFactory, HasStates, RequiresEagerLoading;
 
     protected $fillable = [
         'user_id',
@@ -216,36 +217,20 @@ class LearningPathEnrollment extends Model
     /**
      * Get count of completed courses.
      *
-     * N+1 safe: Uses pre-loaded count from withCount() if available.
-     * Call: $enrollment->loadCount(['courseProgress as completed_courses_count' => fn($q) => $q->where('state', 'completed')])
+     * Requires: withCount(['courseProgress as completed_courses_count' => fn($q) => $q->where('state', 'completed')])
      */
     public function getCompletedCoursesCountAttribute(): int
     {
-        // Use pre-loaded count if available (from withCount)
-        if (array_key_exists('completed_courses_count', $this->attributes)) {
-            return (int) $this->attributes['completed_courses_count'];
-        }
-
-        // Fallback: query (triggers N+1 in loops - avoid!)
-        return $this->courseProgress()
-            ->where('state', 'completed')
-            ->count();
+        return $this->getEagerCount('courseProgress', 'completed_courses_count');
     }
 
     /**
      * Get total count of courses in the path.
      *
-     * N+1 safe: Uses pre-loaded count from withCount() if available.
-     * Call: $enrollment->loadCount('courseProgress') or use withCount('courseProgress')
+     * Requires: withCount('courseProgress')
      */
     public function getTotalCoursesCountAttribute(): int
     {
-        // Use pre-loaded count if available (from withCount)
-        if (array_key_exists('course_progress_count', $this->attributes)) {
-            return (int) $this->attributes['course_progress_count'];
-        }
-
-        // Fallback: query (triggers N+1 in loops - avoid!)
-        return $this->courseProgress()->count();
+        return $this->getEagerCount('courseProgress');
     }
 }

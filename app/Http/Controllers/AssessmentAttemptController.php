@@ -35,10 +35,6 @@ class AssessmentAttemptController extends Controller
 
         $user = $request->user();
 
-        if (! $assessment->canBeAttemptedBy($user)) {
-            return back()->with('error', 'Anda tidak dapat mengikuti penilaian ini.');
-        }
-
         try {
             $assessment->validateAttemptOrFail($user);
         } catch (MaxAttemptsReachedException $e) {
