@@ -13,11 +13,11 @@ import { computed } from 'vue';
 
 const page = usePage();
 
-const flash = computed(() => page.props.flash as { success?: string; error?: string } | undefined);
+const flash = computed(() => page.props.flash as { success?: string; error?: string; warning?: string } | undefined);
 </script>
 
 <template>
-    <div v-if="flash?.success || flash?.error" class="space-y-2">
+    <div v-if="flash?.success || flash?.error || flash?.warning" class="space-y-2">
         <div v-if="flash?.success" class="rounded-md bg-green-50 dark:bg-green-900/20 p-4">
             <div class="flex">
                 <div class="ml-3">
@@ -32,6 +32,15 @@ const flash = computed(() => page.props.flash as { success?: string; error?: str
                 <div class="ml-3">
                     <p class="text-sm font-medium text-red-800 dark:text-red-300">
                         {{ flash.error }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div v-if="flash?.warning" class="rounded-md bg-yellow-50 dark:bg-yellow-900/20 p-4">
+            <div class="flex">
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                        {{ flash.warning }}
                     </p>
                 </div>
             </div>

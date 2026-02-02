@@ -6,6 +6,7 @@
 
 import Navbar from '@/components/home/Navbar.vue';
 import Footer from '@/components/home/Footer.vue';
+import FlashMessages from '@/components/FlashMessages.vue';
 import CourseProgressTimeline from '@/components/learning_paths/CourseProgressTimeline.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -57,6 +58,7 @@ const appName = computed(() => page.props.name || 'E-Learning');
 
 const isDropping = ref(false);
 const showDropDialog = ref(false);
+const dropError = ref<string | null>(null);
 
 // =============================================================================
 // Computed
@@ -71,11 +73,15 @@ const isActive = computed(() => props.enrollment.state === 'active');
 
 const dropEnrollment = () => {
     isDropping.value = true;
+    dropError.value = null;
     router.delete(drop(props.learningPath.id).url, {
         preserveScroll: true,
         onFinish: () => {
             isDropping.value = false;
             showDropDialog.value = false;
+        },
+        onError: () => {
+            dropError.value = 'Terjadi kesalahan saat menghentikan pendaftaran. Silakan coba lagi.';
         },
     });
 };
@@ -88,6 +94,13 @@ const dropEnrollment = () => {
         <Navbar :app-name="appName" />
 
         <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+            <FlashMessages />
+
+            <!-- Drop error -->
+            <div v-if="dropError" class="mb-4 rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+                <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ dropError }}</p>
+            </div>
+
             <!-- Breadcrumb -->
             <nav class="mb-6 text-sm text-muted-foreground">
                 <ol class="flex items-center gap-2">

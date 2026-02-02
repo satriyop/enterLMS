@@ -6,6 +6,7 @@
 
 import Navbar from '@/components/home/Navbar.vue';
 import Footer from '@/components/home/Footer.vue';
+import FlashMessages from '@/components/FlashMessages.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,6 +55,7 @@ const page = usePage();
 const appName = computed(() => page.props.name || 'E-Learning');
 
 const isEnrolling = ref(false);
+const enrollError = ref<string | null>(null);
 
 // =============================================================================
 // Computed
@@ -78,10 +80,14 @@ const getDifficultyColor = (level: DifficultyLevel) => {
 
 const enrollInPath = () => {
     isEnrolling.value = true;
+    enrollError.value = null;
     router.post(enroll(props.learningPath.id).url, {}, {
         preserveScroll: true,
         onFinish: () => {
             isEnrolling.value = false;
+        },
+        onError: () => {
+            enrollError.value = 'Terjadi kesalahan saat mendaftar. Silakan coba lagi.';
         },
     });
 };
@@ -137,6 +143,13 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
         <Navbar :app-name="appName" />
 
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <FlashMessages />
+
+            <!-- Enrollment error -->
+            <div v-if="enrollError" class="mb-4 rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+                <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ enrollError }}</p>
+            </div>
+
             <!-- Breadcrumb -->
             <nav class="mb-6 text-sm text-muted-foreground">
                 <ol class="flex items-center gap-2">
