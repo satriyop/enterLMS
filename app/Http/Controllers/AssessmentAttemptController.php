@@ -92,6 +92,17 @@ class AssessmentAttemptController extends Controller
             return back()->with('error', 'Penilaian ini tidak dapat diserahkan.');
         }
 
+        // Server-side time limit enforcement (grace period: 60 seconds)
+        if ($assessment->time_limit_minutes && $attempt->started_at) {
+            $deadline = \Carbon\Carbon::parse($attempt->started_at)
+                ->addMinutes($assessment->time_limit_minutes)
+                ->addSeconds(60);
+
+            if (now()->greaterThan($deadline)) {
+                return back()->with('error', 'Waktu pengerjaan telah habis. Penilaian tidak dapat diserahkan.');
+            }
+        }
+
         $validated = $request->validated();
 
         $assessment->loadSum('questions', 'points');
