@@ -85,7 +85,19 @@ class AssessmentSubmissionService
 
     public function submitBulkGrades(AssessmentAttempt $attempt, array $grades, Assessment $assessment): array
     {
-        $totalScore = 0;
+        // Log previous scores when re-grading an already graded attempt
+        if ($attempt->isGraded()) {
+            Log::info('Assessment re-grading: overwriting previous grades', [
+                'attempt_id' => $attempt->id,
+                'assessment_id' => $assessment->id,
+                'previous_score' => $attempt->score,
+                'previous_percentage' => $attempt->percentage,
+                'previous_passed' => $attempt->passed,
+                'previous_graded_by' => $attempt->graded_by,
+                'previous_graded_at' => $attempt->graded_at instanceof \DateTimeInterface ? $attempt->graded_at->format('c') : $attempt->graded_at,
+                'regraded_by' => auth()->id(),
+            ]);
+        }
 
         // Batch-load all answers upfront to avoid N+1 queries
         $answerIds = array_column($grades, 'answer_id');
@@ -101,9 +113,12 @@ class AssessmentSubmissionService
                     'graded_by' => auth()->id(),
                     'graded_at' => now(),
                 ]);
-                $totalScore += $gradeData['score'];
             }
         }
+
+        // Recalculate total from ALL answers (auto-graded + manually-graded)
+        // to avoid losing auto-graded scores when only manual grades are submitted
+        $totalScore = (int) $attempt->answers()->sum('score');
 
         $maxScore = $assessment->total_points;
         $percentage = $maxScore > 0 ? round(($totalScore / $maxScore) * 100, 2) : 0;

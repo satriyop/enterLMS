@@ -6,6 +6,7 @@ use App\Models\AssessmentAttempt;
 use App\Models\Question;
 use App\Models\QuestionOption;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 beforeEach(function () {
     $this->service = app(AssessmentSubmissionService::class);
@@ -430,6 +431,127 @@ describe('AssessmentSubmissionService', function () {
             $attempt->refresh();
             expect($attempt->status)->toBe('graded');
             expect($attempt->graded_by)->toBe($grader->id);
+        });
+
+        it('preserves auto-graded scores when grading manual answers in mixed assessment', function () {
+            $user = User::factory()->create();
+            $grader = User::factory()->create(['role' => 'content_manager']);
+            $assessment = Assessment::factory()->published()->create([
+                'passing_score' => 60,
+            ]);
+
+            $mcQuestion = Question::factory()->multipleChoice()->create([
+                'assessment_id' => $assessment->id,
+                'points' => 10,
+            ]);
+
+            $essayQuestion = Question::factory()->essay()->create([
+                'assessment_id' => $assessment->id,
+                'points' => 20,
+            ]);
+
+            $attempt = AssessmentAttempt::factory()->submitted()->create([
+                'assessment_id' => $assessment->id,
+                'user_id' => $user->id,
+            ]);
+
+            // Simulate auto-graded MCQ answer (already scored during submission)
+            $autoGradedAnswer = $attempt->answers()->create([
+                'question_id' => $mcQuestion->id,
+                'answer_text' => 'option_1',
+                'is_correct' => true,
+                'score' => 10,
+            ]);
+
+            // Essay answer awaiting manual grading
+            $essayAnswer = $attempt->answers()->create([
+                'question_id' => $essayQuestion->id,
+                'answer_text' => 'My essay answer...',
+                'score' => 0,
+            ]);
+
+            $this->actingAs($grader);
+
+            // Only grade the essay — auto-graded answer NOT in grades array
+            $grades = [
+                [
+                    'answer_id' => $essayAnswer->id,
+                    'score' => 15,
+                    'feedback' => 'Good work.',
+                ],
+            ];
+
+            $assessment->loadSum('questions', 'points');
+            $result = $this->service->submitBulkGrades($attempt, $grades, $assessment);
+
+            // Total should include BOTH auto-graded (10) + manual (15) = 25
+            expect($result['totalScore'])->toEqual(25);
+            expect($result['maxScore'])->toBe(30);
+            expect($result['percentage'])->toEqual(83.33);
+            expect($result['passed'])->toBeTrue();
+
+            // Auto-graded answer should remain untouched
+            $autoGradedAnswer->refresh();
+            expect($autoGradedAnswer->score)->toEqual(10);
+            expect($autoGradedAnswer->is_correct)->toBeTrue();
+        });
+
+        it('logs previous scores when re-grading an already graded attempt', function () {
+            Log::spy();
+
+            $user = User::factory()->create();
+            $grader = User::factory()->create(['role' => 'content_manager']);
+            $assessment = Assessment::factory()->published()->create([
+                'passing_score' => 70,
+            ]);
+
+            $essayQuestion = Question::factory()->essay()->create([
+                'assessment_id' => $assessment->id,
+                'points' => 20,
+            ]);
+
+            // Create an already-graded attempt
+            $attempt = AssessmentAttempt::factory()->graded()->create([
+                'assessment_id' => $assessment->id,
+                'user_id' => $user->id,
+                'score' => 15,
+                'max_score' => 20,
+                'percentage' => 75.0,
+                'passed' => true,
+                'graded_by' => $grader->id,
+            ]);
+
+            $answer = $attempt->answers()->create([
+                'question_id' => $essayQuestion->id,
+                'answer_text' => 'Essay answer...',
+                'score' => 15,
+                'graded_by' => $grader->id,
+                'graded_at' => now(),
+            ]);
+
+            $this->actingAs($grader);
+
+            $grades = [
+                [
+                    'answer_id' => $answer->id,
+                    'score' => 10,
+                    'feedback' => 'Revised: lower score.',
+                ],
+            ];
+
+            $assessment->loadSum('questions', 'points');
+            $this->service->submitBulkGrades($attempt, $grades, $assessment);
+
+            Log::shouldHaveReceived('info')
+                ->withArgs(fn ($message, $context) => $message === 'Assessment re-grading: overwriting previous grades'
+                    && $context['attempt_id'] === $attempt->id
+                    && $context['previous_score'] === 15
+                )
+                ->once();
+
+            // Verify the new score is applied
+            $attempt->refresh();
+            expect($attempt->score)->toEqual(10);
         });
     });
 });
