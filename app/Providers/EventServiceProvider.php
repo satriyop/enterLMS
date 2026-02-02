@@ -8,10 +8,12 @@ use App\Domain\Assessment\Events\AssessmentGraded;
 use App\Domain\Course\Events\CourseArchived;
 use App\Domain\Course\Events\CoursePublished;
 use App\Domain\Course\Events\CourseUnpublished;
+use App\Domain\Course\Listeners\LogCourseLifecycleImpact;
 use App\Domain\Enrollment\Events\CourseStarted;
 use App\Domain\Enrollment\Events\EnrollmentCompleted;
 use App\Domain\Enrollment\Events\UserDropped;
 use App\Domain\Enrollment\Events\UserEnrolled;
+use App\Domain\Enrollment\Events\UserReenrolled;
 use App\Domain\Enrollment\Listeners\SendCompletionCongratulations;
 use App\Domain\Enrollment\Listeners\SendWelcomeNotification;
 use App\Domain\LearningPath\Events\CourseUnlockedInPath;
@@ -55,9 +57,11 @@ class EventServiceProvider extends ServiceProvider
         ],
         CourseUnpublished::class => [
             LogDomainEvent::class,
+            LogCourseLifecycleImpact::class,
         ],
         CourseArchived::class => [
             LogDomainEvent::class,
+            LogCourseLifecycleImpact::class,
         ],
 
         // Enrollment Events
@@ -76,6 +80,9 @@ class EventServiceProvider extends ServiceProvider
         UserDropped::class => [
             LogDomainEvent::class,
             UpdatePathProgressOnCourseDrop::class,
+        ],
+        UserReenrolled::class => [
+            LogDomainEvent::class,
         ],
 
         // Progress Events

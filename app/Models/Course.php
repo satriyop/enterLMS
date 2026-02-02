@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Domain\Course\Events\CourseArchived;
+use App\Domain\Course\Events\CoursePublished;
+use App\Domain\Course\Events\CourseUnpublished;
 use App\Domain\Course\States\ArchivedState;
 use App\Domain\Course\States\CourseState;
 use App\Domain\Course\States\DraftState;
@@ -18,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Spatie\ModelStates\HasStates;
 
@@ -70,6 +74,35 @@ class Course extends Model
 {
     use Concerns\RequiresEagerLoading;
     use HasFactory, HasStates, SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Course $course) {
+            if ($course->isForceDeleting()) {
+                // Clean up via Eloquent so child model events fire
+                // (e.g., Assessment's booted() cascades to questions/attempts)
+                /** @var CourseSection $section */
+                foreach ($course->sections()->get() as $section) {
+                    $section->forceDelete();
+                }
+                /** @var Assessment $assessment */
+                foreach ($course->assessments()->get() as $assessment) {
+                    $assessment->forceDelete();
+                }
+                $course->enrollments()->forceDelete();
+                $course->invitations()->forceDelete();
+                $course->ratings()->forceDelete();
+                $course->media()->forceDelete();
+
+                // Detach from learning paths (pivot table, no events needed)
+                if (Schema::hasTable('learning_path_courses')) {
+                    DB::table('learning_path_courses')
+                        ->where('course_id', $course->id)
+                        ->delete();
+                }
+            }
+        });
+    }
 
     protected $fillable = [
         'user_id',
@@ -357,31 +390,44 @@ class Course extends Model
 
     public function publish(User $user): void
     {
+        $previousStatus = (string) $this->status;
+
         $this->update([
             'status' => PublishedState::class,
             'published_at' => now(),
             'published_by' => $user->id,
         ]);
+
+        CoursePublished::dispatch($this, $previousStatus, $user->id);
     }
 
     public function unpublish(): void
     {
+        $previousStatus = (string) $this->status;
+
         $this->update([
             'status' => DraftState::class,
             'published_at' => null,
             'published_by' => null,
         ]);
+
+        CourseUnpublished::dispatch($this, $previousStatus);
     }
 
     public function archive(): void
     {
+        $previousStatus = (string) $this->status;
+
         $this->update([
             'status' => ArchivedState::class,
         ]);
+
+        CourseArchived::dispatch($this, $previousStatus);
     }
 
     public function updateStatus(string $status, User $admin): array
     {
+        $previousStatus = (string) $this->status;
         $updateData = ['status' => $status];
 
         if ($status === 'published' && $this->status instanceof DraftState) {
@@ -393,6 +439,13 @@ class Course extends Model
         }
 
         $this->update($updateData);
+
+        match ($status) {
+            'published' => CoursePublished::dispatch($this, $previousStatus, $admin->id),
+            'draft' => CourseUnpublished::dispatch($this, $previousStatus),
+            'archived' => CourseArchived::dispatch($this, $previousStatus),
+            default => null,
+        };
 
         return $updateData;
     }
