@@ -5,6 +5,7 @@ use App\Domain\Enrollment\Events\UserDropped;
 use App\Domain\Enrollment\Events\UserEnrolled;
 use App\Domain\Enrollment\Exceptions\AlreadyEnrolledException;
 use App\Domain\Enrollment\Exceptions\CourseNotPublishedException;
+use App\Domain\Enrollment\Exceptions\PaymentRequiredException;
 use App\Domain\Enrollment\Services\EnrollmentService;
 use App\Domain\Shared\Exceptions\InvalidStateTransitionException;
 use App\Models\Course;
@@ -61,6 +62,39 @@ describe('EnrollmentService', function () {
                 courseId: $course->id,
             );
         })->throws(AlreadyEnrolledException::class);
+
+        it('throws exception for paid course', function () {
+            $user = User::factory()->create();
+            $course = Course::factory()->published()->create([
+                'is_paid' => true,
+                'price' => 150000,
+            ]);
+
+            config()->set('lms.mode', 'commercial');
+
+            $this->service->enroll(
+                userId: $user->id,
+                courseId: $course->id,
+            );
+        })->throws(PaymentRequiredException::class);
+
+        it('allows enrollment for paid course in internal mode', function () {
+            $user = User::factory()->create();
+            $course = Course::factory()->published()->create([
+                'is_paid' => true,
+                'price' => 150000,
+            ]);
+
+            config()->set('lms.mode', 'internal');
+
+            $enrollment = $this->service->enroll(
+                userId: $user->id,
+                courseId: $course->id,
+            );
+
+            expect($enrollment)->toBeInstanceOf(Enrollment::class);
+            expect($enrollment->isActive())->toBeTrue();
+        });
 
         it('allows enrollment with invited_by', function () {
             $user = User::factory()->create();

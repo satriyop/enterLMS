@@ -354,6 +354,61 @@ class PathProgressService
     }
 
     /**
+     * Clean up orphaned course progress records and recalculate path progress
+     * after courses are removed from a learning path.
+     *
+     * Should be called after sync/detach operations on learning_path_course.
+     *
+     * @param  array<int>  $removedCourseIds  Course IDs that were removed from the path
+     */
+    public function onCoursesRemovedFromPath(\App\Models\LearningPath $path, array $removedCourseIds): void
+    {
+        if (empty($removedCourseIds)) {
+            return;
+        }
+
+        $this->logger->info('learning_path.courses.removed', [
+            'learning_path_id' => $path->id,
+            'removed_course_ids' => $removedCourseIds,
+        ]);
+
+        // Delete orphaned course progress records for all active enrollments
+        LearningPathCourseProgress::query()
+            ->whereIn('course_id', $removedCourseIds)
+            ->whereHas('enrollment', fn ($q) => $q
+                ->where('learning_path_id', $path->id)
+            )
+            ->delete();
+
+        // Recalculate progress for all active enrollments in this path
+        $activeEnrollments = LearningPathEnrollment::query()
+            ->where('learning_path_id', $path->id)
+            ->where('state', 'active')
+            ->get();
+
+        foreach ($activeEnrollments as $enrollment) {
+            $previousPercentage = $enrollment->progress_percentage;
+            $newPercentage = $this->calculateProgressPercentage($enrollment);
+
+            $enrollment->update(['progress_percentage' => $newPercentage]);
+
+            if ($newPercentage !== $previousPercentage) {
+                PathProgressUpdated::dispatch(
+                    $enrollment,
+                    $previousPercentage,
+                    $newPercentage,
+                    null // No specific course triggered this
+                );
+            }
+
+            // Check if path is now complete after course removal
+            if ($this->isPathCompleted($enrollment)) {
+                app(PathEnrollmentService::class)->complete($enrollment);
+            }
+        }
+    }
+
+    /**
      * Validate that a course belongs to the learning path.
      * Throws CourseNotInPathException if not.
      *

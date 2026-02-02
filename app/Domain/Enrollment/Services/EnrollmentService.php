@@ -5,6 +5,7 @@ namespace App\Domain\Enrollment\Services;
 use App\Domain\Enrollment\Events\UserEnrolled;
 use App\Domain\Enrollment\Exceptions\AlreadyEnrolledException;
 use App\Domain\Enrollment\Exceptions\CourseNotPublishedException;
+use App\Domain\Enrollment\Exceptions\PaymentRequiredException;
 use App\Domain\Enrollment\States\ActiveState;
 use App\Domain\Enrollment\States\CompletedState;
 use App\Domain\Enrollment\States\DroppedState;
@@ -131,6 +132,12 @@ class EnrollmentService
 
         if (! $course->isPublished()) {
             throw new CourseNotPublishedException($course->id);
+        }
+
+        if ($course->isPaid()) {
+            // TODO: Check for payment record when payment system is implemented.
+            // For now, block enrollment on paid courses entirely.
+            throw new PaymentRequiredException($course->id, $course->price);
         }
     }
 

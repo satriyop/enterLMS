@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\LearningPath\Services\PathProgressService;
 use App\Http\Requests\LearningPath\ReorderPathCoursesRequest;
 use App\Http\Requests\LearningPath\StoreLearningPathRequest;
 use App\Http\Requests\LearningPath\UpdateLearningPathRequest;
@@ -145,6 +146,8 @@ class LearningPathController extends Controller
 
         // Sync courses with their positions
         if ($request->has('courses')) {
+            $previousCourseIds = $learning_path->courses()->pluck('courses.id')->toArray();
+
             $syncData = [];
             foreach ($request->courses as $index => $courseData) {
                 $syncData[$courseData['id']] = [
@@ -155,6 +158,15 @@ class LearningPathController extends Controller
                 ];
             }
             $learning_path->courses()->sync($syncData);
+
+            // Clean up orphaned progress records for removed courses
+            $removedCourseIds = array_diff($previousCourseIds, array_keys($syncData));
+            if (! empty($removedCourseIds)) {
+                app(PathProgressService::class)->onCoursesRemovedFromPath(
+                    $learning_path,
+                    $removedCourseIds
+                );
+            }
         }
 
         return redirect()->route('learning-paths.show', $learning_path)
