@@ -21,9 +21,9 @@ class LearningPathEnrollmentPolicy
     public function view(User $user, LearningPathEnrollment $enrollment): bool
     {
         // Users can view their own enrollments
-        // Admins and instructors can view any enrollment
+        // LMS admins and trainers can view any enrollment
         return $user->id === $enrollment->user_id
-            || $user->hasRole(['admin', 'instructor']);
+            || $user->hasRole(['lms_admin', 'trainer']);
     }
 
     /**
@@ -49,7 +49,7 @@ class LearningPathEnrollmentPolicy
      */
     public function update(User $user, LearningPathEnrollment $enrollment): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('lms_admin');
     }
 
     /**
@@ -57,7 +57,7 @@ class LearningPathEnrollmentPolicy
      */
     public function delete(User $user, LearningPathEnrollment $enrollment): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('lms_admin');
     }
 
     /**
@@ -65,7 +65,7 @@ class LearningPathEnrollmentPolicy
      */
     public function restore(User $user, LearningPathEnrollment $enrollment): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('lms_admin');
     }
 
     /**
@@ -73,6 +73,6 @@ class LearningPathEnrollmentPolicy
      */
     public function forceDelete(User $user, LearningPathEnrollment $enrollment): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('lms_admin');
     }
 }

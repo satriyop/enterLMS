@@ -4,15 +4,14 @@ namespace App\Domain\Course\Listeners;
 
 use App\Domain\Course\Events\CourseArchived;
 use App\Domain\Course\Events\CourseUnpublished;
+use App\Domain\Course\Notifications\CourseAccessChangedNotification;
 use App\Models\Enrollment;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
 /**
  * Logs the impact of course lifecycle changes (unpublish/archive)
- * on active enrollments.
- *
- * Future: Send notifications to affected learners.
+ * on active enrollments and notifies affected learners.
  */
 class LogCourseLifecycleImpact implements ShouldQueue
 {
@@ -22,12 +21,13 @@ class LogCourseLifecycleImpact implements ShouldQueue
     {
         $course = $event->course;
 
-        $activeEnrollmentCount = Enrollment::query()
+        $activeEnrollments = Enrollment::query()
             ->where('course_id', $course->id)
             ->active()
-            ->count();
+            ->with('user')
+            ->get();
 
-        if ($activeEnrollmentCount === 0) {
+        if ($activeEnrollments->isEmpty()) {
             return;
         }
 
@@ -35,17 +35,18 @@ class LogCourseLifecycleImpact implements ShouldQueue
             'event' => $event->getEventName(),
             'course_id' => $course->id,
             'course_title' => $course->title,
-            'active_enrollments_affected' => $activeEnrollmentCount,
+            'active_enrollments_affected' => $activeEnrollments->count(),
             'actor_id' => $event->actorId,
         ]);
 
-        // TODO: Send notifications to affected learners when notification system is ready
-        // Enrollment::query()
-        //     ->where('course_id', $course->id)
-        //     ->active()
-        //     ->with('user')
-        //     ->each(function (Enrollment $enrollment) use ($course, $event) {
-        //         $enrollment->user->notify(new CourseStatusChangedNotification($course, $event->getEventName()));
-        //     });
+        // Determine event type for notification message
+        $eventType = $event instanceof CourseUnpublished ? 'unpublished' : 'archived';
+
+        // Notify all affected learners
+        foreach ($activeEnrollments as $enrollment) {
+            $enrollment->user->notify(
+                new CourseAccessChangedNotification($course, $eventType)
+            );
+        }
     }
 }

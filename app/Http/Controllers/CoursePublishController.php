@@ -18,11 +18,39 @@ class CoursePublishController extends Controller
     {
         Gate::authorize('publish', $course);
 
+        // Validate course has content before publishing
+        $errors = $this->validateCourseContent($course);
+        if (! empty($errors)) {
+            return back()->withErrors(['publish' => $errors]);
+        }
+
         $course->publish($request->user());
 
         return redirect()
             ->route('courses.edit', $course)
             ->with('success', 'Kursus berhasil dipublikasikan.');
+    }
+
+    /**
+     * Validate course has minimum content required for publishing.
+     *
+     * @return array<string> Validation error messages
+     */
+    protected function validateCourseContent(Course $course): array
+    {
+        $errors = [];
+
+        $sectionCount = $course->sections()->count();
+        if ($sectionCount === 0) {
+            $errors[] = 'Kursus harus memiliki minimal 1 bagian (section).';
+        }
+
+        $lessonCount = $course->lessons()->count();
+        if ($lessonCount === 0) {
+            $errors[] = 'Kursus harus memiliki minimal 1 pelajaran (lesson).';
+        }
+
+        return $errors;
     }
 
     /**

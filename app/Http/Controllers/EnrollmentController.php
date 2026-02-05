@@ -59,6 +59,8 @@ class EnrollmentController extends Controller
             return back()->with('error', 'Anda sudah terdaftar di kursus ini.');
         } catch (\App\Domain\Enrollment\Exceptions\CourseNotPublishedException) {
             return back()->with('error', 'Kursus ini belum dipublikasikan.');
+        } catch (\App\Domain\Enrollment\Exceptions\PaymentRequiredException) {
+            return back()->with('error', 'Kursus ini berbayar. Silakan selesaikan pembayaran terlebih dahulu.');
         }
     }
 
@@ -145,6 +147,8 @@ class EnrollmentController extends Controller
             return back()->with('error', 'Anda sudah terdaftar di kursus ini.');
         } catch (\App\Domain\Enrollment\Exceptions\CourseNotPublishedException) {
             return back()->with('error', 'Kursus ini belum dipublikasikan.');
+        } catch (\App\Domain\Enrollment\Exceptions\PaymentRequiredException) {
+            return back()->with('error', 'Kursus ini berbayar. Silakan selesaikan pembayaran terlebih dahulu.');
         }
     }
 

@@ -17,8 +17,7 @@ use App\Policies\LearningPathEnrollmentPolicy;
 beforeEach(function () {
     $this->policy = new LearningPathEnrollmentPolicy;
 
-    // Note: Policy uses 'admin' and 'instructor' roles which may not exist in migration
-    // For now, test with actual roles from migration: lms_admin, trainer
+    // System roles: learner, content_manager, trainer, lms_admin
     $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
     $this->trainer = User::factory()->create(['role' => 'trainer']);
     $this->learner = User::factory()->create(['role' => 'learner']);
@@ -55,16 +54,12 @@ it('denies other learner to view enrollment', function () {
     expect($this->policy->view($this->otherLearner, $this->enrollment))->toBeFalse();
 });
 
-it('denies lms_admin to view other enrollment due to hasRole checking admin/instructor', function () {
-    // Policy uses hasRole(['admin', 'instructor']) which are not valid roles
-    // lms_admin is not in that array, so it should deny
-    expect($this->policy->view($this->lmsAdmin, $this->enrollment))->toBeFalse();
+it('allows lms_admin to view any enrollment', function () {
+    expect($this->policy->view($this->lmsAdmin, $this->enrollment))->toBeTrue();
 });
 
-it('denies trainer to view other enrollment due to hasRole checking admin/instructor', function () {
-    // Policy uses hasRole(['admin', 'instructor']) which are not valid roles
-    // trainer is not in that array, so it should deny
-    expect($this->policy->view($this->trainer, $this->enrollment))->toBeFalse();
+it('allows trainer to view any enrollment', function () {
+    expect($this->policy->view($this->trainer, $this->enrollment))->toBeTrue();
 });
 
 // ========== create ==========
@@ -120,9 +115,8 @@ it('denies lms_admin to drop other users enrollment', function () {
 
 // ========== update ==========
 
-it('denies lms_admin to update enrollment due to policy checking admin role', function () {
-    // Policy uses hasRole('admin') which doesn't exist
-    expect($this->policy->update($this->lmsAdmin, $this->enrollment))->toBeFalse();
+it('allows lms_admin to update enrollment', function () {
+    expect($this->policy->update($this->lmsAdmin, $this->enrollment))->toBeTrue();
 });
 
 it('denies trainer to update enrollment', function () {
@@ -135,9 +129,8 @@ it('denies learner to update their own enrollment', function () {
 
 // ========== delete ==========
 
-it('denies lms_admin to delete enrollment due to policy checking admin role', function () {
-    // Policy uses hasRole('admin') which doesn't exist
-    expect($this->policy->delete($this->lmsAdmin, $this->enrollment))->toBeFalse();
+it('allows lms_admin to delete enrollment', function () {
+    expect($this->policy->delete($this->lmsAdmin, $this->enrollment))->toBeTrue();
 });
 
 it('denies trainer to delete enrollment', function () {
@@ -150,9 +143,8 @@ it('denies learner to delete their own enrollment', function () {
 
 // ========== restore ==========
 
-it('denies lms_admin to restore enrollment due to policy checking admin role', function () {
-    // Policy uses hasRole('admin') which doesn't exist
-    expect($this->policy->restore($this->lmsAdmin, $this->enrollment))->toBeFalse();
+it('allows lms_admin to restore enrollment', function () {
+    expect($this->policy->restore($this->lmsAdmin, $this->enrollment))->toBeTrue();
 });
 
 it('denies trainer to restore enrollment', function () {
@@ -165,9 +157,8 @@ it('denies learner to restore enrollment', function () {
 
 // ========== forceDelete ==========
 
-it('denies lms_admin to force delete enrollment due to policy checking admin role', function () {
-    // Policy uses hasRole('admin') which doesn't exist
-    expect($this->policy->forceDelete($this->lmsAdmin, $this->enrollment))->toBeFalse();
+it('allows lms_admin to force delete enrollment', function () {
+    expect($this->policy->forceDelete($this->lmsAdmin, $this->enrollment))->toBeTrue();
 });
 
 it('denies trainer to force delete enrollment', function () {

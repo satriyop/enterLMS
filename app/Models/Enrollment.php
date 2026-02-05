@@ -30,8 +30,6 @@ use Spatie\ModelStates\HasStates;
  * @property Carbon|null $enrolled_at
  * @property Carbon|null $started_at
  * @property Carbon|null $completed_at
- * @property Carbon|null $dropped_at
- * @property string|null $drop_reason
  * @property int|null $invited_by
  * @property int|null $last_lesson_id
  * @property Carbon|null $created_at

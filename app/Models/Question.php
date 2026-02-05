@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $points
  * @property string|null $feedback
  * @property int $order
+ * @property string|null $correct_answer
+ * @property bool $case_sensitive
+ * @property string|null $grading_rubric
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property \Carbon\Carbon|null $deleted_at
@@ -50,12 +53,16 @@ class Question extends Model
         'points',
         'feedback',
         'order',
+        'correct_answer',
+        'case_sensitive',
+        'grading_rubric',
     ];
 
     protected function casts(): array
     {
         return [
             'question_type' => 'string',
+            'case_sensitive' => 'boolean',
         ];
     }
 

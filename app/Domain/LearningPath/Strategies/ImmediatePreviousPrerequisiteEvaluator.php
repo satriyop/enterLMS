@@ -11,6 +11,9 @@ use App\Models\LearningPathEnrollment;
 /**
  * Evaluates prerequisites based only on the immediately previous course.
  * Only the course directly before needs to be completed.
+ *
+ * Respects min_completion_percentage from path course pivot: if set to 80%,
+ * reaching 80% progress is sufficient even if the course isn't fully completed.
  */
 class ImmediatePreviousPrerequisiteEvaluator implements PrerequisiteEvaluatorContract
 {
@@ -58,7 +61,7 @@ class ImmediatePreviousPrerequisiteEvaluator implements PrerequisiteEvaluatorCon
             ->where('course_id', $previousCourse->id)
             ->first();
 
-        if ($progress && $progress->isCompleted()) {
+        if ($this->meetsRequirement($progress, $previousCourse)) {
             return PrerequisiteCheckResult::met();
         }
 
@@ -66,6 +69,43 @@ class ImmediatePreviousPrerequisiteEvaluator implements PrerequisiteEvaluatorCon
             [['id' => $previousCourse->id, 'title' => $previousCourse->title]],
             'Previous course must be completed'
         );
+    }
+
+    /**
+     * Check if the course progress meets the completion requirement.
+     *
+     * A course is considered complete for prerequisite purposes when:
+     * 1. The course is fully completed (state = completed), OR
+     * 2. The enrollment progress >= min_completion_percentage from pivot
+     */
+    protected function meetsRequirement(?LearningPathCourseProgress $progress, Course $previousCourse): bool
+    {
+        if (! $progress) {
+            return false;
+        }
+
+        // Fully completed courses always meet the requirement
+        if ($progress->isCompleted()) {
+            return true;
+        }
+
+        // Check if min_completion_percentage allows partial completion
+        /** @var object{min_completion_percentage: int|null} $pivot */
+        $pivot = $previousCourse->pivot;
+        $minRequired = $pivot->min_completion_percentage ?? 100;
+
+        // If 100% is required, must be fully completed (which we already checked)
+        if ($minRequired >= 100) {
+            return false;
+        }
+
+        // Check the underlying enrollment's progress
+        $courseEnrollment = $progress->courseEnrollment;
+        if (! $courseEnrollment) {
+            return false;
+        }
+
+        return $courseEnrollment->progress_percentage >= $minRequired;
     }
 
     public function getName(): string
