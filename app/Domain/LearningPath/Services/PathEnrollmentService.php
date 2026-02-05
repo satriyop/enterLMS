@@ -337,4 +337,83 @@ class PathEnrollmentService
 
         return $enrollment;
     }
+
+    /**
+     * Enroll a learner in an optional course within a learning path.
+     *
+     * Optional courses are tracked in progress but not auto-enrolled.
+     * This method allows learners to opt-in to optional courses.
+     *
+     * @throws \InvalidArgumentException If course is not in path, not optional, or not available
+     */
+    public function enrollInOptionalCourse(
+        LearningPathEnrollment $pathEnrollment,
+        Course $course
+    ): \App\Models\Enrollment {
+        $pathEnrollment->loadMissing(['learningPath.courses', 'user', 'courseProgress']);
+
+        // Verify the course is in the path
+        $pathCourse = $pathEnrollment->learningPath->courses
+            ->firstWhere('id', $course->id);
+
+        if (! $pathCourse) {
+            throw new \InvalidArgumentException(
+                "Course {$course->id} is not part of learning path {$pathEnrollment->learning_path_id}"
+            );
+        }
+
+        // Verify the course is optional
+        /** @var object{is_required: bool} $pivot */
+        $pivot = $pathCourse->pivot;
+        if ($pivot->is_required) {
+            throw new \InvalidArgumentException(
+                "Course {$course->id} is required, not optional. Required courses are auto-enrolled."
+            );
+        }
+
+        // Get the course progress record
+        $progress = $pathEnrollment->courseProgress
+            ->firstWhere('course_id', $course->id);
+
+        if (! $progress) {
+            throw new \InvalidArgumentException(
+                "No progress record found for course {$course->id} in path enrollment {$pathEnrollment->id}"
+            );
+        }
+
+        // Verify the course is available (not locked)
+        if ($progress->isLocked()) {
+            throw new \InvalidArgumentException(
+                "Course {$course->id} is locked. Complete prerequisites first."
+            );
+        }
+
+        // Check if already enrolled
+        if ($progress->course_enrollment_id !== null) {
+            $this->logger->info('learning_path.optional_course.already_enrolled', [
+                'path_enrollment_id' => $pathEnrollment->id,
+                'course_id' => $course->id,
+                'course_enrollment_id' => $progress->course_enrollment_id,
+            ]);
+
+            return \App\Models\Enrollment::findOrFail($progress->course_enrollment_id);
+        }
+
+        // Create the course enrollment
+        $courseEnrollment = $this->ensureCourseEnrollment($pathEnrollment->user, $course);
+
+        // Link the enrollment to the progress record
+        $progress->update([
+            'course_enrollment_id' => $courseEnrollment->id,
+            'started_at' => $progress->started_at ?? now(),
+        ]);
+
+        $this->logger->info('learning_path.optional_course.enrolled', [
+            'path_enrollment_id' => $pathEnrollment->id,
+            'course_id' => $course->id,
+            'course_enrollment_id' => $courseEnrollment->id,
+        ]);
+
+        return $courseEnrollment;
+    }
 }

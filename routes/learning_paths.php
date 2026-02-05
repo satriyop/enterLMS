@@ -33,6 +33,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Drop from Learning Path (uses learningPath ID, controller finds enrollment)
         Route::delete('learning-paths/{learningPath}/drop', [LearningPathEnrollmentController::class, 'drop'])
             ->name('learning-paths.drop');
+
+        // Enroll in Optional Course within Learning Path
+        Route::post('learning-paths/{learningPath}/courses/{course}/enroll', [LearningPathEnrollmentController::class, 'enrollInOptionalCourse'])
+            ->middleware('throttle:10,1')
+            ->name('learning-paths.courses.enroll');
     });
 
     // ============================================

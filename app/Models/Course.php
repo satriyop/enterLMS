@@ -47,6 +47,8 @@ use Spatie\ModelStates\HasStates;
  * @property string|null $payment_gateway
  * @property array|null $pricing_tiers
  * @property Carbon|null $price_valid_until
+ * @property Carbon|null $enrollment_deadline
+ * @property int|null $max_enrollments
  * @property Carbon|null $published_at
  * @property int|null $published_by
  * @property Carbon|null $created_at
@@ -127,6 +129,8 @@ class Course extends Model
         'payment_gateway',
         'pricing_tiers',
         'price_valid_until',
+        'enrollment_deadline',
+        'max_enrollments',
     ];
 
     protected function casts(): array
@@ -137,6 +141,8 @@ class Course extends Model
             'prerequisites' => 'array',
             'pricing_tiers' => 'array',
             'price_valid_until' => 'datetime',
+            'enrollment_deadline' => 'datetime',
+            'max_enrollments' => 'integer',
             'published_at' => 'datetime',
         ];
     }
@@ -508,5 +514,63 @@ class Course extends Model
     public function setPricingTiers(?array $tiers): void
     {
         $this->attributes['pricing_tiers'] = $tiers ? json_encode($tiers) : null;
+    }
+
+    // =========================================================================
+    // Enrollment Constraint Methods
+    // =========================================================================
+
+    /**
+     * Check if the enrollment deadline has passed.
+     */
+    public function isEnrollmentDeadlinePassed(): bool
+    {
+        return $this->enrollment_deadline !== null && $this->enrollment_deadline->isPast();
+    }
+
+    /**
+     * Check if the course has reached maximum enrollment capacity.
+     */
+    public function isAtCapacity(): bool
+    {
+        if ($this->max_enrollments === null) {
+            return false;
+        }
+
+        return $this->getActiveEnrollmentCount() >= $this->max_enrollments;
+    }
+
+    /**
+     * Get the count of active enrollments.
+     */
+    public function getActiveEnrollmentCount(): int
+    {
+        return $this->enrollments()
+            ->whereIn('status', ['active', 'completed'])
+            ->count();
+    }
+
+    /**
+     * Get remaining enrollment spots.
+     * Returns null if no limit is set.
+     */
+    public function getRemainingSpots(): ?int
+    {
+        if ($this->max_enrollments === null) {
+            return null;
+        }
+
+        return max(0, $this->max_enrollments - $this->getActiveEnrollmentCount());
+    }
+
+    /**
+     * Check if enrollment is currently open.
+     * Considers: published status, deadline, and capacity.
+     */
+    public function isEnrollmentOpen(): bool
+    {
+        return $this->isPublished()
+            && ! $this->isEnrollmentDeadlinePassed()
+            && ! $this->isAtCapacity();
     }
 }

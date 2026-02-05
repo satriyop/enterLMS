@@ -11,6 +11,7 @@ use App\Http\Resources\Enrollment\PathEnrollmentIndexResource;
 use App\Http\Resources\LearningPath\LearningPathBrowseResource;
 use App\Http\Resources\LearningPath\LearningPathShowResource;
 use App\Http\Resources\Progress\PathProgressResource;
+use App\Models\Course;
 use App\Models\LearningPath;
 use App\Models\LearningPathEnrollment;
 use App\Support\Helpers\DatabaseHelper;
@@ -225,5 +226,59 @@ class LearningPathEnrollmentController extends Controller
         return redirect()
             ->route('learner.learning-paths.index')
             ->with('success', 'Anda telah keluar dari learning path.');
+    }
+
+    /**
+     * Enroll in an optional course within a learning path.
+     */
+    public function enrollInOptionalCourse(
+        Request $request,
+        LearningPath $learningPath,
+        Course $course
+    ): RedirectResponse {
+        $user = Auth::user();
+
+        $enrollment = $this->enrollmentService->getActiveEnrollment($user, $learningPath);
+
+        if (! $enrollment) {
+            return redirect()
+                ->route('learner.learning-paths.show', $learningPath)
+                ->with('error', 'Anda belum terdaftar di learning path ini.');
+        }
+
+        $this->authorize('view', $enrollment);
+
+        try {
+            $this->enrollmentService->enrollInOptionalCourse($enrollment, $course);
+
+            return redirect()
+                ->route('learner.learning-paths.progress', $learningPath)
+                ->with('success', "Anda berhasil mendaftar di kursus opsional \"{$course->title}\".");
+        } catch (\InvalidArgumentException $e) {
+            return redirect()
+                ->route('learner.learning-paths.progress', $learningPath)
+                ->with('error', $this->translateOptionalCourseError($e->getMessage()));
+        }
+    }
+
+    /**
+     * Translate optional course enrollment errors to Indonesian.
+     */
+    protected function translateOptionalCourseError(string $message): string
+    {
+        if (str_contains($message, 'not part of learning path')) {
+            return 'Kursus ini bukan bagian dari learning path.';
+        }
+        if (str_contains($message, 'is required')) {
+            return 'Kursus ini wajib dan sudah terdaftar otomatis.';
+        }
+        if (str_contains($message, 'is locked')) {
+            return 'Kursus ini masih terkunci. Selesaikan prasyarat terlebih dahulu.';
+        }
+        if (str_contains($message, 'No progress record')) {
+            return 'Data progress kursus tidak ditemukan.';
+        }
+
+        return 'Gagal mendaftar kursus opsional.';
     }
 }

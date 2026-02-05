@@ -8,6 +8,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int $assessment_id
+ * @property int $user_id
+ * @property int $attempt_number
+ * @property string $status
+ * @property int|null $score
+ * @property int|null $max_score
+ * @property float|null $percentage
+ * @property bool|null $passed
+ * @property \Carbon\Carbon|null $started_at
+ * @property \Carbon\Carbon|null $submitted_at
+ * @property \Carbon\Carbon|null $graded_at
+ * @property int|null $graded_by
+ * @property string|null $feedback
+ * @property string|null $ip_address
+ * @property string|null $user_agent
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
+ * @property-read Assessment $assessment
+ * @property-read User $user
+ * @property-read User|null $gradedBy
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, AttemptAnswer> $answers
+ */
 class AssessmentAttempt extends Model
 {
     use HasFactory, SoftDeletes;
@@ -26,6 +51,8 @@ class AssessmentAttempt extends Model
         'graded_at',
         'graded_by',
         'feedback',
+        'ip_address',
+        'user_agent',
     ];
 
     protected function casts(): array

@@ -47,5 +47,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Media::class, MediaPolicy::class);
         Gate::policy(Question::class, QuestionPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
+
+        // Compliance reporting gates
+        Gate::define('viewComplianceReports', function (User $user) {
+            return $user->hasRole(['lms_admin']);
+        });
     }
 }

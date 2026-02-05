@@ -52,6 +52,8 @@ class AssessmentAttemptController extends Controller
             'attempt_number' => $nextAttemptNumber,
             'status' => 'in_progress',
             'started_at' => now(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
         ]);
 
         AssessmentAttemptStarted::dispatch($attempt);

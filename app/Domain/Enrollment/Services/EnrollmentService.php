@@ -5,6 +5,8 @@ namespace App\Domain\Enrollment\Services;
 use App\Domain\Enrollment\Events\UserEnrolled;
 use App\Domain\Enrollment\Exceptions\AlreadyEnrolledException;
 use App\Domain\Enrollment\Exceptions\CourseNotPublishedException;
+use App\Domain\Enrollment\Exceptions\EnrollmentCapacityExceededException;
+use App\Domain\Enrollment\Exceptions\EnrollmentDeadlinePassedException;
 use App\Domain\Enrollment\Exceptions\PaymentRequiredException;
 use App\Domain\Enrollment\States\ActiveState;
 use App\Domain\Enrollment\States\CompletedState;
@@ -87,6 +89,16 @@ class EnrollmentService
             return false;
         }
 
+        // Enrollment deadline passed?
+        if ($course->isEnrollmentDeadlinePassed()) {
+            return false;
+        }
+
+        // Course at capacity?
+        if ($course->isAtCapacity()) {
+            return false;
+        }
+
         // Course visible to user?
         if ($course->visibility === 'hidden') {
             return false;
@@ -132,6 +144,14 @@ class EnrollmentService
 
         if (! $course->isPublished()) {
             throw new CourseNotPublishedException($course->id);
+        }
+
+        if ($course->isEnrollmentDeadlinePassed()) {
+            throw new EnrollmentDeadlinePassedException($course->id, $course->enrollment_deadline);
+        }
+
+        if ($course->isAtCapacity()) {
+            throw new EnrollmentCapacityExceededException($course->id, $course->max_enrollments);
         }
 
         if ($course->isPaid()) {
