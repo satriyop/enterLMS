@@ -34,3 +34,4 @@ require __DIR__.'/settings.php';
 require __DIR__.'/courses.php';
 require __DIR__.'/learning_paths.php';
 require __DIR__.'/certificates.php';
+require __DIR__.'/payments.php';
