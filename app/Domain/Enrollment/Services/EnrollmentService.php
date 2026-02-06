@@ -197,4 +197,161 @@ class EnrollmentService
             ->where('status', 'pending')
             ->exists();
     }
+
+    /**
+     * Bulk enroll multiple users in a course.
+     *
+     * @param  array<int>  $userIds  Array of user IDs to enroll
+     * @param  int  $courseId  Course ID to enroll users in
+     * @param  int|null  $enrolledBy  User ID of admin performing the bulk enrollment
+     * @return array{success: int, failed: int, skipped: int, errors: array<string>}
+     */
+    public function bulkEnroll(array $userIds, int $courseId, ?int $enrolledBy = null): array
+    {
+        $course = Course::findOrFail($courseId);
+
+        $results = [
+            'success' => 0,
+            'failed' => 0,
+            'skipped' => 0,
+            'errors' => [],
+        ];
+
+        foreach ($userIds as $userId) {
+            try {
+                $user = User::find($userId);
+
+                if (! $user) {
+                    $results['errors'][] = "User ID {$userId}: Pengguna tidak ditemukan.";
+                    $results['failed']++;
+
+                    continue;
+                }
+
+                if (! $user->isLearner()) {
+                    $results['errors'][] = "{$user->email}: Hanya learner yang dapat didaftarkan.";
+                    $results['skipped']++;
+
+                    continue;
+                }
+
+                // Check if already enrolled
+                if ($this->getActiveEnrollment($user, $course)) {
+                    $results['skipped']++;
+
+                    continue;
+                }
+
+                $this->enroll(
+                    userId: $userId,
+                    courseId: $courseId,
+                    invitedBy: $enrolledBy
+                );
+
+                $results['success']++;
+            } catch (AlreadyEnrolledException) {
+                $results['skipped']++;
+            } catch (CourseNotPublishedException) {
+                $results['errors'][] = 'Kursus belum dipublikasikan.';
+                $results['failed']++;
+                break; // Stop processing if course is not published
+            } catch (EnrollmentDeadlinePassedException) {
+                $results['errors'][] = 'Batas waktu pendaftaran sudah lewat.';
+                $results['failed']++;
+                break; // Stop processing if deadline passed
+            } catch (EnrollmentCapacityExceededException) {
+                $results['errors'][] = 'Kapasitas pendaftaran sudah penuh.';
+                $results['failed']++;
+                break; // Stop processing if capacity exceeded
+            } catch (PaymentRequiredException) {
+                $results['errors'][] = 'Kursus berbayar tidak dapat didaftarkan secara bulk.';
+                $results['failed']++;
+                break; // Stop processing for paid courses
+            } catch (\Throwable $e) {
+                $results['errors'][] = "User ID {$userId}: ".$e->getMessage();
+                $results['failed']++;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Bulk enroll users from CSV data.
+     *
+     * @param  array<int, array<int, string>>  $csvData  CSV rows (excluding header)
+     * @param  int  $emailIndex  Index of email column
+     * @param  int  $courseId  Course ID to enroll users in
+     * @param  int|null  $enrolledBy  User ID of admin performing the bulk enrollment
+     * @return array{success: int, failed: int, skipped: int, errors: array<string>}
+     */
+    public function bulkEnrollFromCsv(
+        array $csvData,
+        int $emailIndex,
+        int $courseId,
+        ?int $enrolledBy = null
+    ): array {
+        $results = [
+            'success' => 0,
+            'failed' => 0,
+            'skipped' => 0,
+            'errors' => [],
+        ];
+
+        $course = Course::findOrFail($courseId);
+
+        foreach ($csvData as $rowIndex => $row) {
+            $email = trim($row[$emailIndex] ?? '');
+
+            if (empty($email)) {
+                continue;
+            }
+
+            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $results['errors'][] = 'Baris '.($rowIndex + 2).": Email tidak valid ({$email}).";
+                $results['failed']++;
+
+                continue;
+            }
+
+            $user = User::where('email', $email)->first();
+
+            if (! $user) {
+                $results['errors'][] = 'Baris '.($rowIndex + 2).": Pengguna dengan email {$email} tidak ditemukan.";
+                $results['failed']++;
+
+                continue;
+            }
+
+            if (! $user->isLearner()) {
+                $results['errors'][] = 'Baris '.($rowIndex + 2).": {$email} bukan learner.";
+                $results['skipped']++;
+
+                continue;
+            }
+
+            try {
+                if ($this->getActiveEnrollment($user, $course)) {
+                    $results['skipped']++;
+
+                    continue;
+                }
+
+                $this->enroll(
+                    userId: $user->id,
+                    courseId: $courseId,
+                    invitedBy: $enrolledBy
+                );
+
+                $results['success']++;
+            } catch (AlreadyEnrolledException) {
+                $results['skipped']++;
+            } catch (\Throwable $e) {
+                $results['errors'][] = 'Baris '.($rowIndex + 2)." ({$email}): ".$e->getMessage();
+                $results['failed']++;
+            }
+        }
+
+        return $results;
+    }
 }

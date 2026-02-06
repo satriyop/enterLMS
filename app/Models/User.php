@@ -39,6 +39,57 @@ class User extends Authenticatable
     use HasFactory, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     /**
+     * Available user roles in the system.
+     *
+     * Core roles:
+     * - learner: Takes courses, completes assessments
+     * - content_manager: Creates and manages course content
+     * - trainer: Manages learners, grades assessments
+     * - lms_admin: Full system administration
+     *
+     * Enterprise roles:
+     * - compliance_officer: Manages compliance, views audit reports, can generate reports
+     * - auditor: Read-only access to audit logs and compliance reports
+     * - teaching_assistant: Limited trainer capabilities (view enrollments, assist grading)
+     */
+    public const ROLES = [
+        'learner',
+        'content_manager',
+        'trainer',
+        'lms_admin',
+        'compliance_officer',
+        'auditor',
+        'teaching_assistant',
+    ];
+
+    /**
+     * Roles that can manage courses (create, edit, publish).
+     */
+    public const COURSE_MANAGER_ROLES = [
+        'content_manager',
+        'trainer',
+        'lms_admin',
+    ];
+
+    /**
+     * Roles that can view compliance/audit data.
+     */
+    public const COMPLIANCE_ROLES = [
+        'lms_admin',
+        'compliance_officer',
+        'auditor',
+    ];
+
+    /**
+     * Roles that can grade assessments.
+     */
+    public const GRADING_ROLES = [
+        'trainer',
+        'lms_admin',
+        'teaching_assistant',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -133,9 +184,24 @@ class User extends Authenticatable
         return $this->role === 'lms_admin';
     }
 
+    public function isComplianceOfficer(): bool
+    {
+        return $this->role === 'compliance_officer';
+    }
+
+    public function isAuditor(): bool
+    {
+        return $this->role === 'auditor';
+    }
+
+    public function isTeachingAssistant(): bool
+    {
+        return $this->role === 'teaching_assistant';
+    }
+
     public function canManageCourses(): bool
     {
-        return in_array($this->role, ['content_manager', 'trainer', 'lms_admin']);
+        return in_array($this->role, self::COURSE_MANAGER_ROLES, true);
     }
 
     /**
@@ -143,7 +209,23 @@ class User extends Authenticatable
      */
     public function canManageLearningPaths(): bool
     {
-        return in_array($this->role, ['content_manager', 'lms_admin']);
+        return in_array($this->role, ['content_manager', 'lms_admin'], true);
+    }
+
+    /**
+     * Check if user can view compliance/audit reports.
+     */
+    public function canViewCompliance(): bool
+    {
+        return in_array($this->role, self::COMPLIANCE_ROLES, true);
+    }
+
+    /**
+     * Check if user can grade assessments.
+     */
+    public function canGradeAssessments(): bool
+    {
+        return in_array($this->role, self::GRADING_ROLES, true);
     }
 
     /**

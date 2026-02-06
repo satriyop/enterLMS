@@ -183,4 +183,20 @@ class CoursePolicy
 
         return false;
     }
+
+    /**
+     * Determine whether the user can bulk enroll learners into the course.
+     *
+     * Only trainers and LMS admins can bulk enroll users.
+     */
+    public function bulkEnroll(User $user, Course $course): bool
+    {
+        // Only trainer and LMS admin can bulk enroll
+        if (! $user->isTrainer() && ! $user->isLmsAdmin()) {
+            return false;
+        }
+
+        // Course must be published for bulk enrollment
+        return $course->isPublished();
+    }
 }

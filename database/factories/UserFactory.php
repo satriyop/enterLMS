@@ -55,4 +55,74 @@ class UserFactory extends Factory
             'two_factor_confirmed_at' => null,
         ]);
     }
+
+    /**
+     * Create a learner user.
+     */
+    public function learner(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'learner',
+        ]);
+    }
+
+    /**
+     * Create a content manager user.
+     */
+    public function contentManager(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'content_manager',
+        ]);
+    }
+
+    /**
+     * Create a trainer user.
+     */
+    public function trainer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'trainer',
+        ]);
+    }
+
+    /**
+     * Create an LMS admin user.
+     */
+    public function lmsAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'lms_admin',
+        ]);
+    }
+
+    /**
+     * Create a compliance officer user.
+     */
+    public function complianceOfficer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'compliance_officer',
+        ]);
+    }
+
+    /**
+     * Create an auditor user.
+     */
+    public function auditor(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'auditor',
+        ]);
+    }
+
+    /**
+     * Create a teaching assistant user.
+     */
+    public function teachingAssistant(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'teaching_assistant',
+        ]);
+    }
 }

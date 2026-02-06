@@ -53,6 +53,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('courses/{course}/unenroll', [EnrollmentController::class, 'destroy'])
         ->middleware('throttle:10,1')
         ->name('courses.unenroll');
+    Route::post('courses/{course}/bulk-enroll', [EnrollmentController::class, 'bulkEnroll'])
+        ->name('courses.bulk-enroll');
 
     // Course Ratings
     Route::post('courses/{course}/ratings', [CourseRatingController::class, 'store'])
