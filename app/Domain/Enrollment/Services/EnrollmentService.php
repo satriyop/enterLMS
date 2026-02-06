@@ -13,6 +13,7 @@ use App\Domain\Enrollment\States\CompletedState;
 use App\Domain\Enrollment\States\DroppedState;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Payment;
 use App\Models\User;
 use App\Support\Helpers\DatabaseHelper;
 use DateTimeInterface;
@@ -155,9 +156,17 @@ class EnrollmentService
         }
 
         if ($course->isPaid()) {
-            // TODO: Check for payment record when payment system is implemented.
-            // For now, block enrollment on paid courses entirely.
-            throw new PaymentRequiredException($course->id, $course->price);
+            // Check for successful payment record
+            $hasPaid = Payment::query()
+                ->where('user_id', $user->id)
+                ->where('payable_type', Course::class)
+                ->where('payable_id', $course->id)
+                ->where('status', Payment::STATUS_PAID)
+                ->exists();
+
+            if (! $hasPaid) {
+                throw new PaymentRequiredException($course->id, $course->price);
+            }
         }
     }
 
