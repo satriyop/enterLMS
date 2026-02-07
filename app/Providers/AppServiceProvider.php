@@ -9,8 +9,10 @@ use App\Models\LearningPath;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Media;
+use App\Models\Payment;
 use App\Models\Question;
 use App\Models\QuestionBankItem;
+use App\Models\ScormPackage;
 use App\Models\User;
 use App\Policies\CertificatePolicy;
 use App\Policies\CoursePolicy;
@@ -19,8 +21,10 @@ use App\Policies\LearningPathPolicy;
 use App\Policies\LessonPolicy;
 use App\Policies\LessonProgressPolicy;
 use App\Policies\MediaPolicy;
+use App\Policies\PaymentPolicy;
 use App\Policies\QuestionBankItemPolicy;
 use App\Policies\QuestionPolicy;
+use App\Policies\ScormPackagePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
@@ -50,8 +54,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(LessonProgress::class, LessonProgressPolicy::class);
         Gate::policy(LearningPath::class, LearningPathPolicy::class);
         Gate::policy(Media::class, MediaPolicy::class);
+        Gate::policy(Payment::class, PaymentPolicy::class);
         Gate::policy(Question::class, QuestionPolicy::class);
         Gate::policy(QuestionBankItem::class, QuestionBankItemPolicy::class);
+        Gate::policy(ScormPackage::class, ScormPackagePolicy::class);
         Gate::policy(User::class, UserPolicy::class);
 
         // Compliance reporting gates

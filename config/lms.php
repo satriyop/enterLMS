@@ -151,4 +151,41 @@ return [
         'sandbox' => env('LMS_PAYMENT_SANDBOX', true),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | SCORM Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for SCORM package management and runtime.
+    |
+    */
+
+    'scorm' => [
+        // Maximum upload size in kilobytes (default: 250MB)
+        'max_upload_size_kb' => (int) env('LMS_SCORM_MAX_UPLOAD_KB', 256000),
+
+        // Storage disk for extracted SCORM packages
+        'disk' => env('LMS_SCORM_DISK', 'local'),
+
+        // Supported SCORM versions
+        'supported_versions' => ['1.2', '2004'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | xAPI (Experience API) Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for xAPI statement recording and LRS.
+    |
+    */
+
+    'xapi' => [
+        // Whether to auto-record xAPI statements from domain events
+        'auto_record' => env('LMS_XAPI_AUTO_RECORD', true),
+
+        // Base IRI for activity identifiers
+        'activity_base_iri' => env('LMS_XAPI_ACTIVITY_IRI', env('APP_URL', 'http://enteraksi.test')),
+    ],
+
 ];

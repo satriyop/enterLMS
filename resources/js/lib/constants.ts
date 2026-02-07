@@ -28,6 +28,7 @@ export const MAX_VIDEO_SIZE = 500 * 1024 * 1024; // 500MB
 export const MAX_AUDIO_SIZE = 50 * 1024 * 1024; // 50MB
 export const MAX_DOCUMENT_SIZE = 20 * 1024 * 1024; // 20MB
 export const MAX_THUMBNAIL_SIZE = 2 * 1024 * 1024; // 2MB
+export const MAX_SCORM_SIZE = 250 * 1024 * 1024; // 250MB
 
 // =============================================================================
 // Allowed File Types
@@ -204,6 +205,11 @@ export const CONTENT_TYPE_COLORS: Record<ContentType, { bg: string; text: string
         bg: 'bg-cyan-100 dark:bg-cyan-900',
         text: 'text-cyan-700 dark:text-cyan-300',
         icon: 'text-cyan-500',
+    },
+    scorm: {
+        bg: 'bg-indigo-100 dark:bg-indigo-900',
+        text: 'text-indigo-700 dark:text-indigo-300',
+        icon: 'text-indigo-500',
     },
 };
 

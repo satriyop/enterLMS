@@ -92,10 +92,13 @@ export interface Lesson extends Timestamps {
     has_audio?: boolean;
     has_document?: boolean;
     has_conference?: boolean;
+    has_scorm?: boolean;
+    scorm_package_id?: number | null;
 
     // Relations (conditionally loaded)
     section?: LessonSection;
     media?: Media[];
+    scorm_package?: ScormPackageSummary | null;
 
     // Progress info (when user context is present)
     user_progress?: LessonProgress;
@@ -143,6 +146,25 @@ export interface LessonNavItem {
     title: string;
     section_title: string;
     is_completed?: boolean;
+}
+
+// =============================================================================
+// SCORM Package Types
+// =============================================================================
+
+/**
+ * SCORM package summary for lesson context.
+ */
+export interface ScormPackageSummary {
+    id: number;
+    title: string;
+    version: string; // '1.2' or '2004'
+    identifier: string | null;
+    original_filename: string;
+    entry_point: string;
+    file_size_bytes: number;
+    is_scorm_12: boolean;
+    is_scorm_2004: boolean;
 }
 
 // =============================================================================
@@ -318,6 +340,13 @@ export function isConferenceLesson(lesson: Lesson | LessonSummary): boolean {
 }
 
 /**
+ * Check if lesson has SCORM content.
+ */
+export function isScormLesson(lesson: Lesson | LessonSummary): boolean {
+    return lesson.content_type === 'scorm';
+}
+
+/**
  * Check if lesson has media-based content (video, youtube, audio).
  */
 export function isMediaBasedLesson(lesson: Lesson | LessonSummary): boolean {
@@ -335,6 +364,7 @@ export function getContentTypeIcon(contentType: ContentType): string {
         audio: 'Headphones',
         document: 'FileDown',
         conference: 'Video',
+        scorm: 'Package',
     };
     return icons[contentType];
 }
@@ -350,6 +380,7 @@ export function getContentTypeLabel(contentType: ContentType): string {
         audio: 'Audio',
         document: 'Dokumen',
         conference: 'Konferensi',
+        scorm: 'SCORM',
     };
     return labels[contentType];
 }

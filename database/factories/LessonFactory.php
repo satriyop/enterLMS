@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\CourseSection;
+use App\Models\ScormPackage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -91,6 +92,17 @@ class LessonFactory extends Factory
             'content_type' => 'conference',
             'conference_url' => 'https://zoom.us/j/123456789',
             'conference_type' => 'zoom',
+        ]);
+    }
+
+    /**
+     * Indicate that the lesson is a SCORM package.
+     */
+    public function scorm(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'content_type' => 'scorm',
+            'scorm_package_id' => ScormPackage::factory(),
         ]);
     }
 

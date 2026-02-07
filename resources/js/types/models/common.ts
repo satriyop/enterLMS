@@ -135,6 +135,7 @@ export const ContentType = {
     DOCUMENT: 'document',
     YOUTUBE: 'youtube',
     CONFERENCE: 'conference',
+    SCORM: 'scorm',
 } as const;
 export type ContentType = (typeof ContentType)[keyof typeof ContentType];
 
