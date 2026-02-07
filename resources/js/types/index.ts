@@ -29,6 +29,7 @@ export * from './models/lesson';
 export * from './models/assessment';
 export * from './models/enrollment';
 export * from './models/learning-path';
+export * from './models/question-bank';
 
 // API/Inertia response types
 export * from './api/responses';

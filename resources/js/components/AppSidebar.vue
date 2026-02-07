@@ -11,12 +11,13 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { index as usersIndex } from '@/actions/App/Http/Controllers/Admin/UserController';
+import { index as questionBankIndex } from '@/actions/App/Http/Controllers/QuestionBankController';
 import { dashboard } from '@/routes';
 import { index as coursesIndex } from '@/routes/courses';
 import { index as learningPathsIndex } from '@/routes/learning-paths';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, LayoutGrid, Map, Users, FileText } from 'lucide-vue-next';
+import { BookOpen, LayoutGrid, Map, Users, FileText, HelpCircle } from 'lucide-vue-next';
 import { index as auditReportsIndex } from '@/actions/App/Http/Controllers/ComplianceReportController';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
@@ -40,6 +41,11 @@ const mainNavItems: NavItem[] = [
         title: 'Jalur Pembelajaran',
         href: learningPathsIndex(),
         icon: Map,
+    },
+    {
+        title: 'Bank Soal',
+        href: questionBankIndex().url,
+        icon: HelpCircle,
     },
 ];
 
