@@ -16,7 +16,8 @@ import { index as coursesIndex } from '@/routes/courses';
 import { index as learningPathsIndex } from '@/routes/learning-paths';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, LayoutGrid, Map, Users } from 'lucide-vue-next';
+import { BookOpen, LayoutGrid, Map, Users, FileText } from 'lucide-vue-next';
+import { index as auditReportsIndex } from '@/actions/App/Http/Controllers/ComplianceReportController';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
@@ -47,6 +48,11 @@ const adminNavItems: NavItem[] = [
         title: 'Manajemen Pengguna',
         href: usersIndex().url,
         icon: Users,
+    },
+    {
+        title: 'Laporan Kepatuhan',
+        href: auditReportsIndex().url,
+        icon: FileText,
     },
 ];
 </script>

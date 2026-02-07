@@ -154,6 +154,12 @@ const toggleTheme = () => {
                                     <Link :href="dashboard()">Dashboard</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem as-child>
+                                    <Link href="/certificates">Sertifikat Saya</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem as-child>
+                                    <Link href="/payments">Riwayat Pembayaran</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem as-child>
                                     <Link href="/settings/profile">Pengaturan</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
@@ -243,6 +249,18 @@ const toggleTheme = () => {
                             class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                         >
                             Dashboard
+                        </Link>
+                        <Link
+                            href="/certificates"
+                            class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                        >
+                            Sertifikat Saya
+                        </Link>
+                        <Link
+                            href="/payments"
+                            class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                        >
+                            Riwayat Pembayaran
                         </Link>
                         <Link
                             href="/logout"

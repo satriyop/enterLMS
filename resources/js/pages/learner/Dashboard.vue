@@ -9,7 +9,8 @@ import Footer from '@/components/home/Footer.vue';
 import FlashMessages from '@/components/FlashMessages.vue';
 import { Badge } from '@/components/ui/badge';
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Mail } from 'lucide-vue-next';
+import { BookOpen, Mail, Award, CreditCard, ChevronRight } from 'lucide-vue-next';
+import { Card, CardContent } from '@/components/ui/card';
 import { computed } from 'vue';
 import MyLearningCard from '@/components/courses/MyLearningCard.vue';
 import FeaturedCoursesCarousel from '@/components/courses/FeaturedCoursesCarousel.vue';
@@ -131,6 +132,69 @@ const browseCoursesFormatted = computed(() =>
             <FlashMessages />
 
             <div class="flex flex-col gap-8">
+                <!-- Quick Access Cards -->
+                <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <Link href="/certificates">
+                        <Card class="group cursor-pointer transition-all hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700">
+                            <CardContent class="flex items-center gap-4 p-4">
+                                <div class="rounded-lg bg-amber-100 p-3 dark:bg-amber-900/30">
+                                    <Award class="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-foreground">Sertifikat</p>
+                                    <p class="text-sm text-muted-foreground">Lihat sertifikat Anda</p>
+                                </div>
+                                <ChevronRight class="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
+                            </CardContent>
+                        </Card>
+                    </Link>
+
+                    <Link href="/payments">
+                        <Card class="group cursor-pointer transition-all hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700">
+                            <CardContent class="flex items-center gap-4 p-4">
+                                <div class="rounded-lg bg-blue-100 p-3 dark:bg-blue-900/30">
+                                    <CreditCard class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-foreground">Pembayaran</p>
+                                    <p class="text-sm text-muted-foreground">Riwayat transaksi</p>
+                                </div>
+                                <ChevronRight class="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
+                            </CardContent>
+                        </Card>
+                    </Link>
+
+                    <Link :href="MyLearningController().url">
+                        <Card class="group cursor-pointer transition-all hover:shadow-md hover:border-green-300 dark:hover:border-green-700">
+                            <CardContent class="flex items-center gap-4 p-4">
+                                <div class="rounded-lg bg-green-100 p-3 dark:bg-green-900/30">
+                                    <BookOpen class="h-6 w-6 text-green-600 dark:text-green-400" />
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-foreground">Pembelajaran</p>
+                                    <p class="text-sm text-muted-foreground">Kursus aktif Anda</p>
+                                </div>
+                                <ChevronRight class="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
+                            </CardContent>
+                        </Card>
+                    </Link>
+
+                    <Link :href="coursesIndex().url">
+                        <Card class="group cursor-pointer transition-all hover:shadow-md hover:border-purple-300 dark:hover:border-purple-700">
+                            <CardContent class="flex items-center gap-4 p-4">
+                                <div class="rounded-lg bg-purple-100 p-3 dark:bg-purple-900/30">
+                                    <Mail class="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-foreground">Jelajahi</p>
+                                    <p class="text-sm text-muted-foreground">Temukan kursus baru</p>
+                                </div>
+                                <ChevronRight class="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
+                            </CardContent>
+                        </Card>
+                    </Link>
+                </section>
+
                 <!-- Featured Courses Carousel -->
                 <FeaturedCoursesCarousel :courses="featuredCoursesFormatted" />
 

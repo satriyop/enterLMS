@@ -11,14 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import { Head, router } from '@inertiajs/vue3';
 import {
     FileText,
@@ -350,37 +342,39 @@ const formatDate = (dateStr: string) => {
                         </CardTitle>
                         <CardDescription>Pendaftaran, penyelesaian, dan pembatalan per hari</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Tanggal</TableHead>
-                                    <TableHead class="text-right">Daftar</TableHead>
-                                    <TableHead class="text-right">Selesai</TableHead>
-                                    <TableHead class="text-right">Batal</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow v-for="activity in sortedEnrollmentActivity" :key="activity.date">
-                                    <TableCell class="font-medium">{{ formatDate(activity.date) }}</TableCell>
-                                    <TableCell class="text-right">
-                                        <Badge variant="secondary">{{ activity.enrollments }}</Badge>
-                                    </TableCell>
-                                    <TableCell class="text-right">
-                                        <Badge variant="default" class="bg-green-500">{{ activity.completions }}</Badge>
-                                    </TableCell>
-                                    <TableCell class="text-right">
-                                        <Badge v-if="activity.drops > 0" variant="destructive">{{ activity.drops }}</Badge>
-                                        <span v-else class="text-gray-400">-</span>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow v-if="sortedEnrollmentActivity.length === 0">
-                                    <TableCell colspan="4" class="text-center text-gray-500">
-                                        Tidak ada aktivitas pada periode ini
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
+                    <CardContent class="p-0">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b bg-muted/50">
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Tanggal</th>
+                                        <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Daftar</th>
+                                        <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Selesai</th>
+                                        <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Batal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="activity in sortedEnrollmentActivity" :key="activity.date" class="border-b last:border-0">
+                                        <td class="px-4 py-3 font-medium">{{ formatDate(activity.date) }}</td>
+                                        <td class="px-4 py-3 text-right">
+                                            <Badge variant="secondary">{{ activity.enrollments }}</Badge>
+                                        </td>
+                                        <td class="px-4 py-3 text-right">
+                                            <Badge variant="default" class="bg-green-500">{{ activity.completions }}</Badge>
+                                        </td>
+                                        <td class="px-4 py-3 text-right">
+                                            <Badge v-if="activity.drops > 0" variant="destructive">{{ activity.drops }}</Badge>
+                                            <span v-else class="text-gray-400">-</span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="sortedEnrollmentActivity.length === 0">
+                                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                                            Tidak ada aktivitas pada periode ini
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -393,36 +387,38 @@ const formatDate = (dateStr: string) => {
                         </CardTitle>
                         <CardDescription>Ujian dimulai, dikumpulkan, dan dinilai per hari</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Tanggal</TableHead>
-                                    <TableHead class="text-right">Mulai</TableHead>
-                                    <TableHead class="text-right">Kumpul</TableHead>
-                                    <TableHead class="text-right">Dinilai</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow v-for="activity in sortedAssessmentActivity" :key="activity.date">
-                                    <TableCell class="font-medium">{{ formatDate(activity.date) }}</TableCell>
-                                    <TableCell class="text-right">
-                                        <Badge variant="outline">{{ activity.attempts_started }}</Badge>
-                                    </TableCell>
-                                    <TableCell class="text-right">
-                                        <Badge variant="secondary">{{ activity.attempts_submitted }}</Badge>
-                                    </TableCell>
-                                    <TableCell class="text-right">
-                                        <Badge variant="default">{{ activity.graded }}</Badge>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow v-if="sortedAssessmentActivity.length === 0">
-                                    <TableCell colspan="4" class="text-center text-gray-500">
-                                        Tidak ada aktivitas pada periode ini
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
+                    <CardContent class="p-0">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b bg-muted/50">
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Tanggal</th>
+                                        <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Mulai</th>
+                                        <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Kumpul</th>
+                                        <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Dinilai</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="activity in sortedAssessmentActivity" :key="activity.date" class="border-b last:border-0">
+                                        <td class="px-4 py-3 font-medium">{{ formatDate(activity.date) }}</td>
+                                        <td class="px-4 py-3 text-right">
+                                            <Badge variant="outline">{{ activity.attempts_started }}</Badge>
+                                        </td>
+                                        <td class="px-4 py-3 text-right">
+                                            <Badge variant="secondary">{{ activity.attempts_submitted }}</Badge>
+                                        </td>
+                                        <td class="px-4 py-3 text-right">
+                                            <Badge variant="default">{{ activity.graded }}</Badge>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="sortedAssessmentActivity.length === 0">
+                                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                                            Tidak ada aktivitas pada periode ini
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
