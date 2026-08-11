@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
+        "build": "vite build && vite build --ssr",
         "build:ssr": "vite build && vite build --ssr",
         "dev": "vite",
         "format": "prettier --write resources/",
@@ -41,7 +41,8 @@
         "vue-tsc": "^3.0.0"
     },
     "dependencies": {
-        "@inertiajs/vue3": "^2.1.0",
+        "@inertiajs/vite": "^3.6.1",
+        "@inertiajs/vue3": "^3.6.1",
         "@tiptap/extension-code-block-lowlight": "^3.11.0",
         "@tiptap/extension-image": "^3.11.0",
         "@tiptap/extension-link": "^3.11.0",
@@ -51,6 +52,7 @@
         "@tiptap/starter-kit": "^3.11.0",
         "@tiptap/vue-3": "^3.11.0",
         "@vueuse/core": "^14.0.0",
+        "axios": "^1.19.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "laravel-vite-plugin": "^2.0.0",
