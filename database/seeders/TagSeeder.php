@@ -6,61 +6,41 @@ use App\Models\Tag;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
+/**
+ * Banking / compliance tags for Enteraksi LMS.
+ */
 class TagSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $tags = [
-            'Pemrograman',
-            'Web Development',
-            'Mobile App',
-            'Database',
-            'Cloud Computing',
-            'Artificial Intelligence',
-            'Machine Learning',
-            'Data Science',
-            'Cyber Security',
-            'DevOps',
-            'Manajemen Proyek',
-            'Kepemimpinan',
-            'Komunikasi',
-            'Negosiasi',
-            'Presentasi',
-            'Excel',
-            'Python',
-            'JavaScript',
-            'PHP',
-            'Laravel',
-            'Vue.js',
-            'React',
-            'UI/UX Design',
-            'Desain Grafis',
-            'Adobe Photoshop',
-            'Figma',
-            'Akuntansi',
-            'Keuangan',
-            'Investasi',
-            'Pemasaran Digital',
-            'SEO',
-            'Social Media Marketing',
-            'Content Writing',
-            'Produktivitas',
-            'Time Management',
-            'Bahasa Inggris',
-            'Bahasa Jepang',
-            'TOEFL',
-            'IELTS',
-            'Public Speaking',
+            'OJK',
+            'POJK',
+            'Kepatuhan',
+            'GCG',
+            'APU-PPT',
+            'AML',
+            'CDD',
+            'EDD',
+            'Basel III',
+            'Manajemen Risiko',
+            'Risiko Kredit',
+            'Risiko Operasional',
+            'Digital Banking',
+            'Open Banking',
+            'Keamanan Siber',
+            'Kontrol Internal',
+            'Onboarding',
+            'Produk Bank',
+            'Sertifikasi Internal',
+            'Pelatihan Wajib',
         ];
 
         foreach ($tags as $tagName) {
-            Tag::create([
-                'name' => $tagName,
-                'slug' => Str::slug($tagName),
-            ]);
+            Tag::query()->firstOrCreate(
+                ['slug' => Str::slug($tagName)],
+                ['name' => $tagName]
+            );
         }
     }
 }

@@ -37,7 +37,7 @@ class EnrollmentSeeder extends Seeder
         }
 
         if ($publishedCourses->isEmpty()) {
-            $this->command->warn('No published courses found. Run CourseSeeder first.');
+            $this->command->warn('No published courses found. Run BankingCourseSeeder / FreeFlowDemoSeeder first.');
 
             return;
         }

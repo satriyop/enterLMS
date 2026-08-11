@@ -29,7 +29,7 @@ class QuestionBankSeeder extends Seeder
         $this->seedGovernanceQuestions($trainers->last(), $tags);
         $this->seedGeneralBankingQuestions($trainers->first(), $tags);
 
-        $this->command->info('Question Bank seeded with ' . QuestionBankItem::count() . ' questions.');
+        $this->command->info('Question Bank seeded with '.QuestionBankItem::count().' questions.');
     }
 
     private function createTags(): array

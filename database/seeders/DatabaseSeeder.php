@@ -6,55 +6,45 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Default local/demo seed for Enteraksi (banking compliance LMS).
+ *
+ * Primary accounts come from FreeFlowDemoSeeder (password: password).
+ * Content stack: banking courses → learning paths → enrollments → assessments → question bank.
+ */
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // Core demo accounts (password: password) — FreeFlowDemoSeeder will upsert richer profiles
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'role' => 'learner',
-            'password' => Hash::make('password'),
-        ]);
+        // Extra learners for enrollment volume demos (beyond free-flow accounts)
+        $extraLearners = [
+            ['name' => 'Ayu Lestari', 'email' => 'ayu.lestari@example.com'],
+            ['name' => 'Rizky Pratama', 'email' => 'rizky.pratama@example.com'],
+            ['name' => 'Maya Putri', 'email' => 'maya.putri@example.com'],
+        ];
 
-        // Additional learners for enrollment variety
-        User::factory()->count(4)->create([
-            'role' => 'learner',
-            'password' => Hash::make('password'),
-        ]);
-
-        User::factory()->create([
-            'name' => 'Content Manager',
-            'email' => 'content@example.com',
-            'role' => 'content_manager',
-            'password' => Hash::make('password'),
-        ]);
-
-        User::factory()->create([
-            'name' => 'Trainer',
-            'email' => 'trainer@example.com',
-            'role' => 'trainer',
-            'password' => Hash::make('password'),
-        ]);
-
-        User::factory()->create([
-            'name' => 'LMS Admin',
-            'email' => 'admin@example.com',
-            'role' => 'lms_admin',
-            'password' => Hash::make('password'),
-        ]);
+        foreach ($extraLearners as $learner) {
+            User::query()->firstOrCreate(
+                ['email' => $learner['email']],
+                [
+                    'name' => $learner['name'],
+                    'role' => 'learner',
+                    'password' => Hash::make('password'),
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
 
         $this->call([
+            // Demo users + free orientation course
+            FreeFlowDemoSeeder::class,
+            // Taxonomy (banking)
             CategorySeeder::class,
             TagSeeder::class,
-            CourseSeeder::class,
+            // Catalog & paths
             BankingCourseSeeder::class,
-            FreeFlowDemoSeeder::class,
             LearningPathSeeder::class,
+            // Sample activity
             EnrollmentSeeder::class,
             AssessmentSeeder::class,
             QuestionBankSeeder::class,

@@ -67,14 +67,21 @@ Visit `http://localhost:8000` in your browser.
 
 ### Test Accounts
 
-After seeding, these accounts are available:
+After seeding (`php artisan migrate:fresh --seed`), password for all demo accounts is **`password`**:
 
-| Role | Email | Password |
-|------|-------|----------|
-| Learner | test@example.com | password |
-| Content Manager | content@example.com | password |
-| Trainer | trainer@example.com | password |
-| LMS Admin | admin@example.com | password |
+| Role | Email |
+|------|-------|
+| Learner | learner@enteraksi.test |
+| Content Manager | content@enteraksi.test |
+| Trainer | trainer@enteraksi.test |
+| LMS Admin | admin@enteraksi.test |
+
+Free orientation course: **Orientasi Kepatuhan Perbankan (Demo Gratis)**.
+
+```bash
+# Free-flow demo only (users + one free course)
+php artisan db:seed --class=FreeFlowDemoSeeder
+```
 
 ## Documentation
 

@@ -68,7 +68,7 @@ class AssessmentSeeder extends Seeder
         $lmsAdmin = User::where('role', 'lms_admin')->first();
 
         if ($publishedCourses->isEmpty()) {
-            $this->command->warn('No published courses found. Run CourseSeeder first.');
+            $this->command->warn('No published courses found. Run BankingCourseSeeder / FreeFlowDemoSeeder first.');
 
             return;
         }
@@ -79,16 +79,14 @@ class AssessmentSeeder extends Seeder
             return;
         }
 
-        // Check if assessments already exist
-        if (Assessment::exists()) {
-            $this->command->info('Assessments already exist. Skipping assessment seeding.');
-
-            return;
-        }
-
-        $this->command->info('Creating assessments for courses...');
+        $this->command->info('Creating assessments for courses without assessments...');
 
         foreach ($publishedCourses as $course) {
+            // Keep FreeFlow / manual assessments; only seed empty courses
+            if ($course->assessments()->exists()) {
+                continue;
+            }
+
             // Create 1-2 assessments per course
             $numAssessments = rand(1, 2);
 
@@ -290,7 +288,7 @@ INSTRUCTIONS;
         // Get enrollments with active or completed status
         $enrollments = Enrollment::query()
             ->whereIn('status', ['active', 'completed'])
-            ->with('course.assessments')
+            ->with(['user', 'course.assessments'])
             ->get();
 
         if ($enrollments->isEmpty()) {

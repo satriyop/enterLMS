@@ -6,53 +6,50 @@ use App\Models\Category;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
+/**
+ * Banking / compliance categories for Enteraksi LMS.
+ */
 class CategorySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $categories = [
             [
-                'name' => 'Teknologi Informasi',
-                'description' => 'Kursus seputar pemrograman, pengembangan software, dan teknologi digital.',
+                'name' => 'Kepatuhan Perbankan',
+                'description' => 'Regulasi OJK, GCG, dan kontrol internal lembaga jasa keuangan.',
                 'order' => 1,
             ],
             [
-                'name' => 'Bisnis & Manajemen',
-                'description' => 'Kursus untuk mengembangkan keterampilan bisnis dan manajemen.',
+                'name' => 'APU-PPT',
+                'description' => 'Anti pencucian uang, pencegahan pendanaan terorisme, dan due diligence nasabah.',
                 'order' => 2,
             ],
             [
-                'name' => 'Bahasa',
-                'description' => 'Kursus pembelajaran bahasa asing untuk berbagai keperluan.',
+                'name' => 'Transformasi Digital',
+                'description' => 'Digital banking, open banking, API, dan keamanan siber perbankan.',
                 'order' => 3,
             ],
             [
-                'name' => 'Desain & Multimedia',
-                'description' => 'Kursus desain grafis, UI/UX, dan produksi multimedia.',
+                'name' => 'Manajemen Risiko',
+                'description' => 'Basel, risiko kredit, operasional, likuiditas, dan framework risiko bank.',
                 'order' => 4,
             ],
             [
-                'name' => 'Keuangan & Akuntansi',
-                'description' => 'Kursus manajemen keuangan, akuntansi, dan investasi.',
+                'name' => 'Dasar Perbankan',
+                'description' => 'Onboarding industri perbankan Indonesia, produk, dan layanan bank.',
                 'order' => 5,
-            ],
-            [
-                'name' => 'Soft Skills',
-                'description' => 'Kursus pengembangan keterampilan interpersonal dan kepribadian.',
-                'order' => 6,
             ],
         ];
 
         foreach ($categories as $category) {
-            Category::create([
-                'name' => $category['name'],
-                'slug' => Str::slug($category['name']),
-                'description' => $category['description'],
-                'order' => $category['order'],
-            ]);
+            Category::query()->firstOrCreate(
+                ['slug' => Str::slug($category['name'])],
+                [
+                    'name' => $category['name'],
+                    'description' => $category['description'],
+                    'order' => $category['order'],
+                ]
+            );
         }
     }
 }
