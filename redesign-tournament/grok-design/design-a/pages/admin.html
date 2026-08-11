@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin · Design A · Enteraksi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topnav">
+    <div class="container-wide topnav-inner">
+      <a class="brand" href="../index.html"><span class="brand-mark">E</span> Enteraksi</a>
+      <nav class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="browse.html">Kursus</a>
+        <a href="my-learning.html">Belajar</a>
+        <a href="learning-paths.html">Path</a>
+        <a href="certificates.html">Sertifikat</a>
+        <a href="cm-courses.html">CM</a>
+        <a href="admin.html" class="active">Admin</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-ghost btn-sm" href="notifications.html">Notifikasi</a>
+        <span class="pill">Budi · Learner</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container-wide stack-lg">
+      <div>
+        <h1 style="font-size:2rem">Admin overview</h1>
+        <p class="muted" style="margin:.35rem 0 0">Ringkasan sistem · LMS Admin</p>
+      </div>
+      <div class="grid-4">
+        <div class="card card-pad"><span class="tiny">Pengguna</span><strong style="font-size:1.6rem;display:block;margin-top:.3rem">128</strong></div>
+        <div class="card card-pad"><span class="tiny">Kursus published</span><strong style="font-size:1.6rem;display:block;margin-top:.3rem">15</strong></div>
+        <div class="card card-pad"><span class="tiny">Enrollment aktif</span><strong style="font-size:1.6rem;display:block;margin-top:.3rem">342</strong></div>
+        <div class="card card-pad"><span class="tiny">Sertifikat terbit</span><strong style="font-size:1.6rem;display:block;margin-top:.3rem">89</strong></div>
+      </div>
+      <div class="grid-2">
+        <div class="card card-pad stack">
+          <h3>Akses cepat</h3>
+          <a class="btn btn-secondary" href="cm-courses.html">Kelola kursus</a>
+          <a class="btn btn-secondary" href="#" data-toast="Mock: Users / Categories / Tags / Trash">Users &amp; taksonomi</a>
+          <a class="btn btn-secondary" href="#" data-toast="Mock: Compliance audit report">Audit compliance</a>
+        </div>
+        <div class="card card-pad stack">
+          <h3>Kesehatan sistem</h3>
+          <div class="between"><span class="muted">Queue</span><span class="badge badge-green">OK</span></div>
+          <div class="between"><span class="muted">Storage</span><span class="badge badge-green">OK</span></div>
+          <div class="between"><span class="muted">Payment gateway</span><span class="badge badge-amber">Partial</span></div>
+          <div class="between"><span class="muted">SSO</span><span class="badge">Belum</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container between"><span>© Enteraksi · Design A (mockup)</span><a class="tiny" href="../index.html">← Hub Design A</a></div></footer>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

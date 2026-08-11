@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CM Editor · Design B · Enteraksi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    
+  <aside class="sidebar">
+    <a class="brand" href="../index.html"><span class="brand-mark">E</span> Enteraksi</a>
+    <div>
+      <div class="side-section">Belajar</div>
+      <nav class="side-nav">
+        <a class="" href="dashboard.html"><span class="ico">🏠</span>Dashboard</a><a class="" href="browse.html"><span class="ico">📚</span>Cari kursus</a><a class="" href="my-learning.html"><span class="ico">▶</span>Pembelajaran saya</a><a class="" href="learning-paths.html"><span class="ico">🗺</span>Learning path</a><a class="" href="certificates.html"><span class="ico">🏅</span>Sertifikat</a><a class="" href="notifications.html"><span class="ico">🔔</span>Notifikasi</a>
+      </nav>
+    </div>
+    <div>
+      <div class="side-section">Kelola</div>
+      <nav class="side-nav">
+        <a class="active" href="cm-courses.html"><span class="ico">✏️</span>CM · Kursus</a><a class="" href="admin.html"><span class="ico">⚙️</span>Admin</a>
+      </nav>
+    </div>
+    <div class="side-user">
+      <div class="avatar">BS</div>
+      <div>
+        <strong style="display:block;font-size:.9rem">Budi Santoso</strong>
+        <span class="tiny" style="color:#94a3b8">Learner</span>
+      </div>
+    </div>
+  </aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="crumbs"><a href="cm-courses.html">Kursus</a> <span class="sep">/</span> <span>Editor</span></div>
+        <div class="row"><a class="btn btn-ghost btn-sm" href="../index.html">Hub B</a></div>
+      </div>
+      <div class="content">
+
+        <div class="steps">
+          <div class="step done"><strong>1</strong> Info kursus</div>
+          <div class="step active"><strong>2</strong> Outline isi</div>
+          <div class="step"><strong>3</strong> Publish</div>
+        </div>
+        <div class="between page-title-block">
+          <h1>Editor: Orientasi Kepatuhan</h1>
+          <div class="row">
+            <button class="btn btn-secondary" data-toast="Draft tersimpan">Simpan draft</button>
+            <button class="btn btn-primary" data-toast="Published! Syarat outline terpenuhi.">Publish kursus</button>
+          </div>
+        </div>
+        <div class="grid-2" style="align-items:start">
+          <div class="card card-pad stack">
+            <h2>Informasi dasar</h2>
+            <div class="field"><label>Judul kursus</label><input class="input" value="Orientasi Kepatuhan Perbankan" /></div>
+            <div class="field"><label>Deskripsi singkat</label><textarea class="textarea">Onboarding gratis Enteraksi.</textarea></div>
+          </div>
+          <div class="card card-pad stack">
+            <div class="between"><h2>Outline</h2><button class="btn btn-ghost btn-sm" data-toast="Section baru">+ Section</button></div>
+            <div class="card card-pad" style="background:#f8fafc">
+              <strong>Section 1 · Memulai</strong>
+              <p class="tiny">2 lessons · OK</p>
+              <button class="btn btn-secondary btn-sm" data-toast="Form lesson">+ Lesson</button>
+            </div>
+            <div class="card card-pad" style="background:#f8fafc">
+              <strong>Section 2 · Kepatuhan</strong>
+              <p class="tiny">3 lessons · OK</p>
+              <button class="btn btn-secondary btn-sm" data-toast="Form lesson">+ Lesson</button>
+            </div>
+            <div class="callout"><span class="callout-icon">✓</span><div>Checklist publish: section ✓ · lesson ✓ · siap dipublish</div></div>
+          </div>
+        </div>
+    
+        <p class="footer-note">Design B mockup · Enteraksi · First-timer navigation</p>
+      </div>
+    </div>
+  </div>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

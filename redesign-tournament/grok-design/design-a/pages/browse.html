@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Browse · Design A · Enteraksi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topnav">
+    <div class="container-wide topnav-inner">
+      <a class="brand" href="../index.html"><span class="brand-mark">E</span> Enteraksi</a>
+      <nav class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="browse.html" class="active">Kursus</a>
+        <a href="my-learning.html">Belajar</a>
+        <a href="learning-paths.html">Path</a>
+        <a href="certificates.html">Sertifikat</a>
+        <a href="cm-courses.html">CM</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-ghost btn-sm" href="notifications.html">Notifikasi</a>
+        <span class="pill">Budi · Learner</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container-wide stack-lg">
+      <div class="between">
+        <div>
+          <h1 style="font-size:2rem">Katalog kursus</h1>
+          <p class="muted" style="margin:.4rem 0 0">15 kursus compliance tersedia</p>
+        </div>
+      </div>
+      <div class="row">
+        <input class="input" style="max-width:320px" placeholder="Cari kursus, OJK, APU…" />
+        <select class="input" style="width:auto"><option>Semua kategori</option><option>Kepatuhan</option><option>APU-PPT</option><option>Risiko</option></select>
+        <select class="input" style="width:auto"><option>Semua tingkat</option><option>Pemula</option><option>Menengah</option></select>
+      </div>
+      <div class="grid-3">
+        
+        <a class="card card-hover" href="course-detail.html">
+          <div class="thumb thumb-dark"><span class="thumb-label">Pemula</span></div>
+          <div class="card-pad stack">
+            <span class="badge">Gratis</span>
+            <h3>Orientasi Kepatuhan Perbankan</h3>
+            <p class="tiny" style="margin:0">5 pelajaran · ~45–180 mnt</p>
+          </div>
+        </a>
+        <a class="card card-hover" href="course-detail.html">
+          <div class="thumb "><span class="thumb-label">Menengah</span></div>
+          <div class="card-pad stack">
+            <span class="badge">OJK</span>
+            <h3>Dasar-Dasar Regulasi OJK</h3>
+            <p class="tiny" style="margin:0">5 pelajaran · ~45–180 mnt</p>
+          </div>
+        </a>
+        <a class="card card-hover" href="course-detail.html">
+          <div class="thumb "><span class="thumb-label">Lanjutan</span></div>
+          <div class="card-pad stack">
+            <span class="badge">APU-PPT</span>
+            <h3>Tata Kelola GCG Perbankan</h3>
+            <p class="tiny" style="margin:0">5 pelajaran · ~45–180 mnt</p>
+          </div>
+        </a>
+        <a class="card card-hover" href="course-detail.html">
+          <div class="thumb "><span class="thumb-label">Pemula</span></div>
+          <div class="card-pad stack">
+            <span class="badge">Digital</span>
+            <h3>Pengenalan Anti Pencucian Uang</h3>
+            <p class="tiny" style="margin:0">5 pelajaran · ~45–180 mnt</p>
+          </div>
+        </a>
+        <a class="card card-hover" href="course-detail.html">
+          <div class="thumb "><span class="thumb-label">Menengah</span></div>
+          <div class="card-pad stack">
+            <span class="badge">Risiko</span>
+            <h3>Customer Due Diligence (CDD)</h3>
+            <p class="tiny" style="margin:0">5 pelajaran · ~45–180 mnt</p>
+          </div>
+        </a>
+        <a class="card card-hover" href="course-detail.html">
+          <div class="thumb "><span class="thumb-label">Lanjutan</span></div>
+          <div class="card-pad stack">
+            <span class="badge">Gratis</span>
+            <h3>Keamanan Siber Perbankan</h3>
+            <p class="tiny" style="margin:0">5 pelajaran · ~45–180 mnt</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container between"><span>© Enteraksi · Design A (mockup)</span><a class="tiny" href="../index.html">← Hub Design A</a></div></footer>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

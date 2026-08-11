@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pembelajaran Saya · Design A · Enteraksi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topnav">
+    <div class="container-wide topnav-inner">
+      <a class="brand" href="../index.html"><span class="brand-mark">E</span> Enteraksi</a>
+      <nav class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="browse.html">Kursus</a>
+        <a href="my-learning.html" class="active">Belajar</a>
+        <a href="learning-paths.html">Path</a>
+        <a href="certificates.html">Sertifikat</a>
+        <a href="cm-courses.html">CM</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-ghost btn-sm" href="notifications.html">Notifikasi</a>
+        <span class="pill">Budi · Learner</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container-wide stack-lg">
+      <div>
+        <h1 style="font-size:2rem">Pembelajaran saya</h1>
+        <p class="muted" style="margin:.4rem 0 0">Semua kursus yang Anda ikuti</p>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary btn-sm">Semua</button>
+        <button class="btn btn-secondary btn-sm">Aktif</button>
+        <button class="btn btn-secondary btn-sm">Selesai</button>
+      </div>
+      <div class="grid-3">
+        <a class="card card-hover" href="lesson.html">
+          <div class="thumb"></div>
+          <div class="card-pad stack">
+            <span class="badge badge-blue">Aktif</span>
+            <h3>Orientasi Kepatuhan Perbankan</h3>
+            <div class="progress"><span data-progress-bar style="width:60%"></span></div>
+            <span class="tiny" data-progress-label>60% selesai</span>
+          </div>
+        </a>
+        <a class="card card-hover" href="lesson.html">
+          <div class="thumb"></div>
+          <div class="card-pad stack">
+            <span class="badge badge-green">Selesai</span>
+            <h3>Dasar-Dasar Regulasi OJK</h3>
+            <div class="progress"><span style="width:100%"></span></div>
+            <span class="tiny">Sertifikat tersedia</span>
+          </div>
+        </a>
+        <a class="card card-hover" href="browse.html" style="display:grid;place-items:center;min-height:240px;border-style:dashed">
+          <div style="text-align:center" class="stack"><strong>Belum ada lagi?</strong><span class="muted">Jelajahi katalog</span></div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container between"><span>© Enteraksi · Design A (mockup)</span><a class="tiny" href="../index.html">← Hub Design A</a></div></footer>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

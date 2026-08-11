@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verifikasi · Design A · Enteraksi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topnav">
+    <div class="container topnav-inner">
+      <a class="brand" href="../index.html"><span class="brand-mark">E</span> Enteraksi</a>
+      <nav class="nav-links">
+        <a href="browse.html">Kursus</a>
+        <a href="learning-paths.html">Learning Path</a>
+        <a href="verify.html" class="active">Verifikasi</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-ghost btn-sm" href="login.html">Masuk</a>
+        <a class="btn btn-primary btn-sm" href="register.html">Daftar</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container" style="max-width:560px">
+      <div class="stack-lg" style="text-align:center">
+        <div>
+          <h1 style="font-size:2rem">Verifikasi sertifikat</h1>
+          <p class="muted">Masukkan kode verifikasi 16 karakter</p>
+        </div>
+        <div class="card card-pad stack">
+          <input class="input" placeholder="Contoh: A1B2C3D4E5F6G7H8" style="text-align:center;letter-spacing:.08em" />
+          <button class="btn btn-primary btn-block" data-toast="Sertifikat valid · Budi Santoso · Dasar Regulasi OJK">Periksa keaslian</button>
+        </div>
+        <div class="card card-pad" style="text-align:left">
+          <div class="row" style="margin-bottom:.75rem"><span class="badge badge-green">Valid</span></div>
+          <h3>Budi Santoso</h3>
+          <p class="muted" style="margin:.35rem 0">Dasar-Dasar Regulasi OJK</p>
+          <p class="tiny">Diterbitkan 11 Agustus 2026 · CERT-2026-00042</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container between"><span>© Enteraksi · Design A (mockup)</span><a class="tiny" href="../index.html">← Hub Design A</a></div></footer>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

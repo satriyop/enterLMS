@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard · Design A · Enteraksi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topnav">
+    <div class="container-wide topnav-inner">
+      <a class="brand" href="../index.html"><span class="brand-mark">E</span> Enteraksi</a>
+      <nav class="nav-links">
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="browse.html">Kursus</a>
+        <a href="my-learning.html">Belajar</a>
+        <a href="learning-paths.html">Path</a>
+        <a href="certificates.html">Sertifikat</a>
+        <a href="cm-courses.html">CM</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-ghost btn-sm" href="notifications.html">Notifikasi</a>
+        <span class="pill">Budi · Learner</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container-wide stack-lg">
+      <div class="between">
+        <div>
+          <p class="tiny" style="margin:0 0 .35rem">Selamat datang kembali</p>
+          <h1 style="font-size:2rem">Halo, Budi</h1>
+        </div>
+        <a class="btn btn-primary" href="browse.html">Cari kursus</a>
+      </div>
+      <div class="grid-4">
+        <a class="card card-pad card-hover" href="certificates.html"><span class="tiny">Sertifikat</span><strong style="font-size:1.4rem;display:block;margin-top:.35rem">2</strong></a>
+        <a class="card card-pad card-hover" href="my-learning.html"><span class="tiny">Aktif</span><strong style="font-size:1.4rem;display:block;margin-top:.35rem">3</strong></a>
+        <a class="card card-pad card-hover" href="learning-paths.html"><span class="tiny">Path</span><strong style="font-size:1.4rem;display:block;margin-top:.35rem">1</strong></a>
+        <a class="card card-pad card-hover" href="notifications.html"><span class="tiny">Notifikasi</span><strong style="font-size:1.4rem;display:block;margin-top:.35rem">4</strong></a>
+      </div>
+      <div>
+        <div class="between" style="margin-bottom:1rem"><h2>Lanjutkan belajar</h2><a class="btn btn-ghost btn-sm" href="my-learning.html">Semua →</a></div>
+        <div class="grid-3">
+          <a class="card card-hover" href="lesson.html">
+            <div class="thumb"></div>
+            <div class="card-pad stack">
+              <h3>Orientasi Kepatuhan Perbankan</h3>
+              <div class="progress"><span style="width:60%"></span></div>
+              <span class="tiny">60% · Lanjut ke pelajaran 4</span>
+            </div>
+          </a>
+          <a class="card card-hover" href="lesson.html">
+            <div class="thumb"></div>
+            <div class="card-pad stack">
+              <h3>Dasar-Dasar Regulasi OJK</h3>
+              <div class="progress"><span style="width:25%"></span></div>
+              <span class="tiny">25% · 2 dari 7 pelajaran</span>
+            </div>
+          </a>
+          <a class="card card-hover" href="browse.html" style="display:grid;place-items:center;min-height:220px;border-style:dashed">
+            <span class="muted">+ Temukan kursus baru</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container between"><span>© Enteraksi · Design A (mockup)</span><a class="tiny" href="../index.html">← Hub Design A</a></div></footer>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

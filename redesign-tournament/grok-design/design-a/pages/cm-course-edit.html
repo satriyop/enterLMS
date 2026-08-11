@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CM Editor · Design A · Enteraksi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topnav">
+    <div class="container-wide topnav-inner">
+      <a class="brand" href="../index.html"><span class="brand-mark">E</span> Enteraksi</a>
+      <nav class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="browse.html">Kursus</a>
+        <a href="my-learning.html">Belajar</a>
+        <a href="learning-paths.html">Path</a>
+        <a href="certificates.html">Sertifikat</a>
+        <a href="cm-courses.html" class="active">CM</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-ghost btn-sm" href="notifications.html">Notifikasi</a>
+        <span class="pill">Budi · Learner</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container stack-lg">
+      <div class="between">
+        <div>
+          <a class="tiny" href="cm-courses.html">← Daftar kursus</a>
+          <h1 style="font-size:1.75rem;margin-top:.4rem">Editor outline</h1>
+        </div>
+        <div class="row">
+          <button class="btn btn-secondary" data-toast="Disimpan sebagai draft">Simpan draft</button>
+          <button class="btn btn-primary" data-toast="Kursus dipublikasikan (validasi: section + lesson OK)">Publish</button>
+        </div>
+      </div>
+      <div class="grid-2" style="align-items:start">
+        <div class="card card-pad stack">
+          <div class="field"><label>Judul</label><input class="input" value="Orientasi Kepatuhan Perbankan" /></div>
+          <div class="field"><label>Deskripsi singkat</label><textarea class="textarea">Kursus onboarding gratis untuk alur belajar Enteraksi.</textarea></div>
+          <div class="field"><label>Tingkat</label><select class="input"><option>Pemula</option><option>Menengah</option></select></div>
+        </div>
+        <div class="card card-pad stack">
+          <div class="between"><strong>Outline</strong><button class="btn btn-ghost btn-sm" data-toast="Section ditambahkan">+ Section</button></div>
+          <div class="card card-pad" style="background:#fafafa">
+            <strong style="font-size:.9rem">Section 1 · Memulai di Enteraksi</strong>
+            <p class="tiny" style="margin:.35rem 0">2 pelajaran</p>
+            <button class="btn btn-secondary btn-sm" data-toast="Lesson form dibuka">+ Lesson</button>
+          </div>
+          <div class="card card-pad" style="background:#fafafa">
+            <strong style="font-size:.9rem">Section 2 · Dasar Kepatuhan</strong>
+            <p class="tiny" style="margin:.35rem 0">3 pelajaran</p>
+            <button class="btn btn-secondary btn-sm" data-toast="Lesson form dibuka">+ Lesson</button>
+          </div>
+          <p class="tiny">Publish memerlukan minimal 1 section dan 1 lesson.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container between"><span>© Enteraksi · Design A (mockup)</span><a class="tiny" href="../index.html">← Hub Design A</a></div></footer>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assessment · Design A · Enteraksi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topnav">
+    <div class="container-wide topnav-inner">
+      <a class="brand" href="../index.html"><span class="brand-mark">E</span> Enteraksi</a>
+      <nav class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="browse.html">Kursus</a>
+        <a href="my-learning.html" class="active">Belajar</a>
+        <a href="learning-paths.html">Path</a>
+        <a href="certificates.html">Sertifikat</a>
+        <a href="cm-courses.html">CM</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-ghost btn-sm" href="notifications.html">Notifikasi</a>
+        <span class="pill">Budi · Learner</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container" style="max-width:720px">
+      <div class="stack-lg">
+        <div>
+          <a class="tiny" href="lesson.html">← Kembali ke pelajaran</a>
+          <h1 style="font-size:1.75rem;margin-top:.5rem">Kuis Singkat Orientasi</h1>
+          <p class="muted">1 pertanyaan · lulus ≥ 60% · opsional</p>
+        </div>
+        <div class="card card-pad stack-lg">
+          <div>
+            <span class="badge">Soal 1 / 1</span>
+            <h3 style="margin-top:.75rem">OJK adalah lembaga yang mengatur dan mengawasi industri jasa keuangan di Indonesia.</h3>
+          </div>
+          <div class="quiz-options stack">
+            <label class="quiz-option selected"><input type="radio" name="q1" checked /><span>Benar</span></label>
+            <label class="quiz-option"><input type="radio" name="q1" /><span>Salah</span></label>
+          </div>
+          <button class="btn btn-primary" data-submit-quiz>Kirim jawaban</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container between"><span>© Enteraksi · Design A (mockup)</span><a class="tiny" href="../index.html">← Hub Design A</a></div></footer>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

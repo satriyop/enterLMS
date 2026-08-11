@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CM Kursus · Design A · Enteraksi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topnav">
+    <div class="container-wide topnav-inner">
+      <a class="brand" href="../index.html"><span class="brand-mark">E</span> Enteraksi</a>
+      <nav class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="browse.html">Kursus</a>
+        <a href="my-learning.html">Belajar</a>
+        <a href="learning-paths.html">Path</a>
+        <a href="certificates.html">Sertifikat</a>
+        <a href="cm-courses.html" class="active">CM</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-ghost btn-sm" href="notifications.html">Notifikasi</a>
+        <span class="pill">Budi · Learner</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container-wide stack-lg">
+      <div class="between">
+        <div>
+          <h1 style="font-size:2rem">Kelola kursus</h1>
+          <p class="muted" style="margin:.35rem 0 0">Content Manager</p>
+        </div>
+        <a class="btn btn-primary" href="cm-course-edit.html">+ Buat kursus</a>
+      </div>
+      <div class="card" style="overflow:auto">
+        <table class="table">
+          <thead><tr><th>Kursus</th><th>Status</th><th>Pelajaran</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Orientasi Kepatuhan Perbankan</strong></td>
+              <td><span class="badge badge-green">Published</span></td>
+              <td>5</td>
+              <td><a class="btn btn-ghost btn-sm" href="cm-course-edit.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td><strong>Dasar-Dasar Regulasi OJK</strong></td>
+              <td><span class="badge badge-green">Published</span></td>
+              <td>7</td>
+              <td><a class="btn btn-ghost btn-sm" href="cm-course-edit.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td><strong>Draft: Etika Pegawai Bank</strong></td>
+              <td><span class="badge">Draft</span></td>
+              <td>2</td>
+              <td><a class="btn btn-ghost btn-sm" href="cm-course-edit.html">Edit</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container between"><span>© Enteraksi · Design A (mockup)</span><a class="tiny" href="../index.html">← Hub Design A</a></div></footer>
+  <script src="../assets/app.js"></script>
+</body>
+</html>
