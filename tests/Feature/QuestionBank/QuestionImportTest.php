@@ -118,10 +118,14 @@ describe('Import Questions Store', function () {
     });
 
     it('appends to existing questions', function () {
-        // Create existing questions
+        // Create existing questions with explicit order
         Question::factory()
             ->for($this->assessment)
             ->count(2)
+            ->sequence(
+                ['order' => 1],
+                ['order' => 2],
+            )
             ->create();
 
         $bankItem = QuestionBankItem::factory()
@@ -137,7 +141,7 @@ describe('Import Questions Store', function () {
 
         expect($this->assessment->questions()->count())->toBe(3);
 
-        // New question should have order = 3 (after existing 2)
+        // New question should have order after existing max (2 + 1 = 3)
         $newQuestion = $this->assessment->questions()->where('source_question_bank_item_id', $bankItem->id)->first();
         expect($newQuestion->order)->toBe(3);
     });
