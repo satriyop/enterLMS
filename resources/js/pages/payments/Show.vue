@@ -14,6 +14,8 @@ import { Separator } from '@/components/ui/separator';
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
 import { useConfirmation } from '@/composables/ui/useConfirmation';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { index as paymentsIndex, cancel as paymentCancel } from '@/actions/App/Http/Controllers/PaymentController';
+import { show as courseShow } from '@/actions/App/Http/Controllers/CourseController';
 import {
     CreditCard,
     Clock,
@@ -154,7 +156,7 @@ const handleCancel = async () => {
     });
 
     if (confirmed) {
-        router.post(`/payments/${props.payment.id}/cancel`);
+        router.post(paymentCancel.url(props.payment.id));
     }
 };
 </script>
@@ -171,7 +173,7 @@ const handleCancel = async () => {
             <!-- Back Button -->
             <div class="mb-6">
                 <Button variant="ghost" size="sm" as-child>
-                    <Link href="/payments">
+                    <Link :href="paymentsIndex.url()">
                         <ArrowLeft class="mr-2 h-4 w-4" />
                         Kembali ke Daftar Pembayaran
                     </Link>
@@ -310,7 +312,7 @@ const handleCancel = async () => {
                         variant="outline"
                         as-child
                     >
-                        <Link :href="`/courses/${payment.payable_id}`">
+                        <Link :href="courseShow.url(payment.payable_id)">
                             <BookOpen class="mr-2 h-5 w-5" />
                             Mulai Belajar
                         </Link>
@@ -346,7 +348,7 @@ const handleCancel = async () => {
                                 size="sm"
                                 as-child
                             >
-                                <Link :href="`/courses/${payment.payable_id}`">
+                                <Link :href="courseShow.url(payment.payable_id)">
                                     Kembali ke Kursus
                                 </Link>
                             </Button>

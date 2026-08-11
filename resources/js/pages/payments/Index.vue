@@ -27,6 +27,8 @@ import {
 import { computed } from 'vue';
 import { formatDate } from '@/lib/date';
 import type { PaginationLink } from '@/types';
+import { show as paymentShow } from '@/actions/App/Http/Controllers/PaymentController';
+import { index as coursesIndex } from '@/actions/App/Http/Controllers/CourseController';
 
 // =============================================================================
 // Types
@@ -135,7 +137,7 @@ const formatCurrency = (amount: number, currency: string) => {
             >
                 <template #action>
                     <Button as-child>
-                        <Link href="/courses">Jelajahi Kursus</Link>
+                        <Link :href="coursesIndex.url()">Jelajahi Kursus</Link>
                     </Button>
                 </template>
             </EmptyState>
@@ -222,7 +224,7 @@ const formatCurrency = (amount: number, currency: string) => {
 
                                         <!-- View Details -->
                                         <Button variant="outline" size="sm" as-child>
-                                            <Link :href="`/payments/${payment.id}`">
+                                            <Link :href="paymentShow.url(payment.id)">
                                                 <Eye class="mr-1.5 h-4 w-4" />
                                                 Detail
                                             </Link>
