@@ -4,9 +4,29 @@
 
 ---
 
+## 🛑 STOP - READ THIS BEFORE EVERY IMPLEMENTATION DECISION
+**This codebase may not align the business workflow. Always consider what this code workflow belongs to, peruse the code diligently**
+
+### Mandatory Questions Before Adding or Fixing Code
+
+1. **How Does Laravel way to solve this?**
+    - many use case already battery included using laravel convention and solution. Prioritize this.
+
+2. **Am I following a pattern just because it exists here?**
+   - Existing patterns may be WRONG. Question them.
+   - "Consistency" with a bad pattern = more bad code
+   - Ask: "If I started fresh, would I suggest it this way?"
+
+3. **Is this going to solve the REAL FIXING ROOT CAUSE or just Fixing the SYMPTOM?**
+   - Dont hide the underlying problem, dont be lazy, seek what causing this issue ?
+   - again, always consider and questioning, what is the impact for the current business/domain workflow ?
+
+### Mandatory Questions Before Adding Abstraction
+
+
 ## 🛑 STOP - READ THIS BEFORE EVERY REFACTORING/ARCHITECTURE DECISION
 
-**This codebase is OVER-ENGINEERED. Do NOT make it worse.**
+**DO NOT OVER-ENGINEERED.**
 
 ### Mandatory Questions Before Adding Abstraction
 
