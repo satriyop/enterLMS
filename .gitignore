@@ -27,3 +27,19 @@ yarn-error.log
 /.vscode
 /.zed
 stats.html
+
+# -----------------------------------------------------------------------------
+# Task system — local scratch only
+# -----------------------------------------------------------------------------
+/tasks/artifact/*
+!/tasks/artifact/README.md
+!/tasks/artifact/.gitkeep
+
+# Local / agent todo noise (do not mix with tasks/)
+**/TODO.local.md
+**/.todo
+**/.todos
+*.todo.md
+
+# Legacy investigation tracker (superseded by tasks/)
+.ai/investigation/
