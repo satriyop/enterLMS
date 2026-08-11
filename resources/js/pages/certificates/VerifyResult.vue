@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Head, Link } from '@inertiajs/vue3';
 import { CheckCircle, XCircle, AlertCircle, Calendar, Award, User, GraduationCap, ArrowLeft } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { verifySearch } from '@/actions/App/Http/Controllers/CertificateController';
 
 // =============================================================================
 // Types
@@ -170,7 +171,7 @@ const StatusIcon = computed(() => statusConfig.value.icon);
                 <!-- Actions -->
                 <div class="flex flex-col gap-2">
                     <Button as-child variant="outline" class="w-full">
-                        <Link href="/certificates/verify">
+                        <Link :href="verifySearch.url()">
                             <ArrowLeft class="mr-2 h-4 w-4" />
                             Verifikasi Sertifikat Lain
                         </Link>

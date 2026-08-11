@@ -14,6 +14,8 @@ import { Head, Link } from '@inertiajs/vue3';
 import { Award, Download, Eye, ExternalLink, Calendar, GraduationCap } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { formatDate } from '@/lib/date';
+import { stream, download, verify } from '@/actions/App/Http/Controllers/CertificateController';
+import { index as coursesIndex } from '@/actions/App/Http/Controllers/CourseController';
 
 // =============================================================================
 // Types
@@ -110,7 +112,7 @@ const getStatusBadge = (status: string) => {
             >
                 <template #action>
                     <Button as-child>
-                        <Link href="/courses">Jelajahi Kursus</Link>
+                        <Link :href="coursesIndex.url()">Jelajahi Kursus</Link>
                     </Button>
                 </template>
             </EmptyState>
@@ -167,7 +169,7 @@ const getStatusBadge = (status: string) => {
                                 class="flex-1"
                             >
                                 <a
-                                    :href="`/certificates/${certificate.id}/view`"
+                                    :href="stream.url(certificate.id)"
                                     target="_blank"
                                 >
                                     <Eye class="mr-1.5 h-4 w-4" />
@@ -179,7 +181,7 @@ const getStatusBadge = (status: string) => {
                                 as-child
                                 class="flex-1"
                             >
-                                <a :href="`/certificates/${certificate.id}/download`">
+                                <a :href="download.url(certificate.id)">
                                     <Download class="mr-1.5 h-4 w-4" />
                                     Unduh
                                 </a>
@@ -189,7 +191,7 @@ const getStatusBadge = (status: string) => {
                         <!-- Verification Link -->
                         <div class="mt-3 border-t pt-3 dark:border-gray-700">
                             <Link
-                                :href="`/certificates/verify/${certificate.verification_code}`"
+                                :href="verify.url(certificate.verification_code)"
                                 class="flex items-center gap-1 text-xs text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400"
                             >
                                 <ExternalLink class="h-3 w-3" />

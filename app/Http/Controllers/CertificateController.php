@@ -88,7 +88,7 @@ class CertificateController extends Controller
     /**
      * Public certificate verification page.
      */
-    public function verifyForm(): InertiaResponse
+    public function verifySearch(): InertiaResponse
     {
         return Inertia::render('certificates/Verify');
     }

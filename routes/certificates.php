@@ -4,9 +4,9 @@ use App\Http\Controllers\CertificateController;
 use Illuminate\Support\Facades\Route;
 
 // Public verification (no auth required)
-Route::get('verify', [CertificateController::class, 'verifyForm'])
+Route::get('certificates/verify', [CertificateController::class, 'verifySearch'])
     ->name('certificates.verify.form');
-Route::get('verify/{code}', [CertificateController::class, 'verify'])
+Route::get('certificates/verify/{code}', [CertificateController::class, 'verify'])
     ->name('certificates.verify');
 
 // Protected certificate routes
