@@ -7,6 +7,7 @@
 import Navbar from '@/components/home/Navbar.vue';
 import Footer from '@/components/home/Footer.vue';
 import LearningPathBrowseCard from '@/components/learning_paths/LearningPathBrowseCard.vue';
+import EmptyState from '@/components/crud/EmptyState.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -165,16 +166,22 @@ watch(searchQuery, () => {
             </div>
 
             <!-- Empty State -->
-            <div v-else class="flex flex-col items-center justify-center py-12 text-center">
-                <Route class="h-16 w-16 text-muted-foreground mb-4" />
-                <h2 class="text-xl font-semibold mb-2">Tidak Ada Learning Path</h2>
-                <p class="text-muted-foreground mb-4">
-                    {{ hasActiveFilters ? 'Tidak ada learning path yang sesuai dengan filter Anda.' : 'Belum ada learning path yang tersedia saat ini.' }}
-                </p>
-                <Button v-if="hasActiveFilters" variant="outline" @click="clearFilters">
-                    Hapus Filter
-                </Button>
-            </div>
+            <EmptyState
+                v-else
+                :icon="Route"
+                :title="hasActiveFilters ? 'Tidak ada learning path yang cocok' : 'Belum ada learning path'"
+                :description="
+                    hasActiveFilters
+                        ? 'Coba ubah filter untuk melihat learning path lainnya.'
+                        : 'Belum ada learning path yang dipublikasikan. Silakan kembali lagi nanti.'
+                "
+            >
+                <template #action>
+                    <Button v-if="hasActiveFilters" variant="outline" @click="clearFilters">
+                        Hapus Filter
+                    </Button>
+                </template>
+            </EmptyState>
 
             <!-- Pagination -->
             <div v-if="learningPaths.last_page > 1" class="mt-8 flex justify-center gap-2">

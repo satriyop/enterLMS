@@ -140,6 +140,8 @@ class Course extends Model
             'objectives' => 'array',
             'prerequisites' => 'array',
             'pricing_tiers' => 'array',
+            'is_paid' => 'boolean',
+            'price' => 'decimal:2',
             'price_valid_until' => 'datetime',
             'enrollment_deadline' => 'datetime',
             'max_enrollments' => 'integer',

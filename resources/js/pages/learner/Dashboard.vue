@@ -7,7 +7,9 @@
 import Navbar from '@/components/home/Navbar.vue';
 import Footer from '@/components/home/Footer.vue';
 import FlashMessages from '@/components/FlashMessages.vue';
+import EmptyState from '@/components/crud/EmptyState.vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Mail, Award, CreditCard, ChevronRight } from 'lucide-vue-next';
 import { Card, CardContent } from '@/components/ui/card';
@@ -120,6 +122,16 @@ const browseCoursesFormatted = computed(() =>
         enrollments_count: course.enrollments_count ?? 0,
     }))
 );
+
+const hasCatalogContent = computed(() =>
+    props.featuredCourses.length > 0
+    || props.browseCourses.length > 0
+    || props.invitedCourses.length > 0
+);
+
+const isPlatformEmpty = computed(() =>
+    props.myLearning.length === 0 && !hasCatalogContent.value
+);
 </script>
 
 <template>
@@ -199,18 +211,25 @@ const browseCoursesFormatted = computed(() =>
                 <FeaturedCoursesCarousel :courses="featuredCoursesFormatted" />
 
                 <!-- My Learning Section -->
-                <section v-if="myLearning.length > 0">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-bold flex items-center gap-2">
+                <section>
+                    <div class="mb-4 flex items-center justify-between">
+                        <h2 class="flex items-center gap-2 text-xl font-bold">
                             <BookOpen class="h-5 w-5" />
                             Pembelajaran Saya
                         </h2>
-                        <Link :href="MyLearningController().url" class="text-sm text-primary hover:underline">
+                        <Link
+                            v-if="myLearning.length > 0"
+                            :href="MyLearningController().url"
+                            class="text-sm text-primary hover:underline"
+                        >
                             Lihat Semua
                         </Link>
                     </div>
 
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div
+                        v-if="myLearning.length > 0"
+                        class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                    >
                         <MyLearningCard
                             v-for="item in myLearning"
                             :key="item.id"
@@ -228,6 +247,19 @@ const browseCoursesFormatted = computed(() =>
                             }"
                         />
                     </div>
+
+                    <EmptyState
+                        v-else-if="hasCatalogContent"
+                        :icon="BookOpen"
+                        title="Belum ada kursus yang diikuti"
+                        description="Daftar ke kursus gratis untuk mulai belajar. Progres dan sertifikat akan muncul di sini."
+                    >
+                        <template #action>
+                            <Button as-child>
+                                <Link :href="coursesIndex().url">Jelajahi Kursus</Link>
+                            </Button>
+                        </template>
+                    </EmptyState>
                 </section>
 
                 <!-- Invited Courses Section -->
@@ -269,17 +301,13 @@ const browseCoursesFormatted = computed(() =>
                     </div>
                 </section>
 
-                <!-- Empty State -->
-                <div
-                    v-if="featuredCourses.length === 0 && myLearning.length === 0 && invitedCourses.length === 0 && browseCourses.length === 0"
-                    class="flex flex-1 flex-col items-center justify-center py-12 text-center"
-                >
-                    <BookOpen class="h-16 w-16 text-muted-foreground mb-4" />
-                    <h2 class="text-xl font-semibold mb-2">Belum Ada Kursus</h2>
-                    <p class="text-muted-foreground mb-4">
-                        Belum ada kursus yang tersedia saat ini.
-                    </p>
-                </div>
+                <!-- Global empty catalog (no content at all on platform) -->
+                <EmptyState
+                    v-if="isPlatformEmpty"
+                    :icon="BookOpen"
+                    title="Katalog kursus masih kosong"
+                    description="Belum ada kursus yang dipublikasikan. Admin/content manager perlu mempublikasikan kursus terlebih dahulu."
+                />
             </div>
         </main>
 

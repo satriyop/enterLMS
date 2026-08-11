@@ -7,6 +7,7 @@
 import Navbar from '@/components/home/Navbar.vue';
 import Footer from '@/components/home/Footer.vue';
 import FlashMessages from '@/components/FlashMessages.vue';
+import EmptyState from '@/components/crud/EmptyState.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,6 +21,7 @@ import {
     GraduationCap,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { index as coursesIndex } from '@/actions/App/Http/Controllers/CourseController';
 import type { PaginationLink } from '@/types';
 
 // =============================================================================
@@ -226,21 +228,18 @@ const hasUnreadNotifications = computed(() => {
             </div>
 
             <!-- Empty State -->
-            <div
+            <EmptyState
                 v-else
-                class="flex flex-col items-center justify-center py-16 text-center"
+                :icon="BellOff"
+                title="Belum ada notifikasi"
+                description="Notifikasi muncul saat Anda mendaftar kursus, menyelesaikan pembelajaran, atau menerima undangan."
             >
-                <div
-                    class="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-muted"
-                >
-                    <BellOff class="h-10 w-10 text-muted-foreground" />
-                </div>
-                <h2 class="text-xl font-semibold mb-2">Belum Ada Notifikasi</h2>
-                <p class="text-muted-foreground max-w-md">
-                    Anda belum memiliki notifikasi. Notifikasi akan muncul di sini ketika ada
-                    aktivitas baru.
-                </p>
-            </div>
+                <template #action>
+                    <Button as-child variant="outline">
+                        <Link :href="coursesIndex().url">Jelajahi Kursus</Link>
+                    </Button>
+                </template>
+            </EmptyState>
 
             <!-- Pagination -->
             <div v-if="notifications.last_page > 1" class="mt-8 flex justify-center gap-2">

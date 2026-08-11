@@ -68,6 +68,9 @@ class BankingCourseSeeder extends Seeder
                 'visibility' => 'public',
                 'difficulty_level' => $courseData['difficulty_level'],
                 'estimated_duration_minutes' => $courseData['estimated_duration_minutes'],
+                // Banking seed content is free for internal compliance training demos
+                'is_paid' => false,
+                'price' => null,
                 'published_at' => $courseData['status'] === 'published' ? now() : null,
                 'published_by' => $courseData['status'] === 'published' ? $lmsAdmin->id : null,
             ]);

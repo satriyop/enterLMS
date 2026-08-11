@@ -8,7 +8,9 @@ import Navbar from '@/components/home/Navbar.vue';
 import Footer from '@/components/home/Footer.vue';
 import FlashMessages from '@/components/FlashMessages.vue';
 import MyLearningCard from '@/components/courses/MyLearningCard.vue';
+import EmptyState from '@/components/crud/EmptyState.vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { BookOpen, GraduationCap } from 'lucide-vue-next';
 import { computed } from 'vue';
@@ -204,27 +206,31 @@ const filterByStatus = (status: string | null) => {
             </div>
 
             <!-- Empty State -->
-            <div
+            <EmptyState
                 v-else
-                class="flex flex-col items-center justify-center py-16 text-center"
+                :icon="BookOpen"
+                :title="currentStatus ? 'Tidak ada kursus dengan status ini' : 'Belum ada pembelajaran'"
+                :description="
+                    currentStatus
+                        ? 'Coba pilih filter status lain, atau jelajahi kursus baru untuk memulai.'
+                        : 'Mulai perjalanan belajar Anda dengan mendaftar ke kursus gratis yang tersedia.'
+                "
             >
-                <BookOpen class="mb-4 h-16 w-16 text-muted-foreground" />
-                <h2 class="mb-2 text-xl font-semibold">Belum Ada Kursus</h2>
-                <p class="mb-6 text-muted-foreground">
-                    {{
-                        currentStatus
-                            ? 'Tidak ada kursus dengan status ini'
-                            : 'Mulai perjalanan belajar Anda dengan mendaftar kursus'
-                    }}
-                </p>
-                <Link :href="coursesIndex().url">
-                    <button
-                        class="rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                    >
-                        Jelajahi Kursus
-                    </button>
-                </Link>
-            </div>
+                <template #action>
+                    <div class="flex flex-wrap items-center justify-center gap-3">
+                        <Button
+                            v-if="currentStatus"
+                            variant="outline"
+                            @click="filterByStatus(null)"
+                        >
+                            Lihat Semua
+                        </Button>
+                        <Button as-child>
+                            <Link :href="coursesIndex().url">Jelajahi Kursus</Link>
+                        </Button>
+                    </div>
+                </template>
+            </EmptyState>
         </main>
 
         <Footer :app-name="appName" />

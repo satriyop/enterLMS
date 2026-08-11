@@ -7,6 +7,7 @@
 import Navbar from '@/components/home/Navbar.vue';
 import Footer from '@/components/home/Footer.vue';
 import LearningPathEnrollmentCard from '@/components/learning_paths/LearningPathEnrollmentCard.vue';
+import EmptyState from '@/components/crud/EmptyState.vue';
 import { Button } from '@/components/ui/button';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { Route, Search } from 'lucide-vue-next';
@@ -121,27 +122,34 @@ const applyFilter = (status: string) => {
             </div>
 
             <!-- Empty State -->
-            <div v-else class="flex flex-col items-center justify-center py-12 text-center">
-                <Route class="h-16 w-16 text-muted-foreground mb-4" />
-                <h2 class="text-xl font-semibold mb-2">
-                    {{ selectedStatus ? 'Tidak Ada Learning Path' : 'Belum Ada Learning Path' }}
-                </h2>
-                <p class="text-muted-foreground mb-4 max-w-md">
-                    {{ selectedStatus
-                        ? 'Tidak ada learning path dengan status tersebut.'
-                        : 'Anda belum terdaftar di learning path manapun. Mulai jelajahi dan daftar ke learning path untuk memulai perjalanan belajar Anda.'
-                    }}
-                </p>
-                <Link v-if="!selectedStatus" :href="browse().url">
-                    <Button>
-                        <Search class="mr-2 h-4 w-4" />
-                        Jelajahi Learning Path
-                    </Button>
-                </Link>
-                <Button v-else variant="outline" @click="applyFilter('')">
-                    Lihat Semua
-                </Button>
-            </div>
+            <EmptyState
+                v-else
+                :icon="Route"
+                :title="selectedStatus ? 'Tidak ada learning path' : 'Belum ada learning path'"
+                :description="
+                    selectedStatus
+                        ? 'Tidak ada learning path dengan status tersebut. Coba pilih filter lain.'
+                        : 'Anda belum terdaftar di learning path manapun. Jelajahi dan daftar untuk memulai jalur belajar terstruktur.'
+                "
+            >
+                <template #action>
+                    <div class="flex flex-wrap items-center justify-center gap-3">
+                        <Button
+                            v-if="selectedStatus"
+                            variant="outline"
+                            @click="applyFilter('')"
+                        >
+                            Lihat Semua
+                        </Button>
+                        <Button as-child>
+                            <Link :href="browse().url">
+                                <Search class="mr-2 h-4 w-4" />
+                                Jelajahi Learning Path
+                            </Link>
+                        </Button>
+                    </div>
+                </template>
+            </EmptyState>
 
             <!-- Pagination -->
             <div v-if="enrollments.last_page > 1" class="mt-8 flex justify-center gap-2">

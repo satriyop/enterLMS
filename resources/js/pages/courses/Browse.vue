@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import BrowseCourseCard from '@/components/courses/BrowseCourseCard.vue';
+import EmptyState from '@/components/crud/EmptyState.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -191,16 +192,23 @@ watch(searchQuery, () => {
             </div>
 
             <!-- Empty State -->
-            <div v-else class="flex flex-col items-center justify-center py-12 text-center">
-                <BookOpen class="h-16 w-16 text-muted-foreground mb-4" />
-                <h2 class="text-xl font-semibold mb-2">Tidak Ada Kursus</h2>
-                <p class="text-muted-foreground mb-4">
-                    {{ hasActiveFilters ? 'Tidak ada kursus yang sesuai dengan filter Anda.' : 'Belum ada kursus yang tersedia saat ini.' }}
-                </p>
-                <Button v-if="hasActiveFilters" variant="outline" @click="clearFilters">
-                    Hapus Filter
-                </Button>
-            </div>
+            <EmptyState
+                v-else
+                :icon="BookOpen"
+                :title="hasActiveFilters ? 'Tidak ada kursus yang cocok' : 'Belum ada kursus'"
+                :description="
+                    hasActiveFilters
+                        ? 'Coba ubah kata kunci atau hapus filter untuk melihat lebih banyak kursus.'
+                        : 'Belum ada kursus yang dipublikasikan. Silakan kembali lagi nanti.'
+                "
+            >
+                <template #action>
+                    <Button v-if="hasActiveFilters" variant="outline" @click="clearFilters">
+                        <X class="mr-1 h-4 w-4" />
+                        Hapus Filter
+                    </Button>
+                </template>
+            </EmptyState>
 
             <!-- Pagination -->
             <div v-if="courses.last_page > 1" class="mt-8 flex justify-center gap-2">
