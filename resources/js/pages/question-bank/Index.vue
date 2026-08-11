@@ -260,6 +260,7 @@ watch([type, difficulty, visibility, selectedTagId, mineOnly], applyFilters);
                         :title="item.question_text.substring(0, 100) + (item.question_text.length > 100 ? '...' : '')"
                         :description="item.feedback || 'Tidak ada feedback'"
                         :href="show({ question_bank: item.id }).url"
+                        :placeholder-icon="HelpCircle"
                         :badges="getBadges(item)"
                         :meta="getMeta(item)"
                         :actions="getActions(item)"

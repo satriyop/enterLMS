@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Link } from '@inertiajs/vue3';
 import { MoreVertical, Play } from 'lucide-vue-next';
-import type { Component } from 'vue';
+import type { Component, Raw } from 'vue';
 
 interface Action {
     label: string;
@@ -25,6 +25,7 @@ interface Props {
     subtitle?: string;
     description?: string;
     thumbnailUrl?: string;
+    placeholderIcon?: Raw<Component>;
     href?: string;
     badges?: { label: string; variant?: 'default' | 'secondary' | 'outline' | 'destructive' }[];
     meta?: { icon?: Component; label: string }[];
@@ -51,7 +52,7 @@ defineProps<Props>();
                 v-else
                 class="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5"
             >
-                <Play class="h-12 w-12 text-primary/30" />
+                <component :is="placeholderIcon ?? Play" class="h-12 w-12 text-primary/30" />
             </div>
             <div v-if="badges && badges.length > 0" class="absolute left-3 top-3 flex flex-wrap gap-1.5">
                 <Badge
