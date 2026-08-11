@@ -9,6 +9,7 @@ use App\Models\Course;
 use App\Models\LearningPath;
 use App\Models\LearningPathEnrollment;
 use App\Models\User;
+use App\Services\SeederThumbnailGenerator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -57,6 +58,7 @@ class LearningPathSeeder extends Seeder
         }
 
         $learningPathsData = $this->getLearningPathData();
+        $thumbnails = app(SeederThumbnailGenerator::class);
 
         foreach ($learningPathsData as $pathData) {
             // Skip if learning path already exists
@@ -67,6 +69,12 @@ class LearningPathSeeder extends Seeder
             }
 
             $this->command->info("Creating learning path: {$pathData['title']}");
+
+            $thumbnailPath = $thumbnails->generate(
+                $pathData['title'],
+                'learning_paths/thumbnails',
+                'path-'.Str::slug(Str::limit($pathData['title'], 40, '')).'.jpg'
+            );
 
             $learningPath = LearningPath::create([
                 'title' => $pathData['title'],
@@ -79,7 +87,8 @@ class LearningPathSeeder extends Seeder
                 'published_at' => $pathData['is_published'] ? now() : null,
                 'estimated_duration' => $pathData['estimated_duration'],
                 'difficulty_level' => $pathData['difficulty_level'],
-                'thumbnail_url' => $pathData['thumbnail_url'] ?? null,
+                // Relative public-disk path (UI prefixes /storage/)
+                'thumbnail_url' => $thumbnailPath,
                 'prerequisite_mode' => $pathData['prerequisite_mode'] ?? 'sequential',
             ]);
 
@@ -206,7 +215,6 @@ class LearningPathSeeder extends Seeder
                 'is_published' => true,
                 'estimated_duration' => 630, // Sum of 3 courses
                 'difficulty_level' => 'intermediate',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=640',
                 'required_count' => 3,
             ],
             [
@@ -222,7 +230,6 @@ class LearningPathSeeder extends Seeder
                 'is_published' => true,
                 'estimated_duration' => 330, // Sum of 2 courses
                 'difficulty_level' => 'intermediate',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=640',
                 'required_count' => 2,
             ],
             [
@@ -238,7 +245,6 @@ class LearningPathSeeder extends Seeder
                 'is_published' => true,
                 'estimated_duration' => 600, // Sum of 4 courses
                 'difficulty_level' => 'advanced',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=640',
                 'required_count' => 3,
             ],
             [
@@ -254,7 +260,6 @@ class LearningPathSeeder extends Seeder
                 'is_published' => true,
                 'estimated_duration' => 660, // Sum of 3 courses
                 'difficulty_level' => 'expert',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=640',
                 'required_count' => 3,
             ],
             [
@@ -270,7 +275,6 @@ class LearningPathSeeder extends Seeder
                 'is_published' => false, // Draft for demo
                 'estimated_duration' => 270, // Sum of 2 courses
                 'difficulty_level' => 'beginner',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=640',
                 'required_count' => 2,
             ],
         ];

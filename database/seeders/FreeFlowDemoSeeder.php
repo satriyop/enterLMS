@@ -11,6 +11,7 @@ use App\Models\Question;
 use App\Models\QuestionOption;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\SeederThumbnailGenerator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -118,6 +119,12 @@ class FreeFlowDemoSeeder extends Seeder
             return $course->load('sections.lessons');
         }
 
+        $thumbnailPath = app(SeederThumbnailGenerator::class)->generate(
+            self::FREE_COURSE_TITLE,
+            'courses/thumbnails',
+            'free-flow-demo-orientation.jpg'
+        );
+
         $course = Course::query()->create([
             'user_id' => $contentManager->id,
             'title' => self::FREE_COURSE_TITLE,
@@ -133,6 +140,7 @@ class FreeFlowDemoSeeder extends Seeder
                 'Tidak ada prasyarat — cocok untuk peserta baru',
             ],
             'category_id' => $category->id,
+            'thumbnail_path' => $thumbnailPath,
             'status' => 'published',
             'visibility' => 'public',
             'difficulty_level' => 'beginner',

@@ -8,6 +8,7 @@ use App\Models\CourseSection;
 use App\Models\Lesson;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\SeederThumbnailGenerator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -32,6 +33,8 @@ class BankingCourseSeeder extends Seeder
             return;
         }
 
+        $thumbnails = app(SeederThumbnailGenerator::class);
+
         // Ensure we have a banking category
         $bankingCategory = Category::firstOrCreate(
             ['slug' => 'perbankan-keuangan'],
@@ -54,6 +57,12 @@ class BankingCourseSeeder extends Seeder
 
             $this->command->info("Creating course: {$courseData['title']}");
 
+            $thumbnailPath = $thumbnails->generate(
+                $courseData['title'],
+                'courses/thumbnails',
+                'banking-'.($index + 1).'-'.Str::slug(Str::limit($courseData['title'], 40, '')).'.jpg'
+            );
+
             $course = Course::create([
                 'user_id' => $contentManager->id,
                 'title' => $courseData['title'],
@@ -63,7 +72,7 @@ class BankingCourseSeeder extends Seeder
                 'objectives' => $courseData['objectives'],
                 'prerequisites' => $courseData['prerequisites'],
                 'category_id' => $bankingCategory->id,
-                'thumbnail_path' => null,
+                'thumbnail_path' => $thumbnailPath,
                 'status' => $courseData['status'],
                 'visibility' => 'public',
                 'difficulty_level' => $courseData['difficulty_level'],
