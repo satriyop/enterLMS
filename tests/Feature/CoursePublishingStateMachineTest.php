@@ -45,14 +45,21 @@ class CoursePublishingStateMachineTest extends TestCase
         $this->category = Category::factory()->create();
     }
 
-    private function createDraftCourse(?User $owner = null): Course
+    private function createDraftCourse(?User $owner = null, bool $withContent = true): Course
     {
-        return Course::factory()->create([
+        $course = Course::factory()->create([
             'user_id' => $owner?->id ?? $this->contentManager->id,
             'status' => 'draft',
             'visibility' => 'public',
             'category_id' => $this->category->id,
         ]);
+
+        if ($withContent) {
+            $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
+        }
+
+        return $course;
     }
 
     private function createPublishedCourse(?User $owner = null): Course
@@ -66,12 +73,17 @@ class CoursePublishingStateMachineTest extends TestCase
 
     private function createArchivedCourse(?User $owner = null): Course
     {
-        return Course::factory()->create([
+        $course = Course::factory()->create([
             'user_id' => $owner?->id ?? $this->contentManager->id,
             'status' => 'archived',
             'visibility' => 'public',
             'category_id' => $this->category->id,
         ]);
+
+        $section = CourseSection::factory()->create(['course_id' => $course->id]);
+        Lesson::factory()->create(['course_section_id' => $section->id]);
+
+        return $course;
     }
 
     // ========== PUBLISH TRANSITIONS (draft → published) ==========

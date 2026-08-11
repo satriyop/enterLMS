@@ -335,6 +335,8 @@ describe('Role Escalation Prevention', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $cm = User::factory()->create(['role' => 'content_manager']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
+            $section = \App\Models\CourseSection::factory()->create(['course_id' => $course->id]);
+            \App\Models\Lesson::factory()->create(['course_section_id' => $section->id]);
 
             $this->actingAs($admin)
                 ->post(route('courses.publish', $course))

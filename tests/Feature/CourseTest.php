@@ -127,6 +127,8 @@ it('allows lms admins to publish courses', function () {
     $owner = User::factory()->create(['role' => 'content_manager']);
     $admin = User::factory()->create(['role' => 'lms_admin']);
     $course = Course::factory()->draft()->create(['user_id' => $owner->id]);
+    $section = CourseSection::factory()->create(['course_id' => $course->id]);
+    Lesson::factory()->create(['course_section_id' => $section->id]);
 
     $this->actingAs($admin)->post("/courses/{$course->id}/publish")
         ->assertRedirect();

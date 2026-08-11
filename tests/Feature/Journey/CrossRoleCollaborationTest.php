@@ -71,6 +71,9 @@ describe('Cross-Role Collaboration', function () {
 
             expect($course->lessons()->count())->toBe(1);
 
+            // Ensure course has required content for publishing
+            expect($course->lessons()->count())->toBe(1);
+
             // Step 3: CM cannot publish (403)
             $this->actingAs($cm)
                 ->post(route('courses.publish', $course))
@@ -120,6 +123,7 @@ describe('Cross-Role Collaboration', function () {
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
 
             // Admin publishes
             $this->actingAs($admin)
@@ -176,6 +180,8 @@ describe('Cross-Role Collaboration', function () {
         it('trainer cannot publish courses', function () {
             $trainer = User::factory()->create(['role' => 'trainer']);
             $course = Course::factory()->draft()->create(['user_id' => $trainer->id]);
+            $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
 
             $this->actingAs($trainer)
                 ->post(route('courses.publish', $course))
@@ -188,6 +194,8 @@ describe('Cross-Role Collaboration', function () {
             $trainer = User::factory()->create(['role' => 'trainer']);
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $trainer->id]);
+            $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
 
             // Admin publishes
             $this->actingAs($admin)->post(route('courses.publish', $course));
@@ -204,6 +212,8 @@ describe('Cross-Role Collaboration', function () {
             $trainer = User::factory()->create(['role' => 'trainer']);
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $trainer->id]);
+            $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
 
             $this->actingAs($admin)->post(route('courses.publish', $course));
 
@@ -457,6 +467,8 @@ describe('Cross-Role Collaboration', function () {
         it('admin can unpublish and re-publish course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create();
+            $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
 
             // Unpublish
             $this->actingAs($admin)
@@ -465,7 +477,7 @@ describe('Cross-Role Collaboration', function () {
 
             expect($course->refresh()->isDraft())->toBeTrue();
 
-            // Re-publish
+            // Re-publish (content exists)
             $this->actingAs($admin)
                 ->post(route('courses.publish', $course))
                 ->assertRedirect();
@@ -476,6 +488,8 @@ describe('Cross-Role Collaboration', function () {
         it('admin can restore archived course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create();
+            $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
 
             // Archive
             $this->actingAs($admin)
@@ -484,7 +498,7 @@ describe('Cross-Role Collaboration', function () {
 
             expect($course->refresh()->isArchived())->toBeTrue();
 
-            // Restore to published
+            // Restore to published (content exists)
             $this->actingAs($admin)
                 ->post(route('courses.publish', $course))
                 ->assertRedirect();
@@ -501,12 +515,12 @@ describe('Cross-Role Collaboration', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
-            // Setup course with content
+            // Setup course with content - already has section + lesson
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
             $lesson = Lesson::factory()->create(['course_section_id' => $section->id]);
 
-            // Admin publishes
+            // Admin publishes - content requirement is met
             $this->actingAs($admin)->post(route('courses.publish', $course));
 
             // CM invites learner
@@ -701,11 +715,12 @@ describe('Cross-Role Collaboration', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
-            // Setup
+            // Setup - already has section + lesson for publishing
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
             Lesson::factory()->create(['course_section_id' => $section->id]);
 
+            // Admin publishes - content requirement is met
             $this->actingAs($admin)->post(route('courses.publish', $course));
 
             // Create assessment with all required fields

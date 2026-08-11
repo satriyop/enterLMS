@@ -360,6 +360,8 @@ describe('Data Integrity', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $cm = User::factory()->create(['role' => 'content_manager']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
+            $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
 
             expect($course->published_at)->toBeNull();
 

@@ -106,6 +106,8 @@ describe('Admin Capabilities', function () {
             $cm = User::factory()->create(['role' => 'content_manager']);
 
             $draftCourse = Course::factory()->draft()->create(['user_id' => $cm->id]);
+            $section = CourseSection::factory()->create(['course_id' => $draftCourse->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
 
             $this->actingAs($admin)
                 ->post(route('courses.publish', $draftCourse))
@@ -391,6 +393,8 @@ describe('Admin Capabilities', function () {
             $cm2 = User::factory()->create(['role' => 'content_manager']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm1->id]);
+            $section = CourseSection::factory()->create(['course_id' => $course->id]);
+            Lesson::factory()->create(['course_section_id' => $section->id]);
 
             // CM2 cannot publish CM1's course
             $this->actingAs($cm2)
