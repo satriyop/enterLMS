@@ -1,7 +1,7 @@
 # Capability Map — Enteraksi LMS
 
-> **Generated:** 2026-08-11  
-> **Stack:** Laravel 13 · Inertia 3 · Vue 3 · Pest  
+> **Generated:** 2026-08-11 · **Updated:** 2026-08-12 (agent depth B)  
+> **Stack:** Laravel 13 · Inertia 3 · Vue 3 · Pest · laravel/mcp  
 > **Basis:** domain code, routes (~195), pages, tests, seeders
 
 ## Legend
@@ -164,10 +164,28 @@
 | Banking course seed | ✅ ready | `BankingCourseSeeder` (free) |
 | E2E free-flow journey test | ✅ ready | Register → cert |
 | Pest feature suite | ✅ ready | Large suite (~2600+) |
-| Mobile API (Sanctum) | ❌ missing | Mostly Inertia web |
+| Mobile API (Sanctum) | ❌ missing | Mostly Inertia web; Sanctum diantar B-012 |
 | Offline mobile | ❌ missing | — |
 | Multi-language i18n UI | 🟡 partial | UI Bahasa; not full i18n framework |
 | Production hardening (queue, monitoring) | 🟡 partial | Pail/queue scripts; deploy ops TBD |
+
+---
+
+## 12. Agent platform (Hermes / OpenClaw)
+
+> **Keputusan v1:** Depth B — MCP + Sanctum + read/limited-write + audit. Webhooks = v1.1.
+
+| Capability | Status | Bukti / gap |
+|------------|--------|-------------|
+| Sanctum product tokens | ✅ ready | Sanctum + `HasApiTokens` + `agent:token` (D-012) |
+| MCP product server (`/mcp/enteraksi`) | 🟡 partial | Server + `agent-ping` only; core tools B-013 |
+| Agent abilities/scopes | ✅ ready | `AgentAbility` constants + Sanctum abilities |
+| Agent action audit log | ✅ ready | `agent_action_logs` + `AgentActionLogger` |
+| MCP catalog/enroll/progress tools | ❌ missing | B-013 |
+| MCP compliance read tools | ❌ missing | B-014 |
+| Outbound agent webhooks | ❌ missing | B-015 v1.1 |
+| Embed agent runtime in Laravel | ⚪ n/a | Explicitly out of scope |
+| ACP / A2A / WhatsApp channel | ⚪ n/a | Not depth B |
 
 ---
 
@@ -186,11 +204,13 @@
 | SCORM/xAPI/LTI | 0 | 3 | 2 |
 | Communication | 2 | 0 | 3 |
 | Platform/DX | 4 | 2 | 2 |
+| Agent platform | 3 | 1 | 3 (+ 2 n/a) |
 
 **Kesimpulan:**
 
 - **Siap dipakai sekarang:** free internal LMS (content → enroll → learn → assess → certificate → basic audit).
 - **Belum siap production commercial/enterprise:** payment gateway, SSO, multi-tenancy, discussion, LTI, mobile API.
+- **Agent (Hermes/OpenClaw):** depth B dipilih; fondasi B-012 in progress; tools B-013.
 - **Tracker lama (`.ai/investigation`) outdated** — mis. SCORM sudah partial di code tapi dulu ditandai pending.
 
 ---
@@ -210,3 +230,7 @@
 | Mobile API | B-009 |
 | Conference deep integrate | B-010 |
 | Role/permission polish | B-011 |
+| Agent MCP foundation | D-012 (done) |
+| Agent MCP core tools | B-013 |
+| Agent MCP compliance tools | B-014 |
+| Agent outbound webhooks | B-015 |

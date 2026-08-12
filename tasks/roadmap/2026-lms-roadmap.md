@@ -2,7 +2,7 @@
 
 > **Sumber status fitur:** `tasks/audit/capability-map.md`  
 > **Item kerja aktif:** `tasks/backlog/`  
-> **Terakhir diselaraskan:** 2026-08-11
+> **Terakhir diselaraskan:** 2026-08-12
 
 ## Tujuan produk
 
@@ -72,16 +72,44 @@ LMS perbankan/kepatuhan (OJK-oriented) untuk:
 | SCORM runtime | partial → harden |
 | xAPI | partial → harden |
 | LTI | missing |
-| Mobile API (Sanctum) | missing |
+| Mobile API (Sanctum) | missing (reuse Sanctum dari Fase F) |
 | Live conference deep integration | partial (URL only) |
+
+---
+
+### Fase F — Agent platform (Hermes / OpenClaw) — Depth B
+
+**Keputusan (2026-08-12):** v1 = **Depth B**
+
+| Include v1 | Defer |
+|------------|--------|
+| MCP server produk (`laravel/mcp`) | Webhooks outbound → B-015 v1.1 |
+| Sanctum token + abilities | Full OAuth/Passport MCP (kecuali client wajib) |
+| Read tools + limited enroll/progress write | Embed agent runtime di Laravel |
+| Agent action audit log | ACP / A2A mesh, WhatsApp channel |
+| Domain services as source of truth | Duplikasi LMS logic di agent skills |
+
+| Area | Target | Backlog |
+|------|--------|---------|
+| Foundation (token, server, audit) | **done** (D-012) | D-012 |
+| Core tools free-flow | missing → next | B-013 |
+| Compliance read tools | missing | B-014 |
+| Outbound webhooks | missing (v1.1) | B-015 |
+
+**Prinsip:** agent di luar; Enteraksi expose capability aman. Jangan reimplement LMS di skill Hermes.
 
 ---
 
 ## Urutan eksekusi yang disarankan
 
 ```text
-A (free flow polish) → B (payment gateway) → C (SSO) → C (multi-tenancy)
-  → D (versioning) → D (branching / discussion) → E (LTI / mobile)
+A (free flow polish) → F-lite (B-012 foundation, parallel OK)
+  → B (payment) / F-core (B-013 tools) sesuai prioritas bisnis
+  → C (SSO) → C (multi-tenancy)
+  → D (versioning / discussion) → E (LTI / mobile)
+  → F v1.1 (B-014 compliance tools, B-015 webhooks)
 ```
 
 Jangan mulai multi-tenancy sebelum free flow + payment (jika commercial) stabil — multi-tenancy menyentuh hampir semua query.
+
+**Agent:** B-012 dulu (shared Sanctum juga membantu B-009 mobile nanti).

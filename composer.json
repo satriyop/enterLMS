@@ -13,6 +13,8 @@
         "inertiajs/inertia-laravel": "^3.0",
         "laravel/fortify": "^1.30",
         "laravel/framework": "^13.0",
+        "laravel/mcp": "^0.9.3",
+        "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.9",
         "league/csv": "^9.28",

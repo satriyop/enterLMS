@@ -26,8 +26,11 @@ use App\Policies\QuestionBankItemPolicy;
 use App\Policies\QuestionPolicy;
 use App\Policies\ScormPackagePolicy;
 use App\Policies\UserPolicy;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -46,6 +49,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::preventLazyLoading(! $this->app->isProduction());
+
+        RateLimiter::for('mcp', function (Request $request) {
+            return Limit::perMinute(120)->by((string) ($request->user()?->id ?: $request->ip()));
+        });
 
         Gate::policy(Certificate::class, CertificatePolicy::class);
         Gate::policy(Course::class, CoursePolicy::class);

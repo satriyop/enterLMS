@@ -39,5 +39,11 @@ depends_on: []
 | [B-009](./B-009-mobile-api.md) | P2 | Mobile API (Sanctum) | E |
 | [B-010](./B-010-conference-integration.md) | P3 | Live conference deep integration | E |
 | [B-011](./B-011-role-permission-polish.md) | P2 | Role & permission matrix polish | C |
+| ~~B-012~~ → [D-012](../done/D-012-agent-mcp-foundation.md) | — | Agent MCP foundation (**done**) | F |
+| [B-013](./B-013-agent-mcp-core-tools.md) | P1 | Agent MCP core tools (catalog/enroll/progress) | F |
+| [B-014](./B-014-agent-mcp-compliance-tools.md) | P2 | Agent MCP compliance read tools | F |
+| [B-015](./B-015-agent-webhooks-v1.1.md) | P2 | Agent outbound webhooks (v1.1) | F |
 
 Urutan ambil kerja: ikuti `tasks/roadmap/2026-lms-roadmap.md`, bukan urutan nomor semata.
+
+**Agent platform (Depth B):** B-012 → B-013; B-014 paralel setelah B-012; B-015 setelah free-flow tools stabil.
