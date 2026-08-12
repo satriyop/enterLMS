@@ -183,7 +183,7 @@
 | Agent abilities/scopes | ✅ ready | `AgentAbility` constants + Sanctum abilities |
 | Agent action audit log | ✅ ready | `agent_action_logs` + `AgentActionLogger` |
 | MCP catalog/enroll/progress tools | ✅ ready | D-013: list/get/enroll/progress/complete |
-| MCP compliance read tools | ❌ missing | B-014 |
+| MCP compliance read tools | ✅ ready | D-014: audit events, training status, certificates |
 | Outbound agent webhooks | ❌ missing | B-015 v1.1 |
 | Embed agent runtime in Laravel | ⚪ n/a | Explicitly out of scope |
 | ACP / A2A / WhatsApp channel | ⚪ n/a | Not depth B |

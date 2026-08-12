@@ -7,7 +7,10 @@ use App\Mcp\Tools\Agent\EnrollCourseTool;
 use App\Mcp\Tools\Agent\GetCourseTool;
 use App\Mcp\Tools\Agent\GetEnrollmentTool;
 use App\Mcp\Tools\Agent\GetProgressTool;
+use App\Mcp\Tools\Agent\GetUserTrainingStatusTool;
+use App\Mcp\Tools\Agent\ListAuditEventsTool;
 use App\Mcp\Tools\Agent\ListCatalogTool;
+use App\Mcp\Tools\Agent\ListCertificatesTool;
 use App\Mcp\Tools\Agent\ListMyEnrollmentsTool;
 use App\Mcp\Tools\Agent\MarkLessonCompleteTool;
 use Laravel\Mcp\Server;
@@ -16,15 +19,16 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;
 
 #[Name('Enteraksi Agent Server')]
-#[Version('1.1.0')]
+#[Version('1.2.0')]
 #[Instructions(<<<'MARKDOWN'
-Enteraksi LMS agent capability server (Depth B + free-flow tools).
+Enteraksi LMS agent capability server (Depth B + free-flow + compliance read).
 
-- Authenticate with Sanctum Bearer token (`php artisan agent:token {email} --free-flow`).
-- Acting-as is always the token owner.
+- Authenticate with Sanctum Bearer token.
+- Free-flow learner: `agent:token {email} --free-flow`
+- Compliance: token with `agent:compliance.read` on user role compliance_officer|auditor|lms_admin
 - Free-flow: list-catalog → get-course → enroll-course → get-progress → mark-lesson-complete.
-- Paid enroll is rejected while payments are disabled or when course requires payment.
-- Do not attempt admin content mutation or privilege escalation.
+- Compliance: list-audit-events, get-user-training-status, list-certificates.
+- Paid enroll rejected when payments enabled; no admin content mutation.
 MARKDOWN)]
 class EnteraksiAgentServer extends Server
 {
@@ -40,6 +44,9 @@ class EnteraksiAgentServer extends Server
         GetProgressTool::class,
         EnrollCourseTool::class,
         MarkLessonCompleteTool::class,
+        ListAuditEventsTool::class,
+        GetUserTrainingStatusTool::class,
+        ListCertificatesTool::class,
     ];
 
     /**

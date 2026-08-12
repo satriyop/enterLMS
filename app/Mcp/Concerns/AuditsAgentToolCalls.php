@@ -42,6 +42,35 @@ trait AuditsAgentToolCalls
     }
 
     /**
+     * Compliance tools: Sanctum ability + role (compliance_officer / auditor / lms_admin).
+     */
+    protected function requireComplianceAccess(Request $request, string $ability): ?Response
+    {
+        if ($denied = $this->requireAbility($request, $ability)) {
+            return $denied;
+        }
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if (! $user->canViewCompliance()) {
+            $this->logger()->log(
+                tool: $this->name(),
+                status: AgentActionLog::STATUS_DENIED,
+                user: $user,
+                arguments: $request->all(),
+                errorMessage: 'Role cannot view compliance',
+            );
+
+            return Response::error(
+                'Akses compliance ditolak. Butuh role compliance_officer, auditor, atau lms_admin. code=role_forbidden'
+            );
+        }
+
+        return null;
+    }
+
+    /**
      * @param  callable(): (Response|ResponseFactory)  $callback
      */
     protected function runAudited(Request $request, callable $callback): Response|ResponseFactory
