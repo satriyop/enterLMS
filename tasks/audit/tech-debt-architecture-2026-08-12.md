@@ -247,7 +247,7 @@ Use this as a gate; not all must be code-complete.
 | — | P0 | Free path | **none open** |
 | P1-1 | P1 | SoftDeletes + enrollment states | **closed** |
 | P1-2 | P1 | Payment half-domain HTTP | **closed** (product-off + 404 middleware) |
-| P1-3 | P1 | MCP core tools | **open → B-013** (feature, not bug) |
+| P1-3 | P1 | MCP core tools | **closed → D-013** |
 | P1-4 | P1 | xAPI context ownership | **closed** |
 | P1-5 | P1 | Prod N+1 fallback | **closed** (fail-closed default) |
 | P1-6 | P1 | Section duration accessor | **closed** |

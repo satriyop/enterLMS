@@ -179,10 +179,10 @@
 | Capability | Status | Bukti / gap |
 |------------|--------|-------------|
 | Sanctum product tokens | ✅ ready | Sanctum + `HasApiTokens` + `agent:token` (D-012); xAPI also `auth:sanctum` |
-| MCP product server (`/mcp/enteraksi`) | 🟡 partial | Server + `agent-ping` only; core tools B-013 |
+| MCP product server (`/mcp/enteraksi`) | ✅ ready | Free-flow tools D-013 + `agent-ping` |
 | Agent abilities/scopes | ✅ ready | `AgentAbility` constants + Sanctum abilities |
 | Agent action audit log | ✅ ready | `agent_action_logs` + `AgentActionLogger` |
-| MCP catalog/enroll/progress tools | ❌ missing | B-013 |
+| MCP catalog/enroll/progress tools | ✅ ready | D-013: list/get/enroll/progress/complete |
 | MCP compliance read tools | ❌ missing | B-014 |
 | Outbound agent webhooks | ❌ missing | B-015 v1.1 |
 | Embed agent runtime in Laravel | ⚪ n/a | Explicitly out of scope |
