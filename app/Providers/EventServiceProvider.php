@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Domain\Agent\Listeners\DispatchAgentWebhooks;
 use App\Domain\Assessment\Events\AssessmentAttemptStarted;
 use App\Domain\Assessment\Events\AssessmentAttemptSubmitted;
 use App\Domain\Assessment\Events\AssessmentGraded;
 use App\Domain\Assessment\Listeners\UpdateProgressOnAssessmentGraded;
+use App\Domain\Certificate\Events\CertificateIssued;
 use App\Domain\Certificate\Listeners\IssueCertificateOnCompletion;
 use App\Domain\Course\Events\CourseArchived;
 use App\Domain\Course\Events\CoursePublished;
@@ -78,6 +80,7 @@ class EventServiceProvider extends ServiceProvider
         // Enrollment Events
         UserEnrolled::class => [
             LogDomainEvent::class,
+            [DispatchAgentWebhooks::class, 'handleUserEnrolled'],
             SendWelcomeNotification::class,
         ],
         CourseStarted::class => [
@@ -90,6 +93,11 @@ class EventServiceProvider extends ServiceProvider
             IssueCertificateOnCompletion::class,
             UpdatePathProgressOnCourseCompletion::class,
             RecordXapiOnEnrollmentCompleted::class,
+            [DispatchAgentWebhooks::class, 'handleEnrollmentCompleted'],
+        ],
+        CertificateIssued::class => [
+            LogDomainEvent::class,
+            [DispatchAgentWebhooks::class, 'handleCertificateIssued'],
         ],
         UserDropped::class => [
             LogDomainEvent::class,

@@ -42,11 +42,11 @@ depends_on: []
 | ~~B-012~~ → [D-012](../done/D-012-agent-mcp-foundation.md) | — | Agent MCP foundation (**done**) | F |
 | ~~B-013~~ → [D-013](../done/D-013-agent-mcp-core-tools.md) | — | Agent MCP core tools (**done**) | F |
 | ~~B-014~~ → [D-014](../done/D-014-agent-mcp-compliance-tools.md) | — | Agent MCP compliance tools (**done**) | F |
-| [B-015](./B-015-agent-webhooks-v1.1.md) | P2 | Agent outbound webhooks (v1.1) | F |
+| ~~B-015~~ → [D-015](../done/D-015-agent-webhooks-v1.1.md) | — | Agent outbound webhooks (**done**) | F |
 
 Urutan ambil kerja: ikuti `tasks/roadmap/2026-lms-roadmap.md`, bukan urutan nomor semata.
 
-**Agent platform (Depth B):** D-012 + D-013 + **D-014 compliance done**; B-015 webhooks v1.1 deferred.
+**Agent platform (Depth B/F):** D-012 foundation · D-013 free-flow tools · D-014 compliance · **D-015 webhooks done**.
 
 ## Vet vs current code (2026-08-12)
 
@@ -54,7 +54,7 @@ Lihat **[backlog-vet-2026-08-12.md](../audit/backlog-vet-2026-08-12.md)** untuk 
 
 | Next (pilih) | Jangan dulu tanpa trigger |
 |--------------|---------------------------|
-| free-flow polish *atau* **B-015** webhooks (later) | **B-001** payment (flag off by design) |
+| free-flow polish *atau* B-001 payment (jika monetrize) | multi-tenancy / SSO |
 | B-011 roles (enterprise demo) | **B-003** multi-tenancy (perlu ADR) |
 | B-007 SCORM edge harden | B-002 SSO (perlu IdP) |
 

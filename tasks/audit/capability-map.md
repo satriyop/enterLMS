@@ -184,7 +184,7 @@
 | Agent action audit log | ✅ ready | `agent_action_logs` + `AgentActionLogger` |
 | MCP catalog/enroll/progress tools | ✅ ready | D-013: list/get/enroll/progress/complete |
 | MCP compliance read tools | ✅ ready | D-014: audit events, training status, certificates |
-| Outbound agent webhooks | ❌ missing | B-015 v1.1 |
+| Outbound agent webhooks | ✅ ready | D-015: signed POST + retry + CLI |
 | Embed agent runtime in Laravel | ⚪ n/a | Explicitly out of scope |
 | ACP / A2A / WhatsApp channel | ⚪ n/a | Not depth B |
 | Free-path stabilize (Spatie/SCORM/xAPI/capacity) | ✅ ready | See tech-debt audit “Recently closed”; `tests/Feature/Stabilize/` |

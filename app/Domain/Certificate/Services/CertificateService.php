@@ -2,6 +2,7 @@
 
 namespace App\Domain\Certificate\Services;
 
+use App\Domain\Certificate\Events\CertificateIssued;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Enrollment;
@@ -40,7 +41,7 @@ class CertificateService
             $course = $enrollment->course;
             $user = $enrollment->user;
 
-            return Certificate::create([
+            $certificate = Certificate::create([
                 'certificate_number' => Certificate::generateCertificateNumber(),
                 'type' => Certificate::TYPE_COURSE_COMPLETION,
                 'status' => Certificate::STATUS_ACTIVE,
@@ -55,6 +56,10 @@ class CertificateService
                 'issued_by' => $issuedBy?->id,
                 'verification_code' => Certificate::generateVerificationCode(),
             ]);
+
+            CertificateIssued::dispatch($certificate);
+
+            return $certificate;
         });
     }
 
