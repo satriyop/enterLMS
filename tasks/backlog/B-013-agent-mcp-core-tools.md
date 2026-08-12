@@ -6,13 +6,16 @@ priority: P1
 area: agent-platform
 phase: F
 depends_on: [B-012]
+# B-012 shipped as D-012 (2026-08-12)
 ---
 
 # B-013 — Agent MCP core tools
 
 ## Problem
 
-Setelah fondasi MCP (B-012), agent masih belum bisa menjalankan learning flow. Hermes/OpenClaw butuh tools domain agar bisa: cek katalog → enroll free → lihat progress → tandai lesson selesai.
+Setelah fondasi MCP (**D-012 done**), agent masih belum bisa menjalankan learning flow. Hermes/OpenClaw butuh tools domain agar bisa: cek katalog → enroll free → lihat progress → tandai lesson selesai.
+
+**Code 2026-08-12 ready:** Domain enroll/progress + capacity locks; payment off (free path); MCP server + `agent-ping`; token default **ping-only** (`agent:token`); gunakan `--free-flow` **setelah** tools terdaftar.
 
 ## Goal
 

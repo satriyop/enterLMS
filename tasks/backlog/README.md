@@ -47,3 +47,15 @@ depends_on: []
 Urutan ambil kerja: ikuti `tasks/roadmap/2026-lms-roadmap.md`, bukan urutan nomor semata.
 
 **Agent platform (Depth B):** B-012 → B-013; B-014 paralel setelah B-012; B-015 setelah free-flow tools stabil.
+
+## Vet vs current code (2026-08-12)
+
+Lihat **[backlog-vet-2026-08-12.md](../audit/backlog-vet-2026-08-12.md)** untuk validitas tiap item + pre-work.
+
+| Next (pilih) | Jangan dulu tanpa trigger |
+|--------------|---------------------------|
+| **B-013** agent tools *atau* free-flow polish | **B-001** payment (flag off by design) |
+| B-011 roles (enterprise demo) | **B-003** multi-tenancy (perlu ADR) |
+| B-007 SCORM edge harden | B-002 SSO (perlu IdP) |
+
+Sanctum + MCP foundation (**D-012**) sudah ada — B-009/B-013 tidak mulai dari nol auth.

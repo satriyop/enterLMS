@@ -12,11 +12,13 @@ depends_on: []
 
 ## Problem
 
-`PaymentService` + `PaymentGatewayContract` sudah ada, UI list/show/cancel ada, tapi **tidak ada implementasi gateway nyata**. Kursus berbayar di-block dengan pesan, tidak bisa diselesaikan sampai paid.
+`PaymentService` + `PaymentGatewayContract` sudah ada, UI list/show/cancel ada, tapi **tidak ada implementasi gateway nyata**.
+
+**Code 2026-08-12:** payments **product-off** by design (`lms.payment.enabled=false`, `EnsurePaymentsEnabled` → 404, `Course::isPaid()` requires commercial + flag). Kursus dengan `is_paid` di DB **bukan** di-block — diperlakukan gratis sampai flag + gateway hidup.
 
 ## Goal
 
-Learner bisa bayar kursus berbayar → webhook sukses → enrollment aktif otomatis.
+Learner bisa bayar kursus berbayar → webhook sukses → enrollment aktif otomatis (hanya saat commercial + `payment.enabled`).
 
 ## Scope
 

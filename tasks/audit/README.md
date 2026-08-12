@@ -6,6 +6,7 @@ Hasil pemetaan codebase **sekarang** — kesiapan fitur **dan** stabilitas/tech 
 |------|-----|------------|
 | [capability-map.md](./capability-map.md) | Ready / partial / missing per **capability produk** | Roadmap, status fitur |
 | [tech-debt-architecture-2026-08-12.md](./tech-debt-architecture-2026-08-12.md) | **Tech debt / architecture / code smell** + go/no-go sebelum fitur baru | Sebelum B-013, B-001, multi-tenancy, atau “stabil dulu?” |
+| [backlog-vet-2026-08-12.md](./backlog-vet-2026-08-12.md) | **Backlog vs code terbaru** — valid / stale / next / jangan dulu | Pilih item kerja berikutnya |
 
 ## Cara update
 
