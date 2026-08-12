@@ -86,6 +86,23 @@ it('creates agent token via artisan command', function () {
     expect($user->tokens()->first()->can(AgentAbility::PING))->toBeTrue();
 });
 
+it('defaults agent:token to ping-only without write abilities', function () {
+    $user = User::factory()->create([
+        'email' => 'ping-only@example.com',
+        'role' => 'learner',
+    ]);
+
+    $this->artisan('agent:token', [
+        'user' => 'ping-only@example.com',
+        '--name' => 'safe-default',
+    ])->assertSuccessful();
+
+    $token = $user->tokens()->first();
+    expect($token->can(AgentAbility::PING))->toBeTrue()
+        ->and($token->can(AgentAbility::ENROLLMENT_WRITE))->toBeFalse()
+        ->and($token->can(AgentAbility::PROGRESS_WRITE))->toBeFalse();
+});
+
 it('rejects unknown abilities when creating token', function () {
     $user = User::factory()->create(['role' => 'learner']);
 

@@ -42,7 +42,7 @@ trait AuditsAgentToolCalls
     }
 
     /**
-     * @param  callable(): Response|ResponseFactory  $callback
+     * @param  callable(): (Response|ResponseFactory)  $callback
      */
     protected function runAudited(Request $request, callable $callback): Response|ResponseFactory
     {

@@ -27,7 +27,10 @@ describe('PricingAwarePrerequisiteEvaluator', function () {
     });
 
     it('returns not met for paid courses in commercial mode', function () {
-        config(['lms.mode' => 'commercial']);
+        config([
+            'lms.mode' => 'commercial',
+            'lms.payment.enabled' => true,
+        ]);
 
         $path = LearningPath::factory()->published()->create();
         $course = Course::factory()->published()->create(['is_paid' => true]);

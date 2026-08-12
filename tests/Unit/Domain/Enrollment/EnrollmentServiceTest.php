@@ -71,6 +71,7 @@ describe('EnrollmentService', function () {
             ]);
 
             config()->set('lms.mode', 'commercial');
+            config()->set('lms.payment.enabled', true);
 
             $this->service->enroll(
                 userId: $user->id,

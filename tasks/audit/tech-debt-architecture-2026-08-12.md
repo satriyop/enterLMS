@@ -1,0 +1,286 @@
+# Tech debt / architecture / code-smell audit
+
+> **Date:** 2026-08-12  
+> **Tree basis:** working tree after free-flow harden + agent foundation (D-012) + stabilize pack (Spatie/SCORM/xAPI/capacity/payment-off/progress default)  
+> **Method:** evidence from `app/`, `routes/`, `config/`, `tests/` — **not** pattern-worship  
+> **Companion:** [capability-map.md](./capability-map.md) (product readiness); this file = **code stability** before new features
+
+---
+
+## Executive verdict
+
+| Question | Answer |
+|----------|--------|
+| Is free-flow LMS **stable enough** to build on? | **YES — go**, with listed known debt accepted or tracked |
+| Is agent/MCP product-ready? | **Partial** — foundation only (`agent-ping`); core tools = [B-013](../backlog/B-013-agent-mcp-core-tools.md) |
+| Is commercial payment ready? | **NO** — intentionally disabled; do not enable without [B-001](../backlog/B-001-payment-gateway.md) |
+| Should we rewrite architecture first? | **NO** — domain boundaries are sound; fix residual P1 when touching those paths |
+
+**Go / no-go for new features**
+
+| Feature track | Decision | Why |
+|---------------|----------|-----|
+| Free-flow polish, content, assessment, cert | **GO** | Core path ready; recent correctness fixes in tree |
+| B-013 MCP core tools (thin adapters) | **GO with rules** | Domain services exist; wrap only; reuse policies |
+| B-001 payment gateway | **NO-GO until intentional** | Domain half-wired; flag off by design |
+| Multi-tenancy / SSO | **NO-GO** | Cross-cuts all queries; product gaps, not code polish |
+| Big DTO/event-sourcing rewrite | **NO-GO** | Would add debt without solving free LMS needs |
+
+---
+
+## Recently closed (do not re-open as P0)
+
+Verified **present in current tree** (re-scan 2026-08-12):
+
+| Former risk | Evidence now | Tests |
+|-------------|--------------|-------|
+| Spatie `status === 'string'` false forever | `EnrollmentContext` uses `$enrollment?->isActive()`; progress uses `isCompleted()`; `CourseController` uses `isDraft()` | `tests/Feature/Stabilize/StabilizeDebtFixesTest.php` |
+| SCORM path traversal | `ScormPlayerController::resolveSafePackagePath` rejects `..` | same Stabilize suite |
+| xAPI IDOR index + actor spoof | `auth:sanctum`; force actor in `XapiStatementController@store`; learner scope on index | Stabilize + `tests/Feature/Xapi/` |
+| Capacity race | `lockForUpdate` + `assertCapacityAvailable` on create / drop-reactivate / soft-delete restore | Stabilize |
+| Soft-delete unique brick | restore path + capacity check | Stabilize |
+| Home stats wrong schema | `visibility = 'public'`; `COALESCE(manual_duration_minutes, estimated_duration_minutes, 0)` | Stabilize |
+| Dual route load courses/paths | only `routes/web.php` requires them; `bootstrap/app.php` documents single source | Stabilize |
+| Progress FormRequest `authorize: true` | Gate via `LessonProgress` policy | Stabilize |
+| Unlimited parallel assessment starts | resume open attempt; count `in_progress` toward max | `AssessmentAttemptFlowTest` |
+| Payment ghost success path | `lms.payment.enabled` default false; `Course::isPaid()` requires flag; `ensurePaymentsEnabled()` | `PaymentTest` + Stabilize |
+| PHPStan live errors (prior 8) | `./vendor/bin/phpstan analyse` → **0 errors** (baseline still holds historical ignores) | CI local |
+| xAPI context enrollment ownership | `XapiStatementController::scopedContextForActor` rejects foreign enrollment ids | Stabilize |
+| Agent token default write abilities | `agent:token` defaults to `AgentAbility::defaults()` = ping only; `--free-flow` opt-in | Agent MCP foundation tests |
+
+---
+
+## Open findings (current)
+
+### Severity legend
+
+| Sev | Meaning |
+|-----|---------|
+| **P0** | Correctness/security/integrity risk active in default free path |
+| **P1** | Multiplies cost of next features or bites under load/commercial/agent |
+| **P2** | Smell / maintainability; fix when touching area |
+
+---
+
+### P0 — blocking free-path stability
+
+**None remaining** for the default **internal / free** LMS path after stabilize.
+
+If any of the “Recently closed” items are **not** committed/deployed on a given branch, treat that branch as not audited green.
+
+---
+
+### P1 — fix before or while building next features
+
+#### P1-1 Dual enrollment lifecycle (SoftDeletes + state machine)
+
+| | |
+|--|--|
+| **What** | `Enrollment` uses Spatie states (`active`/`completed`/`dropped`) **and** `SoftDeletes`. Unique `(user_id, course_id)` is non-partial. Domain prefers `dropped` + `reactivate()`; soft-delete still exists and needs special restore path. |
+| **Why** | Two mental models for “gone” enrollment. Easy for admin tools / future purge to soft-delete and surprise re-enroll / capacity math. Mitigated for re-enroll but dual semantics remain. |
+| **Where** | `app/Models/Enrollment.php` (`SoftDeletes` + state methods); `app/Domain/Enrollment/Services/EnrollmentService.php` (`onlyTrashed` restore); migrations `2025_11_26_193402_create_enrollments_table.php` (unique), `2026_01_31_221317_add_soft_deletes_to_users_enrollments_ratings.php` |
+| **Fix direction** | Prefer **one** lifecycle: either drop SoftDeletes on enrollments, or stop using soft-delete and only use `dropped`. Document and enforce in admin delete paths. |
+| **Before** | B-013 enroll tools; any admin “purge enrollment” UI |
+
+#### P1-2 Payment domain half-product (disabled but still large surface)
+
+| | |
+|--|--|
+| **What** | Full `PaymentService` + model + UI routes; **no** `PaymentGatewayContract` implementation/binding. Product flag off. |
+| **Why** | Large surface invites “just flip commercial” mistakes; tests must remember `payment.enabled`. Not active risk while flag false. |
+| **Where** | `app/Domain/Payment/`; `app/Domain/Payment/Contracts/PaymentGatewayContract.php` (no app impl); `routes/payments.php` still registered; `config/lms.php` `payment.enabled` default `false`; `Course::isPaid()` gates on flag |
+| **Fix direction** | Keep disabled until B-001; optionally hide routes/UI when `!payment.enabled`; never enable commercial without gateway binding tests. |
+| **Before** | Any monetization work |
+
+#### P1-3 Agent MCP abilities without tools (product/API drift risk)
+
+| | |
+|--|--|
+| **What** | Abilities define free-flow scopes; only tool is `agent-ping`. |
+| **Why** | Tokens can be issued with write abilities that do nothing yet — or B-013 might reimplement rules outside domain if rushed. |
+| **Where** | `app/Domain/Agent/Abilities/AgentAbility.php`; `app/Mcp/Servers/EnteraksiAgentServer.php` (`$tools = [AgentPingTool::class]`); `routes/ai.php` |
+| **Fix direction** | B-013: **thin** tools → Domain services + existing policies only. Issue tokens with minimal abilities until tools ship. |
+| **Before** | Hermes/OpenClaw real workflows |
+
+#### P1-4 xAPI context IDs not ownership-scoped — **closed 2026-08-12**
+
+See “Recently closed”. Residual: compliance roles may still set arbitrary context (by design for auditors).
+
+#### P1-5 `RequiresEagerLoading` silent N+1 in production
+
+| | |
+|--|--|
+| **What** | Missing `withCount`/`withAvg` throws in `local`/`testing`, but **logs + runs query** in production. |
+| **Why** | Lists can degrade only under real traffic; hard to catch without APM. |
+| **Where** | `app/Models/Concerns/RequiresEagerLoading.php` (`handleMissingEagerLoad` lines ~111–129) |
+| **Fix direction** | Prefer fail closed in staging; or metrics alert on warning; keep list controllers disciplined |
+| **Before** | High-traffic catalog/dashboard work |
+
+#### P1-6 Query-in-accessor: `CourseSection::getDurationAttribute`
+
+| | |
+|--|--|
+| **What** | If `estimated_duration_minutes` null, accessor runs SQL sum over lessons. |
+| **Why** | N+1 on course outline when sections missing denormalized duration. |
+| **Where** | `app/Models/CourseSection.php` `getDurationAttribute` / `calculateEstimatedDuration` |
+| **Fix direction** | Always maintain denormalized minutes on lesson save; never query in accessor on list paths |
+| **Before** | CM outline heavy pages / API that lists sections |
+
+#### P1-7 Nested resource scoping inconsistent
+
+| | |
+|--|--|
+| **What** | Some controllers hard-filter parent (`where course_id`); others rely on policy 403; no global `scopeBindings()`. |
+| **Why** | New nested routes can copy wrong pattern → IDOR or 403/404 inconsistency. |
+| **Where** | e.g. `LessonController` / `AssessmentController` parent checks; `tests/Feature/Authorization/NestedRouteScopingTest.php` accepts 403 **or** 404 |
+| **Fix direction** | Standardize abort 404 when child ∉ parent; optional route `scoped` bindings |
+| **Before** | New nested admin/agent routes |
+
+#### P1-8 Exception control flow via magic strings
+
+| | |
+|--|--|
+| **What** | Invitation flow throws `RuntimeException('invitation_not_pending')`; controller compares `$e->getMessage() === ...`. |
+| **Why** | Fragile, untyped, easy to break silently on message change. |
+| **Where** | `InvitationAcceptanceService`; `EnrollmentController` accept invitation catch block ~282+ |
+| **Fix direction** | Dedicated domain exceptions (already pattern for enroll capacity/deadline) |
+| **Before** | Touching invitation accept path / B-013 invite flows |
+
+#### P1-9 PHPStan baseline (~46 historical ignores)
+
+| | |
+|--|--|
+| **What** | Live analyse is clean; baseline still ignores older type holes (Resources, events, CSV types, etc.). |
+| **Why** | Same class of bugs can reappear without forcing fix. |
+| **Where** | `phpstan-baseline.neon`; `phpstan.neon` level 5 |
+| **Fix direction** | Burn down `property.notFound` / Resource typing when editing those files |
+| **Before** | Large Resource/API work |
+
+#### P1-10 Fat gravity wells (maintainability)
+
+| | |
+|--|--|
+| **What** | Very large units: `Course` model ~582 LOC; Path/Enrollment/Payment services 400+; `EnrollmentController` ~327. |
+| **Why** | Not wrong today; high change risk when multi-tenant / versioning lands. |
+| **Where** | `app/Models/Course.php`; `PathProgressService`; `EnrollmentService`; `PaymentService`; `EnrollmentController` |
+| **Fix direction** | Extract only when a story forces it; do not big-bang split |
+| **Before** | Course versioning (B-004), multi-tenancy (B-003) |
+
+#### P1-11 Enterprise roles incomplete (product/authz)
+
+| | |
+|--|--|
+| **What** | 7 roles on `User`; policies still mostly CM/trainer/admin/learner. |
+| **Why** | Compliance/auditor/TA may over/under-permit on new pages. |
+| **Where** | `app/Models/User.php` `ROLES`; sparse policy references; backlog [B-011](../backlog/B-011-role-permission-polish.md) |
+| **Fix direction** | Matrix pass when enterprise customers appear |
+| **Before** | Selling “compliance officer” product story |
+
+---
+
+### P2 — smells / cleanup when nearby
+
+| ID | Finding | Where | Note |
+|----|---------|-------|------|
+| P2-1 | Double authorize: FormRequest Gate + controller `Gate::authorize` on progress | `LessonProgressController` + FormRequests | Harmless redundancy; pick one layer |
+| P2-2 | Payment routes registered even when disabled | `routes/payments.php` via `web.php` | UX noise; service still hard-fails |
+| P2-3 | Strategy factories + tags larger than swap need | `DomainServiceProvider` grading/progress/prereq | OK if used; avoid new strategy layers “for flexibility” |
+| P2-4 | Large Vue pages (question-bank, outline) | `resources/js/pages/question-bank/*` | DX only unless editing those pages |
+| P2-5 | ~~Agent freeFlow as default~~ **closed** — default is ping-only; `--free-flow` opt-in | `AgentAbility::defaults()` | |
+| P2-6 | `EnrollmentController@store` inline auth (no FormRequest) | `EnrollmentController` | Works; inconsistent with other resources |
+| P2-7 | redesign-tournament artifacts uncommitted / parallel design track | `redesign-tournament/` | Out of product runtime path |
+
+---
+
+## Architecture assessment (objective)
+
+### Sound (keep)
+
+1. **Bounded contexts under `app/Domain/*`** with thin controllers and services returning models.  
+2. **Rich models for state** (enrollment/course) + Spatie model-states.  
+3. **Policies + FormRequests** as primary authz/validation (Laravel-native).  
+4. **Concurrency awareness** on enroll (locks, unique, capacity).  
+5. **Domain events + `domain_event_log`** for compliance trail.  
+6. **Agent as external client** (MCP + Sanctum) — correct product boundary.  
+7. **Test investment** large Feature suite including Stabilize, free-flow journey, nested scoping.
+
+### Weak / watch
+
+1. **Dual surfaces** (Inertia web vs token/MCP/xAPI) without a single “application service” doc — mitigated if B-013 stays thin.  
+2. **Dual lifecycle** on enrollment (P1-1).  
+3. **Half-domains** (payment) that look production-shaped but are disabled (P1-2).  
+4. **Prod soft-fail N+1** (P1-5).  
+5. **Role model** coarse for enterprise (P1-11).
+
+### Explicit non-problems (do not “fix” without cause)
+
+- DDD folder layout is not over-engineered for this size.  
+- Strategy pattern for grading/progress is justified by multiple algorithms.  
+- JsonResource over custom VO layers is correct Laravel style.  
+- Inertia + Fortify auth for learners is appropriate; no need for Passport for web.
+
+---
+
+## Before next feature — checklist
+
+Use this as a gate; not all must be code-complete.
+
+### Always (any feature)
+
+- [ ] Touching enroll/capacity/invite → keep locks; no soft-delete without restore path  
+- [ ] Nested routes → assert parent ownership (404 preferred)  
+- [ ] New progress/API write → FormRequest authorize via policy  
+- [ ] PHPStan clean on touched files (no new baseline noise)
+
+### Before B-013 (agent tools)
+
+- [ ] Tools only call Domain services / model methods used by web  
+- [ ] Ability checks via `tokenCan` + audit logger (existing trait)  
+- [ ] Do not issue default freeFlow write tokens until tools exist (prefer ping-only)  
+- [ ] Paid enroll remains blocked via `isPaid()` / payment flag  
+
+### Before B-001 (payment)
+
+- [ ] Real gateway class + container bind  
+- [ ] Webhook signature verify  
+- [ ] Flip `lms.payment.enabled` only with tests green  
+- [ ] UI only when enabled  
+
+### Before multi-tenancy / SSO
+
+- [ ] Expect cross-cutting query + policy rewrite — plan as product phase, not “cleanup sprint”
+
+---
+
+## Cross-links
+
+| Artifact | Role |
+|----------|------|
+| [capability-map.md](./capability-map.md) | Product capability ready/partial/missing |
+| [../roadmap/2026-lms-roadmap.md](../roadmap/2026-lms-roadmap.md) | Phase order (incl. Fase F agent) |
+| [../done/D-012-agent-mcp-foundation.md](../done/D-012-agent-mcp-foundation.md) | MCP foundation done |
+| [../backlog/B-013-agent-mcp-core-tools.md](../backlog/B-013-agent-mcp-core-tools.md) | Next agent work |
+| [../backlog/B-001-payment-gateway.md](../backlog/B-001-payment-gateway.md) | Payment when needed |
+| `tests/Feature/Stabilize/StabilizeDebtFixesTest.php` | Regression net for stabilize fixes |
+
+---
+
+## Summary table (open only)
+
+| ID | Sev | Topic | Blocks |
+|----|-----|-------|--------|
+| — | P0 | *(none on free path)* | — |
+| P1-1 | P1 | SoftDeletes + enrollment states | Enroll tooling |
+| P1-2 | P1 | Payment half-domain | Monetization |
+| P1-3 | P1 | MCP tools missing | Agent product |
+| P1-4 | P1 | xAPI context ownership | Compliance telemetry |
+| P1-5 | P1 | Prod N+1 fallback | Scale |
+| P1-6 | P1 | Section duration accessor query | Outline perf |
+| P1-7 | P1 | Nested scoping consistency | New nested APIs |
+| P1-8 | P1 | Exception string matching | Invite path |
+| P1-9 | P1 | PHPStan baseline debt | Type safety long-term |
+| P1-10 | P1 | Fat models/services | Large refactors later |
+| P1-11 | P1 | Enterprise role matrix | Enterprise sales |
+| P2-* | P2 | See table above | Opportunistic |
+
+**Bottom line:** Codebase is **stable enough for free LMS feature work and careful B-013**. Do **not** treat payment or multi-tenancy as “just another story.” Residual debt is mostly **lifecycle clarity, product boundaries, and production performance honesty** — not a failed architecture.

@@ -43,7 +43,7 @@ class QuestionBankService
             $item->syncOptions($data->options);
         }
 
-        if (isset($data->tag_ids)) {
+        if ($data->tag_ids !== []) {
             $item->tags()->sync($data->tag_ids);
         }
 

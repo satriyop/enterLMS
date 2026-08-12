@@ -71,20 +71,62 @@ class ScormPlayerController extends Controller
             abort(403, 'Anda tidak memiliki akses ke konten ini.');
         }
 
-        $disk = Storage::disk($scormPackage->disk);
-        $filePath = $scormPackage->extraction_path.'/'.$path;
+        $safeRelativePath = $this->resolveSafePackagePath($scormPackage->extraction_path, $path);
 
-        if (! $disk->exists($filePath)) {
+        $disk = Storage::disk($scormPackage->disk);
+
+        if (! $disk->exists($safeRelativePath)) {
             abort(404);
         }
 
-        $fullPath = $disk->path($filePath);
-        $mimeType = $this->getMimeType($path);
+        $fullPath = $disk->path($safeRelativePath);
+        $mimeType = $this->getMimeType($safeRelativePath);
 
         return response()->file($fullPath, [
             'Content-Type' => $mimeType,
             'Cache-Control' => 'private, max-age=3600',
         ]);
+    }
+
+    /**
+     * Resolve a content path that cannot escape the package extraction root.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     */
+    protected function resolveSafePackagePath(string $extractionPath, string $path): string
+    {
+        $path = str_replace('\\', '/', $path);
+
+        if ($path === '' || str_starts_with($path, '/') || str_contains($path, "\0")) {
+            abort(404);
+        }
+
+        if (str_contains($path, '..')) {
+            abort(404);
+        }
+
+        $root = rtrim(str_replace('\\', '/', $extractionPath), '/');
+        $candidate = $root.'/'.ltrim($path, '/');
+
+        // Collapse redundant segments without leaving the root prefix.
+        $parts = [];
+        foreach (explode('/', $candidate) as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
+            }
+            if ($segment === '..') {
+                abort(404);
+            }
+            $parts[] = $segment;
+        }
+
+        $normalized = implode('/', $parts);
+
+        if ($normalized !== $root && ! str_starts_with($normalized, $root.'/')) {
+            abort(404);
+        }
+
+        return $normalized;
     }
 
     protected function verifyEnrollment(Request $request, Lesson $lesson): ?Enrollment

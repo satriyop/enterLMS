@@ -467,7 +467,11 @@ class Course extends Model
      */
     public function isPaid(): bool
     {
-        return config('lms.mode') === 'commercial' && $this->is_paid;
+        // Paid only when commercial mode AND payments are explicitly enabled.
+        // Until a real gateway ships (B-001), payment.enabled stays false → free path.
+        return config('lms.mode') === 'commercial'
+            && (bool) config('lms.payment.enabled', false)
+            && $this->is_paid;
     }
 
     /**

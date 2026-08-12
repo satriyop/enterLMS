@@ -2,20 +2,24 @@
 
 use App\Domain\Enrollment\Exceptions\PaymentRequiredException;
 use App\Domain\Enrollment\Services\EnrollmentService;
+use App\Domain\Payment\Contracts\PaymentGatewayContract;
 use App\Domain\Payment\Services\PaymentService;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
 use App\Models\User;
+use Tests\Support\FakePaymentGateway;
 
 beforeEach(function () {
     $this->learner = User::factory()->learner()->create();
     $this->admin = User::factory()->lmsAdmin()->create();
+    $this->app->instance(PaymentGatewayContract::class, new FakePaymentGateway);
     $this->paymentService = app(PaymentService::class);
     $this->enrollmentService = app(EnrollmentService::class);
 
-    // Enable commercial mode for payment tests
+    // Enable commercial mode + payments for payment tests (production defaults stay off)
     config()->set('lms.mode', 'commercial');
+    config()->set('lms.payment.enabled', true);
 });
 
 describe('Payment Model', function () {
@@ -91,6 +95,30 @@ describe('Payment Model', function () {
 
 describe('PaymentService', function () {
     describe('createCoursePayment', function () {
+        it('rejects create when payments are product-disabled', function () {
+            config()->set('lms.payment.enabled', false);
+
+            $course = Course::factory()->published()->create([
+                'is_paid' => true,
+                'price' => 150000,
+            ]);
+
+            $this->paymentService->createCoursePayment($this->learner, $course);
+        })->throws(RuntimeException::class, 'Pembayaran dinonaktifkan');
+
+        it('rejects create when payment gateway is not configured', function () {
+            $this->app->forgetInstance(PaymentGatewayContract::class);
+            // Fresh service without gateway binding
+            $service = new PaymentService(app(EnrollmentService::class), null);
+
+            $course = Course::factory()->published()->create([
+                'is_paid' => true,
+                'price' => 150000,
+            ]);
+
+            $service->createCoursePayment($this->learner, $course);
+        })->throws(RuntimeException::class, 'Gateway pembayaran belum dikonfigurasi');
+
         it('creates payment for paid course', function () {
             $course = Course::factory()->published()->create([
                 'is_paid' => true,

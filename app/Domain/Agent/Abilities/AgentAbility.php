@@ -24,7 +24,19 @@ final class AgentAbility
     public const COMPLIANCE_READ = 'agent:compliance.read';
 
     /**
-     * Abilities available for free-flow agent tokens (B-012 + B-013).
+     * Safe default until B-013 tools ship: identity only.
+     *
+     * @return list<string>
+     */
+    public static function defaults(): array
+    {
+        return [
+            self::PING,
+        ];
+    }
+
+    /**
+     * Full free-flow agent surface (catalog → enroll → progress). Use after B-013 tools exist.
      *
      * @return list<string>
      */

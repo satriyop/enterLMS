@@ -9,7 +9,8 @@ use Laravel\Mcp\Facades\Mcp;
 |--------------------------------------------------------------------------
 |
 | Clients must send: Authorization: Bearer <sanctum-personal-access-token>
-| Issue tokens via: php artisan agent:token {email} --ability=agent:ping
+| Issue tokens via: php artisan agent:token {email}
+| (default ability: agent:ping only; use --free-flow after B-013 tools)
 |
 */
 

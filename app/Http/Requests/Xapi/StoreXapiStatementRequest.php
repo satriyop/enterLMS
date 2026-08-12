@@ -15,7 +15,7 @@ class StoreXapiStatementRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Actor fields from clients are ignored — controller binds the authenticated user.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
@@ -27,9 +27,8 @@ class StoreXapiStatementRequest extends FormRequest
             'object_id' => ['required', 'string'],
             'object_name' => ['nullable', 'string', 'max:255'],
             'object_type' => ['nullable', 'string', 'max:50'],
-            'actor_id' => ['nullable', 'integer', 'exists:users,id'],
-            'actor_mbox' => ['nullable', 'string', 'max:255'],
-            'actor_name' => ['nullable', 'string', 'max:255'],
+            // Intentionally not accepted from client for spoof prevention:
+            // actor_id, actor_mbox, actor_name
             'result_score_raw' => ['nullable', 'numeric'],
             'result_score_min' => ['nullable', 'numeric'],
             'result_score_max' => ['nullable', 'numeric'],
@@ -38,8 +37,8 @@ class StoreXapiStatementRequest extends FormRequest
             'result_completion' => ['nullable', 'boolean'],
             'result_duration' => ['nullable', 'string', 'max:100'],
             'context_registration' => ['nullable', 'uuid'],
-            'context_course_id' => ['nullable', 'integer'],
-            'context_enrollment_id' => ['nullable', 'integer'],
+            'context_course_id' => ['nullable', 'integer', 'exists:courses,id'],
+            'context_enrollment_id' => ['nullable', 'integer', 'exists:enrollments,id'],
             'context_extensions' => ['nullable', 'array'],
             'source' => ['nullable', 'string', 'in:scorm,native,external'],
         ];

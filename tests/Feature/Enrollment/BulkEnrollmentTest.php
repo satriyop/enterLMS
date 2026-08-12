@@ -98,6 +98,7 @@ describe('BulkEnrollmentService', function () {
 
         it('stops processing for paid course', function () {
             config()->set('lms.mode', 'commercial');
+            config()->set('lms.payment.enabled', true);
             $paidCourse = Course::factory()->published()->create([
                 'is_paid' => true,
                 'price' => 100000,

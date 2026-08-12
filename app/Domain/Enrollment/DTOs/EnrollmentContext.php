@@ -3,6 +3,7 @@
 namespace App\Domain\Enrollment\DTOs;
 
 use App\Models\Course;
+use App\Models\CourseInvitation;
 use App\Models\Enrollment;
 use App\Models\User;
 
@@ -46,9 +47,9 @@ readonly class EnrollmentContext
             ->first(['id', 'status']);
 
         return new self(
-            isActivelyEnrolled: $enrollment?->status === 'active',
-            /** @phpstan-ignore method.notFound (notExpired is a valid scope on CourseInvitation) */
-            hasPendingInvitation: $user->courseInvitations()
+            isActivelyEnrolled: $enrollment?->isActive() ?? false,
+            hasPendingInvitation: CourseInvitation::query()
+                ->where('user_id', $user->id)
                 ->where('course_id', $course->id)
                 ->where('status', 'pending')
                 ->notExpired()

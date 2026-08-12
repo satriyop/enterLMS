@@ -151,15 +151,36 @@ class Assessment extends Model
             return false;
         }
 
-        // Check attempt limits
-        $completedAttempts = $this->attempts()->where('user_id', $user->id)
-            ->whereIn('status', ['submitted', 'graded', 'completed'])->count();
+        // Allow resuming a single open attempt without counting it as a "new" start.
+        if ($this->getOpenAttemptFor($user) !== null) {
+            return true;
+        }
 
-        if ($this->max_attempts > 0 && $completedAttempts >= $this->max_attempts) {
+        // Count finished + open attempts toward the limit (no unlimited parallel starts).
+        $usedAttempts = $this->attempts()->where('user_id', $user->id)
+            ->whereIn('status', ['in_progress', 'submitted', 'graded', 'completed'])
+            ->count();
+
+        if ($this->max_attempts > 0 && $usedAttempts >= $this->max_attempts) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Get the user's open (in_progress) attempt for this assessment, if any.
+     */
+    public function getOpenAttemptFor(User $user): ?AssessmentAttempt
+    {
+        /** @var AssessmentAttempt|null $attempt */
+        $attempt = $this->attempts()
+            ->where('user_id', $user->id)
+            ->where('status', 'in_progress')
+            ->latest('id')
+            ->first();
+
+        return $attempt;
     }
 
     /**
@@ -181,24 +202,24 @@ class Assessment extends Model
     public function validateAttemptOrFail(User $user): void
     {
         if ($this->max_attempts > 0) {
-            $completedAttempts = $this->attempts()
+            $usedAttempts = $this->attempts()
                 ->where('user_id', $user->id)
-                ->whereIn('status', ['submitted', 'graded', 'completed'])
+                ->whereIn('status', ['in_progress', 'submitted', 'graded', 'completed'])
                 ->count();
 
-            if ($completedAttempts >= $this->max_attempts) {
+            if ($usedAttempts >= $this->max_attempts) {
                 throw new MaxAttemptsReachedException(
                     userId: $user->id,
                     assessmentId: $this->id,
                     maxAttempts: $this->max_attempts,
-                    completedAttempts: $completedAttempts
+                    completedAttempts: $usedAttempts
                 );
             }
         }
     }
 
     /**
-     * Get the number of completed attempts for a user.
+     * Get the number of finished attempts for a user (submitted/graded/completed).
      */
     public function getCompletedAttemptsCount(User $user): int
     {

@@ -35,6 +35,14 @@ class AssessmentAttemptController extends Controller
 
         $user = $request->user();
 
+        // Resume a single open attempt instead of opening unlimited parallel ones.
+        $openAttempt = $assessment->getOpenAttemptFor($user);
+        if ($openAttempt) {
+            return redirect()
+                ->route('assessments.attempt', [$course, $assessment, $openAttempt])
+                ->with('info', 'Melanjutkan percobaan yang masih berjalan.');
+        }
+
         try {
             $assessment->validateAttemptOrFail($user);
         } catch (MaxAttemptsReachedException $e) {

@@ -260,9 +260,9 @@ class AssessmentAttemptFlowTest extends TestCase
         );
     }
 
-    public function test_in_progress_attempts_do_not_count_toward_limit(): void
+    public function test_open_in_progress_attempt_is_resumed_not_duplicated(): void
     {
-        // Create 2 completed attempts
+        // Create 2 completed attempts (max_attempts is typically 3 in this suite)
         for ($i = 1; $i <= 2; $i++) {
             AssessmentAttempt::factory()->completed()->create([
                 'assessment_id' => $this->assessment->id,
@@ -271,21 +271,59 @@ class AssessmentAttemptFlowTest extends TestCase
             ]);
         }
 
-        // Create 1 in_progress attempt (shouldn't count toward limit)
-        AssessmentAttempt::factory()->create([
+        $open = AssessmentAttempt::factory()->create([
             'assessment_id' => $this->assessment->id,
             'user_id' => $this->learner->id,
             'attempt_number' => 3,
             'status' => 'in_progress',
         ]);
 
-        // Should be able to start a new attempt (only 2 completed)
         $response = $this->actingAs($this->learner)
             ->post("/courses/{$this->course->id}/assessments/{$this->assessment->id}/start");
 
-        // The canBeAttemptedBy counts submitted/graded/completed, so this should work
+        // Resume the open attempt; do not create a 4th row
+        $response->assertRedirect(route('assessments.attempt', [
+            $this->course,
+            $this->assessment,
+            $open,
+        ]));
+
+        $this->assertEquals(
+            3,
+            AssessmentAttempt::where('assessment_id', $this->assessment->id)
+                ->where('user_id', $this->learner->id)
+                ->count()
+        );
+    }
+
+    public function test_in_progress_attempts_count_toward_max_attempts_limit(): void
+    {
+        $this->assessment->update(['max_attempts' => 2]);
+
+        AssessmentAttempt::factory()->completed()->create([
+            'assessment_id' => $this->assessment->id,
+            'user_id' => $this->learner->id,
+            'attempt_number' => 1,
+        ]);
+
+        AssessmentAttempt::factory()->create([
+            'assessment_id' => $this->assessment->id,
+            'user_id' => $this->learner->id,
+            'attempt_number' => 2,
+            'status' => 'in_progress',
+        ]);
+
+        // At capacity (1 completed + 1 open). Starting again resumes, not a new attempt.
+        $response = $this->actingAs($this->learner)
+            ->post("/courses/{$this->course->id}/assessments/{$this->assessment->id}/start");
+
         $response->assertRedirect();
-        // Depending on implementation, this might create attempt 4
+        $this->assertEquals(
+            2,
+            AssessmentAttempt::where('assessment_id', $this->assessment->id)
+                ->where('user_id', $this->learner->id)
+                ->count()
+        );
     }
 
     public function test_unlimited_attempts_when_max_attempts_is_zero(): void
@@ -424,26 +462,36 @@ class AssessmentAttemptFlowTest extends TestCase
 
     public function test_learner_cannot_start_new_attempt_with_existing_in_progress(): void
     {
-        // Create an in-progress attempt
-        AssessmentAttempt::factory()->create([
+        $open = AssessmentAttempt::factory()->create([
             'assessment_id' => $this->assessment->id,
             'user_id' => $this->learner->id,
             'status' => 'in_progress',
             'attempt_number' => 1,
         ]);
 
-        // Try to start another attempt
         $response = $this->actingAs($this->learner)
             ->post("/courses/{$this->course->id}/assessments/{$this->assessment->id}/start");
 
-        // This behavior depends on implementation - current code will create a new attempt
-        // The test documents the actual behavior
-        $attempts = AssessmentAttempt::where('assessment_id', $this->assessment->id)
-            ->where('user_id', $this->learner->id)
-            ->get();
+        // Resume the open attempt — never open a second in_progress row.
+        $response->assertRedirect(route('assessments.attempt', [
+            $this->course,
+            $this->assessment,
+            $open,
+        ]));
 
-        // Current implementation creates new attempt regardless of existing in_progress
-        $this->assertGreaterThanOrEqual(1, $attempts->count());
+        $this->assertEquals(
+            1,
+            AssessmentAttempt::where('assessment_id', $this->assessment->id)
+                ->where('user_id', $this->learner->id)
+                ->count()
+        );
+        $this->assertEquals(
+            1,
+            AssessmentAttempt::where('assessment_id', $this->assessment->id)
+                ->where('user_id', $this->learner->id)
+                ->where('status', 'in_progress')
+                ->count()
+        );
     }
 
     // ========== canBeAttemptedBy Model Method Tests ==========

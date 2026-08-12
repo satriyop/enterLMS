@@ -18,14 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            Route::middleware('web')
-                ->group(base_path('routes/courses.php'));
+            // courses.php + learning_paths.php are required from routes/web.php only
+            // (avoid dual registration of the same named routes).
 
             Route::middleware('web')
                 ->group(base_path('routes/admin.php'));
-
-            Route::middleware('web')
-                ->group(base_path('routes/learning_paths.php'));
 
             Route::middleware('web')
                 ->group(base_path('routes/compliance.php'));

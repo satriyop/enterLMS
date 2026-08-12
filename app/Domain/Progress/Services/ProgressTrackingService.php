@@ -4,7 +4,6 @@ namespace App\Domain\Progress\Services;
 
 use App\Domain\Enrollment\Events\CourseStarted;
 use App\Domain\Progress\Contracts\ProgressCalculatorContract;
-
 use App\Domain\Progress\DTOs\ProgressResult;
 use App\Domain\Progress\DTOs\ProgressUpdateDTO;
 use App\Domain\Progress\Events\LessonCompleted;
@@ -77,7 +76,7 @@ class ProgressTrackingService
                 progress: $progress,
                 coursePercentage: new Percentage($enrollment->progress_percentage),
                 lessonCompleted: $justCompleted,
-                courseCompleted: $enrollment->status === 'completed',
+                courseCompleted: $enrollment->isCompleted(),
             );
         });
     }
@@ -92,7 +91,7 @@ class ProgressTrackingService
                 progress: $progress,
                 coursePercentage: new Percentage($enrollment->progress_percentage),
                 lessonCompleted: false,
-                courseCompleted: $enrollment->status === 'completed',
+                courseCompleted: $enrollment->isCompleted(),
             );
         }
 
@@ -118,7 +117,7 @@ class ProgressTrackingService
                 progress: $progress,
                 coursePercentage: new Percentage($enrollment->progress_percentage),
                 lessonCompleted: true,
-                courseCompleted: $enrollment->status === 'completed',
+                courseCompleted: $enrollment->isCompleted(),
             );
         });
     }

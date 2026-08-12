@@ -48,7 +48,7 @@ class AgentPingTool extends Tool
                 'token' => [
                     'id' => $token?->id,
                     'name' => $token?->name,
-                    'abilities' => $token?->abilities ?? [],
+                    'abilities' => $token !== null ? ($token->abilities ?? []) : [],
                 ],
                 'time' => now()->toIso8601String(),
             ]);

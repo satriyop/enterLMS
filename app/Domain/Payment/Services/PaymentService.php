@@ -21,16 +21,26 @@ use Illuminate\Support\Facades\Log;
  */
 class PaymentService
 {
+    protected ?PaymentGatewayContract $gateway;
+
     public function __construct(
         protected EnrollmentService $enrollmentService,
-        protected ?PaymentGatewayContract $gateway = null
-    ) {}
+        ?PaymentGatewayContract $gateway = null,
+    ) {
+        $this->gateway = $gateway ?? (
+            app()->bound(PaymentGatewayContract::class)
+                ? app(PaymentGatewayContract::class)
+                : null
+        );
+    }
 
     /**
      * Create a payment for a course.
      */
     public function createCoursePayment(User $user, Course $course): Payment
     {
+        $this->ensurePaymentsEnabled();
+        $this->ensureGatewayConfigured();
         $this->validateCoursePayment($user, $course);
 
         return $this->createPayment(
@@ -46,6 +56,9 @@ class PaymentService
      */
     public function createLearningPathPayment(User $user, LearningPath $learningPath): Payment
     {
+        $this->ensurePaymentsEnabled();
+        $this->ensureGatewayConfigured();
+
         // Learning paths may have aggregate pricing
         $price = $learningPath->price ?? $this->calculateLearningPathPrice($learningPath);
 
@@ -55,6 +68,30 @@ class PaymentService
             amount: $price,
             currency: $learningPath->currency ?? 'IDR'
         );
+    }
+
+    /**
+     * Payments are product-disabled until commercial mode + flag + gateway exist.
+     */
+    protected function ensurePaymentsEnabled(): void
+    {
+        if (config('lms.mode') !== 'commercial' || ! config('lms.payment.enabled')) {
+            throw new \RuntimeException(
+                'Pembayaran dinonaktifkan. LMS beroperasi dalam mode gratis/internal.'
+            );
+        }
+    }
+
+    /**
+     * Hard-fail paid flows when no PaymentGatewayContract is bound.
+     */
+    protected function ensureGatewayConfigured(): void
+    {
+        if ($this->gateway === null) {
+            throw new \RuntimeException(
+                'Gateway pembayaran belum dikonfigurasi. Kursus berbayar tidak dapat diproses.'
+            );
+        }
     }
 
     /**
@@ -100,12 +137,11 @@ class PaymentService
      */
     public function initiatePayment(Payment $payment): Payment
     {
-        if (! $this->gateway) {
-            throw new \RuntimeException('Payment gateway not configured');
-        }
+        $this->ensurePaymentsEnabled();
+        $this->ensureGatewayConfigured();
 
         if (! $payment->canProcess()) {
-            throw new \RuntimeException('Payment cannot be processed in current state');
+            throw new \RuntimeException('Pembayaran tidak dapat diproses pada status saat ini.');
         }
 
         $result = $this->gateway->createTransaction($payment);

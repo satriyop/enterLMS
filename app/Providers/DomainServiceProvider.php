@@ -80,7 +80,7 @@ class DomainServiceProvider extends ServiceProvider
 
         // Default calculator binding based on configuration
         $this->app->bind(ProgressCalculatorContract::class, function ($app) {
-            $calculatorType = config('lms.progress_calculator', 'lesson_based');
+            $calculatorType = config('lms.progress_calculator', 'assessment_inclusive');
 
             return match ($calculatorType) {
                 'weighted' => $app->make(WeightedProgressCalculator::class),

@@ -2,13 +2,15 @@
 
 namespace App\Http\Requests\LessonProgress;
 
+use App\Models\LessonProgress;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class UpdatePaginationProgressRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('update', [LessonProgress::class, $this->route('course')]);
     }
 
     public function rules(): array

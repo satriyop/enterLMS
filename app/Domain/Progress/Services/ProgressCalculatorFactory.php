@@ -22,7 +22,7 @@ class ProgressCalculatorFactory
     {
         // Course can specify its calculator type via progress_calculator_type attribute
         $calculatorType = $course->progress_calculator_type
-            ?? config('lms.progress_calculator', 'lesson_based');
+            ?? config('lms.progress_calculator', 'assessment_inclusive');
 
         return $this->resolve($calculatorType);
     }
@@ -44,7 +44,7 @@ class ProgressCalculatorFactory
      */
     public function getDefault(): ProgressCalculatorContract
     {
-        return $this->resolve(config('lms.progress_calculator', 'lesson_based'));
+        return $this->resolve(config('lms.progress_calculator', 'assessment_inclusive'));
     }
 
     /**

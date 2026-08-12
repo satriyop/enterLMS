@@ -13,7 +13,8 @@ class CreateAgentToken extends Command
     protected $signature = 'agent:token
                             {user : User email or id}
                             {--name=hermes : Token name}
-                            {--ability=* : Ability (repeatable). Default: free-flow set}
+                            {--ability=* : Ability (repeatable). Default: agent:ping only}
+                            {--free-flow : Issue full free-flow abilities (after B-013 tools)}
                             {--all-abilities : Issue all known agent abilities}
                             {--expires= : Expiry datetime (Y-m-d or ISO8601)}
                             {--revoke= : Revoke token by id instead of creating}';
@@ -83,11 +84,15 @@ class CreateAgentToken extends Command
             return AgentAbility::all();
         }
 
+        if ($this->option('free-flow')) {
+            return AgentAbility::freeFlow();
+        }
+
         /** @var list<string> $abilities */
         $abilities = $this->option('ability');
 
         if ($abilities === []) {
-            return AgentAbility::freeFlow();
+            return AgentAbility::defaults();
         }
 
         return $abilities;

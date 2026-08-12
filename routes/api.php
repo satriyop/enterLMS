@@ -22,7 +22,8 @@ Route::prefix('health')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->prefix('xapi')->name('api.xapi.')->group(function () {
+// Sanctum: session (web SPA) or Bearer token (agent/mobile). Same product auth story.
+Route::middleware('auth:sanctum')->prefix('xapi')->name('api.xapi.')->group(function () {
     Route::get('/statements', [XapiStatementController::class, 'index'])->name('statements.index');
     Route::post('/statements', [XapiStatementController::class, 'store'])->name('statements.store');
 });

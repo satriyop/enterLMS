@@ -13,7 +13,8 @@ return [
     |
     */
 
-    'progress_calculator' => env('LMS_PROGRESS_CALCULATOR', 'lesson_based'),
+    // Banking/compliance default: lessons + required assessments gate completion.
+    'progress_calculator' => env('LMS_PROGRESS_CALCULATOR', 'assessment_inclusive'),
 
     /*
     |--------------------------------------------------------------------------
@@ -113,6 +114,9 @@ return [
     | - 'internal': All courses are free, no payments
     | - 'commercial': Courses can be paid, payment system enabled
     |
+    | Even in commercial mode, payments stay off until payment.enabled=true
+    | AND a PaymentGatewayContract is bound (see PaymentService).
+    |
     */
 
     'mode' => env('LMS_MODE', 'internal'),
@@ -146,8 +150,9 @@ return [
     */
 
     'payment' => [
+        // Hard-off until B-001 gateway ships. Commercial mode alone is not enough.
         'enabled' => env('LMS_PAYMENT_ENABLED', false),
-        'gateway' => env('LMS_PAYMENT_GATEWAY', 'midtrans'), // midtrans, stripe, etc.
+        'gateway' => env('LMS_PAYMENT_GATEWAY', null),
         'sandbox' => env('LMS_PAYMENT_SANDBOX', true),
     ],
 

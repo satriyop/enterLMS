@@ -48,8 +48,9 @@ class HomeController extends Controller
 
         $stats = Cache::remember('home_stats', 3600, function () {
             $coursesCount = DB::table('courses')
+                ->whereNull('deleted_at')
                 ->where('status', 'published')
-                ->where('visibility', 'visible')
+                ->where('visibility', 'public')
                 ->count();
 
             $studentsCount = DB::table('enrollments')
@@ -58,16 +59,19 @@ class HomeController extends Controller
                 ->count('user_id');
 
             $instructorsCount = DB::table('courses')
+                ->whereNull('deleted_at')
                 ->where('status', 'published')
                 ->distinct('user_id')
                 ->count('user_id');
 
-            $totalHours = (int) round(
-                DB::table('courses')
-                    ->where('status', 'published')
-                    ->where('visibility', 'visible')
-                    ->sum('duration') / 60
-            );
+            // Prefer manual duration override, else estimated (minutes) → hours.
+            $totalMinutes = (int) DB::table('courses')
+                ->whereNull('deleted_at')
+                ->where('status', 'published')
+                ->where('visibility', 'public')
+                ->sum(DB::raw('COALESCE(manual_duration_minutes, estimated_duration_minutes, 0)'));
+
+            $totalHours = (int) round($totalMinutes / 60);
 
             return [
                 ['label' => 'Kursus Tersedia', 'value' => number_format($coursesCount), 'icon' => 'courses'],

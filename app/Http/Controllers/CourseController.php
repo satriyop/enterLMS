@@ -136,7 +136,7 @@ class CourseController extends Controller
             ->first();
 
         $enrollmentContext = EnrollmentContext::fromData(
-            isActivelyEnrolled: $enrollment && $enrollment->status === 'active',
+            isActivelyEnrolled: $enrollment?->isActive() ?? false,
             hasPendingInvitation: $user->courseInvitations()
                 ->where('course_id', $course->id)
                 ->where('status', 'pending')
@@ -182,7 +182,7 @@ class CourseController extends Controller
         return Inertia::render($viewName, [
             'course' => new CourseShowResource($course),
             'enrollment' => $enrollment ? new EnrollmentSummaryResource($enrollment) : null,
-            'isUnderRevision' => $enrollment && $course->status === 'draft',
+            'isUnderRevision' => $enrollment !== null && $course->isDraft(),
             'assessmentStats' => $assessmentStats,
             'userRating' => $userRating ? new CourseRatingResource($userRating) : null,
             'ratings' => CourseRatingResource::collection($ratings)->resolve(),

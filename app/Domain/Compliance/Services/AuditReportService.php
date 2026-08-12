@@ -56,17 +56,7 @@ class AuditReportService
     /**
      * Get raw audit log entries matching the filter.
      *
-     * @return Collection<int, object{
-     *     id: int,
-     *     event_id: string,
-     *     event_name: string,
-     *     aggregate_type: string,
-     *     aggregate_id: int,
-     *     actor_id: int|null,
-     *     actor_name: string|null,
-     *     metadata: string,
-     *     occurred_at: string
-     * }>
+     * @return Collection<int, mixed>
      */
     public function getAuditLog(AuditReportFilter $filter): Collection
     {
@@ -170,13 +160,7 @@ class AuditReportService
      * Get enrollment activity report.
      * Tracks: enrollments, completions, drops for compliance.
      *
-     * @return Collection<int, object{
-     *     date: string,
-     *     enrollments: int,
-     *     completions: int,
-     *     drops: int,
-     *     reenrollments: int
-     * }>
+     * @return Collection<int, mixed>
      */
     public function getEnrollmentActivityReport(AuditReportFilter $filter): Collection
     {
@@ -216,12 +200,7 @@ class AuditReportService
      * Get assessment activity report for compliance.
      * Tracks: attempts started, submitted, graded.
      *
-     * @return Collection<int, object{
-     *     date: string,
-     *     attempts_started: int,
-     *     attempts_submitted: int,
-     *     graded: int
-     * }>
+     * @return Collection<int, mixed>
      */
     public function getAssessmentActivityReport(AuditReportFilter $filter): Collection
     {
@@ -258,7 +237,7 @@ class AuditReportService
      * Get user activity audit for a specific user.
      * Used for individual compliance audits.
      *
-     * @return Collection<int, object>
+     * @return Collection<int, mixed>
      */
     public function getUserActivityAudit(int $userId, AuditReportFilter $filter): Collection
     {

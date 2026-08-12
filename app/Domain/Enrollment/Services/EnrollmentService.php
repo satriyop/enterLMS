@@ -44,19 +44,66 @@ class EnrollmentService
 
         $this->validateEnrollment($user, $course);
 
+        // Soft-deleted row still occupies unique(user_id, course_id) — restore + reactivate.
+        $trashedEnrollment = Enrollment::onlyTrashed()
+            ->where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->first();
+
+        if ($trashedEnrollment) {
+            return DB::transaction(function () use ($courseId, $trashedEnrollment, $invitedBy) {
+                // Same capacity serialization as create/reactivate paths.
+                $lockedCourse = Course::query()->whereKey($courseId)->lockForUpdate()->firstOrFail();
+                $this->assertCapacityAvailable($lockedCourse);
+
+                $trashedEnrollment->restore();
+
+                if ($trashedEnrollment->isDropped()) {
+                    return $trashedEnrollment->reactivate(
+                        preserveProgress: true,
+                        invitedBy: $invitedBy
+                    );
+                }
+
+                if ($trashedEnrollment->isActive() || $trashedEnrollment->isCompleted()) {
+                    return $trashedEnrollment;
+                }
+
+                $trashedEnrollment->update([
+                    'status' => ActiveState::$name,
+                    'enrolled_at' => now(),
+                    'completed_at' => null,
+                    'invited_by' => $invitedBy ?? $trashedEnrollment->invited_by,
+                ]);
+
+                UserEnrolled::dispatch($trashedEnrollment->fresh());
+
+                return $trashedEnrollment->fresh();
+            });
+        }
+
         // Check for existing dropped enrollment (re-enrollment case)
         $droppedEnrollment = $this->getDroppedEnrollment($user, $course);
 
         if ($droppedEnrollment) {
-            // Reactivate via model method
-            return $droppedEnrollment->reactivate(
-                preserveProgress: true,
-                invitedBy: $invitedBy
-            );
+            // Capacity still applies when reactivating a dropped seat
+            return DB::transaction(function () use ($courseId, $droppedEnrollment, $invitedBy) {
+                $lockedCourse = Course::query()->whereKey($courseId)->lockForUpdate()->firstOrFail();
+                $this->assertCapacityAvailable($lockedCourse);
+
+                return $droppedEnrollment->reactivate(
+                    preserveProgress: true,
+                    invitedBy: $invitedBy
+                );
+            });
         }
 
         try {
             return DB::transaction(function () use ($userId, $courseId, $invitedBy, $enrolledAt) {
+                // Serialize capacity checks across concurrent enrolls for the same course.
+                $lockedCourse = Course::query()->whereKey($courseId)->lockForUpdate()->firstOrFail();
+                $this->assertCapacityAvailable($lockedCourse);
+
                 $enrollment = Enrollment::create([
                     'user_id' => $userId,
                     'course_id' => $courseId,
@@ -75,6 +122,26 @@ class EnrollmentService
                 throw new AlreadyEnrolledException($userId, $courseId);
             }
             throw $e;
+        }
+    }
+
+    /**
+     * Re-check capacity after locking the course row.
+     */
+    protected function assertCapacityAvailable(Course $course): void
+    {
+        if ($course->max_enrollments === null) {
+            return;
+        }
+
+        // Fresh count under the course lock (same transaction).
+        $activeCount = Enrollment::query()
+            ->where('course_id', $course->id)
+            ->whereIn('status', [ActiveState::$name, CompletedState::$name])
+            ->count();
+
+        if ($activeCount >= $course->max_enrollments) {
+            throw new EnrollmentCapacityExceededException($course->id, $course->max_enrollments);
         }
     }
 

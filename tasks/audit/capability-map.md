@@ -1,8 +1,9 @@
 # Capability Map — Enteraksi LMS
 
-> **Generated:** 2026-08-11 · **Updated:** 2026-08-12 (agent depth B)  
-> **Stack:** Laravel 13 · Inertia 3 · Vue 3 · Pest · laravel/mcp  
-> **Basis:** domain code, routes (~195), pages, tests, seeders
+> **Generated:** 2026-08-11 · **Updated:** 2026-08-12 (agent depth B + stabilize + payment-off)  
+> **Stack:** Laravel 13 · Inertia 3 · Vue 3 · Pest · laravel/mcp · Sanctum  
+> **Basis:** domain code, routes, pages, tests, seeders  
+> **Code stability / debt (before new features):** see [tech-debt-architecture-2026-08-12.md](./tech-debt-architecture-2026-08-12.md)
 
 ## Legend
 
@@ -177,7 +178,7 @@
 
 | Capability | Status | Bukti / gap |
 |------------|--------|-------------|
-| Sanctum product tokens | ✅ ready | Sanctum + `HasApiTokens` + `agent:token` (D-012) |
+| Sanctum product tokens | ✅ ready | Sanctum + `HasApiTokens` + `agent:token` (D-012); xAPI also `auth:sanctum` |
 | MCP product server (`/mcp/enteraksi`) | 🟡 partial | Server + `agent-ping` only; core tools B-013 |
 | Agent abilities/scopes | ✅ ready | `AgentAbility` constants + Sanctum abilities |
 | Agent action audit log | ✅ ready | `agent_action_logs` + `AgentActionLogger` |
@@ -186,6 +187,8 @@
 | Outbound agent webhooks | ❌ missing | B-015 v1.1 |
 | Embed agent runtime in Laravel | ⚪ n/a | Explicitly out of scope |
 | ACP / A2A / WhatsApp channel | ⚪ n/a | Not depth B |
+| Free-path stabilize (Spatie/SCORM/xAPI/capacity) | ✅ ready | See tech-debt audit “Recently closed”; `tests/Feature/Stabilize/` |
+| Payment (live gateway) | ❌ missing | Domain exists; `lms.payment.enabled=false` by design until B-001 |
 
 ---
 
