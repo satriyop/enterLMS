@@ -74,19 +74,17 @@ class CourseSection extends Model
         return $this->getEagerCount('lessons');
     }
 
+    /**
+     * Denormalized duration only — never query lessons from this accessor (N+1 risk).
+     * Call updateEstimatedDuration() after lesson changes.
+     */
     public function getDurationAttribute(): int
     {
-        if ($this->estimated_duration_minutes) {
-            return $this->estimated_duration_minutes;
-        }
-
-        return $this->calculateEstimatedDuration();
+        return (int) ($this->estimated_duration_minutes ?? 0);
     }
 
     /**
-     * Calculate total estimated duration from lessons.
-     *
-     * Uses single SQL query instead of loading all lessons.
+     * Calculate total estimated duration from lessons (explicit recompute).
      */
     public function calculateEstimatedDuration(): int
     {

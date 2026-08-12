@@ -279,14 +279,10 @@ class EnrollmentController extends Controller
                 ->route('courses.show', $courseId)
                 ->with('success', 'Undangan diterima. Selamat belajar!');
 
-        } catch (\RuntimeException $e) {
-            if ($e->getMessage() === 'invitation_not_pending') {
-                return back()->with('error', 'Undangan ini sudah tidak berlaku.');
-            }
-            if ($e->getMessage() === 'invitation_expired') {
-                return back()->with('error', 'Undangan ini sudah kadaluarsa.');
-            }
-            throw $e;
+        } catch (\App\Domain\Course\Exceptions\InvitationNotPendingException) {
+            return back()->with('error', 'Undangan ini sudah tidak berlaku.');
+        } catch (\App\Domain\Course\Exceptions\InvitationExpiredException) {
+            return back()->with('error', 'Undangan ini sudah kadaluarsa.');
         } catch (\App\Domain\Enrollment\Exceptions\AlreadyEnrolledException) {
             return back()->with('error', 'Anda sudah terdaftar di kursus ini.');
         } catch (\App\Domain\Enrollment\Exceptions\CourseNotPublishedException) {

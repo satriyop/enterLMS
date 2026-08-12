@@ -107,12 +107,17 @@ trait RequiresEagerLoading
         $message = "N+1 query detected: {$class}::{$attributeName} accessed without {$suggestion}. "
             ."Add ->{$suggestion} to your query to fix this.";
 
-        // In development/testing: fail fast to catch issues early
-        if (app()->environment('local', 'testing')) {
+        // Fail closed by default so N+1 cannot hide in production.
+        // Emergency soft-degrade only: LMS_STRICT_EAGER_LOADING=false
+        $strict = config('lms.strict_eager_loading');
+        if ($strict === null) {
+            $strict = true;
+        }
+
+        if ($strict) {
             throw new \RuntimeException($message);
         }
 
-        // In production: log warning and fallback gracefully
         Log::warning($message, [
             'model' => $class,
             'model_id' => $this->getKey(),

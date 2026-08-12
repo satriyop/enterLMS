@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\PaymentController;
+use App\Http\Middleware\EnsurePaymentsEnabled;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Payment listing and details
+Route::middleware(['auth', 'verified', EnsurePaymentsEnabled::class])->group(function () {
+    // Payment listing and details (HTTP surface only when payments product-enabled)
     Route::get('payments', [PaymentController::class, 'index'])
         ->name('payments.index');
 

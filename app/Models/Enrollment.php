@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Spatie\ModelStates\HasStates;
 
@@ -49,7 +48,7 @@ use Spatie\ModelStates\HasStates;
 class Enrollment extends Model
 {
     /** @use HasFactory<\Database\Factories\EnrollmentFactory> */
-    use HasFactory, HasStates, SoftDeletes;
+    use HasFactory, HasStates;
 
     protected $fillable = [
         'user_id',

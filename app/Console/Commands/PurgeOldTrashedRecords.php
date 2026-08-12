@@ -8,7 +8,6 @@ use App\Models\AttemptAnswer;
 use App\Models\Course;
 use App\Models\CourseRating;
 use App\Models\CourseSection;
-use App\Models\Enrollment;
 use App\Models\LearningPath;
 use App\Models\Lesson;
 use App\Models\Question;
@@ -36,7 +35,7 @@ class PurgeOldTrashedRecords extends Command
         Course::class,
         CourseSection::class,
         Lesson::class,
-        Enrollment::class,
+        // Enrollment: no SoftDeletes — lifecycle is Spatie status only
         Assessment::class,
         Question::class,
         QuestionOption::class,

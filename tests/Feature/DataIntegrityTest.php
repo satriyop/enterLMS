@@ -17,7 +17,6 @@ it('preserves enrollments when user is soft-deleted', function () {
     $this->assertSoftDeleted('users', ['id' => $user->id]);
     $this->assertDatabaseHas('enrollments', [
         'id' => $enrollment->id,
-        'deleted_at' => null,
     ]);
 });
 
@@ -74,33 +73,31 @@ it('restores a soft-deleted user', function () {
 });
 
 // =============================================================================
-// SoftDeletes — Enrollment
+// Enrollment lifecycle — status drop (no SoftDeletes)
 // =============================================================================
 
-it('soft-deletes an enrollment without affecting the user or course', function () {
+it('drops an enrollment without deleting the user or course', function () {
     ['user' => $user, 'course' => $course, 'enrollment' => $enrollment] = createEnrolledLearner();
 
-    $enrollment->delete();
+    $enrollment->drop('integrity-test');
 
-    $this->assertSoftDeleted('enrollments', ['id' => $enrollment->id]);
+    expect($enrollment->fresh()->isDropped())->toBeTrue();
     $this->assertDatabaseHas('users', ['id' => $user->id, 'deleted_at' => null]);
     $this->assertDatabaseHas('courses', ['id' => $course->id]);
+    $this->assertDatabaseHas('enrollments', ['id' => $enrollment->id]);
 });
 
-it('restores a soft-deleted enrollment', function () {
+it('reactivates a dropped enrollment', function () {
     ['enrollment' => $enrollment] = createEnrolledLearner();
-    $enrollment->delete();
-    $this->assertSoftDeleted('enrollments', ['id' => $enrollment->id]);
+    $enrollment->drop('temp');
+    expect($enrollment->fresh()->isDropped())->toBeTrue();
 
-    $enrollment->restore();
+    $enrollment->fresh()->reactivate();
 
-    $this->assertDatabaseHas('enrollments', [
-        'id' => $enrollment->id,
-        'deleted_at' => null,
-    ]);
+    expect($enrollment->fresh()->isActive())->toBeTrue();
 });
 
-it('excludes soft-deleted enrollments from user relationship', function () {
+it('keeps dropped enrollments visible on user relationship', function () {
     $user = User::factory()->create(['role' => 'learner']);
     $course1 = Course::factory()->published()->create();
     $course2 = Course::factory()->published()->create();
@@ -110,17 +107,17 @@ it('excludes soft-deleted enrollments from user relationship', function () {
         'course_id' => $course1->id,
         'status' => 'active',
     ]);
-    $deleted = Enrollment::factory()->create([
+    $dropped = Enrollment::factory()->create([
         'user_id' => $user->id,
         'course_id' => $course2->id,
         'status' => 'active',
     ]);
-    $deleted->delete();
+    $dropped->drop('gone');
 
     $enrollments = $user->enrollments;
 
-    expect($enrollments)->toHaveCount(1);
-    expect($enrollments->first()->id)->toBe($active->id);
+    expect($enrollments)->toHaveCount(2);
+    expect($enrollments->pluck('id')->all())->toContain($active->id, $dropped->id);
 });
 
 // =============================================================================

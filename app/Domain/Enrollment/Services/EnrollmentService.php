@@ -44,44 +44,6 @@ class EnrollmentService
 
         $this->validateEnrollment($user, $course);
 
-        // Soft-deleted row still occupies unique(user_id, course_id) — restore + reactivate.
-        $trashedEnrollment = Enrollment::onlyTrashed()
-            ->where('user_id', $userId)
-            ->where('course_id', $courseId)
-            ->first();
-
-        if ($trashedEnrollment) {
-            return DB::transaction(function () use ($courseId, $trashedEnrollment, $invitedBy) {
-                // Same capacity serialization as create/reactivate paths.
-                $lockedCourse = Course::query()->whereKey($courseId)->lockForUpdate()->firstOrFail();
-                $this->assertCapacityAvailable($lockedCourse);
-
-                $trashedEnrollment->restore();
-
-                if ($trashedEnrollment->isDropped()) {
-                    return $trashedEnrollment->reactivate(
-                        preserveProgress: true,
-                        invitedBy: $invitedBy
-                    );
-                }
-
-                if ($trashedEnrollment->isActive() || $trashedEnrollment->isCompleted()) {
-                    return $trashedEnrollment;
-                }
-
-                $trashedEnrollment->update([
-                    'status' => ActiveState::$name,
-                    'enrolled_at' => now(),
-                    'completed_at' => null,
-                    'invited_by' => $invitedBy ?? $trashedEnrollment->invited_by,
-                ]);
-
-                UserEnrolled::dispatch($trashedEnrollment->fresh());
-
-                return $trashedEnrollment->fresh();
-            });
-        }
-
         // Check for existing dropped enrollment (re-enrollment case)
         $droppedEnrollment = $this->getDroppedEnrollment($user, $course);
 

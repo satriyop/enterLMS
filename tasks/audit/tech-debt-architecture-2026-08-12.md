@@ -47,6 +47,11 @@ Verified **present in current tree** (re-scan 2026-08-12):
 | PHPStan live errors (prior 8) | `./vendor/bin/phpstan analyse` → **0 errors** (baseline still holds historical ignores) | CI local |
 | xAPI context enrollment ownership | `XapiStatementController::scopedContextForActor` rejects foreign enrollment ids | Stabilize |
 | Agent token default write abilities | `agent:token` defaults to `AgentAbility::defaults()` = ping only; `--free-flow` opt-in | Agent MCP foundation tests |
+| Dual enrollment SoftDeletes + states | SoftDeletes **removed** from `Enrollment`; lifecycle = status only; migration drops `deleted_at` | DataIntegrity + Stabilize |
+| Invite magic-string exceptions | `InvitationNotPendingException` / `InvitationExpiredException` | EnrollmentController catches types |
+| Section duration accessor query | `getDurationAttribute` uses denormalized field only | — |
+| Prod N+1 soft-fail | `lms.strict_eager_loading` default **true** (fail closed) | RequiresEagerLoading |
+| Payment HTTP when disabled | `EnsurePaymentsEnabled` middleware 404 | routes/payments.php |
 
 ---
 
@@ -72,25 +77,13 @@ If any of the “Recently closed” items are **not** committed/deployed on a gi
 
 ### P1 — fix before or while building next features
 
-#### P1-1 Dual enrollment lifecycle (SoftDeletes + state machine)
+#### P1-1 Dual enrollment lifecycle — **closed**
 
-| | |
-|--|--|
-| **What** | `Enrollment` uses Spatie states (`active`/`completed`/`dropped`) **and** `SoftDeletes`. Unique `(user_id, course_id)` is non-partial. Domain prefers `dropped` + `reactivate()`; soft-delete still exists and needs special restore path. |
-| **Why** | Two mental models for “gone” enrollment. Easy for admin tools / future purge to soft-delete and surprise re-enroll / capacity math. Mitigated for re-enroll but dual semantics remain. |
-| **Where** | `app/Models/Enrollment.php` (`SoftDeletes` + state methods); `app/Domain/Enrollment/Services/EnrollmentService.php` (`onlyTrashed` restore); migrations `2025_11_26_193402_create_enrollments_table.php` (unique), `2026_01_31_221317_add_soft_deletes_to_users_enrollments_ratings.php` |
-| **Fix direction** | Prefer **one** lifecycle: either drop SoftDeletes on enrollments, or stop using soft-delete and only use `dropped`. Document and enforce in admin delete paths. |
-| **Before** | B-013 enroll tools; any admin “purge enrollment” UI |
+SoftDeletes removed from Enrollment; only Spatie status lifecycle remains.
 
-#### P1-2 Payment domain half-product (disabled but still large surface)
+#### P1-2 Payment domain half-product — **closed as product-off**
 
-| | |
-|--|--|
-| **What** | Full `PaymentService` + model + UI routes; **no** `PaymentGatewayContract` implementation/binding. Product flag off. |
-| **Why** | Large surface invites “just flip commercial” mistakes; tests must remember `payment.enabled`. Not active risk while flag false. |
-| **Where** | `app/Domain/Payment/`; `app/Domain/Payment/Contracts/PaymentGatewayContract.php` (no app impl); `routes/payments.php` still registered; `config/lms.php` `payment.enabled` default `false`; `Course::isPaid()` gates on flag |
-| **Fix direction** | Keep disabled until B-001; optionally hide routes/UI when `!payment.enabled`; never enable commercial without gateway binding tests. |
-| **Before** | Any monetization work |
+Still no gateway (B-001), but HTTP surface 404 via `EnsurePaymentsEnabled` + service hard-fail + `isPaid()` gated. Residual domain code intentional scaffolding for B-001.
 
 #### P1-3 Agent MCP abilities without tools (product/API drift risk)
 
@@ -106,25 +99,13 @@ If any of the “Recently closed” items are **not** committed/deployed on a gi
 
 See “Recently closed”. Residual: compliance roles may still set arbitrary context (by design for auditors).
 
-#### P1-5 `RequiresEagerLoading` silent N+1 in production
+#### P1-5 `RequiresEagerLoading` silent N+1 — **closed**
 
-| | |
-|--|--|
-| **What** | Missing `withCount`/`withAvg` throws in `local`/`testing`, but **logs + runs query** in production. |
-| **Why** | Lists can degrade only under real traffic; hard to catch without APM. |
-| **Where** | `app/Models/Concerns/RequiresEagerLoading.php` (`handleMissingEagerLoad` lines ~111–129) |
-| **Fix direction** | Prefer fail closed in staging; or metrics alert on warning; keep list controllers disciplined |
-| **Before** | High-traffic catalog/dashboard work |
+Default fail-closed via `lms.strict_eager_loading` (true). Soft-degrade only if env false.
 
-#### P1-6 Query-in-accessor: `CourseSection::getDurationAttribute`
+#### P1-6 Query-in-accessor section duration — **closed**
 
-| | |
-|--|--|
-| **What** | If `estimated_duration_minutes` null, accessor runs SQL sum over lessons. |
-| **Why** | N+1 on course outline when sections missing denormalized duration. |
-| **Where** | `app/Models/CourseSection.php` `getDurationAttribute` / `calculateEstimatedDuration` |
-| **Fix direction** | Always maintain denormalized minutes on lesson save; never query in accessor on list paths |
-| **Before** | CM outline heavy pages / API that lists sections |
+Accessor returns denormalized `estimated_duration_minutes` only; recompute via `updateEstimatedDuration()`.
 
 #### P1-7 Nested resource scoping inconsistent
 
@@ -136,15 +117,9 @@ See “Recently closed”. Residual: compliance roles may still set arbitrary co
 | **Fix direction** | Standardize abort 404 when child ∉ parent; optional route `scoped` bindings |
 | **Before** | New nested admin/agent routes |
 
-#### P1-8 Exception control flow via magic strings
+#### P1-8 Exception control flow via magic strings — **closed**
 
-| | |
-|--|--|
-| **What** | Invitation flow throws `RuntimeException('invitation_not_pending')`; controller compares `$e->getMessage() === ...`. |
-| **Why** | Fragile, untyped, easy to break silently on message change. |
-| **Where** | `InvitationAcceptanceService`; `EnrollmentController` accept invitation catch block ~282+ |
-| **Fix direction** | Dedicated domain exceptions (already pattern for enroll capacity/deadline) |
-| **Before** | Touching invitation accept path / B-013 invite flows |
+Domain exceptions for invitation not pending / expired.
 
 #### P1-9 PHPStan baseline (~46 historical ignores)
 
@@ -265,22 +240,22 @@ Use this as a gate; not all must be code-complete.
 
 ---
 
-## Summary table (open only)
+## Summary table (status after close pack)
 
-| ID | Sev | Topic | Blocks |
+| ID | Sev | Topic | Status |
 |----|-----|-------|--------|
-| — | P0 | *(none on free path)* | — |
-| P1-1 | P1 | SoftDeletes + enrollment states | Enroll tooling |
-| P1-2 | P1 | Payment half-domain | Monetization |
-| P1-3 | P1 | MCP tools missing | Agent product |
-| P1-4 | P1 | xAPI context ownership | Compliance telemetry |
-| P1-5 | P1 | Prod N+1 fallback | Scale |
-| P1-6 | P1 | Section duration accessor query | Outline perf |
-| P1-7 | P1 | Nested scoping consistency | New nested APIs |
-| P1-8 | P1 | Exception string matching | Invite path |
-| P1-9 | P1 | PHPStan baseline debt | Type safety long-term |
-| P1-10 | P1 | Fat models/services | Large refactors later |
-| P1-11 | P1 | Enterprise role matrix | Enterprise sales |
-| P2-* | P2 | See table above | Opportunistic |
+| — | P0 | Free path | **none open** |
+| P1-1 | P1 | SoftDeletes + enrollment states | **closed** |
+| P1-2 | P1 | Payment half-domain HTTP | **closed** (product-off + 404 middleware) |
+| P1-3 | P1 | MCP core tools | **open → B-013** (feature, not bug) |
+| P1-4 | P1 | xAPI context ownership | **closed** |
+| P1-5 | P1 | Prod N+1 fallback | **closed** (fail-closed default) |
+| P1-6 | P1 | Section duration accessor | **closed** |
+| P1-7 | P1 | Nested scoping consistency | **accepted** (NestedRouteScopingTest; standardise on new routes) |
+| P1-8 | P1 | Exception string matching | **closed** |
+| P1-9 | P1 | PHPStan baseline | **accepted deferred** |
+| P1-10 | P1 | Fat models/services | **accepted deferred** |
+| P1-11 | P1 | Enterprise role matrix | **open → B-011** (product) |
+| P2-* | P2 | smells | opportunistic |
 
-**Bottom line:** Codebase is **stable enough for free LMS feature work and careful B-013**. Do **not** treat payment or multi-tenancy as “just another story.” Residual debt is mostly **lifecycle clarity, product boundaries, and production performance honesty** — not a failed architecture.
+**Bottom line (updated):** Correctness/security debt from the audit is **closed or product-gated**. Remaining open items are **features** (B-013, B-011) or **accepted deferred** maintainability — safe to vet backlog and build free-flow / agent tools.

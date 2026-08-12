@@ -233,7 +233,7 @@ it('enforces max_enrollments under sequential capacity pressure', function () {
         ->toThrow(EnrollmentCapacityExceededException::class);
 });
 
-it('restores soft-deleted enrollment instead of failing unique constraint', function () {
+it('reactivates dropped enrollment instead of soft-delete lifecycle', function () {
     $user = User::factory()->learner()->create();
     $course = Course::factory()->published()->create([
         'visibility' => 'public',
@@ -244,18 +244,15 @@ it('restores soft-deleted enrollment instead of failing unique constraint', func
         'user_id' => $user->id,
         'course_id' => $course->id,
     ]);
-    $enrollment->delete();
-
-    expect(Enrollment::withTrashed()->whereKey($enrollment->id)->first()->trashed())->toBeTrue();
+    $enrollment->drop('test');
 
     $restored = app(EnrollmentService::class)->enroll($user->id, $course->id);
 
     expect($restored->id)->toBe($enrollment->id)
-        ->and($restored->trashed())->toBeFalse()
         ->and($restored->isActive())->toBeTrue();
 });
 
-it('rejects soft-deleted restore when course is already at capacity', function () {
+it('rejects re-enroll when course is already at capacity including active seats', function () {
     $course = Course::factory()->published()->create([
         'visibility' => 'public',
         'is_paid' => false,
@@ -266,16 +263,15 @@ it('rejects soft-deleted restore when course is already at capacity', function (
     app(EnrollmentService::class)->enroll($holder->id, $course->id);
 
     $other = User::factory()->learner()->create();
-    $trashed = Enrollment::factory()->active()->create([
+    $dropped = Enrollment::factory()->dropped()->create([
         'user_id' => $other->id,
         'course_id' => $course->id,
     ]);
-    // Manually force soft-delete without going through capacity rules
-    $trashed->delete();
 
-    // Course is full with $holder; restoring $other would exceed max_enrollments
     expect(fn () => app(EnrollmentService::class)->enroll($other->id, $course->id))
         ->toThrow(EnrollmentCapacityExceededException::class);
+
+    expect($dropped->fresh()->isDropped())->toBeTrue();
 });
 
 // ---------------------------------------------------------------------------

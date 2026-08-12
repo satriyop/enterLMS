@@ -54,7 +54,6 @@ class HomeController extends Controller
                 ->count();
 
             $studentsCount = DB::table('enrollments')
-                ->whereNull('deleted_at')
                 ->distinct('user_id')
                 ->count('user_id');
 

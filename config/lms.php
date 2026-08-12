@@ -18,6 +18,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Eager loading strictness (RequiresEagerLoading trait)
+    |--------------------------------------------------------------------------
+    |
+    | true  = throw on missing withCount/withAvg (default — fail closed)
+    | false = log + fallback query (emergency only)
+    |
+    */
+    'strict_eager_loading' => filter_var(
+        env('LMS_STRICT_EAGER_LOADING', true),
+        FILTER_VALIDATE_BOOLEAN
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Lesson Completion Thresholds
     |--------------------------------------------------------------------------
     |

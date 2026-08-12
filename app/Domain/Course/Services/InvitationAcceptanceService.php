@@ -2,10 +2,13 @@
 
 namespace App\Domain\Course\Services;
 
+use App\Domain\Course\Exceptions\InvitationExpiredException;
+use App\Domain\Course\Exceptions\InvitationNotPendingException;
 use App\Domain\Enrollment\Services\EnrollmentService;
 use App\Models\CourseInvitation;
 use App\Models\Enrollment;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class InvitationAcceptanceService
 {
@@ -18,24 +21,24 @@ class InvitationAcceptanceService
      *
      * Returns course_id on success.
      *
-     * @throws \RuntimeException if invitation not pending
-     * @throws \RuntimeException if invitation expired
+     * @throws InvitationNotPendingException
+     * @throws InvitationExpiredException
      * @throws \App\Domain\Enrollment\Exceptions\AlreadyEnrolledException
      * @throws \App\Domain\Enrollment\Exceptions\CourseNotPublishedException
      */
     public function acceptWithLocking(User $user, CourseInvitation $invitation): int
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($user, $invitation) {
+        return DB::transaction(function () use ($user, $invitation) {
             $lockedInvitation = CourseInvitation::lockForUpdate()
                 ->findOrFail($invitation->id);
 
             if ($lockedInvitation->status !== 'pending') {
-                throw new \RuntimeException('invitation_not_pending');
+                throw new InvitationNotPendingException($lockedInvitation->id);
             }
 
             if ($lockedInvitation->is_expired) {
                 $lockedInvitation->update(['status' => 'expired']);
-                throw new \RuntimeException('invitation_expired');
+                throw new InvitationExpiredException($lockedInvitation->id);
             }
 
             $enrollment = $this->accept($user, $lockedInvitation);
