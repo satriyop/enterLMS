@@ -125,11 +125,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | The LMS can operate in two modes:
-    | - 'internal': All courses are free, no payments
-    | - 'commercial': Courses can be paid, payment system enabled
+    | - 'internal': All courses are free
+    | - 'commercial': Courses can carry a price
     |
-    | Even in commercial mode, payments stay off until payment.enabled=true
-    | AND a PaymentGatewayContract is bound (see PaymentService).
+    | Payment *processing* was removed with the frozen banking scope (ADR 004).
+    | A priced Course has no self-serve path; LMS Admin grants Enrollment.
     |
     */
 
@@ -153,42 +153,6 @@ return [
     ],
 
     'default_currency' => env('LMS_DEFAULT_CURRENCY', 'IDR'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Payment Settings
-    |--------------------------------------------------------------------------
-    |
-    | Configuration for payment processing in commercial mode.
-    |
-    */
-
-    'payment' => [
-        // Hard-off until B-001 gateway ships. Commercial mode alone is not enough.
-        'enabled' => env('LMS_PAYMENT_ENABLED', false),
-        'gateway' => env('LMS_PAYMENT_GATEWAY', null),
-        'sandbox' => env('LMS_PAYMENT_SANDBOX', true),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | SCORM Settings
-    |--------------------------------------------------------------------------
-    |
-    | Configuration for SCORM package management and runtime.
-    |
-    */
-
-    'scorm' => [
-        // Maximum upload size in kilobytes (default: 250MB)
-        'max_upload_size_kb' => (int) env('LMS_SCORM_MAX_UPLOAD_KB', 256000),
-
-        // Storage disk for extracted SCORM packages
-        'disk' => env('LMS_SCORM_DISK', 'local'),
-
-        // Supported SCORM versions
-        'supported_versions' => ['1.2', '2004'],
-    ],
 
     /*
     |--------------------------------------------------------------------------

@@ -19,9 +19,4 @@ class Tag extends Model
     {
         return $this->belongsToMany(Course::class);
     }
-
-    public function questionBankItems(): BelongsToMany
-    {
-        return $this->belongsToMany(QuestionBankItem::class, 'question_bank_item_tag');
-    }
 }

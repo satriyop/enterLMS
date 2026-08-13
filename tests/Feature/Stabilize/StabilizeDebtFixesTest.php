@@ -9,12 +9,10 @@ use App\Domain\Progress\Services\ProgressTrackingService;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
-use App\Models\ScormPackage;
 use App\Models\User;
 use App\Models\XapiStatement;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 // ---------------------------------------------------------------------------
 // 1. Spatie state helpers (EnrollmentContext + progress courseCompleted)
@@ -71,39 +69,7 @@ it('reports courseCompleted true when enrollment is completed via model helper p
 });
 
 // ---------------------------------------------------------------------------
-// 2. SCORM path jail
-// ---------------------------------------------------------------------------
-
-it('rejects SCORM content paths that escape the package root', function () {
-    Storage::fake('local');
-
-    $admin = User::factory()->lmsAdmin()->create();
-    $package = ScormPackage::factory()->create([
-        'disk' => 'local',
-        'extraction_path' => 'scorm/packages/safe-pkg',
-        'uploaded_by' => $admin->id,
-    ]);
-
-    Storage::disk('local')->put('scorm/packages/safe-pkg/index.html', '<html>ok</html>');
-    Storage::disk('local')->put('secret.txt', 'should-not-leak');
-
-    $this->actingAs($admin)
-        ->get(route('scorm.player.content', [
-            'scormPackage' => $package->id,
-            'path' => '../secret.txt',
-        ]))
-        ->assertNotFound();
-
-    $this->actingAs($admin)
-        ->get(route('scorm.player.content', [
-            'scormPackage' => $package->id,
-            'path' => 'index.html',
-        ]))
-        ->assertOk();
-});
-
-// ---------------------------------------------------------------------------
-// 3. xAPI ownership + actor binding
+// 2. xAPI ownership + actor binding
 // ---------------------------------------------------------------------------
 
 it('binds xAPI actor to authenticated user and ignores spoofed actor_id', function () {

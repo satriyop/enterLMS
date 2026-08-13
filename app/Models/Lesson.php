@@ -27,17 +27,14 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $conference_url
  * @property string|null $conference_type
  * @property int|null $estimated_duration_minutes
- * @property int|null $scorm_package_id
  * @property bool $is_free_preview
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read string|null $youtube_video_id
  * @property-read string|null $rich_content_html
- * @property-read bool $has_scorm
  * @property-read CourseSection $section
  * @property-read Course|null $course
- * @property-read ScormPackage|null $scormPackage
  * @property-read Collection<int, LessonProgress> $progress
  * @property-read Collection<int, Media> $media
  */
@@ -55,7 +52,6 @@ class Lesson extends Model
         'youtube_url',
         'conference_url',
         'conference_type',
-        'scorm_package_id',
         'estimated_duration_minutes',
         'is_free_preview',
     ];
@@ -83,11 +79,6 @@ class Lesson extends Model
             'course_section_id',
             'course_id'
         );
-    }
-
-    public function scormPackage(): BelongsTo
-    {
-        return $this->belongsTo(ScormPackage::class);
     }
 
     public function media(): MorphMany
@@ -129,11 +120,6 @@ class Lesson extends Model
     public function getHasConferenceAttribute(): bool
     {
         return $this->content_type === 'conference';
-    }
-
-    public function getHasScormAttribute(): bool
-    {
-        return $this->content_type === 'scorm';
     }
 
     /**

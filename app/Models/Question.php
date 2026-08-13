@@ -19,14 +19,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $correct_answer
  * @property bool $case_sensitive
  * @property string|null $grading_rubric
- * @property int|null $source_question_bank_item_id
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property \Carbon\Carbon|null $deleted_at
  * @property-read Assessment $assessment
  * @property-read \Illuminate\Database\Eloquent\Collection<int, QuestionOption> $options
  * @property-read \Illuminate\Database\Eloquent\Collection<int, AttemptAnswer> $answers
- * @property-read QuestionBankItem|null $sourceQuestionBankItem
  */
 class Question extends Model
 {
@@ -58,7 +56,6 @@ class Question extends Model
         'correct_answer',
         'case_sensitive',
         'grading_rubric',
-        'source_question_bank_item_id',
     ];
 
     protected function casts(): array
@@ -87,11 +84,6 @@ class Question extends Model
     /**
      * The bank item this question was imported from (if any).
      */
-    public function sourceQuestionBankItem(): BelongsTo
-    {
-        return $this->belongsTo(QuestionBankItem::class, 'source_question_bank_item_id');
-    }
-
     public function getQuestionTypeLabel(): string
     {
         return match ($this->question_type) {

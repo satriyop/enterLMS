@@ -11,7 +11,6 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { index as usersIndex } from '@/actions/App/Http/Controllers/Admin/UserController';
-import { index as questionBankIndex } from '@/actions/App/Http/Controllers/QuestionBankController';
 import { index as auditReportsIndex } from '@/actions/App/Http/Controllers/ComplianceReportController';
 import MyLearningController from '@/actions/App/Http/Controllers/MyLearningController';
 import { dashboard } from '@/routes';
@@ -103,11 +102,6 @@ const manageNavItems = computed<NavItem[]>(() => {
             href: coursesIndex(),
             icon: BookOpen,
         });
-        items.push({
-            title: 'Bank soal',
-            href: questionBankIndex().url,
-            icon: HelpCircle,
-        });
     }
     return items;
 });
@@ -123,7 +117,7 @@ const adminNavItems = computed<NavItem[]>(() => {
     }
     if (canViewCompliance.value) {
         items.push({
-            title: 'Laporan kepatuhan',
+            title: 'Jejak aktivitas',
             href: auditReportsIndex().url,
             icon: FileText,
         });

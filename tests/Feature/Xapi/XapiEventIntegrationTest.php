@@ -4,12 +4,10 @@ use App\Domain\Assessment\Events\AssessmentGraded;
 use App\Domain\Enrollment\Events\CourseStarted;
 use App\Domain\Enrollment\Events\EnrollmentCompleted;
 use App\Domain\Progress\Events\LessonCompleted;
-use App\Domain\Scorm\Events\ScormLessonCompleted;
 use App\Domain\Xapi\Listeners\RecordXapiOnAssessmentGraded;
 use App\Domain\Xapi\Listeners\RecordXapiOnCourseStarted;
 use App\Domain\Xapi\Listeners\RecordXapiOnEnrollmentCompleted;
 use App\Domain\Xapi\Listeners\RecordXapiOnLessonCompleted;
-use App\Domain\Xapi\Listeners\RecordXapiOnScormCompleted;
 use App\Domain\Xapi\Services\XapiStatementService;
 use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
@@ -17,8 +15,6 @@ use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Lesson;
-use App\Models\ScormPackage;
-use App\Models\ScormScoTracking;
 use App\Models\User;
 use App\Models\XapiStatement;
 
@@ -179,50 +175,6 @@ it('records failed xAPI statement when assessment score is below passing', funct
         ->verb_id->toBe(XapiStatementService::VERB_FAILED)
         ->verb_display->toBe('failed')
         ->result_success->toBeFalse();
-});
-
-// --- ScormLessonCompleted → xAPI ---
-
-it('records xAPI statement when SCORM lesson is completed', function () {
-    $course = Course::factory()->published()->create();
-    $section = CourseSection::factory()->create(['course_id' => $course->id]);
-    $scormPackage = ScormPackage::factory()->scorm12()->create();
-    $lesson = Lesson::factory()->create([
-        'course_section_id' => $section->id,
-        'content_type' => 'scorm',
-        'scorm_package_id' => $scormPackage->id,
-        'title' => 'Modul Kepatuhan OJK',
-    ]);
-    $user = User::factory()->create(['role' => 'learner']);
-    $enrollment = Enrollment::factory()->create([
-        'user_id' => $user->id,
-        'course_id' => $course->id,
-        'status' => 'active',
-    ]);
-    $tracking = ScormScoTracking::factory()->completedScorm12()->create([
-        'enrollment_id' => $enrollment->id,
-        'lesson_id' => $lesson->id,
-        'scorm_package_id' => $scormPackage->id,
-        'score_raw' => 90,
-        'score_min' => 0,
-        'score_max' => 100,
-    ]);
-
-    $event = new ScormLessonCompleted($enrollment, $lesson, $tracking, $user->id);
-    $listener = app(RecordXapiOnScormCompleted::class);
-    $listener->handle($event);
-
-    $statement = XapiStatement::latest('id')->first();
-
-    expect($statement)
-        ->verb_id->toBe(XapiStatementService::VERB_COMPLETED)
-        ->verb_display->toBe('completed')
-        ->result_completion->toBeTrue()
-        ->source->toBe('scorm')
-        ->context_course_id->toBe($course->id)
-        ->context_enrollment_id->toBe($enrollment->id);
-
-    expect($statement->object_id)->toContain("/activities/lesson/{$lesson->id}");
 });
 
 // --- Integration: multiple events create multiple statements ---

@@ -26,12 +26,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
             Route::middleware('web')
                 ->group(base_path('routes/compliance.php'));
-
-            Route::middleware('web')
-                ->group(base_path('routes/question-bank.php'));
-
-            Route::middleware('web')
-                ->group(base_path('routes/scorm.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

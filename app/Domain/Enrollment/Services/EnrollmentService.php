@@ -13,7 +13,6 @@ use App\Domain\Enrollment\States\CompletedState;
 use App\Domain\Enrollment\States\DroppedState;
 use App\Models\Course;
 use App\Models\Enrollment;
-use App\Models\Payment;
 use App\Models\User;
 use App\Support\Helpers\DatabaseHelper;
 use DateTimeInterface;
@@ -184,18 +183,10 @@ class EnrollmentService
             throw new EnrollmentCapacityExceededException($course->id, $course->max_enrollments);
         }
 
+        // Payment processing was removed with the frozen banking scope (ADR 004).
+        // A priced Course therefore has no self-serve path: LMS Admin grants it.
         if ($course->isPaid()) {
-            // Check for successful payment record
-            $hasPaid = Payment::query()
-                ->where('user_id', $user->id)
-                ->where('payable_type', Course::class)
-                ->where('payable_id', $course->id)
-                ->where('status', Payment::STATUS_PAID)
-                ->exists();
-
-            if (! $hasPaid) {
-                throw new PaymentRequiredException($course->id, $course->price);
-            }
+            throw new PaymentRequiredException($course->id, $course->price);
         }
     }
 

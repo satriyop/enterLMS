@@ -7,10 +7,10 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * Default local/demo seed for EnterLMS (banking compliance LMS).
+ * Default local/demo seed for EnterLMS (academy for the AI product family).
  *
  * Primary accounts come from FreeFlowDemoSeeder (password: password).
- * Content stack: banking courses → learning paths → enrollments → assessments → question bank.
+ * Content stack: open intro course → restricted OpenClaw course + operator path → sample activity.
  */
 class DatabaseSeeder extends Seeder
 {
@@ -36,18 +36,15 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call([
-            // Demo users + free orientation course
+            // Demo users + open Pengenalan Agen AI
             FreeFlowDemoSeeder::class,
-            // Taxonomy (banking)
             CategorySeeder::class,
             TagSeeder::class,
-            // Catalog & paths
-            BankingCourseSeeder::class,
-            LearningPathSeeder::class,
+            // Restricted OpenClaw course + operator path
+            AgentAcademyCourseSeeder::class,
             // Sample activity
             EnrollmentSeeder::class,
             AssessmentSeeder::class,
-            QuestionBankSeeder::class,
         ]);
     }
 }

@@ -33,14 +33,11 @@ use App\Domain\Progress\Events\LessonCompleted;
 use App\Domain\Progress\Events\LessonDeleted;
 use App\Domain\Progress\Events\ProgressUpdated;
 use App\Domain\Progress\Listeners\RecalculateProgressOnLessonDeletion;
-use App\Domain\Scorm\Events\ScormLessonCompleted;
-use App\Domain\Scorm\Events\ScormPackageUploaded;
 use App\Domain\Shared\Listeners\LogDomainEvent;
 use App\Domain\Xapi\Listeners\RecordXapiOnAssessmentGraded;
 use App\Domain\Xapi\Listeners\RecordXapiOnCourseStarted;
 use App\Domain\Xapi\Listeners\RecordXapiOnEnrollmentCompleted;
 use App\Domain\Xapi\Listeners\RecordXapiOnLessonCompleted;
-use App\Domain\Xapi\Listeners\RecordXapiOnScormCompleted;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -105,15 +102,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         UserReenrolled::class => [
             LogDomainEvent::class,
-        ],
-
-        // SCORM Events
-        ScormPackageUploaded::class => [
-            LogDomainEvent::class,
-        ],
-        ScormLessonCompleted::class => [
-            LogDomainEvent::class,
-            RecordXapiOnScormCompleted::class,
         ],
 
         // Progress Events

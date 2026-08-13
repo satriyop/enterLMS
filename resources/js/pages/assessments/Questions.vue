@@ -6,7 +6,6 @@
 
 import { show } from '@/actions/App/Http/Controllers/AssessmentController';
 import { index as questionsRoute } from '@/actions/App/Http/Controllers/QuestionController';
-import { index as importQuestionsRoute } from '@/actions/App/Http/Controllers/QuestionImportController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import FormSection from '@/components/crud/FormSection.vue';
 import QuestionEditor from '@/components/assessments/QuestionEditor.vue';
@@ -15,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, QuestionType } from '@/types';
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { Plus, Import } from 'lucide-vue-next';
+import { Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 // =============================================================================
@@ -198,12 +197,6 @@ const moveQuestionDown = (index: number) => {
                                     <Plus class="h-4 w-4" />
                                     Tambah Pertanyaan
                                 </Button>
-                                <Link :href="importQuestionsRoute({ course: course.id, assessment: assessment.id }).url">
-                                    <Button type="button" variant="outline" class="gap-2">
-                                        <Import class="h-4 w-4" />
-                                        Impor dari Bank Soal
-                                    </Button>
-                                </Link>
                             </div>
 
                             <!-- New Question Form -->
