@@ -21,18 +21,18 @@ const clearSearch = () => {
 
 <template>
     <div class="relative">
-        <Search class="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search class="absolute left-[0.8rem] top-1/2 h-4 w-4 -translate-y-1/2 text-subtle" />
         <input
             :value="modelValue"
             type="text"
             :placeholder="placeholder"
-            class="h-11 w-full rounded-lg border border-input bg-background pl-11 pr-10 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="h-[42px] w-full rounded-[var(--r-sm)] border border-border bg-surface pl-[2.4rem] pr-10 text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-subtle focus:border-primary focus:shadow-[0_0_0_3px_var(--primary-ring)]"
             @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
         />
         <button
             v-if="modelValue"
             type="button"
-            class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            class="absolute right-3 top-1/2 -translate-y-1/2 rounded-pill p-1 text-subtle transition-colors hover:bg-surface-2 hover:text-foreground"
             @click="clearSearch"
         >
             <X class="h-4 w-4" />

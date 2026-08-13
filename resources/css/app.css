@@ -30,6 +30,7 @@
     --radius-lg: var(--r-lg);
     --radius-md: var(--r);
     --radius-sm: var(--r-sm);
+    --radius-pill: var(--r-pill);
 
     /* shadcn color bridge */
     --color-background: var(--background);
@@ -45,7 +46,7 @@
     --color-primary-foreground: var(--primary-foreground);
 
     --color-secondary: var(--surface-2);
-    --color-secondary-foreground: var(--foreground);
+    --color-secondary-foreground: var(--muted-foreground);
 
     --color-muted: var(--surface-2);
     --color-muted-foreground: var(--muted-foreground);
@@ -54,7 +55,7 @@
     --color-accent-foreground: var(--primary-hover);
 
     --color-destructive: var(--danger);
-    --color-destructive-foreground: #ffffff;
+    --color-destructive-foreground: var(--danger-foreground);
 
     --color-border: var(--border);
     --color-input: var(--border);
@@ -72,7 +73,7 @@
     --color-sidebar-primary-foreground: var(--primary-foreground);
     --color-sidebar-accent: var(--primary-soft);
     --color-sidebar-accent-foreground: var(--primary-hover);
-    --color-sidebar-border: var(--surface-3);
+    --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--primary);
 
     /* Claude A extras exposed to Tailwind */
@@ -93,16 +94,6 @@
     --color-danger-soft: var(--danger-soft);
     --color-info: var(--info);
     --color-info-soft: var(--info-soft);
-}
-
-@layer base {
-    *,
-    ::after,
-    ::before,
-    ::backdrop,
-    ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
-    }
 }
 
 /* ============================================================
@@ -143,6 +134,7 @@
     --warn-soft: #f8efe0;
     --danger: #9e2f2a;
     --danger-soft: #f7e7e5;
+    --danger-foreground: #ffffff;
     --info: #2a5490;
     --info-soft: #e6edf7;
 
@@ -177,7 +169,7 @@
     --accent: var(--primary-soft);
     --accent-foreground: var(--primary-hover);
     --destructive: var(--danger);
-    --destructive-foreground: #ffffff;
+    --destructive-foreground: var(--danger-foreground);
     --input: var(--border);
     --ring: var(--primary);
 
@@ -229,6 +221,7 @@
     --warn-soft: #2e2517;
     --danger: #e08c86;
     --danger-soft: #331e1c;
+    --danger-foreground: #2b100d; /* deep ink: dark-mode danger is a light salmon */
     --info: #85aee8;
     --info-soft: #172436;
 
@@ -247,7 +240,7 @@
     --accent: var(--primary-soft);
     --accent-foreground: var(--primary-hover);
     --destructive: var(--danger);
-    --destructive-foreground: #ffffff;
+    --destructive-foreground: var(--danger-foreground);
     --input: var(--border);
     --ring: var(--primary);
 

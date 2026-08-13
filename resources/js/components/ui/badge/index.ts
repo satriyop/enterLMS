@@ -3,19 +3,29 @@ import { cva } from "class-variance-authority"
 
 export { default as Badge } from "./Badge.vue"
 
+/**
+ * Tenang's `.badge` (ADR 007): a pill that pairs a `*-soft` background with
+ * its full-strength ink. The tokens flip under `.dark` on their own, so no
+ * variant here carries a `dark:` class.
+ *
+ * `default` is deliberately the *quiet* badge -- Tenang has no solid-fill
+ * status pill. Reach for `primary` when a badge needs to carry brand weight.
+ */
 export const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
+  "inline-flex items-center justify-center gap-[0.3rem] rounded-pill border border-transparent px-[0.55rem] py-[0.16rem] text-[0.72rem] font-[550] tracking-[0.005em] w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-[color,background-color,border-color] overflow-hidden",
   {
     variants: {
       variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
-        destructive:
-         "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        default: "bg-surface-2 text-muted-foreground",
+        secondary: "bg-surface-2 text-muted-foreground",
+        primary: "bg-primary-soft text-primary",
+        ok: "bg-ok-soft text-ok",
+        warn: "bg-warn-soft text-warn",
+        danger: "bg-danger-soft text-danger",
+        destructive: "bg-danger-soft text-danger",
+        info: "bg-info-soft text-info",
+        gold: "bg-gold-soft text-gold",
+        outline: "border-[var(--border-strong)] bg-transparent text-muted-foreground",
       },
     },
     defaultVariants: {

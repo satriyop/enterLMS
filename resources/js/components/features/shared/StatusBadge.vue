@@ -20,6 +20,7 @@ import {
     ASSESSMENT_STATUS_COLORS,
     ATTEMPT_STATUS_COLORS,
     VISIBILITY_COLORS,
+    TONES,
 } from '@/lib/constants';
 import {
     courseStatusLabel,
@@ -75,7 +76,7 @@ const props = withDefaults(defineProps<Props>(), {
 // =============================================================================
 
 const colorClasses = computed(() => {
-    const defaultColors = { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300' };
+    const defaultColors = TONES.neutral;
 
     switch (props.type) {
         case 'course':
@@ -114,15 +115,16 @@ const label = computed(() => {
     }
 });
 
+/** Tenang's `.badge` scale: tighter and a shade smaller than shadcn's default. */
 const sizeClasses = computed(() => {
     switch (props.size) {
         case 'sm':
-            return 'px-2 py-0.5 text-xs';
+            return 'px-[0.45rem] py-[0.1rem] text-[0.68rem]';
         case 'lg':
-            return 'px-4 py-1.5 text-sm';
+            return 'px-[0.7rem] py-[0.28rem] text-[0.8rem]';
         case 'md':
         default:
-            return 'px-2.5 py-1 text-xs';
+            return 'px-[0.55rem] py-[0.16rem] text-[0.72rem]';
     }
 });
 </script>
@@ -130,7 +132,7 @@ const sizeClasses = computed(() => {
 <template>
     <span
         :class="[
-            'inline-flex items-center rounded-full font-medium whitespace-nowrap',
+            'inline-flex items-center gap-[0.3rem] rounded-pill border border-transparent font-[550] whitespace-nowrap',
             colorClasses.bg,
             colorClasses.text,
             sizeClasses,

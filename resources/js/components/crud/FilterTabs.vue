@@ -21,24 +21,30 @@ const selectTab = (value: string) => {
 </script>
 
 <template>
-    <div class="flex flex-wrap gap-1 rounded-lg bg-muted/50 p-1">
+    <!--
+        Tenang's `.chip` row: free-standing pills on the page background, not
+        segments inside a track. The selected chip inverts to ink-on-paper
+        rather than lifting a white tab out of a grey well.
+    -->
+    <div class="flex flex-wrap gap-2">
         <button
             v-for="tab in tabs"
             :key="tab.value"
             type="button"
-            class="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all"
+            :aria-pressed="modelValue === tab.value"
+            class="inline-flex items-center gap-2 rounded-pill border px-[0.8rem] py-[0.38rem] text-[0.82rem] transition-all duration-150"
             :class="
                 modelValue === tab.value
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-background/50 hover:text-foreground'
+                    ? 'border-foreground bg-foreground font-[550] text-background'
+                    : 'border-border bg-surface text-muted-foreground hover:border-[var(--border-strong)] hover:text-foreground'
             "
             @click="selectTab(tab.value)"
         >
             {{ tab.label }}
             <span
                 v-if="tab.count !== undefined"
-                class="rounded-full px-2 py-0.5 text-xs"
-                :class="modelValue === tab.value ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'"
+                class="text-[0.72rem] tabular-nums"
+                :class="modelValue === tab.value ? 'text-background/70' : 'text-subtle'"
             >
                 {{ tab.count }}
             </span>

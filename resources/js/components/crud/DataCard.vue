@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -27,7 +27,7 @@ interface Props {
     thumbnailUrl?: string;
     placeholderIcon?: Raw<Component>;
     href?: string;
-    badges?: { label: string; variant?: 'default' | 'secondary' | 'outline' | 'destructive' }[];
+    badges?: { label: string; variant?: BadgeVariants['variant'] }[];
     meta?: { icon?: Component; label: string }[];
     actions?: Action[];
 }
@@ -36,11 +36,13 @@ defineProps<Props>();
 </script>
 
 <template>
-    <div class="group relative flex flex-col overflow-hidden rounded-xl border bg-card transition-all hover:shadow-lg">
+    <div
+        class="group relative flex flex-col overflow-hidden rounded-[var(--r)] border border-border bg-surface transition-[border-color,box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-editorial"
+    >
         <component
             :is="href ? Link : 'div'"
             :href="href"
-            class="relative aspect-video w-full overflow-hidden bg-muted"
+            class="relative aspect-[16/10] w-full overflow-hidden bg-surface-3"
         >
             <img
                 v-if="thumbnailUrl"
@@ -48,18 +50,23 @@ defineProps<Props>();
                 :alt="title"
                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
+            <!--
+                Tenang's `.thumb`: two off-centre colour washes over surface-3,
+                so an image-less card still reads as a considered surface rather
+                than an empty grey box.
+            -->
             <div
                 v-else
-                class="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5"
+                class="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_22%_26%,color-mix(in_srgb,var(--primary)_26%,transparent),transparent_55%),radial-gradient(circle_at_78%_74%,color-mix(in_srgb,var(--gold)_20%,transparent),transparent_52%)]"
             >
-                <component :is="placeholderIcon ?? Play" class="h-12 w-12 text-primary/30" />
+                <component :is="placeholderIcon ?? Play" class="h-10 w-10 text-subtle" />
             </div>
-            <div v-if="badges && badges.length > 0" class="absolute left-3 top-3 flex flex-wrap gap-1.5">
+            <div v-if="badges && badges.length > 0" class="absolute left-[0.7rem] top-[0.7rem] flex flex-wrap gap-1.5">
                 <Badge
                     v-for="(badge, idx) in badges"
                     :key="idx"
                     :variant="badge.variant || 'default'"
-                    class="shadow-sm"
+                    class="shadow-sm-editorial"
                 >
                     {{ badge.label }}
                 </Badge>
@@ -107,7 +114,7 @@ defineProps<Props>();
                 {{ description }}
             </p>
 
-            <div v-if="meta && meta.length > 0" class="mt-auto flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+            <div v-if="meta && meta.length > 0" class="text-tiny mt-auto flex flex-wrap items-center gap-3">
                 <span v-for="(item, idx) in meta" :key="idx" class="flex items-center gap-1">
                     <component v-if="item.icon" :is="item.icon" class="h-3.5 w-3.5" />
                     {{ item.label }}

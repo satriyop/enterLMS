@@ -8,6 +8,7 @@ import type {
     CourseVisibility,
     UserRole,
 } from '@/types';
+import { toneClasses, type Tone } from './constants';
 
 // =============================================================================
 // Duration Formatters
@@ -183,16 +184,19 @@ export function difficultyLabel(level: DifficultyLevel | string | null | undefin
 }
 
 /**
- * Get Tailwind CSS color classes for difficulty level badge
+ * Get Tenang tone classes for difficulty level badge.
+ *
+ * `expert` shares `advanced`'s tone: Tenang has no seventh hue to spend on a
+ * level the Course model does not actually expose.
  */
 export function difficultyColor(level: DifficultyLevel | string | null | undefined): string {
-    const colors: Record<string, string> = {
-        beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-        intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-        advanced: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-        expert: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
+    const tones: Record<string, Tone> = {
+        beginner: 'ok',
+        intermediate: 'warn',
+        advanced: 'danger',
+        expert: 'danger',
     };
-    return level ? colors[level] ?? '' : '';
+    return level ? toneClasses(tones[level]) : '';
 }
 
 /**
@@ -296,38 +300,38 @@ export function questionTypeLabel(type: string | null | undefined): string {
  * Get Tailwind CSS color classes for assessment/course status badge
  */
 export function statusBadgeColor(status: string | null | undefined): string {
-    const colors: Record<string, string> = {
-        draft: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-        published: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-        archived: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+    const tones: Record<string, Tone> = {
+        draft: 'neutral',
+        published: 'ok',
+        archived: 'danger',
     };
-    return status ? colors[status] ?? 'bg-gray-100 text-gray-800' : '';
+    return status ? toneClasses(tones[status]) : '';
 }
 
 /**
  * Get Tailwind CSS color classes for visibility badge
  */
 export function visibilityBadgeColor(visibility: string | null | undefined): string {
-    const colors: Record<string, string> = {
-        public: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-        restricted: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-        hidden: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+    const tones: Record<string, Tone> = {
+        public: 'ok',
+        restricted: 'warn',
+        hidden: 'neutral',
     };
-    return visibility ? colors[visibility] ?? 'bg-gray-100 text-gray-800' : '';
+    return visibility ? toneClasses(tones[visibility]) : '';
 }
 
 /**
  * Get Tailwind CSS color classes for attempt status badge
  */
 export function attemptStatusBadgeColor(status: string | null | undefined): string {
-    const colors: Record<string, string> = {
-        in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-        submitted: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-        graded: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-        completed: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-        expired: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+    const tones: Record<string, Tone> = {
+        in_progress: 'info',
+        submitted: 'warn',
+        graded: 'ok',
+        completed: 'ok',
+        expired: 'danger',
     };
-    return status ? colors[status] ?? 'bg-gray-100 text-gray-800' : '';
+    return status ? toneClasses(tones[status]) : '';
 }
 
 // =============================================================================

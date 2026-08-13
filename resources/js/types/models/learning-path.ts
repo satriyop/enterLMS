@@ -6,6 +6,7 @@
  */
 
 import type { DifficultyLevel, PaginationLink } from '@/types';
+import { TONES } from '@/lib/constants';
 
 // =============================================================================
 // State Enums
@@ -246,21 +247,10 @@ export const LEARNING_PATH_STATE_COLORS: Record<
     LearningPathEnrollmentState,
     { bg: string; text: string; border: string }
 > = {
-    active: {
-        bg: 'bg-blue-100 dark:bg-blue-900',
-        text: 'text-blue-700 dark:text-blue-300',
-        border: 'border-blue-200 dark:border-blue-800',
-    },
-    completed: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        border: 'border-green-200 dark:border-green-800',
-    },
-    dropped: {
-        bg: 'bg-gray-100 dark:bg-gray-800',
-        text: 'text-gray-700 dark:text-gray-300',
-        border: 'border-gray-200 dark:border-gray-700',
-    },
+    active: TONES.info,
+    /** Mirrors ENROLLMENT_STATUS_COLORS: finishing a Path is also earned. */
+    completed: TONES.gold,
+    dropped: TONES.danger,
 };
 
 /**
@@ -270,26 +260,10 @@ export const COURSE_PROGRESS_STATUS_COLORS: Record<
     CourseProgressStatus,
     { bg: string; text: string; icon: string }
 > = {
-    locked: {
-        bg: 'bg-gray-100 dark:bg-gray-800',
-        text: 'text-gray-500 dark:text-gray-400',
-        icon: 'text-gray-400',
-    },
-    available: {
-        bg: 'bg-blue-100 dark:bg-blue-900',
-        text: 'text-blue-700 dark:text-blue-300',
-        icon: 'text-blue-500',
-    },
-    in_progress: {
-        bg: 'bg-yellow-100 dark:bg-yellow-900',
-        text: 'text-yellow-700 dark:text-yellow-300',
-        icon: 'text-yellow-500',
-    },
-    completed: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        icon: 'text-green-500',
-    },
+    locked: TONES.neutral,
+    available: TONES.info,
+    in_progress: TONES.warn,
+    completed: TONES.ok,
 };
 
 /**

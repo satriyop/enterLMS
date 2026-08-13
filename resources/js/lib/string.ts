@@ -161,7 +161,8 @@ export function escapeHtml(text: string | null | undefined): string {
 export function highlightText(
     text: string,
     searchTerm: string,
-    highlightClass: string = 'bg-yellow-200 dark:bg-yellow-800'
+    /** Gold reads as a paper highlighter and already flips under `.dark`. */
+    highlightClass: string = 'bg-gold-soft text-foreground'
 ): string {
     if (!searchTerm) return escapeHtml(text);
 

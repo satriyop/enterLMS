@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
 import { cn } from '@/lib/utils'
+import { type CardVariants, cardVariants } from '.'
 
 const props = defineProps<{
+  variant?: CardVariants['variant']
+  hoverable?: CardVariants['hoverable']
   class?: HTMLAttributes['class']
 }>()
 </script>
@@ -12,7 +15,8 @@ const props = defineProps<{
     data-slot="card"
     :class="
       cn(
-        'bg-surface text-card-foreground flex flex-col gap-6 rounded-[var(--r)] border border-border py-6 shadow-none',
+        'text-card-foreground',
+        cardVariants({ variant: props.variant, hoverable: props.hoverable }),
         props.class,
       )
     "

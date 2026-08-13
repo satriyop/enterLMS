@@ -233,10 +233,20 @@ describe('difficultyLabel', () => {
 });
 
 describe('difficultyColor', () => {
-    it('returns Tailwind classes for difficulty levels', () => {
-        expect(difficultyColor('beginner')).toContain('bg-green');
-        expect(difficultyColor('intermediate')).toContain('bg-yellow');
-        expect(difficultyColor('advanced')).toContain('bg-red');
+    // Tones, not hues (ADR 007): the tokens behind these flip under `.dark`
+    // on their own, so the returned string carries no `dark:` variant.
+    it('returns Tenang tone classes for difficulty levels', () => {
+        expect(difficultyColor('beginner')).toBe('bg-ok-soft text-ok');
+        expect(difficultyColor('intermediate')).toBe('bg-warn-soft text-warn');
+        expect(difficultyColor('advanced')).toBe('bg-danger-soft text-danger');
+    });
+
+    it('gives expert the same tone as advanced', () => {
+        expect(difficultyColor('expert')).toBe(difficultyColor('advanced'));
+    });
+
+    it('returns no dark: variants', () => {
+        expect(difficultyColor('beginner')).not.toContain('dark:');
     });
 
     it('returns empty string for null/undefined', () => {
@@ -320,14 +330,14 @@ describe('questionTypeLabel', () => {
 // =============================================================================
 
 describe('statusBadgeColor', () => {
-    it('returns Tailwind classes for statuses', () => {
-        expect(statusBadgeColor('draft')).toContain('bg-yellow');
-        expect(statusBadgeColor('published')).toContain('bg-green');
-        expect(statusBadgeColor('archived')).toContain('bg-gray');
+    it('returns Tenang tone classes for statuses', () => {
+        expect(statusBadgeColor('draft')).toBe('bg-surface-2 text-muted-foreground');
+        expect(statusBadgeColor('published')).toBe('bg-ok-soft text-ok');
+        expect(statusBadgeColor('archived')).toBe('bg-danger-soft text-danger');
     });
 
-    it('returns fallback for unknown status', () => {
-        expect(statusBadgeColor('unknown')).toBe('bg-gray-100 text-gray-800');
+    it('falls back to the neutral tone for an unknown status', () => {
+        expect(statusBadgeColor('unknown')).toBe('bg-surface-2 text-muted-foreground');
     });
 
     it('returns empty string for null/undefined', () => {

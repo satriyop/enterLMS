@@ -2,6 +2,14 @@
 
 Mockup kompetisi desain UI/UX untuk EnterLMS (**bukan** implementasi app).
 
+> **Pemenang: hybrid — palet & tipografi Claude A "Tenang" di atas shell Claude B.**
+> Alasan dan kontrak tokennya ada di [`docs/adr/007-tenang-conformance.md`](../docs/adr/007-tenang-conformance.md).
+> Sumber palet: `claude-design/design-a/assets/styles.css`.
+>
+> ⚠️ Mockup ini dibuat sebelum ADR 004 membekukan domain banking/OJK. Layar
+> pembayaran, question bank, SCORM, dan compliance OJK di dalamnya
+> menggambarkan domain yang sudah tidak ada — jangan dipakai sebagai acuan.
+
 Setiap entry berisi dua arah desain:
 
 - **Design A** — clean, modern, visually appealing

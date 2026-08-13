@@ -54,157 +54,107 @@ export const ALLOWED_DOCUMENT_TYPES = [
 export const ALLOWED_DOCUMENT_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'] as const;
 
 // =============================================================================
-// Status Colors (Tailwind classes)
+// Tones — the semantic palette from the "Tenang" design (ADR 007)
+// =============================================================================
+
+/**
+ * Every coloured status surface in the app resolves to one of these tones.
+ *
+ * Each tone pairs a `*-soft` background with its full-strength ink, which is
+ * how Tenang builds badges. The tokens behind them are redefined under `.dark`,
+ * so a tone carries no `dark:` variant of its own -- do not add one.
+ *
+ * Meanings are fixed; pick the tone that matches the meaning, not the hue:
+ * - `neutral` — inert, unpublished, or locked. Nothing to react to.
+ * - `primary` — the pine brand accent. Identity, not status.
+ * - `info`    — live and in good standing, but not finished.
+ * - `warn`    — needs someone's attention.
+ * - `danger`  — ended badly, or withdrawn.
+ * - `ok`      — succeeded.
+ * - `gold`    — achievement. Reserved for what a learner *earns*.
+ */
+export const TONES = {
+    neutral: { bg: 'bg-surface-2', text: 'text-muted-foreground', border: 'border-transparent', icon: 'text-subtle' },
+    primary: { bg: 'bg-primary-soft', text: 'text-primary', border: 'border-transparent', icon: 'text-primary' },
+    info: { bg: 'bg-info-soft', text: 'text-info', border: 'border-transparent', icon: 'text-info' },
+    warn: { bg: 'bg-warn-soft', text: 'text-warn', border: 'border-transparent', icon: 'text-warn' },
+    danger: { bg: 'bg-danger-soft', text: 'text-danger', border: 'border-transparent', icon: 'text-danger' },
+    ok: { bg: 'bg-ok-soft', text: 'text-ok', border: 'border-transparent', icon: 'text-ok' },
+    gold: { bg: 'bg-gold-soft', text: 'text-gold', border: 'border-transparent', icon: 'text-gold' },
+} as const;
+
+export type Tone = keyof typeof TONES;
+
+/**
+ * Flatten a tone to the `bg + text` class string that badge helpers return.
+ * An unrecognised status falls back to `neutral` rather than to nothing, so a
+ * badge never renders as unstyled text.
+ */
+export function toneClasses(tone: Tone | undefined): string {
+    const { bg, text } = TONES[tone ?? 'neutral'];
+
+    return `${bg} ${text}`;
+}
+
+// =============================================================================
+// Status Colors
 // =============================================================================
 
 export const COURSE_STATUS_COLORS: Record<CourseStatus, { bg: string; text: string; border: string }> = {
-    draft: {
-        bg: 'bg-gray-100 dark:bg-gray-800',
-        text: 'text-gray-700 dark:text-gray-300',
-        border: 'border-gray-200 dark:border-gray-700',
-    },
-    published: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        border: 'border-green-200 dark:border-green-800',
-    },
-    archived: {
-        bg: 'bg-red-100 dark:bg-red-900',
-        text: 'text-red-700 dark:text-red-300',
-        border: 'border-red-200 dark:border-red-800',
-    },
+    draft: TONES.neutral,
+    published: TONES.ok,
+    archived: TONES.danger,
 };
 
 export const ENROLLMENT_STATUS_COLORS: Record<EnrollmentStatus, { bg: string; text: string; border: string }> = {
-    active: {
-        bg: 'bg-blue-100 dark:bg-blue-900',
-        text: 'text-blue-700 dark:text-blue-300',
-        border: 'border-blue-200 dark:border-blue-800',
-    },
-    completed: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        border: 'border-green-200 dark:border-green-800',
-    },
-    dropped: {
-        bg: 'bg-red-100 dark:bg-red-900',
-        text: 'text-red-700 dark:text-red-300',
-        border: 'border-red-200 dark:border-red-800',
-    },
+    active: TONES.info,
+    /** Gold, not ok: finishing a Course is the achievement the learner earns. */
+    completed: TONES.gold,
+    dropped: TONES.danger,
 };
 
 export const DIFFICULTY_COLORS: Record<DifficultyLevel, { bg: string; text: string; border: string }> = {
-    beginner: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        border: 'border-green-200 dark:border-green-800',
-    },
-    intermediate: {
-        bg: 'bg-yellow-100 dark:bg-yellow-900',
-        text: 'text-yellow-700 dark:text-yellow-300',
-        border: 'border-yellow-200 dark:border-yellow-800',
-    },
-    advanced: {
-        bg: 'bg-red-100 dark:bg-red-900',
-        text: 'text-red-700 dark:text-red-300',
-        border: 'border-red-200 dark:border-red-800',
-    },
+    beginner: TONES.ok,
+    intermediate: TONES.warn,
+    advanced: TONES.danger,
 };
 
 export const ASSESSMENT_STATUS_COLORS: Record<AssessmentStatus, { bg: string; text: string; border: string }> = {
-    draft: {
-        bg: 'bg-gray-100 dark:bg-gray-800',
-        text: 'text-gray-700 dark:text-gray-300',
-        border: 'border-gray-200 dark:border-gray-700',
-    },
-    published: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        border: 'border-green-200 dark:border-green-800',
-    },
-    archived: {
-        bg: 'bg-red-100 dark:bg-red-900',
-        text: 'text-red-700 dark:text-red-300',
-        border: 'border-red-200 dark:border-red-800',
-    },
+    draft: TONES.neutral,
+    published: TONES.ok,
+    archived: TONES.danger,
 };
 
 export const ATTEMPT_STATUS_COLORS: Record<AttemptStatus, { bg: string; text: string; border: string }> = {
-    in_progress: {
-        bg: 'bg-blue-100 dark:bg-blue-900',
-        text: 'text-blue-700 dark:text-blue-300',
-        border: 'border-blue-200 dark:border-blue-800',
-    },
-    submitted: {
-        bg: 'bg-yellow-100 dark:bg-yellow-900',
-        text: 'text-yellow-700 dark:text-yellow-300',
-        border: 'border-yellow-200 dark:border-yellow-800',
-    },
-    graded: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        border: 'border-green-200 dark:border-green-800',
-    },
-    completed: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        border: 'border-green-200 dark:border-green-800',
-    },
+    in_progress: TONES.info,
+    /** Awaiting a grader — the one attempt state that needs someone to act. */
+    submitted: TONES.warn,
+    graded: TONES.ok,
+    completed: TONES.ok,
 };
 
 export const VISIBILITY_COLORS: Record<CourseVisibility, { bg: string; text: string; border: string }> = {
-    public: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        border: 'border-green-200 dark:border-green-800',
-    },
-    restricted: {
-        bg: 'bg-yellow-100 dark:bg-yellow-900',
-        text: 'text-yellow-700 dark:text-yellow-300',
-        border: 'border-yellow-200 dark:border-yellow-800',
-    },
-    hidden: {
-        bg: 'bg-gray-100 dark:bg-gray-800',
-        text: 'text-gray-700 dark:text-gray-300',
-        border: 'border-gray-200 dark:border-gray-700',
-    },
+    public: TONES.ok,
+    restricted: TONES.warn,
+    hidden: TONES.neutral,
 };
 
 // =============================================================================
 // Content Type Colors
 // =============================================================================
 
+/**
+ * Lesson forms. These are categories rather than statuses, so they borrow the
+ * tone palette purely to stay distinguishable -- `warn` on a document does not
+ * mean anything is wrong.
+ */
 export const CONTENT_TYPE_COLORS: Record<ContentType, { bg: string; text: string; icon: string }> = {
-    text: {
-        bg: 'bg-blue-100 dark:bg-blue-900',
-        text: 'text-blue-700 dark:text-blue-300',
-        icon: 'text-blue-500',
-    },
-    video: {
-        bg: 'bg-purple-100 dark:bg-purple-900',
-        text: 'text-purple-700 dark:text-purple-300',
-        icon: 'text-purple-500',
-    },
-    youtube: {
-        bg: 'bg-red-100 dark:bg-red-900',
-        text: 'text-red-700 dark:text-red-300',
-        icon: 'text-red-500',
-    },
-    audio: {
-        bg: 'bg-green-100 dark:bg-green-900',
-        text: 'text-green-700 dark:text-green-300',
-        icon: 'text-green-500',
-    },
-    document: {
-        bg: 'bg-orange-100 dark:bg-orange-900',
-        text: 'text-orange-700 dark:text-orange-300',
-        icon: 'text-orange-500',
-    },
-    conference: {
-        bg: 'bg-cyan-100 dark:bg-cyan-900',
-        text: 'text-cyan-700 dark:text-cyan-300',
-        icon: 'text-cyan-500',
-    },
+    text: TONES.neutral,
+    video: TONES.primary,
+    youtube: TONES.danger,
+    audio: TONES.info,
+    document: TONES.warn,
+    conference: TONES.ok,
 };
 
 // =============================================================================

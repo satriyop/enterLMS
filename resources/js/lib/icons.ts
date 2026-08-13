@@ -16,6 +16,19 @@ import {
     Info,
     type LucideIcon,
 } from 'lucide-vue-next';
+import { TONES, type Tone } from './constants';
+
+/**
+ * Expand a tone into the `colorClass` / `bgClass` pair these helpers have
+ * always returned, so callers do not have to change.
+ */
+function iconTone({ icon, tone }: { icon: LucideIcon; tone: Tone }): {
+    icon: LucideIcon;
+    colorClass: string;
+    bgClass: string;
+} {
+    return { icon, colorClass: TONES[tone].icon, bgClass: TONES[tone].bg };
+}
 
 // =============================================================================
 // Content Type Icons
@@ -46,15 +59,15 @@ export function getContentTypeIconWithColor(type: ContentType | string): {
     colorClass: string;
     bgClass: string;
 } {
-    const config: Record<ContentType, { icon: LucideIcon; colorClass: string; bgClass: string }> = {
-        text: { icon: FileText, colorClass: 'text-blue-500', bgClass: 'bg-blue-100 dark:bg-blue-900' },
-        video: { icon: Video, colorClass: 'text-purple-500', bgClass: 'bg-purple-100 dark:bg-purple-900' },
-        youtube: { icon: Youtube, colorClass: 'text-red-500', bgClass: 'bg-red-100 dark:bg-red-900' },
-        audio: { icon: Music, colorClass: 'text-green-500', bgClass: 'bg-green-100 dark:bg-green-900' },
-        document: { icon: File, colorClass: 'text-orange-500', bgClass: 'bg-orange-100 dark:bg-orange-900' },
-        conference: { icon: Users, colorClass: 'text-cyan-500', bgClass: 'bg-cyan-100 dark:bg-cyan-900' },
+    const config: Record<ContentType, { icon: LucideIcon; tone: Tone }> = {
+        text: { icon: FileText, tone: 'neutral' },
+        video: { icon: Video, tone: 'primary' },
+        youtube: { icon: Youtube, tone: 'danger' },
+        audio: { icon: Music, tone: 'info' },
+        document: { icon: File, tone: 'warn' },
+        conference: { icon: Users, tone: 'ok' },
     };
-    return config[type as ContentType] || { icon: FileText, colorClass: 'text-gray-500', bgClass: 'bg-gray-100' };
+    return iconTone(config[type as ContentType] ?? { icon: FileText, tone: 'neutral' });
 }
 
 // =============================================================================
@@ -83,12 +96,12 @@ export function getDifficultyIconWithColor(level: DifficultyLevel | string): {
     colorClass: string;
     bgClass: string;
 } {
-    const config: Record<DifficultyLevel, { icon: LucideIcon; colorClass: string; bgClass: string }> = {
-        beginner: { icon: BookOpen, colorClass: 'text-green-500', bgClass: 'bg-green-100 dark:bg-green-900' },
-        intermediate: { icon: Award, colorClass: 'text-yellow-500', bgClass: 'bg-yellow-100 dark:bg-yellow-900' },
-        advanced: { icon: Award, colorClass: 'text-red-500', bgClass: 'bg-red-100 dark:bg-red-900' },
+    const config: Record<DifficultyLevel, { icon: LucideIcon; tone: Tone }> = {
+        beginner: { icon: BookOpen, tone: 'ok' },
+        intermediate: { icon: Award, tone: 'warn' },
+        advanced: { icon: Award, tone: 'danger' },
     };
-    return config[level as DifficultyLevel] || { icon: BookOpen, colorClass: 'text-gray-500', bgClass: 'bg-gray-100' };
+    return iconTone(config[level as DifficultyLevel] ?? { icon: BookOpen, tone: 'neutral' });
 }
 
 // =============================================================================
@@ -121,14 +134,14 @@ export function getStatusIconWithColor(status: StatusType): {
     colorClass: string;
     bgClass: string;
 } {
-    const config: Record<StatusType, { icon: LucideIcon; colorClass: string; bgClass: string }> = {
-        success: { icon: CheckCircle, colorClass: 'text-green-500', bgClass: 'bg-green-100 dark:bg-green-900' },
-        error: { icon: XCircle, colorClass: 'text-red-500', bgClass: 'bg-red-100 dark:bg-red-900' },
-        warning: { icon: AlertTriangle, colorClass: 'text-yellow-500', bgClass: 'bg-yellow-100 dark:bg-yellow-900' },
-        info: { icon: Info, colorClass: 'text-blue-500', bgClass: 'bg-blue-100 dark:bg-blue-900' },
-        pending: { icon: Clock, colorClass: 'text-gray-500', bgClass: 'bg-gray-100 dark:bg-gray-800' },
+    const config: Record<StatusType, { icon: LucideIcon; tone: Tone }> = {
+        success: { icon: CheckCircle, tone: 'ok' },
+        error: { icon: XCircle, tone: 'danger' },
+        warning: { icon: AlertTriangle, tone: 'warn' },
+        info: { icon: Info, tone: 'info' },
+        pending: { icon: Clock, tone: 'neutral' },
     };
-    return config[status];
+    return iconTone(config[status]);
 }
 
 // =============================================================================
