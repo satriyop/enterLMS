@@ -1,4 +1,4 @@
-# Enteraksi LMS — Task System
+# EnterLMS — Task System
 
 Sistem kerja **baru** untuk development. Ganti pola lama di `.ai/investigation/` dan catatan ad-hoc yang sudah stale.
 

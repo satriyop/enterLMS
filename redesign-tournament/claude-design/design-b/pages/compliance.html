@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Laporan kepatuhan · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="compliance" data-role="compliance_officer">
+
+<div class="app">
+  <aside data-side></aside>
+  <div class="main">
+    <header data-top></header>
+    <div class="content">
+      <div class="inner stack-l">
+
+        <div class="page-head">
+          <div class="page-head-text">
+            <h1 class="h1">Laporan kepatuhan</h1>
+            <p class="lead">Jejak audit lengkap untuk pemeriksaan internal dan regulator. Pilih periode, tinjau data, lalu ekspor bila diperlukan.</p>
+          </div>
+          <div class="row">
+            <select class="select" style="width:auto"><option>1 Jan – 12 Agu 2026</option><option>Kuartal berjalan</option><option>Tahun lalu</option><option>Rentang khusus…</option></select>
+            <button class="btn btn-primary" data-modal-open="export">Ekspor laporan</button>
+          </div>
+        </div>
+
+        <div class="notice notice-info">
+          <span class="ic">i</span>
+          <span>Data bersifat <strong>append-only</strong>. Catatan audit tidak dapat diubah atau dihapus oleh siapa pun, sesuai prinsip integritas bukti pemeriksaan.</span>
+        </div>
+
+        <div class="grid-4">
+          <div class="stat-card"><span class="stat-num">96%</span><span class="stat-label">Kepatuhan modul wajib</span></div>
+          <div class="stat-card"><span class="stat-icon" style="background:var(--danger-soft);color:var(--danger)">!</span><span class="stat-num" style="color:var(--danger)">487</span><span class="stat-label">Pegawai belum patuh</span></div>
+          <div class="stat-card"><span class="stat-num">28.412</span><span class="stat-label">Peristiwa tercatat</span></div>
+          <div class="stat-card"><span class="stat-num">2.140</span><span class="stat-label">Sertifikat diterbitkan</span></div>
+        </div>
+
+        <div data-tabs>
+          <div class="tabs">
+            <button class="tab" data-tab="summary" aria-selected="true">Ringkasan</button>
+            <button class="tab" data-tab="units" aria-selected="false">Per unit kerja</button>
+            <button class="tab" data-tab="log" aria-selected="false">Jejak audit</button>
+            <button class="tab" data-tab="gaps" aria-selected="false">Ketidakpatuhan</button>
+          </div>
+
+          <!-- SUMMARY -->
+          <div class="panel" data-panel="summary" style="padding-top:1.5rem">
+            <div class="split">
+              <div class="stack-l">
+                <section>
+                  <div class="sec-head">
+                    <div class="stack" style="gap:.15rem">
+                      <h2 class="h2">Kepatuhan per modul wajib</h2>
+                      <p class="helper">Modul di bawah 90% memerlukan rencana perbaikan.</p>
+                    </div>
+                  </div>
+                  <div class="card card-pad-lg stack-m">
+                    <div class="stack">
+                      <div class="between"><span class="body-sm" style="font-weight:600">Anti Pencucian Uang (APU-PPT)</span><span class="helper num">98% · 12.230 / 12.480</span></div>
+                      <div class="bar"><span data-bar="98" style="width:0"></span></div>
+                    </div>
+                    <div class="stack">
+                      <div class="between"><span class="body-sm" style="font-weight:600">Keamanan Informasi</span><span class="helper num">97% · 12.106 / 12.480</span></div>
+                      <div class="bar"><span data-bar="97" style="width:0"></span></div>
+                    </div>
+                    <div class="stack">
+                      <div class="between"><span class="body-sm" style="font-weight:600">Kode Etik & Benturan Kepentingan</span><span class="helper num">96% · 11.981 / 12.480</span></div>
+                      <div class="bar"><span data-bar="96" style="width:0"></span></div>
+                    </div>
+                    <div class="stack">
+                      <div class="between"><span class="body-sm" style="font-weight:600">Tata Kelola Risiko Operasional</span><span class="helper num">91% · 11.357 / 12.480</span></div>
+                      <div class="bar"><span data-bar="91" style="width:0"></span></div>
+                    </div>
+                    <div class="stack">
+                      <div class="between"><span class="body-sm" style="font-weight:700;color:var(--danger)">Pelaporan & Transparansi OJK</span><span class="helper num">84% · 10.483 / 12.480</span></div>
+                      <div class="bar"><span data-bar="84" style="width:0;background:var(--danger)"></span></div>
+                      <span class="helper" style="color:var(--danger)">Di bawah ambang 90% — perlu tindak lanjut.</span>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <div class="sec-head">
+                    <div class="stack" style="gap:.15rem">
+                      <h2 class="h2">Tren penyelesaian</h2>
+                      <p class="helper">Persentase kepatuhan keseluruhan, 6 bulan terakhir.</p>
+                    </div>
+                  </div>
+                  <div class="card card-pad-lg">
+                    <div class="row" style="align-items:flex-end;gap:1rem;height:190px">
+                      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:.5rem;height:100%"><span class="tiny num" style="text-align:center">58%</span><div style="background:var(--primary);border-radius:6px 6px 0 0;height:58%"></div><span class="helper" style="text-align:center">Mar</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:.5rem;height:100%"><span class="tiny num" style="text-align:center">64%</span><div style="background:var(--primary);border-radius:6px 6px 0 0;height:64%"></div><span class="helper" style="text-align:center">Apr</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:.5rem;height:100%"><span class="tiny num" style="text-align:center">71%</span><div style="background:var(--primary);border-radius:6px 6px 0 0;height:71%"></div><span class="helper" style="text-align:center">Mei</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:.5rem;height:100%"><span class="tiny num" style="text-align:center">78%</span><div style="background:var(--primary);border-radius:6px 6px 0 0;height:78%"></div><span class="helper" style="text-align:center">Jun</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:.5rem;height:100%"><span class="tiny num" style="text-align:center">88%</span><div style="background:var(--primary);border-radius:6px 6px 0 0;height:88%"></div><span class="helper" style="text-align:center">Jul</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:.5rem;height:100%"><span class="tiny num" style="text-align:center;color:var(--ok);font-weight:700">96%</span><div style="background:var(--ok);border-radius:6px 6px 0 0;height:96%"></div><span class="helper" style="text-align:center">Agu</span></div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <aside class="sticky-side stack-m">
+                <div class="card">
+                  <div class="card-head"><strong class="body-sm">Rujukan regulasi</strong></div>
+                  <div class="card-pad">
+                    <dl class="stack" style="gap:0">
+                      <div class="kv"><dt>APU-PPT</dt><dd class="helper">POJK 12/2017</dd></div>
+                      <div class="kv"><dt>Manajemen risiko</dt><dd class="helper">POJK 18/2016</dd></div>
+                      <div class="kv"><dt>Keamanan siber</dt><dd class="helper">POJK 11/2022</dd></div>
+                      <div class="kv"><dt>Likuiditas</dt><dd class="helper">POJK 42/2015</dd></div>
+                    </dl>
+                  </div>
+                </div>
+                <div class="card card-pad stack">
+                  <span class="eyebrow">Retensi data</span>
+                  <p class="helper">Jejak audit disimpan 5 tahun. Ekspor bulanan diarsipkan otomatis ke penyimpanan dingin.</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+
+          <!-- UNITS -->
+          <div class="panel" data-panel="units" hidden style="padding-top:1.5rem">
+            <div class="stack-m">
+              <p class="helper">Baris bertanda merah berada di bawah ambang kepatuhan 90%.</p>
+              <div class="table-wrap">
+                <table class="t">
+                  <thead><tr><th>Unit kerja</th><th>Pegawai</th><th>Patuh</th><th>Tingkat</th><th>Lewat tenggat</th><th class="t-right">Aksi</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Kepatuhan</strong></td><td class="num">184</td><td class="num">184</td><td><div class="row" style="gap:.5rem"><span class="bar thin" style="width:70px"><span style="width:100%"></span></span><span class="helper num">100%</span></div></td><td class="num">0</td><td class="t-right"><button class="btn btn-outline btn-sm">Rincian</button></td></tr>
+                    <tr><td><strong>Manajemen Risiko</strong></td><td class="num">312</td><td class="num">305</td><td><div class="row" style="gap:.5rem"><span class="bar thin" style="width:70px"><span style="width:98%"></span></span><span class="helper num">98%</span></div></td><td class="num">2</td><td class="t-right"><button class="btn btn-outline btn-sm">Rincian</button></td></tr>
+                    <tr><td><strong>Teknologi Informasi</strong></td><td class="num">428</td><td class="num">414</td><td><div class="row" style="gap:.5rem"><span class="bar thin" style="width:70px"><span style="width:97%"></span></span><span class="helper num">97%</span></div></td><td class="num">5</td><td class="t-right"><button class="btn btn-outline btn-sm">Rincian</button></td></tr>
+                    <tr><td><strong>Layanan Nasabah</strong></td><td class="num">6.240</td><td class="num">5.928</td><td><div class="row" style="gap:.5rem"><span class="bar thin" style="width:70px"><span style="width:95%"></span></span><span class="helper num">95%</span></div></td><td class="num">148</td><td class="t-right"><button class="btn btn-outline btn-sm">Rincian</button></td></tr>
+                    <tr><td><strong>Tresuri</strong></td><td class="num">96</td><td class="num">88</td><td><div class="row" style="gap:.5rem"><span class="bar thin" style="width:70px"><span style="width:92%"></span></span><span class="helper num">92%</span></div></td><td class="num">4</td><td class="t-right"><button class="btn btn-outline btn-sm">Rincian</button></td></tr>
+                    <tr style="background:var(--danger-soft)"><td><strong>Operasional Cabang</strong></td><td class="num">5.220</td><td class="num">4.437</td><td><div class="row" style="gap:.5rem"><span class="bar thin" style="width:70px"><span style="width:85%;background:var(--danger)"></span></span><span class="helper num" style="color:var(--danger);font-weight:700">85%</span></div></td><td class="num">328</td><td class="t-right"><button class="btn btn-primary btn-sm">Tindak lanjut</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOG -->
+          <div class="panel" data-panel="log" hidden style="padding-top:1.5rem">
+            <div class="stack-m">
+              <div class="row-w" style="gap:.75rem">
+                <div class="search" style="flex:1;min-width:220px">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                  <input class="input" placeholder="Cari pengguna, peristiwa, atau ID…" />
+                </div>
+                <select class="select" style="width:auto"><option>Semua jenis peristiwa</option><option>Pendaftaran</option><option>Penyelesaian</option><option>Percobaan asesmen</option><option>Penerbitan sertifikat</option><option>Perubahan peran</option></select>
+              </div>
+
+              <div class="table-wrap">
+                <table class="t">
+                  <thead><tr><th>Waktu</th><th>Peristiwa</th><th>Aktor</th><th>Objek</th><th>IP</th></tr></thead>
+                  <tbody>
+                    <tr><td class="mono helper">12 Agu 09:42:11</td><td><span class="badge badge-ok">certificate.issued</span></td><td class="helper">Sistem</td><td class="helper">Budi Santoso · ENT-2026-SEC-4B21A7</td><td class="mono helper">—</td></tr>
+                    <tr><td class="mono helper">12 Agu 09:41:58</td><td><span class="badge badge-info">assessment.passed</span></td><td class="helper">Budi Santoso</td><td class="helper">Keamanan Informasi · skor 92</td><td class="mono helper">10.14.2.88</td></tr>
+                    <tr><td class="mono helper">12 Agu 08:15:03</td><td><span class="badge">enrollment.created</span></td><td class="helper">Ratna K.</td><td class="helper">42 pegawai → Pelaporan OJK</td><td class="mono helper">10.14.1.12</td></tr>
+                    <tr><td class="mono helper">11 Agu 16:22:47</td><td><span class="badge badge-warn">role.changed</span></td><td class="helper">Admin sistem</td><td class="helper">Ahmad Hidayat: learner → trainer</td><td class="mono helper">10.14.1.4</td></tr>
+                    <tr><td class="mono helper">11 Agu 14:08:19</td><td><span class="badge badge-info">assessment.graded</span></td><td class="helper">Ahmad Hidayat</td><td class="helper">Siti Wulandari · esai 5/5</td><td class="mono helper">10.14.3.51</td></tr>
+                    <tr><td class="mono helper">11 Agu 11:33:02</td><td><span class="badge badge-danger">assessment.failed</span></td><td class="helper">Rizky Pratama</td><td class="helper">APU-PPT · skor 68 · percobaan 2/3</td><td class="mono helper">10.14.7.203</td></tr>
+                    <tr><td class="mono helper">10 Agu 17:55:41</td><td><span class="badge">course.published</span></td><td class="helper">Ratna K.</td><td class="helper">Kode Etik & Benturan Kepentingan v2</td><td class="mono helper">10.14.1.12</td></tr>
+                    <tr><td class="mono helper">10 Agu 10:02:16</td><td><span class="badge badge-warn">enrollment.dropped</span></td><td class="helper">Nurul Aini</td><td class="helper">Dasar Analitik Data</td><td class="mono helper">10.14.5.77</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="between">
+                <span class="helper">Menampilkan 8 dari 28.412 peristiwa</span>
+                <button class="btn btn-outline btn-sm" data-modal-open="export">Ekspor hasil filter ini</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GAPS -->
+          <div class="panel" data-panel="gaps" hidden style="padding-top:1.5rem">
+            <div class="stack-m">
+              <div class="notice notice-danger">
+                <span class="ic">!</span>
+                <span><strong>487 pegawai belum memenuhi modul wajib.</strong> 328 di antaranya berada di unit Operasional Cabang — pertimbangkan sesi pelatihan terjadwal.</span>
+              </div>
+              <div class="table-wrap">
+                <table class="t">
+                  <thead><tr><th>Pegawai</th><th>Unit</th><th>Modul tertunggak</th><th>Lewat tenggat</th><th class="t-right">Tindakan</th></tr></thead>
+                  <tbody>
+                    <tr><td><div class="stack" style="gap:0"><strong>Taufik Maulana</strong><span class="helper">NIP 10298374</span></div></td><td class="helper">Tresuri</td><td><span class="badge badge-danger">3 modul</span></td><td><span class="badge badge-danger">42 hari</span></td><td class="t-right"><button class="btn btn-outline btn-sm" data-toast="Pengingat terkirim">Kirim pengingat</button></td></tr>
+                    <tr><td><div class="stack" style="gap:0"><strong>Yulia Hartono</strong><span class="helper">NIP 10384920</span></div></td><td class="helper">Operasional Cabang</td><td><span class="badge badge-danger">2 modul</span></td><td><span class="badge badge-danger">28 hari</span></td><td class="t-right"><button class="btn btn-outline btn-sm" data-toast="Pengingat terkirim">Kirim pengingat</button></td></tr>
+                    <tr><td><div class="stack" style="gap:0"><strong>Bambang Sutrisno</strong><span class="helper">NIP 10192837</span></div></td><td class="helper">Operasional Cabang</td><td><span class="badge badge-warn">1 modul</span></td><td><span class="badge badge-warn">11 hari</span></td><td class="t-right"><button class="btn btn-outline btn-sm" data-toast="Pengingat terkirim">Kirim pengingat</button></td></tr>
+                    <tr><td><div class="stack" style="gap:0"><strong>Indah Permatasari</strong><span class="helper">NIP 10483726</span></div></td><td class="helper">Layanan Nasabah</td><td><span class="badge badge-warn">1 modul</span></td><td><span class="badge badge-warn">6 hari</span></td><td class="t-right"><button class="btn btn-outline btn-sm" data-toast="Pengingat terkirim">Kirim pengingat</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <button class="btn btn-primary" style="align-self:flex-start" data-toast="487 pengingat dijadwalkan">Kirim pengingat ke semua (487)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="backdrop" id="export">
+  <div class="modal">
+    <div class="card-pad-lg stack-m">
+      <h3 class="h2">Ekspor laporan</h3>
+      <p class="helper">Tautan unduhan dikirim ke email Anda setelah berkas siap.</p>
+      <div class="field">
+        <label class="label">Format berkas <span class="req">*</span></label>
+        <select class="select"><option>CSV — untuk analisis lanjutan</option><option>XLSX — untuk lampiran laporan</option><option>PDF — dokumen bertanda tangan digital</option></select>
+      </div>
+      <div class="field"><label class="label">Cakupan data</label><select class="select"><option>Sesuai filter saat ini</option><option>Seluruh periode</option></select></div>
+      <label class="check"><input type="checkbox" checked /> <span class="body-sm">Sertakan kolom identitas pegawai (NIP, unit kerja)</span></label>
+      <label class="check"><input type="checkbox" /> <span class="body-sm">Sertakan alamat IP dan agen pengguna</span></label>
+      <div class="notice notice-warn">
+        <span class="ic">!</span>
+        <span>Ekspor yang memuat data pribadi tercatat dalam jejak audit atas nama Anda.</span>
+      </div>
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn btn-ghost" data-modal-close>Batal</button>
+        <button class="btn btn-primary" data-modal-close data-toast="Ekspor disiapkan — tautan dikirim via email">Mulai ekspor</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

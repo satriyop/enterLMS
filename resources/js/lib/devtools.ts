@@ -246,10 +246,10 @@ if (import.meta.env.DEV && typeof window !== 'undefined') {
         getRenderStats,
     };
 
-    (window as unknown as { __ENTERAKSI_DEVTOOLS__: typeof devTools }).__ENTERAKSI_DEVTOOLS__ = devTools;
+    (window as unknown as { __ENTERLMS_DEVTOOLS__: typeof devTools }).__ENTERLMS_DEVTOOLS__ = devTools;
 
     console.log(
-        '%c🛠️ Enteraksi DevTools available at window.__ENTERAKSI_DEVTOOLS__',
+        '%c🛠️ EnterLMS DevTools available at window.__ENTERLMS_DEVTOOLS__',
         'color: #51cf66; font-weight: bold;'
     );
 }

@@ -831,7 +831,7 @@ declare module '@inertiajs/vue3' {
 **File: `resources/js/types/index.d.ts`**
 ```typescript
 /**
- * Enteraksi LMS Type Definitions
+ * EnterLMS Type Definitions
  *
  * This file exports all type definitions used across the application.
  * Import types from this file for consistent type usage.

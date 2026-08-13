@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Notifikasi · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="notifications" data-role="learner">
+
+<div class="app">
+  <aside data-side></aside>
+  <div class="main">
+    <header data-top></header>
+    <div class="content">
+      <div class="inner stack-l">
+
+        <div class="page-head">
+          <div class="page-head-text">
+            <h1 class="h1">Notifikasi</h1>
+            <p class="lead">Empat notifikasi belum dibaca. Notifikasi bertanda biru memerlukan tanggapan Anda.</p>
+          </div>
+          <button class="btn btn-outline" data-toast="Semua notifikasi ditandai terbaca">Tandai semua terbaca</button>
+        </div>
+
+        <div class="split">
+          <div class="stack-l">
+            <div data-tabs>
+              <div class="tabs">
+                <button class="tab" data-tab="all" aria-selected="true">Semua (6)</button>
+                <button class="tab" data-tab="action" aria-selected="false">Perlu tanggapan (2)</button>
+                <button class="tab" data-tab="info" aria-selected="false">Informasi (4)</button>
+              </div>
+
+              <div class="panel" data-panel="all" style="padding-top:1.5rem">
+                <div class="stack-m">
+                  <p class="eyebrow">Belum dibaca</p>
+
+                  <article class="card card-pad" style="border-left:4px solid var(--primary)">
+                    <div class="row" style="gap:.9rem;align-items:flex-start">
+                      <span class="empty-icon" style="width:40px;height:40px;font-size:1rem">✉</span>
+                      <div class="stack spacer">
+                        <div class="between">
+                          <strong class="body-sm">Undangan kursus — perlu tanggapan</strong>
+                          <span class="helper">2 jam lalu</span>
+                        </div>
+                        <p class="body-sm muted">Divisi Manajemen Risiko mengundang Anda mengikuti <strong>Manajemen Krisis Likuiditas</strong>.</p>
+                        <p class="helper">Kedaluwarsa dalam 5 hari. Bila tidak ditanggapi, undangan otomatis batal.</p>
+                        <div class="row" style="margin-top:.4rem">
+                          <button class="btn btn-primary btn-sm" data-toast="Undangan diterima — Anda terdaftar">Terima undangan</button>
+                          <button class="btn btn-ghost btn-sm" data-toast="Undangan ditolak">Tolak</button>
+                          <a class="btn btn-ghost btn-sm" href="course-detail.html">Lihat kursus dulu</a>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+
+                  <article class="card card-pad" style="border-left:4px solid var(--primary)">
+                    <div class="row" style="gap:.9rem;align-items:flex-start">
+                      <span class="empty-icon" style="width:40px;height:40px;font-size:1rem">✉</span>
+                      <div class="stack spacer">
+                        <div class="between"><strong class="body-sm">Undangan jalur — perlu tanggapan</strong><span class="helper">Kemarin</span></div>
+                        <p class="body-sm muted">Anda diundang ke jalur <strong>Analis Risiko Kredit</strong> oleh Kepala Divisi Kredit.</p>
+                        <div class="row" style="margin-top:.4rem">
+                          <button class="btn btn-primary btn-sm" data-toast="Undangan diterima">Terima undangan</button>
+                          <button class="btn btn-ghost btn-sm" data-toast="Undangan ditolak">Tolak</button>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+
+                  <article class="card card-pad" style="border-left:4px solid var(--warn)">
+                    <div class="row" style="gap:.9rem;align-items:flex-start">
+                      <span class="empty-icon" style="width:40px;height:40px;background:var(--warn-soft);color:var(--warn);font-size:1rem">!</span>
+                      <div class="stack spacer">
+                        <div class="between"><strong class="body-sm">Pengingat tenggat</strong><span class="helper">Kemarin</span></div>
+                        <p class="body-sm muted"><strong>Tata Kelola Risiko Operasional</strong> harus selesai sebelum 30 September 2026. Progres Anda saat ini 45%.</p>
+                        <a class="btn btn-outline btn-sm" href="lesson.html" style="align-self:flex-start;margin-top:.4rem">Lanjutkan belajar</a>
+                      </div>
+                    </div>
+                  </article>
+
+                  <article class="card card-pad" style="border-left:4px solid var(--ok)">
+                    <div class="row" style="gap:.9rem;align-items:flex-start">
+                      <span class="empty-icon" style="width:40px;height:40px;background:var(--ok-soft);color:var(--ok);font-size:1rem">✓</span>
+                      <div class="stack spacer">
+                        <div class="between"><strong class="body-sm">Esai Anda telah dinilai</strong><span class="helper">2 hari lalu</span></div>
+                        <p class="body-sm muted">Trainer memberi <strong>5 dari 5</strong> untuk esai pada <em>Kode Etik & Benturan Kepentingan</em>. Skor akhir Anda naik menjadi 86.</p>
+                        <a class="btn btn-outline btn-sm" href="assessment-result.html" style="align-self:flex-start;margin-top:.4rem">Lihat hasil lengkap</a>
+                      </div>
+                    </div>
+                  </article>
+
+                  <hr class="hairline" />
+                  <p class="eyebrow">Sudah dibaca</p>
+
+                  <article class="card card-pad" style="opacity:.72">
+                    <div class="row" style="gap:.9rem;align-items:flex-start">
+                      <span class="empty-icon" style="width:40px;height:40px;background:var(--gold-soft);color:var(--gold);font-size:1rem">★</span>
+                      <div class="stack spacer">
+                        <div class="between"><strong class="body-sm">Sertifikat diterbitkan</strong><span class="helper">8 Agustus 2026</span></div>
+                        <p class="body-sm muted">Sertifikat <strong>Keamanan Informasi & Rekayasa Sosial</strong> siap diunduh.</p>
+                      </div>
+                    </div>
+                  </article>
+
+                  <article class="card card-pad" style="opacity:.72">
+                    <div class="row" style="gap:.9rem;align-items:flex-start">
+                      <span class="empty-icon" style="width:40px;height:40px;font-size:1rem">↳</span>
+                      <div class="stack spacer">
+                        <div class="between"><strong class="body-sm">Terdaftar pada jalur</strong><span class="helper">3 Agustus 2026</span></div>
+                        <p class="body-sm muted">Anda kini mengikuti <strong>Spesialis Kepatuhan — Tahap 1</strong>.</p>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+
+              <div class="panel" data-panel="action" hidden style="padding-top:1.5rem">
+                <div class="notice notice-info"><span class="ic">i</span><span>Menampilkan hanya notifikasi yang menunggu keputusan Anda.</span></div>
+              </div>
+              <div class="panel" data-panel="info" hidden style="padding-top:1.5rem">
+                <div class="notice notice-info"><span class="ic">i</span><span>Menampilkan hanya pemberitahuan yang tidak memerlukan tindakan.</span></div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="sticky-side">
+            <div class="card">
+              <div class="card-head"><strong class="body-sm">Preferensi notifikasi</strong></div>
+              <div class="card-pad stack">
+                <p class="helper">Atur kapan EnterLMS menghubungi Anda.</p>
+                <hr class="hairline" />
+                <label class="check"><input type="checkbox" checked /> <span class="body-sm">Ringkasan mingguan via email</span></label>
+                <label class="check"><input type="checkbox" checked /> <span class="body-sm">Ingatkan 14 hari sebelum tenggat modul wajib</span></label>
+                <label class="check"><input type="checkbox" checked /> <span class="body-sm">Beri tahu saat esai selesai dinilai</span></label>
+                <label class="check"><input type="checkbox" /> <span class="body-sm">Beri tahu saat kursus baru ditambahkan</span></label>
+                <button class="btn btn-primary btn-sm btn-block" style="margin-top:.5rem" data-toast="Preferensi disimpan">Simpan preferensi</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

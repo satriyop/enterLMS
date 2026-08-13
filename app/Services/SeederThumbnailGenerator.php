@@ -52,7 +52,7 @@ class SeederThumbnailGenerator
         $white = imagecolorallocate($image, 255, 255, 255);
         $muted = imagecolorallocate($image, 226, 232, 240);
 
-        $label = 'ENTERAKSI LMS';
+        $label = 'EnterLMS';
         imagestring($image, 3, 60, $height - 140, $label, $muted);
 
         $lines = $this->wrapTitle($title, 42);

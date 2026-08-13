@@ -1,4 +1,4 @@
-# Capability Map — Enteraksi LMS
+# Capability Map — EnterLMS
 
 > **Generated:** 2026-08-11 · **Updated:** 2026-08-12 (agent depth B + stabilize + payment-off)  
 > **Stack:** Laravel 13 · Inertia 3 · Vue 3 · Pest · laravel/mcp · Sanctum  
@@ -179,7 +179,7 @@
 | Capability | Status | Bukti / gap |
 |------------|--------|-------------|
 | Sanctum product tokens | ✅ ready | Sanctum + `HasApiTokens` + `agent:token` (D-012); xAPI also `auth:sanctum` |
-| MCP product server (`/mcp/enteraksi`) | ✅ ready | Free-flow tools D-013 + `agent-ping` |
+| MCP product server (`/mcp/enterlms`) | ✅ ready | Free-flow tools D-013 + `agent-ping` |
 | Agent abilities/scopes | ✅ ready | `AgentAbility` constants + Sanctum abilities |
 | Agent action audit log | ✅ ready | `agent_action_logs` + `AgentActionLogger` |
 | MCP catalog/enroll/progress tools | ✅ ready | D-013: list/get/enroll/progress/complete |

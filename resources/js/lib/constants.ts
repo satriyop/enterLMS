@@ -218,12 +218,12 @@ export const CONTENT_TYPE_COLORS: Record<ContentType, { bg: string; text: string
 // =============================================================================
 
 export const STORAGE_KEYS = {
-    theme: 'enteraksi-theme',
-    sidebarCollapsed: 'enteraksi-sidebar-collapsed',
-    recentCourses: 'enteraksi-recent-courses',
-    videoProgress: 'enteraksi-video-progress',
-    audioProgress: 'enteraksi-audio-progress',
-    lessonProgress: 'enteraksi-lesson-progress',
+    theme: 'enterlms-theme',
+    sidebarCollapsed: 'enterlms-sidebar-collapsed',
+    recentCourses: 'enterlms-recent-courses',
+    videoProgress: 'enterlms-video-progress',
+    audioProgress: 'enterlms-audio-progress',
+    lessonProgress: 'enterlms-lesson-progress',
 } as const;
 
 // =============================================================================

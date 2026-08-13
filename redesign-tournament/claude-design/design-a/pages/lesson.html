@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ruang belajar · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="my-learning" data-role="learner">
+
+<header data-shell></header>
+
+<main class="page-tight">
+  <div class="wrap stack-m">
+
+    <div class="between">
+      <nav class="crumbs"><a href="my-learning.html">Pembelajaran saya</a> <span>/</span> <span>Tata Kelola Risiko Operasional</span></nav>
+      <div class="row" style="gap:.75rem">
+        <span class="tiny">Progres kursus</span>
+        <span class="bar" style="width:120px"><span data-course-bar="45" style="width:45%"></span></span>
+        <span class="tiny num">45%</span>
+      </div>
+    </div>
+
+    <div class="split" style="gap:2.25rem">
+      <!-- player -->
+      <div class="stack-m">
+        <div class="player">
+          <button class="play-btn" aria-label="Putar"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></button>
+        </div>
+
+        <div class="stack">
+          <span class="eyebrow">Seksi 2 · Pelajaran 4 dari 6</span>
+          <h1 class="h1" style="font-size:1.75rem">Identifikasi Risiko Proses</h1>
+          <div class="row-w" style="gap:1.25rem">
+            <span class="tiny">11 menit</span>
+            <span class="tiny">Video + transkrip</span>
+            <span class="tiny">Terakhir dilihat kemarin</span>
+          </div>
+        </div>
+
+        <div class="row-w" style="gap:.6rem">
+          <button class="btn btn-primary" data-complete="l4">Tandai selesai</button>
+          <a class="btn btn-outline" href="#">Pelajaran berikutnya →</a>
+          <button class="btn btn-ghost" data-toast="Ditambahkan ke catatan">Simpan catatan</button>
+          <button class="btn btn-ghost" data-modal-open="report">Laporkan masalah</button>
+        </div>
+
+        <hr class="hairline" />
+
+        <div data-tabs>
+          <div class="tabs">
+            <button class="tab" data-tab="notes" aria-selected="true">Materi</button>
+            <button class="tab" data-tab="transcript" aria-selected="false">Transkrip</button>
+            <button class="tab" data-tab="files" aria-selected="false">Lampiran</button>
+            <button class="tab" data-tab="qna" aria-selected="false">Tanya jawab</button>
+          </div>
+
+          <div class="panel" data-panel="notes" style="padding-top:1.5rem">
+            <div class="stack-m" style="max-width:66ch">
+              <p>Risiko proses muncul ketika prosedur yang dirancang tidak dijalankan sebagaimana mestinya — bukan karena niat buruk, melainkan karena celah desain, beban kerja, atau ketergantungan pada satu orang.</p>
+              <h3 class="h3">Tiga sumber risiko proses</h3>
+              <ol class="stack">
+                <li class="body-sm"><strong>1. Kontrol manual berulang.</strong> Semakin sering manusia menyalin data antar sistem, semakin tinggi peluang galat.</li>
+                <li class="body-sm"><strong>2. Pemisahan tugas yang lemah.</strong> Satu pegawai yang dapat membuat sekaligus menyetujui transaksi adalah temuan audit klasik.</li>
+                <li class="body-sm"><strong>3. Prosedur tidak terdokumentasi.</strong> Pengetahuan yang hanya ada di kepala seseorang hilang saat rotasi jabatan.</li>
+              </ol>
+              <div class="notice notice-info">
+                <span><strong>Kaitan regulasi.</strong> POJK 18/POJK.03/2016 mewajibkan bank menerapkan manajemen risiko operasional termasuk identifikasi risiko pada setiap proses bisnis material.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" data-panel="transcript" hidden style="padding-top:1.5rem">
+            <div class="stack" style="max-width:66ch">
+              <p class="body-sm"><span class="mono muted">00:00</span> &nbsp; Selamat datang di pelajaran keempat. Hari ini kita membahas cara mengidentifikasi risiko yang melekat pada proses.</p>
+              <p class="body-sm"><span class="mono muted">00:24</span> &nbsp; Bayangkan proses pembukaan rekening di cabang Anda. Ada berapa titik di mana data nasabah berpindah tangan?</p>
+              <p class="body-sm"><span class="mono muted">01:03</span> &nbsp; Setiap perpindahan adalah titik risiko. Tugas kita bukan menghilangkannya, tetapi mengetahuinya dan memasang kontrol yang sepadan.</p>
+              <p class="body-sm"><span class="mono muted">01:47</span> &nbsp; Mari kita lihat contoh nyata dari temuan audit tahun lalu…</p>
+            </div>
+          </div>
+
+          <div class="panel" data-panel="files" hidden style="padding-top:1.5rem">
+            <div class="stack">
+              <div class="drag-row"><span>📄</span><span class="spacer">Templat Peta Risiko Proses.xlsx</span><span class="tiny">48 KB</span><a class="link-arrow" href="#">Unduh</a></div>
+              <div class="drag-row"><span>📄</span><span class="spacer">Ringkasan POJK 18-2016.pdf</span><span class="tiny">312 KB</span><a class="link-arrow" href="#">Unduh</a></div>
+              <div class="drag-row"><span>📄</span><span class="spacer">Studi Kasus Cabang Menteng.pdf</span><span class="tiny">1,2 MB</span><a class="link-arrow" href="#">Unduh</a></div>
+            </div>
+          </div>
+
+          <div class="panel" data-panel="qna" hidden style="padding-top:1.5rem">
+            <div class="stack-m">
+              <textarea class="textarea" placeholder="Ajukan pertanyaan tentang pelajaran ini…"></textarea>
+              <button class="btn btn-primary btn-sm" style="align-self:flex-start" data-toast="Pertanyaan terkirim">Kirim pertanyaan</button>
+              <hr class="hairline" />
+              <div class="stack">
+                <div class="row"><span class="avatar sm">DP</span><strong class="body-sm">Dewi Puspita</strong><span class="tiny">3 hari lalu</span></div>
+                <p class="body-sm muted">Apakah pemisahan tugas tetap wajib untuk cabang dengan pegawai kurang dari lima orang?</p>
+                <div class="card card-quiet card-pad" style="margin-left:2rem">
+                  <div class="row" style="margin-bottom:.4rem"><span class="avatar sm" style="background:var(--primary);color:var(--primary-foreground)">RK</span><strong class="body-sm">Dr. Ratna K.</strong><span class="badge badge-primary">Instruktur</span></div>
+                  <p class="body-sm muted">Wajib, tetapi bentuknya menyesuaikan. Untuk cabang kecil, kompensasinya bisa berupa reviu harian oleh kepala cabang dan rekonsiliasi terpisah dari kantor wilayah.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- outline rail -->
+      <aside class="sticky-side stack-m">
+        <div class="card">
+          <div class="card-pad" style="border-bottom:1px solid var(--border)">
+            <div class="between"><strong class="body-sm">Daftar isi</strong><span class="tiny">11 / 24</span></div>
+          </div>
+          <div style="max-height:60vh;overflow-y:auto">
+            <div class="acc" style="border:none;border-radius:0">
+              <div class="acc-item">
+                <button class="acc-head" data-acc aria-expanded="false">
+                  <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+                  <span class="spacer"><strong class="body-sm">1. Kerangka Risiko</strong></span><span class="tiny">4/4</span>
+                </button>
+                <div class="acc-body">
+                  <div class="lesson-row done"><span class="tick on">✓</span><span class="spacer">Definisi risiko operasional</span></div>
+                  <div class="lesson-row done"><span class="tick on">✓</span><span class="spacer">Three lines of defence</span></div>
+                  <div class="lesson-row done"><span class="tick on">✓</span><span class="spacer">Selera risiko</span></div>
+                  <div class="lesson-row done"><span class="tick on">✓</span><span class="spacer">Rangkuman</span></div>
+                </div>
+              </div>
+              <div class="acc-item">
+                <button class="acc-head" data-acc aria-expanded="true">
+                  <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+                  <span class="spacer"><strong class="body-sm">2. Identifikasi</strong></span><span class="tiny">3/6</span>
+                </button>
+                <div class="acc-body">
+                  <div class="lesson-row done"><span class="tick on">✓</span><span class="spacer">Sumber data risiko</span></div>
+                  <div class="lesson-row done"><span class="tick on">✓</span><span class="spacer">Wawancara pemilik proses</span></div>
+                  <div class="lesson-row done"><span class="tick on">✓</span><span class="spacer">Loss event database</span></div>
+                  <div class="lesson-row current" data-lesson="l4"><span class="tick"></span><span class="spacer">Identifikasi Risiko Proses</span><span class="tiny">11 mnt</span></div>
+                  <div class="lesson-row"><span class="tick"></span><span class="spacer">Pemetaan kontrol</span><span class="tiny">9 mnt</span></div>
+                  <div class="lesson-row"><span class="tick"></span><span class="spacer">Kuis Seksi 2</span><span class="badge badge-info">Kuis</span></div>
+                </div>
+              </div>
+              <div class="acc-item">
+                <button class="acc-head" data-acc aria-expanded="false">
+                  <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+                  <span class="spacer"><strong class="body-sm">3. Pengukuran</strong></span><span class="tiny">0/7</span>
+                </button>
+                <div class="acc-body">
+                  <div class="lesson-row"><span class="tick"></span><span class="spacer">Matriks dampak & kemungkinan</span></div>
+                  <div class="lesson-row"><span class="tick"></span><span class="spacer">Risiko inheren vs residual</span></div>
+                  <div class="lesson-row"><span class="tick"></span><span class="spacer">Simulasi SCORM</span><span class="badge">SCORM</span></div>
+                </div>
+              </div>
+              <div class="acc-item">
+                <button class="acc-head" data-acc aria-expanded="false">
+                  <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+                  <span class="spacer"><strong class="body-sm">4. Ujian Akhir</strong></span><span style="color:var(--subtle-foreground)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+                </button>
+                <div class="acc-body"><p class="tiny">Terbuka setelah seluruh seksi selesai.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-pad stack">
+          <span class="eyebrow">Catatan saya</span>
+          <p class="tiny">Belum ada catatan pada pelajaran ini.</p>
+          <button class="btn btn-outline btn-sm" data-toast="Editor catatan dibuka">Tulis catatan</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<!-- report modal -->
+<div class="backdrop" id="report">
+  <div class="modal">
+    <div class="card-pad" style="border-bottom:1px solid var(--border)">
+      <div class="between"><h3 class="h3">Laporkan masalah</h3><button class="icon-btn" data-modal-close aria-label="Tutup">✕</button></div>
+    </div>
+    <div class="card-pad stack-m">
+      <div class="field">
+        <label class="label">Jenis masalah</label>
+        <select class="select"><option>Video tidak dapat diputar</option><option>Transkrip tidak sesuai</option><option>Materi kedaluwarsa</option><option>Lainnya</option></select>
+      </div>
+      <div class="field">
+        <label class="label">Keterangan</label>
+        <textarea class="textarea" placeholder="Jelaskan singkat…"></textarea>
+      </div>
+    </div>
+    <div class="card-pad row" style="justify-content:flex-end;border-top:1px solid var(--border)">
+      <button class="btn btn-ghost" data-modal-close>Batal</button>
+      <button class="btn btn-primary" data-modal-close data-toast="Laporan terkirim ke tim konten">Kirim laporan</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

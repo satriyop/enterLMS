@@ -1,4 +1,4 @@
-# Enteraksi LMS - Project Guidelines
+# EnterLMS - Project Guidelines
 
 > ⚠️ **NOT A PRODUCTION APPLICATION YET** — This is still development project. No need to consider backward compatibility when refactoring. Feel free to make breaking changes.
 
@@ -69,30 +69,30 @@ This project has detailed architectural patterns documented in `.claude/skills/`
 
 | Skill | Use When |
 |-------|----------|
-| `enteraksi-architecture` | Creating services, rich models, DTOs, JsonResource, DomainServiceProvider |
-| `enteraksi-state-machines` | Working with CourseState, EnrollmentState, status transitions |
-| `enteraksi-events` | Domain events, listeners, audit logging |
-| `enteraksi-strategies` | Grading strategies, progress calculators, prerequisite evaluators |
-| `enteraksi-testing` | Pest tests, factory states, policy tests, global helpers |
-| `enteraksi-frontend` | Vue 3 + Inertia pages, composables, TypeScript types, constants/formatters |
-| `enteraksi-crud` | CRUD pages, controllers, FormRequests, PageHeader/DataCard/FilterTabs |
-| `enteraksi-component-architecture` | Extracting Vue components, refactoring large pages |
-| `enteraksi-learning-path` | Learning path enrollment, cross-domain sync, progress tracking |
-| `enteraksi-n1-prevention` | N+1 queries, accessor traps, RequiresEagerLoading trait |
-| `enteraksi-batch-loading` | Batch loading, DB aggregation, replacing loop queries |
-| `enteraksi-eloquent-gotchas` | fresh() vs refresh(), transaction patterns, stale data |
-| `enteraksi-concurrency` | Race conditions, pessimistic locking, concurrent enrollment handling |
-| `enteraksi-resource-scoping` | Nested route authorization, scoped validation rules, ownership verification |
-| `enteraksi-policy-context` | Policy authorization with context DTOs, FormRequest authorize |
-| `enteraksi-db-indexing` | Slow queries, composite indexes, query optimization |
-| `enteraksi-debugging` | Root cause analysis, type errors, data transformation issues |
-| `enteraksi-phpstan-shapes` | PHPDoc array shapes, static analysis, fromArray type hints |
+| `enterlms-architecture` | Creating services, rich models, DTOs, JsonResource, DomainServiceProvider |
+| `enterlms-state-machines` | Working with CourseState, EnrollmentState, status transitions |
+| `enterlms-events` | Domain events, listeners, audit logging |
+| `enterlms-strategies` | Grading strategies, progress calculators, prerequisite evaluators |
+| `enterlms-testing` | Pest tests, factory states, policy tests, global helpers |
+| `enterlms-frontend` | Vue 3 + Inertia pages, composables, TypeScript types, constants/formatters |
+| `enterlms-crud` | CRUD pages, controllers, FormRequests, PageHeader/DataCard/FilterTabs |
+| `enterlms-component-architecture` | Extracting Vue components, refactoring large pages |
+| `enterlms-learning-path` | Learning path enrollment, cross-domain sync, progress tracking |
+| `enterlms-n1-prevention` | N+1 queries, accessor traps, RequiresEagerLoading trait |
+| `enterlms-batch-loading` | Batch loading, DB aggregation, replacing loop queries |
+| `enterlms-eloquent-gotchas` | fresh() vs refresh(), transaction patterns, stale data |
+| `enterlms-concurrency` | Race conditions, pessimistic locking, concurrent enrollment handling |
+| `enterlms-resource-scoping` | Nested route authorization, scoped validation rules, ownership verification |
+| `enterlms-policy-context` | Policy authorization with context DTOs, FormRequest authorize |
+| `enterlms-db-indexing` | Slow queries, composite indexes, query optimization |
+| `enterlms-debugging` | Root cause analysis, type errors, data transformation issues |
+| `enterlms-phpstan-shapes` | PHPDoc array shapes, static analysis, fromArray type hints |
 
 **Always check relevant skills before implementing features.**
 
 ---
 
-## Enteraksi Architecture Overview
+## EnterLMS Architecture Overview
 
 ```
 app/
@@ -204,7 +204,7 @@ See `phpstan.neon` for:
 
 ---
 
-## Database Query Strategy (Enteraksi-Specific)
+## Database Query Strategy (EnterLMS-Specific)
 
 Use the right tool for the job - NOT a blanket "avoid DB::" rule:
 

@@ -91,7 +91,7 @@ Still no gateway (B-001), but HTTP surface 404 via `EnsurePaymentsEnabled` + ser
 |--|--|
 | **What** | Abilities define free-flow scopes; only tool is `agent-ping`. |
 | **Why** | Tokens can be issued with write abilities that do nothing yet — or B-013 might reimplement rules outside domain if rushed. |
-| **Where** | `app/Domain/Agent/Abilities/AgentAbility.php`; `app/Mcp/Servers/EnteraksiAgentServer.php` (`$tools = [AgentPingTool::class]`); `routes/ai.php` |
+| **Where** | `app/Domain/Agent/Abilities/AgentAbility.php`; `app/Mcp/Servers/EnterLmsAgentServer.php` (`$tools = [AgentPingTool::class]`); `routes/ai.php` |
 | **Fix direction** | B-013: **thin** tools → Domain services + existing policies only. Issue tokens with minimal abilities until tools ship. |
 | **Before** | Hermes/OpenClaw real workflows |
 

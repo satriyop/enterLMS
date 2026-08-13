@@ -1,8 +1,8 @@
-# Enteraksi Frontend Refactoring Master Plan
+# EnterLMS Frontend Refactoring Master Plan
 
 ## Executive Summary
 
-This document outlines a comprehensive refactoring strategy for the Enteraksi LMS frontend built with Vue 3, TypeScript, Inertia.js v2, and Tailwind CSS v4. The goal is to transform the current codebase into a maintainable, scalable, and testable architecture while preserving existing functionality.
+This document outlines a comprehensive refactoring strategy for the EnterLMS frontend built with Vue 3, TypeScript, Inertia.js v2, and Tailwind CSS v4. The goal is to transform the current codebase into a maintainable, scalable, and testable architecture while preserving existing functionality.
 
 ---
 

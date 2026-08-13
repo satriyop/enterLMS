@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 /**
- * Banking / compliance categories for Enteraksi LMS.
+ * Banking / compliance categories for EnterLMS.
  */
 class CategorySeeder extends Seeder
 {

@@ -1,6 +1,6 @@
 # Contributing Guide
 
-Guidelines for contributing to Enteraksi LMS.
+Guidelines for contributing to EnterLMS.
 
 ---
 
@@ -379,4 +379,4 @@ Contributors are recognized in:
 - Pull request credits
 - Release notes (for significant contributions)
 
-Thank you for contributing to Enteraksi LMS!
+Thank you for contributing to EnterLMS!

@@ -1,6 +1,6 @@
 # Assessment Creation Guide
 
-How to create quizzes, tests, and assessments in Enteraksi LMS.
+How to create quizzes, tests, and assessments in EnterLMS.
 
 ## Prerequisites
 

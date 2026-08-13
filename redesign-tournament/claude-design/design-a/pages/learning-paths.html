@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jalur pembelajaran · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="learning-paths" data-role="learner">
+
+<header data-shell></header>
+
+<main class="page">
+  <div class="wrap stack-l">
+
+    <div class="stack">
+      <h1 class="h1">Jalur pembelajaran</h1>
+      <p class="lead">Rangkaian kursus berurutan yang membangun kompetensi peran secara bertahap.</p>
+    </div>
+
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab" data-tab="mine" aria-selected="true">Jalur saya (1)</button>
+        <button class="tab" data-tab="all" aria-selected="false">Semua jalur (6)</button>
+      </div>
+
+      <!-- mine -->
+      <div class="panel" data-panel="mine" style="padding-top:1.75rem">
+        <article class="card">
+          <div class="card-pad-lg stack-m">
+            <div class="between">
+              <div class="stack">
+                <span class="eyebrow">Terdaftar 3 Agustus 2026</span>
+                <h2 class="h1" style="font-size:1.5rem">Spesialis Kepatuhan — Tahap 1</h2>
+                <p class="body-sm muted" style="max-width:60ch">Fondasi untuk pegawai yang akan mengambil peran di unit kepatuhan: regulasi, deteksi, pelaporan, dan etika.</p>
+              </div>
+              <div class="ring lg" data-ring="60"><b>60%</b></div>
+            </div>
+
+            <div class="bar thick"><span data-bar="60" style="width:0"></span></div>
+
+            <div class="row-w" style="gap:1.75rem">
+              <div class="stack" style="gap:.1rem"><span class="tiny">Kursus</span><strong class="body-sm">3 dari 5 selesai</strong></div>
+              <div class="stack" style="gap:.1rem"><span class="tiny">Estimasi sisa</span><strong class="body-sm">9 jam</strong></div>
+              <div class="stack" style="gap:.1rem"><span class="tiny">Target selesai</span><strong class="body-sm">31 Desember 2026</strong></div>
+            </div>
+
+            <div class="row-w">
+              <a class="btn btn-primary" href="path-progress.html">Lihat progres</a>
+              <a class="btn btn-outline" href="lesson.html">Lanjutkan kursus aktif</a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- all -->
+      <div class="panel" data-panel="all" hidden style="padding-top:1.75rem">
+        <div class="grid-2">
+          <a class="card card-hover card-pad stack-m" href="path-progress.html">
+            <div class="between">
+              <span class="badge badge-primary">Terdaftar</span>
+              <span class="tiny">5 kursus · 22 jam</span>
+            </div>
+            <div class="stack">
+              <h3 class="h3">Spesialis Kepatuhan — Tahap 1</h3>
+              <p class="tiny">Regulasi, deteksi, pelaporan, etika.</p>
+            </div>
+            <div class="bar"><span data-bar="60" style="width:0"></span></div>
+            <span class="tiny">60% selesai</span>
+          </a>
+
+          <a class="card card-hover card-pad stack-m" href="path-progress.html">
+            <div class="between">
+              <span class="badge badge-outline">Prasyarat belum terpenuhi</span>
+              <span class="tiny">6 kursus · 30 jam</span>
+            </div>
+            <div class="stack">
+              <h3 class="h3">Spesialis Kepatuhan — Tahap 2</h3>
+              <p class="tiny">Investigasi lanjutan, koordinasi PPATK, penanganan temuan regulator.</p>
+            </div>
+            <div class="notice" style="padding:.6rem .75rem"><span class="tiny">Selesaikan Tahap 1 untuk membuka.</span></div>
+          </a>
+
+          <a class="card card-hover card-pad stack-m" href="path-progress.html">
+            <div class="between"><span class="badge badge-info">Tersedia</span><span class="tiny">4 kursus · 16 jam</span></div>
+            <div class="stack">
+              <h3 class="h3">Manajer Cabang Baru</h3>
+              <p class="tiny">Operasional cabang, kepemimpinan tim, penanganan eskalasi nasabah.</p>
+            </div>
+            <button class="btn btn-outline btn-sm" style="align-self:flex-start" data-toast="Terdaftar pada jalur">Daftar jalur</button>
+          </a>
+
+          <a class="card card-hover card-pad stack-m" href="path-progress.html">
+            <div class="between"><span class="badge badge-info">Tersedia</span><span class="tiny">7 kursus · 34 jam</span></div>
+            <div class="stack">
+              <h3 class="h3">Analis Risiko Kredit</h3>
+              <p class="tiny">Penilaian kelayakan, model skoring, mitigasi risiko konsentrasi.</p>
+            </div>
+            <button class="btn btn-outline btn-sm" style="align-self:flex-start" data-toast="Terdaftar pada jalur">Daftar jalur</button>
+          </a>
+
+          <a class="card card-hover card-pad stack-m" href="path-progress.html">
+            <div class="between"><span class="badge badge-info">Tersedia</span><span class="tiny">5 kursus · 20 jam</span></div>
+            <div class="stack">
+              <h3 class="h3">Keamanan Siber untuk Non-TI</h3>
+              <p class="tiny">Kesadaran ancaman, higiene digital, respons insiden dasar.</p>
+            </div>
+            <button class="btn btn-outline btn-sm" style="align-self:flex-start" data-toast="Terdaftar pada jalur">Daftar jalur</button>
+          </a>
+
+          <a class="card card-hover card-pad stack-m" href="path-progress.html">
+            <div class="between"><span class="badge badge-ok">Selesai</span><span class="tiny">3 kursus · 10 jam</span></div>
+            <div class="stack">
+              <h3 class="h3">Orientasi Pegawai Baru</h3>
+              <p class="tiny">Struktur organisasi, kode etik dasar, sistem internal.</p>
+            </div>
+            <div class="bar"><span data-bar="100" style="width:0"></span></div>
+            <span class="tiny">Selesai 20 Februari 2026</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

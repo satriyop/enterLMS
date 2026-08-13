@@ -115,6 +115,28 @@ const statusLabel = computed(() => {
         default: return props.course.status;
     }
 });
+
+/** Claude B publish-readiness cues for draft courses */
+const readinessGaps = computed(() => {
+    if (props.course.status !== 'draft') {
+        return [] as string[];
+    }
+    const gaps: string[] = [];
+    if (!props.course.short_description?.trim()) {
+        gaps.push('Deskripsi singkat masih kosong (tab Informasi).');
+    }
+    if (!props.course.sections?.length) {
+        gaps.push('Belum ada seksi di struktur kursus (tab Struktur).');
+    } else {
+        const emptySections = props.course.sections.filter((s) => !s.lessons?.length);
+        if (emptySections.length > 0) {
+            gaps.push(
+                `${emptySections.length} seksi belum memiliki pelajaran (tab Struktur).`,
+            );
+        }
+    }
+    return gaps;
+});
 </script>
 
 <template>
@@ -141,6 +163,41 @@ const statusLabel = computed(() => {
                     </div>
                 </div>
             </div>
+
+            <!-- Guided publish readiness (Claude B) -->
+            <Alert
+                v-if="readinessGaps.length > 0"
+                class="border-primary/30 bg-primary/5"
+            >
+                <AlertTriangle class="h-4 w-4 text-primary" />
+                <AlertTitle>Belum siap terbit</AlertTitle>
+                <AlertDescription>
+                    <p class="mb-2">
+                        Lengkapi syarat berikut sebelum menerbitkan. Tombol terbit mengikuti izin peran Anda.
+                    </p>
+                    <ul class="list-inside list-disc space-y-1 text-sm">
+                        <li v-for="(gap, i) in readinessGaps" :key="i">{{ gap }}</li>
+                    </ul>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            type="button"
+                            @click="activeTab = 'info'"
+                        >
+                            1 · Informasi
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            type="button"
+                            @click="activeTab = 'outline'"
+                        >
+                            2 · Struktur
+                        </Button>
+                    </div>
+                </AlertDescription>
+            </Alert>
 
             <!-- Active Enrollments Warning -->
             <Alert

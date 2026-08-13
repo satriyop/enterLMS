@@ -54,8 +54,8 @@ Three critical issues were addressed:
    - Fixed eager loading in `CourseRatingTest`
 
 6. **Updated Project Documentation**:
-   - Added `RequiresEagerLoading` section to `enteraksi-n1-prevention` skill
-   - Added "Testing Services That Return Value Objects" section to `enteraksi-testing` skill
+   - Added `RequiresEagerLoading` section to `enterlms-n1-prevention` skill
+   - Added "Testing Services That Return Value Objects" section to `enterlms-testing` skill
    - Updated `CLAUDE.md` with new gotchas and skill descriptions
 
 ---
@@ -274,9 +274,9 @@ Skills updated with patterns discovered during this refactoring:
 
 | Skill | Section Added |
 |-------|---------------|
-| `enteraksi-n1-prevention` | RequiresEagerLoading trait documentation |
-| `enteraksi-testing` | Testing Services That Return Value Objects |
-| `enteraksi-architecture` | Critical rules about DTOs (already had, verified) |
+| `enterlms-n1-prevention` | RequiresEagerLoading trait documentation |
+| `enterlms-testing` | Testing Services That Return Value Objects |
+| `enterlms-architecture` | Critical rules about DTOs (already had, verified) |
 
 CLAUDE.md updated:
 - Skills table updated with RequiresEagerLoading mention
@@ -346,6 +346,6 @@ CLAUDE.md updated:
 ### Skills to Reference
 
 When working on related code, consult:
-- `enteraksi-architecture` - DTO and value object patterns
-- `enteraksi-n1-prevention` - RequiresEagerLoading trait usage
-- `enteraksi-testing` - Testing value object results
+- `enterlms-architecture` - DTO and value object patterns
+- `enterlms-n1-prevention` - RequiresEagerLoading trait usage
+- `enterlms-testing` - Testing value object results

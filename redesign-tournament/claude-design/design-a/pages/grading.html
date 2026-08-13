@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Penilaian · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="grading" data-role="trainer">
+
+<header data-shell></header>
+
+<main class="page">
+  <div class="wrap stack-l">
+
+    <div class="between">
+      <div class="stack">
+        <h1 class="h1">Antrean penilaian</h1>
+        <p class="lead">14 jawaban esai menunggu koreksi. Tiga sudah melewati SLA 2 hari.</p>
+      </div>
+      <button class="btn btn-outline" data-toast="Ekspor CSV dibuat">Ekspor antrean</button>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat"><span class="stat-num">14</span><span class="stat-label">Menunggu</span></div>
+      <div class="stat"><span class="stat-num" style="color:var(--danger)">3</span><span class="stat-label">Lewat SLA</span></div>
+      <div class="stat"><span class="stat-num">42</span><span class="stat-label">Dinilai minggu ini</span></div>
+      <div class="stat"><span class="stat-num">1,4h</span><span class="stat-label">Rata-rata waktu koreksi</span></div>
+    </div>
+
+    <div class="split-l">
+      <!-- queue -->
+      <aside class="stack-m sticky-side">
+        <div class="row-w" data-chip-group="single">
+          <button class="chip" data-chip aria-pressed="true">Semua</button>
+          <button class="chip" data-chip aria-pressed="false">Lewat SLA</button>
+        </div>
+        <div class="stack">
+          <button class="card card-pad stack" style="text-align:left;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-ring)">
+            <div class="between"><strong class="body-sm">Siti Wulandari</strong><span class="badge badge-danger">3 hari</span></div>
+            <span class="tiny">Kode Etik · Ujian Akhir · soal 3</span>
+          </button>
+          <button class="card card-pad stack" style="text-align:left">
+            <div class="between"><strong class="body-sm">Ahmad Hidayat</strong><span class="badge badge-danger">3 hari</span></div>
+            <span class="tiny">Kode Etik · Ujian Akhir · soal 3</span>
+          </button>
+          <button class="card card-pad stack" style="text-align:left">
+            <div class="between"><strong class="body-sm">Dewi Puspita</strong><span class="badge badge-warn">2 hari</span></div>
+            <span class="tiny">APU-PPT · Ujian Akhir · soal 12</span>
+          </button>
+          <button class="card card-pad stack" style="text-align:left">
+            <div class="between"><strong class="body-sm">Rizky Pratama</strong><span class="badge">1 hari</span></div>
+            <span class="tiny">Risiko Operasional · Kuis 2 · soal 5</span>
+          </button>
+          <button class="card card-pad stack" style="text-align:left">
+            <div class="between"><strong class="body-sm">Nurul Aini</strong><span class="badge">1 hari</span></div>
+            <span class="tiny">Kode Etik · Ujian Akhir · soal 3</span>
+          </button>
+        </div>
+        <p class="tiny" style="text-align:center">+ 9 lainnya</p>
+      </aside>
+
+      <!-- grading pane -->
+      <div class="stack-l">
+        <div class="card">
+          <div class="card-pad" style="border-bottom:1px solid var(--border)">
+            <div class="between">
+              <div class="row" style="gap:.75rem">
+                <span class="avatar">SW</span>
+                <div class="stack" style="gap:.05rem">
+                  <strong class="body-sm">Siti Wulandari</strong>
+                  <span class="tiny">NIP 10384756 · Kepatuhan · dikumpulkan 8 Agu 2026, 14:22</span>
+                </div>
+              </div>
+              <span class="badge badge-danger">Lewat SLA 1 hari</span>
+            </div>
+          </div>
+
+          <div class="card-pad-lg stack-l">
+            <div class="stack-m">
+              <span class="eyebrow">Soal 3 · Esai · maksimum 5 poin</span>
+              <p class="body-sm" style="font-weight:550;line-height:1.55">Jelaskan langkah yang harus Anda ambil bila menemukan atasan langsung melakukan pelanggaran kode etik, dan sebutkan saluran pelaporan yang tersedia.</p>
+            </div>
+
+            <div class="card card-quiet card-pad">
+              <span class="eyebrow">Jawaban peserta</span>
+              <div class="stack" style="margin-top:.6rem">
+                <p class="body-sm">Langkah pertama adalah mendokumentasikan temuan secara objektif — mencatat tanggal, pihak yang terlibat, dan bukti pendukung — tanpa melakukan konfrontasi langsung yang berisiko menghilangkan bukti.</p>
+                <p class="body-sm">Karena pelaku adalah atasan langsung, jalur hierarki biasa tidak dapat digunakan. Pelaporan dilakukan melalui kanal whistleblowing yang dikelola pihak independen, yang di institusi kami tersedia dalam bentuk hotline dan portal daring dengan opsi anonim.</p>
+                <p class="body-sm">Pelapor dilindungi kebijakan anti-retaliasi. Identitas pelapor hanya diketahui oleh unit penerima laporan dan tidak dibagikan kepada terlapor.</p>
+              </div>
+              <p class="tiny" style="margin-top:.75rem">168 kata · waktu pengerjaan 11 menit</p>
+            </div>
+
+            <!-- rubric -->
+            <div class="stack-m">
+              <div class="between"><span class="eyebrow">Rubrik penilaian</span><span class="tiny">Total maksimum 5 poin</span></div>
+              <div class="stack">
+                <div class="drag-row" style="padding:.85rem">
+                  <div class="spacer stack" style="gap:.1rem">
+                    <strong class="body-sm">Dokumentasi objektif tanpa konfrontasi</strong>
+                    <span class="tiny">2 poin</span>
+                  </div>
+                  <div class="row" style="gap:.3rem">
+                    <button class="chip" style="padding:.25rem .6rem">0</button>
+                    <button class="chip" style="padding:.25rem .6rem">1</button>
+                    <button class="chip" aria-pressed="true" style="padding:.25rem .6rem">2</button>
+                  </div>
+                </div>
+                <div class="drag-row" style="padding:.85rem">
+                  <div class="spacer stack" style="gap:.1rem">
+                    <strong class="body-sm">Menyebut kanal whistleblowing independen</strong>
+                    <span class="tiny">2 poin</span>
+                  </div>
+                  <div class="row" style="gap:.3rem">
+                    <button class="chip" style="padding:.25rem .6rem">0</button>
+                    <button class="chip" style="padding:.25rem .6rem">1</button>
+                    <button class="chip" aria-pressed="true" style="padding:.25rem .6rem">2</button>
+                  </div>
+                </div>
+                <div class="drag-row" style="padding:.85rem">
+                  <div class="spacer stack" style="gap:.1rem">
+                    <strong class="body-sm">Menyebut perlindungan pelapor / anti-retaliasi</strong>
+                    <span class="tiny">1 poin</span>
+                  </div>
+                  <div class="row" style="gap:.3rem">
+                    <button class="chip" style="padding:.25rem .6rem">0</button>
+                    <button class="chip" aria-pressed="true" style="padding:.25rem .6rem">1</button>
+                  </div>
+                </div>
+              </div>
+              <div class="between card card-quiet card-pad">
+                <strong class="body-sm">Skor esai</strong>
+                <strong style="font-size:1.3rem">5 / 5</strong>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Umpan balik untuk peserta</label>
+              <textarea class="textarea" placeholder="Tulis umpan balik…">Jawaban lengkap dan terstruktur. Anda menangkap poin penting bahwa jalur hierarki tidak dapat dipakai ketika pelaku adalah atasan langsung. Akan lebih kuat jika menyebut tenggat pelaporan internal.</textarea>
+              <span class="hint">Umpan balik ini terlihat oleh peserta bersama skor akhirnya.</span>
+            </div>
+
+            <div class="notice notice-info">
+              <span>Skor total peserta akan menjadi <strong>86</strong> setelah esai ini dinilai. Nilai lulus 75 — peserta <strong>lulus</strong> dan sertifikat akan terbit otomatis.</span>
+            </div>
+
+            <div class="row-w" style="justify-content:space-between;padding-top:1rem;border-top:1px solid var(--border)">
+              <button class="btn btn-ghost" data-toast="Dilewati — kembali ke antrean">Lewati</button>
+              <div class="row">
+                <button class="btn btn-outline" data-toast="Disimpan sebagai draf">Simpan draf</button>
+                <button class="btn btn-primary" data-toast="Nilai dikirim — peserta diberi tahu">Kirim nilai & lanjut</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

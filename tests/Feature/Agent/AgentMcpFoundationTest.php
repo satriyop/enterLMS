@@ -2,14 +2,14 @@
 
 use App\Domain\Agent\Abilities\AgentAbility;
 use App\Domain\Agent\Services\AgentTokenService;
-use App\Mcp\Servers\EnteraksiAgentServer;
+use App\Mcp\Servers\EnterLmsAgentServer;
 use App\Mcp\Tools\Agent\AgentPingTool;
 use App\Models\AgentActionLog;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 it('rejects unauthenticated mcp http requests', function () {
-    $response = $this->postJson('/mcp/enteraksi', [
+    $response = $this->postJson('/mcp/enterlms', [
         'jsonrpc' => '2.0',
         'id' => 1,
         'method' => 'tools/list',
@@ -24,7 +24,7 @@ it('allows authenticated agent token to list tools over http', function () {
     $token = app(AgentTokenService::class)->create($user, 'test-agent', [AgentAbility::PING]);
 
     $response = $this->withToken($token->plainTextToken)
-        ->postJson('/mcp/enteraksi', [
+        ->postJson('/mcp/enterlms', [
             'jsonrpc' => '2.0',
             'id' => 1,
             'method' => 'tools/list',
@@ -44,11 +44,11 @@ it('returns identity from agent-ping with required ability', function () {
 
     Sanctum::actingAs($user, [AgentAbility::PING]);
 
-    EnteraksiAgentServer::tool(AgentPingTool::class)
+    EnterLmsAgentServer::tool(AgentPingTool::class)
         ->assertOk()
         ->assertStructuredContent(function ($json) use ($user) {
             $json->where('ok', true)
-                ->where('server', 'enteraksi-agent')
+                ->where('server', 'enterlms-agent')
                 ->where('acting_as.id', $user->id)
                 ->where('acting_as.email', 'agent-learner@example.com')
                 ->etc();
@@ -63,7 +63,7 @@ it('denies agent-ping without ability and audits denial', function () {
 
     Sanctum::actingAs($user, [AgentAbility::CATALOG_READ]);
 
-    EnteraksiAgentServer::tool(AgentPingTool::class)
+    EnterLmsAgentServer::tool(AgentPingTool::class)
         ->assertSee("ability 'agent:ping'");
 
     expect(AgentActionLog::query()->where('tool', 'agent-ping')->where('status', AgentActionLog::STATUS_DENIED)->exists())

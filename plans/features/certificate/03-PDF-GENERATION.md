@@ -454,7 +454,7 @@ class CertificateGenerator implements CertificateGeneratorContract
 
             <!-- Header -->
             <div class="header">
-                <div class="header-title">Enteraksi Learning Management System</div>
+                <div class="header-title">EnterLMS Learning Management System</div>
                 <div class="main-title">SERTIFIKAT</div>
                 <div class="subtitle">Penyelesaian Kursus</div>
             </div>
@@ -495,7 +495,7 @@ class CertificateGenerator implements CertificateGeneratorContract
                     <div class="signature-section">
                         <div class="signature-line">
                             <div class="signature-name">Administrator LMS</div>
-                            <div class="signature-title">Enteraksi</div>
+                            <div class="signature-title">EnterLMS</div>
                         </div>
                     </div>
                 </div>

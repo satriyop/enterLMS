@@ -1,4 +1,4 @@
-# Enteraksi LMS
+# EnterLMS
 
 A Learning Management System built for Indonesian banking and financial compliance training.
 
@@ -9,7 +9,7 @@ A Learning Management System built for Indonesian banking and financial complian
 
 ## Overview
 
-Enteraksi is an enterprise LMS designed for:
+EnterLMS is an enterprise LMS designed for:
 - **Banking/Financial Compliance Training** - OJK regulation compliance, AML, cyber security
 - **Indonesian Context** - Bahasa Indonesia UI, local date formats, Indonesian content
 - **Industry Standards** - SCORM, xAPI, LTI compatible architecture
@@ -28,7 +28,7 @@ Enteraksi is an enterprise LMS designed for:
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd enteraksi
+cd enterlms
 
 # Install PHP dependencies
 composer install
@@ -71,10 +71,10 @@ After seeding (`php artisan migrate:fresh --seed`), password for all demo accoun
 
 | Role | Email |
 |------|-------|
-| Learner | learner@enteraksi.test |
-| Content Manager | content@enteraksi.test |
-| Trainer | trainer@enteraksi.test |
-| LMS Admin | admin@enteraksi.test |
+| Learner | learner@enterlms.test |
+| Content Manager | content@enterlms.test |
+| Trainer | trainer@enterlms.test |
+| LMS Admin | admin@enterlms.test |
 
 Free orientation course: **Orientasi Kepatuhan Perbankan (Demo Gratis)**.
 
@@ -116,7 +116,7 @@ Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 ## Project Structure
 
 ```
-enteraksi/
+enterlms/
 ├── app/                    # Laravel application code
 │   ├── Http/Controllers/   # Request handlers
 │   ├── Models/             # Eloquent models

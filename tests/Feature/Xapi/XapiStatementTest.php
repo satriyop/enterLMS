@@ -12,7 +12,7 @@ it('stores an xAPI statement via API', function () {
         ->postJson(route('api.xapi.statements.store'), [
             'verb_id' => 'http://adlnet.gov/expapi/verbs/completed',
             'verb_display' => 'completed',
-            'object_id' => 'http://enteraksi.test/activities/lesson/1',
+            'object_id' => 'http://enterlms.test/activities/lesson/1',
             'object_name' => 'Pengenalan AML',
             'actor_id' => $user->id,
             'result_completion' => true,
@@ -22,11 +22,11 @@ it('stores an xAPI statement via API', function () {
     $response->assertCreated()
         ->assertJsonPath('data.verb.id', 'http://adlnet.gov/expapi/verbs/completed')
         ->assertJsonPath('data.verb.display.en-US', 'completed')
-        ->assertJsonPath('data.object.id', 'http://enteraksi.test/activities/lesson/1');
+        ->assertJsonPath('data.object.id', 'http://enterlms.test/activities/lesson/1');
 
     $this->assertDatabaseHas('xapi_statements', [
         'verb_id' => 'http://adlnet.gov/expapi/verbs/completed',
-        'object_id' => 'http://enteraksi.test/activities/lesson/1',
+        'object_id' => 'http://enterlms.test/activities/lesson/1',
         'actor_id' => $user->id,
         'source' => 'native',
     ]);
@@ -36,14 +36,14 @@ it('auto-resolves actor info from user ID', function () {
     $user = User::factory()->create([
         'role' => 'learner',
         'name' => 'Budi Santoso',
-        'email' => 'budi@enteraksi.test',
+        'email' => 'budi@enterlms.test',
     ]);
 
     $this->actingAs($user)
         ->postJson(route('api.xapi.statements.store'), [
             'verb_id' => 'http://adlnet.gov/expapi/verbs/launched',
             'verb_display' => 'launched',
-            'object_id' => 'http://enteraksi.test/activities/course/1',
+            'object_id' => 'http://enterlms.test/activities/course/1',
             'actor_id' => $user->id,
         ])->assertCreated();
 
@@ -51,7 +51,7 @@ it('auto-resolves actor info from user ID', function () {
 
     expect($statement)
         ->actor_name->toBe('Budi Santoso')
-        ->actor_mbox->toBe('mailto:budi@enteraksi.test');
+        ->actor_mbox->toBe('mailto:budi@enterlms.test');
 });
 
 it('stores a statement with score results', function () {
@@ -61,7 +61,7 @@ it('stores a statement with score results', function () {
         ->postJson(route('api.xapi.statements.store'), [
             'verb_id' => 'http://adlnet.gov/expapi/verbs/scored',
             'verb_display' => 'scored',
-            'object_id' => 'http://enteraksi.test/activities/assessment/5',
+            'object_id' => 'http://enterlms.test/activities/assessment/5',
             'object_name' => 'Quiz Keamanan Siber',
             'actor_id' => $user->id,
             'result_score_raw' => 85.0,
@@ -84,7 +84,7 @@ it('generates unique statement IDs', function () {
     $payload = [
         'verb_id' => 'http://adlnet.gov/expapi/verbs/experienced',
         'verb_display' => 'experienced',
-        'object_id' => 'http://enteraksi.test/activities/lesson/1',
+        'object_id' => 'http://enterlms.test/activities/lesson/1',
     ];
 
     $this->actingAs($user)
@@ -103,7 +103,7 @@ it('rejects unauthenticated requests', function () {
     $this->postJson(route('api.xapi.statements.store'), [
         'verb_id' => 'http://adlnet.gov/expapi/verbs/completed',
         'verb_display' => 'completed',
-        'object_id' => 'http://enteraksi.test/activities/lesson/1',
+        'object_id' => 'http://enterlms.test/activities/lesson/1',
     ])->assertUnauthorized();
 });
 
@@ -123,7 +123,7 @@ it('rejects invalid verb IRI', function () {
         ->postJson(route('api.xapi.statements.store'), [
             'verb_id' => 'not-a-valid-url',
             'verb_display' => 'completed',
-            'object_id' => 'http://enteraksi.test/activities/lesson/1',
+            'object_id' => 'http://enterlms.test/activities/lesson/1',
         ])->assertUnprocessable()
         ->assertJsonValidationErrors('verb_id');
 });
@@ -135,7 +135,7 @@ it('rejects invalid source value', function () {
         ->postJson(route('api.xapi.statements.store'), [
             'verb_id' => 'http://adlnet.gov/expapi/verbs/completed',
             'verb_display' => 'completed',
-            'object_id' => 'http://enteraksi.test/activities/lesson/1',
+            'object_id' => 'http://enterlms.test/activities/lesson/1',
             'source' => 'invalid_source',
         ])->assertUnprocessable()
         ->assertJsonValidationErrors('source');

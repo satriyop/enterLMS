@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Administrasi · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="admin" data-role="lms_admin">
+
+<header data-shell></header>
+
+<main class="page">
+  <div class="wrap stack-l">
+
+    <div class="between">
+      <div class="stack">
+        <h1 class="h1">Administrasi</h1>
+        <p class="lead">Pengguna, taksonomi, dan arsip sistem.</p>
+      </div>
+      <a class="btn btn-outline" href="compliance.html">Laporan kepatuhan</a>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat"><span class="stat-num">12.480</span><span class="stat-label">Pengguna aktif</span></div>
+      <div class="stat"><span class="stat-num">42</span><span class="stat-label">Kursus terbit</span></div>
+      <div class="stat"><span class="stat-num">96%</span><span class="stat-label">Kepatuhan wajib</span></div>
+      <div class="stat"><span class="stat-num">8</span><span class="stat-label">Item di arsip terhapus</span></div>
+    </div>
+
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab" data-tab="users" aria-selected="true">Pengguna</button>
+        <button class="tab" data-tab="cats" aria-selected="false">Kategori</button>
+        <button class="tab" data-tab="tags" aria-selected="false">Tag</button>
+        <button class="tab" data-tab="trash" aria-selected="false">Arsip terhapus</button>
+      </div>
+
+      <!-- USERS -->
+      <div class="panel" data-panel="users" style="padding-top:1.75rem">
+        <div class="stack-m">
+          <div class="row-w" style="gap:.75rem">
+            <div class="search" style="flex:1;min-width:240px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input class="input" placeholder="Cari nama, NIP, atau email…" />
+            </div>
+            <select class="select" style="width:auto"><option>Semua peran</option><option>Learner</option><option>Content Manager</option><option>Trainer</option><option>Teaching Assistant</option><option>Compliance Officer</option><option>Auditor</option><option>LMS Admin</option></select>
+            <select class="select" style="width:auto"><option>Semua unit</option><option>Kepatuhan</option><option>Manajemen Risiko</option><option>Layanan Nasabah</option></select>
+            <button class="btn btn-primary" data-modal-open="newuser">Tambah pengguna</button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="t">
+              <thead><tr><th style="width:34px"><input type="checkbox" /></th><th>Pengguna</th><th>Peran</th><th>Unit kerja</th><th>Kepatuhan</th><th>Terakhir aktif</th><th class="t-right">Aksi</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td><div class="row" style="gap:.6rem"><span class="avatar sm">BS</span><div class="stack" style="gap:0"><strong>Budi Santoso</strong><span class="tiny">budi.santoso@banknusantara.co.id</span></div></div></td>
+                  <td><span class="badge">Learner</span></td>
+                  <td class="tiny">Layanan Nasabah</td>
+                  <td><div class="row" style="gap:.4rem"><span class="bar" style="width:52px"><span style="width:78%"></span></span><span class="tiny num">78%</span></div></td>
+                  <td class="tiny">Hari ini</td>
+                  <td class="t-right"><a class="link-arrow" href="#">Kelola</a></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td><div class="row" style="gap:.6rem"><span class="avatar sm">RK</span><div class="stack" style="gap:0"><strong>Dr. Ratna Kusumawardhani</strong><span class="tiny">ratna.k@banknusantara.co.id</span></div></div></td>
+                  <td><span class="badge badge-primary">Content Manager</span></td>
+                  <td class="tiny">Kepatuhan</td>
+                  <td><div class="row" style="gap:.4rem"><span class="bar" style="width:52px"><span style="width:100%"></span></span><span class="tiny num">100%</span></div></td>
+                  <td class="tiny">2 jam lalu</td>
+                  <td class="t-right"><a class="link-arrow" href="#">Kelola</a></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td><div class="row" style="gap:.6rem"><span class="avatar sm">AH</span><div class="stack" style="gap:0"><strong>Ahmad Hidayat</strong><span class="tiny">ahmad.h@banknusantara.co.id</span></div></div></td>
+                  <td><span class="badge badge-info">Trainer</span></td>
+                  <td class="tiny">Manajemen Risiko</td>
+                  <td><div class="row" style="gap:.4rem"><span class="bar" style="width:52px"><span style="width:89%"></span></span><span class="tiny num">89%</span></div></td>
+                  <td class="tiny">Kemarin</td>
+                  <td class="t-right"><a class="link-arrow" href="#">Kelola</a></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td><div class="row" style="gap:.6rem"><span class="avatar sm">SW</span><div class="stack" style="gap:0"><strong>Siti Wulandari</strong><span class="tiny">siti.w@banknusantara.co.id</span></div></div></td>
+                  <td><span class="badge badge-warn">Compliance Officer</span></td>
+                  <td class="tiny">Kepatuhan</td>
+                  <td><div class="row" style="gap:.4rem"><span class="bar" style="width:52px"><span style="width:94%"></span></span><span class="tiny num">94%</span></div></td>
+                  <td class="tiny">Hari ini</td>
+                  <td class="t-right"><a class="link-arrow" href="#">Kelola</a></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td><div class="row" style="gap:.6rem"><span class="avatar sm">HP</span><div class="stack" style="gap:0"><strong>Hendra Prasetyo</strong><span class="tiny">hendra.p@auditor-eksternal.co.id</span></div></div></td>
+                  <td><span class="badge badge-outline">Auditor</span></td>
+                  <td class="tiny">Eksternal</td>
+                  <td class="tiny">—</td>
+                  <td class="tiny">5 hari lalu</td>
+                  <td class="t-right"><a class="link-arrow" href="#">Kelola</a></td>
+                </tr>
+                <tr style="opacity:.6">
+                  <td><input type="checkbox" /></td>
+                  <td><div class="row" style="gap:.6rem"><span class="avatar sm">TM</span><div class="stack" style="gap:0"><strong>Taufik Maulana</strong><span class="tiny">Nonaktif sejak 1 Jul 2026</span></div></div></td>
+                  <td><span class="badge">Learner</span></td>
+                  <td class="tiny">Tresuri</td>
+                  <td class="tiny">—</td>
+                  <td class="tiny">1 Jul 2026</td>
+                  <td class="t-right"><button class="link-arrow" data-toast="Akun diaktifkan kembali">Aktifkan</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <span class="tiny">Menampilkan 6 dari 12.480 pengguna</span>
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="panel" data-panel="cats" hidden style="padding-top:1.75rem">
+        <div class="split">
+          <div class="stack">
+            <div class="between" style="margin-bottom:.5rem"><span class="tiny">8 kategori</span><button class="btn btn-outline btn-sm" data-toast="Kategori ditambahkan">+ Kategori</button></div>
+            <div class="drag-row"><svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg><span class="spacer"><strong>Anti Pencucian Uang</strong></span><span class="tiny">9 kursus</span><button class="tiny" style="color:var(--primary)">Ubah</button></div>
+            <div class="drag-row"><svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg><span class="spacer"><strong>Keamanan Siber</strong></span><span class="tiny">7 kursus</span><button class="tiny" style="color:var(--primary)">Ubah</button></div>
+            <div class="drag-row"><svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg><span class="spacer"><strong>Tata Kelola & Risiko</strong></span><span class="tiny">6 kursus</span><button class="tiny" style="color:var(--primary)">Ubah</button></div>
+            <div class="drag-row"><svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg><span class="spacer"><strong>Pelaporan OJK</strong></span><span class="tiny">5 kursus</span><button class="tiny" style="color:var(--primary)">Ubah</button></div>
+            <div class="drag-row"><svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg><span class="spacer"><strong>Prudensial</strong></span><span class="tiny">5 kursus</span><button class="tiny" style="color:var(--primary)">Ubah</button></div>
+            <div class="drag-row"><svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg><span class="spacer"><strong>Transformasi Digital</strong></span><span class="tiny">4 kursus</span><button class="tiny" style="color:var(--primary)">Ubah</button></div>
+          </div>
+          <aside class="card card-pad stack-m">
+            <span class="eyebrow">Tentang kategori</span>
+            <p class="tiny">Urutan di sini menentukan urutan filter pada katalog. Tarik untuk mengubah urutan. Kategori yang masih memiliki kursus tidak dapat dihapus.</p>
+          </aside>
+        </div>
+      </div>
+
+      <!-- TAGS -->
+      <div class="panel" data-panel="tags" hidden style="padding-top:1.75rem">
+        <div class="stack-m">
+          <div class="between"><span class="tiny">34 tag</span><button class="btn btn-outline btn-sm" data-toast="Tag ditambahkan">+ Tag</button></div>
+          <div class="card card-pad">
+            <div class="row-w" style="gap:.5rem">
+              <span class="badge badge-primary">APU-PPT <span style="opacity:.6">312</span></span>
+              <span class="badge badge-primary">phishing <span style="opacity:.6">184</span></span>
+              <span class="badge badge-primary">LCR <span style="opacity:.6">96</span></span>
+              <span class="badge badge-primary">whistleblowing <span style="opacity:.6">88</span></span>
+              <span class="badge badge-primary">gratifikasi <span style="opacity:.6">76</span></span>
+              <span class="badge badge-primary">PEP <span style="opacity:.6">72</span></span>
+              <span class="badge badge-primary">LTKM <span style="opacity:.6">64</span></span>
+              <span class="badge badge-primary">three lines of defence <span style="opacity:.6">58</span></span>
+              <span class="badge badge-primary">CAR <span style="opacity:.6">52</span></span>
+              <span class="badge badge-primary">NPL <span style="opacity:.6">44</span></span>
+              <span class="badge badge-outline">ransomware <span style="opacity:.6">2</span></span>
+              <span class="badge badge-outline">deepfake <span style="opacity:.6">1</span></span>
+            </div>
+          </div>
+          <div class="notice notice-info"><span>Dua tag digunakan kurang dari 3 kali. Pertimbangkan menggabungkannya agar filter katalog tetap ringkas.</span></div>
+        </div>
+      </div>
+
+      <!-- TRASH -->
+      <div class="panel" data-panel="trash" hidden style="padding-top:1.75rem">
+        <div class="stack-m">
+          <div class="notice notice-warn"><span>Item di arsip terhapus dimusnahkan permanen setelah 30 hari. Jejak audit tetap tersimpan sesuai kebijakan retensi.</span></div>
+          <div class="table-wrap">
+            <table class="t">
+              <thead><tr><th>Item</th><th>Tipe</th><th>Dihapus oleh</th><th>Sisa waktu</th><th class="t-right">Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Produk Bancassurance (versi 2024)</strong></td><td><span class="badge">Kursus</span></td><td class="tiny">Ratna K.</td><td><span class="badge badge-warn">4 hari</span></td><td class="t-right"><button class="link-arrow" data-toast="Dipulihkan">Pulihkan</button></td></tr>
+                <tr><td><strong>Kuis Orientasi (lama)</strong></td><td><span class="badge">Asesmen</span></td><td class="tiny">Ahmad H.</td><td><span class="badge">18 hari</span></td><td class="t-right"><button class="link-arrow" data-toast="Dipulihkan">Pulihkan</button></td></tr>
+                <tr><td><strong>Jalur Magang 2025</strong></td><td><span class="badge">Jalur</span></td><td class="tiny">Admin sistem</td><td><span class="badge">26 hari</span></td><td class="t-right"><button class="link-arrow" data-toast="Dipulihkan">Pulihkan</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="backdrop" id="newuser">
+  <div class="modal">
+    <div class="card-pad-lg stack-m">
+      <h3 class="h2">Tambah pengguna</h3>
+      <div class="field"><label class="label">Nama lengkap</label><input class="input" /></div>
+      <div class="field"><label class="label">Email korporat</label><input class="input" type="email" /></div>
+      <div class="grid-2" style="gap:.9rem">
+        <div class="field"><label class="label">Peran</label><select class="select"><option>Learner</option><option>Content Manager</option><option>Trainer</option><option>Teaching Assistant</option><option>Compliance Officer</option><option>Auditor</option><option>LMS Admin</option></select></div>
+        <div class="field"><label class="label">Unit kerja</label><select class="select"><option>Layanan Nasabah</option><option>Kepatuhan</option><option>Manajemen Risiko</option></select></div>
+      </div>
+      <label class="check"><input type="checkbox" checked /> <span class="body-sm">Kirim undangan aktivasi ke email</span></label>
+      <label class="check"><input type="checkbox" checked /> <span class="body-sm">Daftarkan otomatis ke modul wajib sesuai unit kerja</span></label>
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn btn-ghost" data-modal-close>Batal</button>
+        <button class="btn btn-primary" data-modal-close data-toast="Pengguna dibuat dan undangan terkirim">Buat pengguna</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

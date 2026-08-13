@@ -627,5 +627,5 @@ it('transforms course for dashboard', function () {
 ## Related Documentation
 
 - `plans/fixing/ROUND7_PERFORMANCE_ARCHITECTURE.md` - Previous policy fix (enroll only)
-- `.claude/skills/enteraksi-architecture/SKILL.md` - Policy Context DTO pattern
-- `.claude/skills/enteraksi-strategies/SKILL.md` - Strategy pattern documentation
+- `.claude/skills/enterlms-architecture/SKILL.md` - Policy Context DTO pattern
+- `.claude/skills/enterlms-strategies/SKILL.md` - Strategy pattern documentation

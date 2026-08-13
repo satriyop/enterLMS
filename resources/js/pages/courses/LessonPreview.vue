@@ -35,7 +35,9 @@ interface PreviewLesson {
     title: string;
     description: string | null;
     content_type: ContentType;
-    rich_content: { content?: string } | null;
+    rich_content: Record<string, unknown> | null;
+    /** TipTap JSON rendered to HTML on the server — required for text previews */
+    rich_content_html: string | null;
     youtube_url: string | null;
     youtube_video_id: string | null;
     estimated_duration_minutes: number | null;
@@ -215,7 +217,7 @@ const lessonTypeLabel = (type: string) => {
                     <!-- Content Area -->
                     <PreviewContentCard
                         :content-type="lesson.content_type"
-                        :rich-content="lesson.rich_content"
+                        :rich-content-html="lesson.rich_content_html"
                         :youtube-video-id="lesson.youtube_video_id"
                         :media="lesson.media"
                     />

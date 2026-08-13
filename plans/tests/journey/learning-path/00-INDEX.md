@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document serves as the master index for comprehensive end-to-end journey tests covering the **Learning Path** feature in Enteraksi LMS. These tests are designed from the **learner's perspective**, simulating real-world user stories and ensuring the application behaves correctly across all scenarios.
+This document serves as the master index for comprehensive end-to-end journey tests covering the **Learning Path** feature in EnterLMS. These tests are designed from the **learner's perspective**, simulating real-world user stories and ensuring the application behaves correctly across all scenarios.
 
 ---
 

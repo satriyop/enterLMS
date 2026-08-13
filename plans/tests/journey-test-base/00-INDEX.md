@@ -1,8 +1,8 @@
-# Enteraksi LMS - Comprehensive Integration Test Plan
+# EnterLMS - Comprehensive Integration Test Plan
 
 ## Executive Summary
 
-This test plan provides comprehensive end-to-end integration test coverage for the Enteraksi Learning Management System. The plan is organized by user role and workflow, ensuring complete coverage of all application flows.
+This test plan provides comprehensive end-to-end integration test coverage for the EnterLMS Learning Management System. The plan is organized by user role and workflow, ensuring complete coverage of all application flows.
 
 ---
 

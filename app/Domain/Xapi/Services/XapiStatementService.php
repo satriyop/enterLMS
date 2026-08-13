@@ -78,7 +78,7 @@ class XapiStatementService
      */
     public function buildActivityId(string $type, int $id): string
     {
-        $baseUrl = config('app.url', 'http://enteraksi.test');
+        $baseUrl = config('app.url', 'http://enterlms.test');
 
         return "{$baseUrl}/activities/{$type}/{$id}";
     }

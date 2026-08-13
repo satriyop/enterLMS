@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide walks you through setting up Enteraksi LMS for local development.
+This guide walks you through setting up EnterLMS for local development.
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ Before starting, ensure you have:
 
 ```bash
 git clone <repository-url>
-cd enteraksi
+cd enterlms
 ```
 
 ## Step 2: Install PHP Dependencies
@@ -62,7 +62,7 @@ Edit `.env` and set your database connection:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=enteraksi
+DB_DATABASE=enterlms
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
@@ -88,8 +88,8 @@ MAIL_HOST=smtp.mailtrap.io
 MAIL_PORT=2525
 MAIL_USERNAME=your_mailtrap_username
 MAIL_PASSWORD=your_mailtrap_password
-MAIL_FROM_ADDRESS=noreply@enteraksi.test
-MAIL_FROM_NAME="Enteraksi LMS"
+MAIL_FROM_ADDRESS=noreply@enterlms.test
+MAIL_FROM_NAME="EnterLMS"
 ```
 
 > **Tip**: Use [Mailtrap](https://mailtrap.io) for development email testing.

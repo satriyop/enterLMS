@@ -1,6 +1,6 @@
 # Glossary
 
-Domain terminology and technical terms used in Enteraksi LMS.
+Domain terminology and technical terms used in EnterLMS.
 
 ---
 

@@ -204,7 +204,7 @@ return [
         'auto_record' => env('LMS_XAPI_AUTO_RECORD', true),
 
         // Base IRI for activity identifiers
-        'activity_base_iri' => env('LMS_XAPI_ACTIVITY_IRI', env('APP_URL', 'http://enteraksi.test')),
+        'activity_base_iri' => env('LMS_XAPI_ACTIVITY_IRI', env('APP_URL', 'http://enterlms.test')),
     ],
 
 ];

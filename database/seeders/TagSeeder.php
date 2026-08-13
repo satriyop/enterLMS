@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 /**
- * Banking / compliance tags for Enteraksi LMS.
+ * Banking / compliance tags for EnterLMS.
  */
 class TagSeeder extends Seeder
 {

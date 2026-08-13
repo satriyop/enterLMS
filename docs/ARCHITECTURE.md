@@ -1,6 +1,6 @@
-# Enteraksi LMS - Architecture Documentation
+# EnterLMS - Architecture Documentation
 
-> **Purpose**: This document serves as the primary technical reference for understanding the Enteraksi Learning Management System architecture. It is designed to help developers (human and AI agents) work efficiently, accurately, and with minimal assumptions.
+> **Purpose**: This document serves as the primary technical reference for understanding the EnterLMS Learning Management System architecture. It is designed to help developers (human and AI agents) work efficiently, accurately, and with minimal assumptions.
 
 ---
 
@@ -18,7 +18,7 @@
 
 ## System Overview
 
-**Enteraksi** is a Learning Management System (LMS) built for Indonesian banking/financial compliance training. It follows industry standards (SCORM, xAPI, LTI) and is designed with:
+**EnterLMS** is a Learning Management System (LMS) built for Indonesian banking/financial compliance training. It follows industry standards (SCORM, xAPI, LTI) and is designed with:
 
 - **Mobile-first responsive UI** (Udemy-inspired)
 - **Bahasa Indonesia** as primary language
@@ -79,7 +79,7 @@
 ## Directory Structure
 
 ```
-enteraksi/
+enterlms/
 ├── app/
 │   ├── Actions/Fortify/        # Authentication actions
 │   ├── Domain/                 # Domain-Driven Design layer
@@ -558,11 +558,11 @@ $enrollment = $this->enrollmentService->enroll(new CreateEnrollmentDTO(
 ### Environment Variables (Key)
 
 ```env
-APP_NAME=Enteraksi
+APP_NAME=EnterLMS
 APP_URL=http://localhost
 
 DB_CONNECTION=mysql
-DB_DATABASE=enteraksi
+DB_DATABASE=enterlms
 
 MAIL_MAILER=smtp  # For password reset, email verification
 ```

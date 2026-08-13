@@ -39,22 +39,22 @@ class FreeFlowDemoSeeder extends Seeder
     private array $demoUsers = [
         [
             'name' => 'Budi Santoso',
-            'email' => 'learner@enteraksi.test',
+            'email' => 'learner@enterlms.test',
             'role' => 'learner',
         ],
         [
             'name' => 'Siti Rahayu',
-            'email' => 'content@enteraksi.test',
+            'email' => 'content@enterlms.test',
             'role' => 'content_manager',
         ],
         [
             'name' => 'Andi Wijaya',
-            'email' => 'trainer@enteraksi.test',
+            'email' => 'trainer@enterlms.test',
             'role' => 'trainer',
         ],
         [
             'name' => 'Dewi Lestari',
-            'email' => 'admin@enteraksi.test',
+            'email' => 'admin@enterlms.test',
             'role' => 'lms_admin',
         ],
     ];
@@ -129,10 +129,10 @@ class FreeFlowDemoSeeder extends Seeder
             'user_id' => $contentManager->id,
             'title' => self::FREE_COURSE_TITLE,
             'slug' => Str::slug(self::FREE_COURSE_TITLE).'-demo',
-            'short_description' => 'Kursus onboarding gratis untuk memahami alur belajar Enteraksi: daftar, belajar, selesai, dan dapat sertifikat.',
-            'long_description' => 'Kursus demo gratis ini dirancang agar peserta baru bisa merasakan alur lengkap LMS Enteraksi tanpa pembayaran. Materi mencakup pengenalan kepatuhan perbankan, peran OJK, dan praktik pelaporan dasar.',
+            'short_description' => 'Kursus onboarding gratis untuk memahami alur belajar EnterLMS: daftar, belajar, selesai, dan dapat sertifikat.',
+            'long_description' => 'Kursus demo gratis ini dirancang agar peserta baru bisa merasakan alur lengkap LMS EnterLMS tanpa pembayaran. Materi mencakup pengenalan kepatuhan perbankan, peran OJK, dan praktik pelaporan dasar.',
             'objectives' => [
-                'Memahami alur belajar di Enteraksi LMS',
+                'Memahami alur belajar di EnterLMS',
                 'Mengenal konsep dasar kepatuhan perbankan',
                 'Menyelesaikan kursus gratis hingga memperoleh sertifikat',
             ],
@@ -159,17 +159,17 @@ class FreeFlowDemoSeeder extends Seeder
 
         $sections = [
             [
-                'title' => 'Memulai di Enteraksi',
+                'title' => 'Memulai di EnterLMS',
                 'description' => 'Orientasi platform dan cara menyelesaikan kursus',
                 'lessons' => [
                     [
-                        'title' => 'Selamat Datang di Enteraksi LMS',
+                        'title' => 'Selamat Datang di EnterLMS',
                         'content_type' => 'text',
                         'duration' => 5,
                         'is_free_preview' => true,
                         'rich_content' => $this->richContent(
-                            'Selamat Datang di Enteraksi LMS',
-                            'Enteraksi adalah platform pembelajaran untuk industri perbankan. Selesaikan setiap pelajaran untuk menandai progres Anda, lalu selesaikan kursus untuk memperoleh sertifikat.'
+                            'Selamat Datang di EnterLMS',
+                            'EnterLMS adalah platform pembelajaran untuk industri perbankan. Selesaikan setiap pelajaran untuk menandai progres Anda, lalu selesaikan kursus untuk memperoleh sertifikat.'
                         ),
                     ],
                     [
@@ -333,7 +333,7 @@ class FreeFlowDemoSeeder extends Seeder
             ]
         );
         $this->command->info('Suggested manual flow:');
-        $this->command->line('  1. Login as learner@enteraksi.test');
+        $this->command->line('  1. Login as learner@enterlms.test');
         $this->command->line('  2. Buka kursus demo → Enroll');
         $this->command->line('  3. Selesaikan semua pelajaran');
         $this->command->line('  4. Buka /certificates untuk unduh sertifikat');

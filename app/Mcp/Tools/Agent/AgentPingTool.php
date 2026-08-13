@@ -37,7 +37,7 @@ class AgentPingTool extends Tool
             return Response::structured([
                 'ok' => true,
                 'app' => config('app.name'),
-                'server' => 'enteraksi-agent',
+                'server' => 'enterlms-agent',
                 'version' => '1.0.0',
                 'acting_as' => [
                     'id' => $user->id,

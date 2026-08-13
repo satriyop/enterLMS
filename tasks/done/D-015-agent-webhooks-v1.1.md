@@ -13,7 +13,7 @@ depends_on: [D-012, D-013]
 
 ## In plain language
 
-Enteraksi **memberi tahu** gateway agent (Hermes/OpenClaw) lewat HTTP POST saat kejadian penting, tanpa agent harus terus bertanya.
+EnterLMS **memberi tahu** gateway agent (Hermes/OpenClaw) lewat HTTP POST saat kejadian penting, tanpa agent harus terus bertanya.
 
 ## Events
 
@@ -25,15 +25,15 @@ Enteraksi **memberi tahu** gateway agent (Hermes/OpenClaw) lewat HTTP POST saat 
 
 ## Security
 
-HMAC-SHA256 over raw JSON body. Header: `X-Enteraksi-Signature: sha256=<hex>`  
-Also: `X-Enteraksi-Event`, `X-Enteraksi-Delivery`.
+HMAC-SHA256 over raw JSON body. Header: `X-EnterLMS-Signature: sha256=<hex>`  
+Also: `X-EnterLMS-Event`, `X-EnterLMS-Delivery`.
 
 ## CLI
 
 ```bash
 php artisan agent:webhook register \
   --name=openclaw \
-  --url=https://your-gateway.example/hooks/enteraksi \
+  --url=https://your-gateway.example/hooks/enterlms \
   --secret=your-shared-secret \
   --events=enrollment.completed,certificate.issued
 

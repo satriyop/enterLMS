@@ -326,7 +326,7 @@ defineProps<{
                         <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                 <Award class="h-4 w-4" />
-                                <span>Diverifikasi oleh Enteraksi LMS</span>
+                                <span>Diverifikasi oleh EnterLMS</span>
                             </div>
                         </div>
                     </CardContent>

@@ -676,10 +676,10 @@ export const API_ENDPOINTS = {
 
 // Local storage keys
 export const STORAGE_KEYS = {
-    theme: 'enteraksi-theme',
-    sidebarCollapsed: 'enteraksi-sidebar-collapsed',
-    recentCourses: 'enteraksi-recent-courses',
-    videoProgress: 'enteraksi-video-progress',
+    theme: 'enterlms-theme',
+    sidebarCollapsed: 'enterlms-sidebar-collapsed',
+    recentCourses: 'enterlms-recent-courses',
+    videoProgress: 'enterlms-video-progress',
 } as const;
 
 // Debounce delays (in milliseconds)

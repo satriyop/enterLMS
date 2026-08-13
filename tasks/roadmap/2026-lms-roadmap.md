@@ -1,4 +1,4 @@
-# Enteraksi LMS Roadmap (2026)
+# EnterLMS Roadmap (2026)
 
 > **Sumber status fitur:** `tasks/audit/capability-map.md`  
 > **Item kerja aktif:** `tasks/backlog/`  
@@ -96,7 +96,7 @@ LMS perbankan/kepatuhan (OJK-oriented) untuk:
 | Compliance read tools | missing | B-014 |
 | Outbound webhooks | missing (v1.1) | B-015 |
 
-**Prinsip:** agent di luar; Enteraksi expose capability aman. Jangan reimplement LMS di skill Hermes.
+**Prinsip:** agent di luar; EnterLMS expose capability aman. Jangan reimplement LMS di skill Hermes.
 
 ---
 

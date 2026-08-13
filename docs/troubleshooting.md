@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Common issues and their solutions when working with Enteraksi LMS.
+Common issues and their solutions when working with EnterLMS.
 
 ---
 
@@ -52,7 +52,7 @@ npm run dev
    ```env
    DB_HOST=127.0.0.1
    DB_PORT=3306
-   DB_DATABASE=enteraksi
+   DB_DATABASE=enterlms
    DB_USERNAME=root
    DB_PASSWORD=your_password
    ```

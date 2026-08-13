@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pembelajaran saya · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="my-learning" data-role="learner">
+
+<header data-shell></header>
+
+<main class="page">
+  <div class="wrap stack-l">
+
+    <div class="between">
+      <div class="stack">
+        <h1 class="h1">Pembelajaran saya</h1>
+        <p class="lead">Empat kursus aktif, dua selesai tahun ini.</p>
+      </div>
+      <a class="btn btn-outline" href="browse.html">Tambah kursus</a>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat"><span class="stat-num">4</span><span class="stat-label">Sedang berjalan</span></div>
+      <div class="stat"><span class="stat-num">2</span><span class="stat-label">Selesai</span></div>
+      <div class="stat"><span class="stat-num">18j</span><span class="stat-label">Waktu belajar</span></div>
+      <div class="stat"><span class="stat-num">90</span><span class="stat-label">Rata-rata skor</span></div>
+    </div>
+
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab" data-tab="active" aria-selected="true">Berjalan (4)</button>
+        <button class="tab" data-tab="done" aria-selected="false">Selesai (2)</button>
+        <button class="tab" data-tab="paths" aria-selected="false">Jalur (1)</button>
+        <button class="tab" data-tab="dropped" aria-selected="false">Dibatalkan (1)</button>
+      </div>
+
+      <!-- active -->
+      <div class="panel" data-panel="active" style="padding-top:1.75rem">
+        <div class="stack-m">
+          <article class="card">
+            <div class="card-pad" style="display:grid;grid-template-columns:auto 1fr auto;gap:1.25rem;align-items:center">
+              <div class="ring" data-ring="45"><b>45%</b></div>
+              <div class="stack">
+                <div class="row-w"><span class="badge badge-danger">Wajib</span><span class="tiny">Tenggat 30 Sep 2026</span></div>
+                <h3 class="h3">Tata Kelola Risiko Operasional</h3>
+                <p class="tiny">Berikutnya: <strong>Modul 4 — Identifikasi Risiko Proses</strong> · 11 mnt</p>
+              </div>
+              <a class="btn btn-primary" href="lesson.html">Lanjutkan</a>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-pad" style="display:grid;grid-template-columns:auto 1fr auto;gap:1.25rem;align-items:center">
+              <div class="ring" data-ring="72"><b>72%</b></div>
+              <div class="stack">
+                <div class="row-w"><span class="badge badge-info">Pilihan</span></div>
+                <h3 class="h3">Layanan Perbankan Digital & UX</h3>
+                <p class="tiny">Berikutnya: <strong>Studi Kasus Onboarding Digital</strong> · 14 mnt</p>
+              </div>
+              <a class="btn btn-primary" href="lesson.html">Lanjutkan</a>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-pad" style="display:grid;grid-template-columns:auto 1fr auto;gap:1.25rem;align-items:center">
+              <div class="ring" data-ring="12"><b>12%</b></div>
+              <div class="stack">
+                <div class="row-w"><span class="badge badge-danger">Wajib</span><span class="tiny">Tenggat 31 Okt 2026</span></div>
+                <h3 class="h3">Pelaporan & Transparansi OJK</h3>
+                <p class="tiny">Berikutnya: <strong>Struktur Laporan Berkala</strong> · 9 mnt</p>
+              </div>
+              <a class="btn btn-primary" href="lesson.html">Lanjutkan</a>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-pad" style="display:grid;grid-template-columns:auto 1fr auto;gap:1.25rem;align-items:center">
+              <div class="ring" data-ring="88"><b>88%</b></div>
+              <div class="stack">
+                <div class="row-w"><span class="badge badge-info">Pilihan</span><span class="badge badge-warn">Ujian akhir menunggu</span></div>
+                <h3 class="h3">Kode Etik & Benturan Kepentingan</h3>
+                <p class="tiny">Berikutnya: <strong>Ujian akhir</strong> · 30 mnt · nilai minimum 75</p>
+              </div>
+              <a class="btn btn-primary" href="assessment.html">Mulai ujian</a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- done -->
+      <div class="panel" data-panel="done" hidden style="padding-top:1.75rem">
+        <div class="stack-m">
+          <article class="card">
+            <div class="card-pad" style="display:grid;grid-template-columns:auto 1fr auto;gap:1.25rem;align-items:center">
+              <div class="ring" data-ring="100"><b>✓</b></div>
+              <div class="stack">
+                <div class="row-w"><span class="badge badge-ok">Lulus · skor 88</span></div>
+                <h3 class="h3">Dasar APU-PPT untuk Frontliner</h3>
+                <p class="tiny">Selesai 14 Maret 2026 · sertifikat berlaku sampai 14 Maret 2028</p>
+              </div>
+              <a class="btn btn-outline" href="certificates.html">Sertifikat</a>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-pad" style="display:grid;grid-template-columns:auto 1fr auto;gap:1.25rem;align-items:center">
+              <div class="ring" data-ring="100"><b>✓</b></div>
+              <div class="stack">
+                <div class="row-w"><span class="badge badge-ok">Lulus · skor 92</span></div>
+                <h3 class="h3">Keamanan Informasi & Rekayasa Sosial</h3>
+                <p class="tiny">Selesai 8 Agustus 2026 · sertifikat berlaku sampai 8 Agustus 2028</p>
+              </div>
+              <a class="btn btn-outline" href="certificates.html">Sertifikat</a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- paths -->
+      <div class="panel" data-panel="paths" hidden style="padding-top:1.75rem">
+        <article class="card card-pad stack-m">
+          <div class="between">
+            <div class="stack">
+              <span class="eyebrow">Jalur pembelajaran</span>
+              <h3 class="h3">Spesialis Kepatuhan — Tahap 1</h3>
+            </div>
+            <span class="badge badge-primary">3 / 5 kursus</span>
+          </div>
+          <div class="bar thick"><span data-bar="60" style="width:0"></span></div>
+          <a class="btn btn-outline btn-sm" href="path-progress.html" style="align-self:flex-start">Lihat progres jalur</a>
+        </article>
+      </div>
+
+      <!-- dropped -->
+      <div class="panel" data-panel="dropped" hidden style="padding-top:1.75rem">
+        <div class="empty">
+          <span class="empty-icon">↺</span>
+          <h3 class="h3">Satu kursus dibatalkan</h3>
+          <p class="body-sm muted" style="max-width:44ch">Anda membatalkan <strong>Dasar Analitik Data untuk Perbankan</strong> pada 20 Juni 2026. Progres lama tersimpan jika Anda mendaftar ulang.</p>
+          <button class="btn btn-outline btn-sm" data-toast="Pendaftaran ulang berhasil">Daftar ulang</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

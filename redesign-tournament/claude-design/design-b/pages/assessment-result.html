@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hasil ujian · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="assessment-result" data-role="learner">
+
+<div class="app">
+  <aside data-side></aside>
+  <div class="main">
+    <header data-top></header>
+    <div class="content">
+      <div class="inner stack-l">
+
+        <!-- verdict, unambiguous -->
+        <section class="card card-pad-lg" style="border:2px solid var(--ok);background:var(--ok-soft)">
+          <div class="between">
+            <div class="row" style="gap:1.5rem">
+              <div class="ring lg" data-ring="86" style="--p:86"><b>86</b></div>
+              <div class="stack">
+                <span class="badge badge-ok" style="align-self:flex-start">✓ LULUS</span>
+                <h1 class="h1">Selamat, Anda lulus ujian ini</h1>
+                <p class="body-sm">Skor <strong>86</strong> dari nilai minimum <strong>75</strong> pada Kode Etik & Benturan Kepentingan.</p>
+              </div>
+            </div>
+            <div class="stack" style="min-width:200px">
+              <a class="btn btn-primary btn-lg btn-block" href="certificates.html">Lihat sertifikat</a>
+              <a class="btn btn-outline btn-block" href="my-learning.html">Kembali ke kursus</a>
+            </div>
+          </div>
+        </section>
+
+        <div class="grid-4">
+          <div class="stat-card"><span class="stat-num">12/15</span><span class="stat-label">Jawaban benar</span></div>
+          <div class="stat-card"><span class="stat-num">86</span><span class="stat-label">Skor akhir</span></div>
+          <div class="stat-card"><span class="stat-num">18:42</span><span class="stat-label">Waktu pengerjaan</span></div>
+          <div class="stat-card"><span class="stat-num">1 / 3</span><span class="stat-label">Percobaan terpakai</span></div>
+        </div>
+
+        <div class="notice notice-info">
+          <span class="ic">i</span>
+          <span><strong>Satu soal esai masih menunggu penilaian trainer.</strong> Skor akhir dapat naik hingga 5 poin. Anda akan menerima notifikasi setelah dinilai — biasanya dalam 2 hari kerja.</span>
+        </div>
+
+        <!-- what to do next, always explicit -->
+        <section class="card card-pad-lg" style="border:2px solid var(--primary)">
+          <div class="stack-m">
+            <h2 class="h2">Langkah berikutnya</h2>
+            <ul class="guide">
+              <li><div class="stack" style="gap:.1rem"><strong class="body-sm">Tinjau pembahasan soal yang salah</strong><span class="helper">Tiga soal dijawab keliru. Pembahasannya ada di bawah.</span></div></li>
+              <li><div class="stack" style="gap:.1rem"><strong class="body-sm">Unduh sertifikat Anda</strong><span class="helper">Terbit otomatis setelah esai dinilai.</span></div></li>
+              <li><div class="stack" style="gap:.1rem"><strong class="body-sm">Lanjut ke kursus terakhir pada jalur Anda</strong><span class="helper">Jalur Spesialis Kepatuhan Tahap 1 kini 80% selesai.</span></div></li>
+            </ul>
+            <a class="btn btn-primary" href="path-progress.html" style="align-self:flex-start">Lihat jalur pembelajaran</a>
+          </div>
+        </section>
+
+        <!-- review -->
+        <section>
+          <div class="sec-head">
+            <div class="stack" style="gap:.15rem">
+              <h2 class="h2">Pembahasan jawaban</h2>
+              <p class="helper">Pembahasan ditampilkan karena Anda sudah lulus.</p>
+            </div>
+          </div>
+
+          <div class="stack-m">
+            <article class="card card-pad-lg stack-m">
+              <div class="row"><span class="badge badge-ok">Soal 1 · Benar</span><span class="badge">1 poin</span></div>
+              <p class="body-sm" style="font-weight:600">Seorang relationship officer menerima tawaran perjalanan wisata dari calon debitur korporasi yang pengajuan kreditnya sedang diproses…</p>
+              <div class="opt correct"><span class="opt-key">B</span><span>Menolak tawaran dan melaporkannya ke atasan serta unit kepatuhan sesuai prosedur gratifikasi. <span class="badge badge-ok" style="margin-left:.4rem">Jawaban Anda</span></span></div>
+              <div class="notice notice-ok">
+                <span class="ic">✓</span>
+                <span><strong>Tepat.</strong> Penolakan saja tidak cukup — kode etik mewajibkan pelaporan agar tercipta jejak audit dan pola pendekatan dari pihak yang sama dapat dideteksi.</span>
+              </div>
+            </article>
+
+            <article class="card card-pad-lg stack-m">
+              <div class="row"><span class="badge badge-danger">Soal 7 · Salah</span><span class="badge">1 poin</span></div>
+              <p class="body-sm" style="font-weight:600">Batas waktu pelaporan penerimaan gratifikasi kepada unit kepatuhan adalah…</p>
+              <div class="opt wrong"><span class="opt-key">C</span><span>30 hari kerja sejak penerimaan. <span class="badge badge-danger" style="margin-left:.4rem">Jawaban Anda</span></span></div>
+              <div class="opt correct"><span class="opt-key">A</span><span>7 hari kerja sejak penerimaan. <span class="badge badge-ok" style="margin-left:.4rem">Jawaban benar</span></span></div>
+              <div class="notice notice-info">
+                <span class="ic">i</span>
+                <span><strong>Pembahasan.</strong> Tenggat internal 7 hari kerja dirancang lebih ketat daripada tenggat regulator agar unit kepatuhan punya waktu memproses sebelum batas eksternal.</span>
+              </div>
+              <a class="btn btn-outline btn-sm" href="lesson.html" style="align-self:flex-start">Buka pelajaran terkait</a>
+            </article>
+
+            <article class="card card-pad-lg stack-m">
+              <div class="row"><span class="badge badge-warn">Soal 3 · Menunggu penilaian</span><span class="badge">5 poin</span></div>
+              <p class="body-sm" style="font-weight:600">Jelaskan langkah yang harus Anda ambil bila menemukan atasan langsung melakukan pelanggaran kode etik…</p>
+              <div class="card card-quiet card-pad">
+                <span class="eyebrow">Jawaban Anda</span>
+                <p class="body-sm muted" style="margin-top:.5rem">Langkah pertama adalah mendokumentasikan temuan secara objektif tanpa konfrontasi langsung. Karena pelaku adalah atasan langsung, pelaporan tidak melalui jalur hierarki biasa melainkan melalui kanal whistleblowing yang dikelola pihak independen…</p>
+              </div>
+              <p class="helper">Trainer akan menilai berdasarkan rubrik 3 kriteria. Estimasi selesai: 2 hari kerja.</p>
+            </article>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

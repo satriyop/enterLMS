@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jelajahi kursus · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="browse" data-role="learner">
+
+<div class="app">
+  <aside data-side></aside>
+  <div class="main">
+    <header data-top></header>
+    <div class="content">
+      <div class="inner stack-l">
+
+        <div class="page-head">
+          <div class="page-head-text">
+            <h1 class="h1">Jelajahi kursus</h1>
+            <p class="lead">Cari modul berdasarkan topik atau regulasi. Gunakan filter di sebelah kiri untuk mempersempit hasil.</p>
+          </div>
+        </div>
+
+        <div class="split-l">
+          <!-- filters, always visible and labelled -->
+          <aside class="stack-m sticky-side">
+            <div class="card">
+              <div class="card-head"><div class="between"><strong class="body-sm">Filter</strong><button class="tiny" style="color:var(--primary);font-weight:600">Atur ulang</button></div></div>
+              <div class="card-pad stack-m">
+                <div class="stack">
+                  <span class="eyebrow">Status</span>
+                  <label class="check"><input type="checkbox" checked /> <span class="body-sm">Wajib untuk saya <span class="tiny">(9)</span></span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Pilihan <span class="tiny">(33)</span></span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Belum terdaftar <span class="tiny">(28)</span></span></label>
+                </div>
+                <hr class="hairline" />
+                <div class="stack">
+                  <span class="eyebrow">Kategori</span>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Anti Pencucian Uang <span class="tiny">(9)</span></span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Keamanan Siber <span class="tiny">(7)</span></span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Tata Kelola & Risiko <span class="tiny">(6)</span></span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Pelaporan OJK <span class="tiny">(5)</span></span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Prudensial <span class="tiny">(5)</span></span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Transformasi Digital <span class="tiny">(4)</span></span></label>
+                </div>
+                <hr class="hairline" />
+                <div class="stack">
+                  <span class="eyebrow">Durasi</span>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Di bawah 3 jam</span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">3–6 jam</span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Lebih dari 6 jam</span></label>
+                </div>
+                <hr class="hairline" />
+                <div class="stack">
+                  <span class="eyebrow">Biaya</span>
+                  <label class="check"><input type="checkbox" checked /> <span class="body-sm">Gratis untuk pegawai</span></label>
+                  <label class="check"><input type="checkbox" /> <span class="body-sm">Berbayar</span></label>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- results -->
+          <div class="stack-m">
+            <div class="row-w" style="gap:.75rem">
+              <div class="search" style="flex:1;min-width:240px">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input class="input" placeholder="Cari kursus, topik, atau nomor POJK…" />
+              </div>
+              <select class="select" style="width:auto;min-width:180px">
+                <option>Urutkan: paling relevan</option>
+                <option>Terbaru</option>
+                <option>Rating tertinggi</option>
+                <option>Durasi terpendek</option>
+              </select>
+            </div>
+
+            <div class="notice notice-info">
+              <span class="ic">i</span>
+              <span>Filter aktif: <strong>Wajib untuk saya</strong> dan <strong>Gratis untuk pegawai</strong>. Menampilkan 9 kursus.</span>
+            </div>
+
+            <div class="grid-2">
+              <a class="card card-hover" href="course-detail.html">
+                <div class="thumb"><span class="thumb-tag badge badge-danger">Wajib</span></div>
+                <div class="card-pad stack">
+                  <span class="eyebrow">Anti Pencucian Uang</span>
+                  <h3 class="h3">Dasar APU-PPT untuk Frontliner</h3>
+                  <p class="helper">Mengenali transaksi mencurigakan di titik layanan nasabah.</p>
+                  <div class="row-w"><span class="badge">6 modul</span><span class="badge">4 jam</span><span class="badge badge-gold">★ 4,8</span></div>
+                  <div class="row" style="justify-content:space-between;padding-top:.5rem;border-top:1px solid var(--border)">
+                    <span class="badge badge-ok">✓ Sudah selesai</span>
+                    <span class="link-arrow">Tinjau ulang →</span>
+                  </div>
+                </div>
+              </a>
+
+              <a class="card card-hover" href="course-detail.html">
+                <div class="thumb"><span class="thumb-tag badge badge-danger">Wajib</span></div>
+                <div class="card-pad stack">
+                  <span class="eyebrow">Tata Kelola & Risiko</span>
+                  <h3 class="h3">Tata Kelola Risiko Operasional</h3>
+                  <p class="helper">Identifikasi, ukur, dan mitigasi risiko pada proses bisnis.</p>
+                  <div class="row-w"><span class="badge">7 modul</span><span class="badge">5 jam</span><span class="badge badge-gold">★ 4,7</span></div>
+                  <div class="row" style="justify-content:space-between;padding-top:.5rem;border-top:1px solid var(--border)">
+                    <span class="badge badge-warn">Berjalan 45%</span>
+                    <span class="link-arrow">Lanjutkan →</span>
+                  </div>
+                </div>
+              </a>
+
+              <a class="card card-hover" href="course-detail.html">
+                <div class="thumb"><span class="thumb-tag badge badge-danger">Wajib</span></div>
+                <div class="card-pad stack">
+                  <span class="eyebrow">Pelaporan OJK</span>
+                  <h3 class="h3">Pelaporan & Transparansi OJK</h3>
+                  <p class="helper">Struktur, tenggat, dan konsekuensi keterlambatan pelaporan.</p>
+                  <div class="row-w"><span class="badge">7 modul</span><span class="badge">4,5 jam</span><span class="badge badge-gold">★ 4,7</span></div>
+                  <div class="row" style="justify-content:space-between;padding-top:.5rem;border-top:1px solid var(--border)">
+                    <span class="badge badge-outline">Belum mulai</span>
+                    <span class="link-arrow">Mulai →</span>
+                  </div>
+                </div>
+              </a>
+
+              <a class="card card-hover" href="course-detail.html">
+                <div class="thumb"><span class="thumb-tag badge badge-danger">Wajib</span></div>
+                <div class="card-pad stack">
+                  <span class="eyebrow">Keamanan Siber</span>
+                  <h3 class="h3">Keamanan Informasi & Rekayasa Sosial</h3>
+                  <p class="helper">Pertahanan terhadap phishing, vishing, dan kebocoran data.</p>
+                  <div class="row-w"><span class="badge">8 modul</span><span class="badge">5 jam</span><span class="badge badge-gold">★ 4,9</span></div>
+                  <div class="row" style="justify-content:space-between;padding-top:.5rem;border-top:1px solid var(--border)">
+                    <span class="badge badge-ok">✓ Sudah selesai</span>
+                    <span class="link-arrow">Tinjau ulang →</span>
+                  </div>
+                </div>
+              </a>
+
+              <a class="card card-hover" href="course-detail.html">
+                <div class="thumb"><span class="thumb-tag badge">SCORM</span></div>
+                <div class="card-pad stack">
+                  <span class="eyebrow">Kepatuhan</span>
+                  <h3 class="h3">Kode Etik & Benturan Kepentingan</h3>
+                  <p class="helper">Paket interaktif dengan simulasi pengambilan keputusan.</p>
+                  <div class="row-w"><span class="badge">4 modul</span><span class="badge">2 jam</span><span class="badge badge-gold">★ 4,4</span></div>
+                  <div class="row" style="justify-content:space-between;padding-top:.5rem;border-top:1px solid var(--border)">
+                    <span class="badge badge-warn">Ujian menunggu</span>
+                    <span class="link-arrow">Kerjakan →</span>
+                  </div>
+                </div>
+              </a>
+
+              <a class="card card-hover" href="checkout.html">
+                <div class="thumb"><span class="thumb-tag badge badge-warn">Berbayar</span></div>
+                <div class="card-pad stack">
+                  <span class="eyebrow">Tata Kelola & Risiko</span>
+                  <h3 class="h3">Manajemen Risiko Operasional Lanjutan</h3>
+                  <p class="helper">Three lines of defence dan pengukuran risiko residual.</p>
+                  <div class="row-w"><span class="badge">10 modul</span><span class="badge">7 jam</span><span class="badge badge-primary">Rp 1.250.000</span></div>
+                  <div class="row" style="justify-content:space-between;padding-top:.5rem;border-top:1px solid var(--border)">
+                    <span class="badge badge-outline">Belum terdaftar</span>
+                    <span class="link-arrow">Lihat detail →</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <div class="between" style="padding-top:.5rem">
+              <span class="helper">Menampilkan 6 dari 9 kursus</span>
+              <div class="row" style="gap:.4rem">
+                <button class="btn btn-outline btn-sm">← Sebelumnya</button>
+                <button class="btn btn-primary btn-sm">1</button>
+                <button class="btn btn-ghost btn-sm">2</button>
+                <button class="btn btn-outline btn-sm">Berikutnya →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

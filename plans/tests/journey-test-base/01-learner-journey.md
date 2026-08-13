@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document covers the complete learner experience in the Enteraksi LMS, from course discovery through completion and rating.
+This document covers the complete learner experience in the EnterLMS, from course discovery through completion and rating.
 
 ---
 

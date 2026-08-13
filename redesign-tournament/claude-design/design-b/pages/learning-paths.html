@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jalur pembelajaran · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="learning-paths" data-role="learner">
+
+<div class="app">
+  <aside data-side></aside>
+  <div class="main">
+    <header data-top></header>
+    <div class="content">
+      <div class="inner stack-l">
+
+        <div class="page-head">
+          <div class="page-head-text">
+            <h1 class="h1">Jalur pembelajaran</h1>
+            <p class="lead">Jalur adalah rangkaian kursus berurutan yang membangun kompetensi sebuah peran. Kursus berikutnya terbuka setelah kursus sebelumnya lulus.</p>
+          </div>
+        </div>
+
+        <div data-tabs>
+          <div class="tabs">
+            <button class="tab" data-tab="mine" aria-selected="true">Jalur saya (1)</button>
+            <button class="tab" data-tab="all" aria-selected="false">Semua jalur (6)</button>
+          </div>
+
+          <div class="panel" data-panel="mine" style="padding-top:1.5rem">
+            <article class="card" style="border:2px solid var(--primary)">
+              <div class="card-head" style="background:var(--primary-soft);border-bottom-color:transparent">
+                <div class="between"><strong class="body-sm">Jalur aktif Anda</strong><span class="badge badge-primary">Terdaftar 3 Agu 2026</span></div>
+              </div>
+              <div class="card-pad-lg stack-m">
+                <div class="between">
+                  <div class="stack">
+                    <h2 class="h2">Spesialis Kepatuhan — Tahap 1</h2>
+                    <p class="helper" style="max-width:60ch">Fondasi untuk pegawai yang akan mengambil peran di unit kepatuhan: regulasi, deteksi, pelaporan, dan etika.</p>
+                  </div>
+                  <div class="ring lg" data-ring="60"><b>60%</b></div>
+                </div>
+                <div class="bar"><span data-bar="60" style="width:0"></span></div>
+                <div class="grid-3">
+                  <div class="stack" style="gap:.1rem"><span class="helper">Kursus</span><strong class="body-sm">3 dari 5 selesai</strong></div>
+                  <div class="stack" style="gap:.1rem"><span class="helper">Estimasi sisa</span><strong class="body-sm">9 jam</strong></div>
+                  <div class="stack" style="gap:.1rem"><span class="helper">Target selesai</span><strong class="body-sm">31 Desember 2026</strong></div>
+                </div>
+                <hr class="hairline" />
+                <div class="row-w">
+                  <a class="btn btn-primary btn-lg" href="path-progress.html">Lihat timeline & lanjutkan</a>
+                  <a class="btn btn-outline" href="lesson.html">Langsung ke kursus aktif</a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="panel" data-panel="all" hidden style="padding-top:1.5rem">
+            <div class="stack-m">
+              <p class="helper">Jalur bertanda <strong>Terkunci</strong> memerlukan penyelesaian jalur prasyarat terlebih dahulu.</p>
+              <div class="grid-2">
+                <a class="card card-hover card-pad stack-m" href="path-progress.html">
+                  <div class="between"><span class="badge badge-primary">Sedang diikuti</span><span class="helper">5 kursus · 22 jam</span></div>
+                  <div class="stack" style="gap:.2rem">
+                    <h3 class="h3">Spesialis Kepatuhan — Tahap 1</h3>
+                    <p class="helper">Regulasi, deteksi, pelaporan, etika.</p>
+                  </div>
+                  <div class="bar thin"><span data-bar="60" style="width:0"></span></div>
+                  <span class="helper">60% selesai</span>
+                </a>
+
+                <div class="card card-pad stack-m" style="opacity:.8">
+                  <div class="between"><span class="badge badge-outline">Terkunci</span><span class="helper">6 kursus · 30 jam</span></div>
+                  <div class="stack" style="gap:.2rem">
+                    <h3 class="h3">Spesialis Kepatuhan — Tahap 2</h3>
+                    <p class="helper">Investigasi lanjutan, koordinasi PPATK, penanganan temuan regulator.</p>
+                  </div>
+                  <div class="notice" style="padding:.7rem .85rem">
+                    <span class="ic" style="background:var(--surface-3);color:var(--muted-foreground);width:18px;height:18px;font-size:.62rem">🔒</span>
+                    <span class="helper">Selesaikan Tahap 1 untuk membuka jalur ini.</span>
+                  </div>
+                </div>
+
+                <div class="card card-hover card-pad stack-m">
+                  <div class="between"><span class="badge badge-info">Tersedia</span><span class="helper">4 kursus · 16 jam</span></div>
+                  <div class="stack" style="gap:.2rem">
+                    <h3 class="h3">Manajer Cabang Baru</h3>
+                    <p class="helper">Operasional cabang, kepemimpinan tim, penanganan eskalasi nasabah.</p>
+                  </div>
+                  <button class="btn btn-outline btn-sm" style="align-self:flex-start" data-toast="Anda terdaftar pada jalur ini">Daftar jalur ini</button>
+                </div>
+
+                <div class="card card-hover card-pad stack-m">
+                  <div class="between"><span class="badge badge-info">Tersedia</span><span class="helper">7 kursus · 34 jam</span></div>
+                  <div class="stack" style="gap:.2rem">
+                    <h3 class="h3">Analis Risiko Kredit</h3>
+                    <p class="helper">Penilaian kelayakan, model skoring, mitigasi risiko konsentrasi.</p>
+                  </div>
+                  <button class="btn btn-outline btn-sm" style="align-self:flex-start" data-toast="Anda terdaftar pada jalur ini">Daftar jalur ini</button>
+                </div>
+
+                <div class="card card-hover card-pad stack-m">
+                  <div class="between"><span class="badge badge-info">Tersedia</span><span class="helper">5 kursus · 20 jam</span></div>
+                  <div class="stack" style="gap:.2rem">
+                    <h3 class="h3">Keamanan Siber untuk Non-TI</h3>
+                    <p class="helper">Kesadaran ancaman, higiene digital, respons insiden dasar.</p>
+                  </div>
+                  <button class="btn btn-outline btn-sm" style="align-self:flex-start" data-toast="Anda terdaftar pada jalur ini">Daftar jalur ini</button>
+                </div>
+
+                <a class="card card-hover card-pad stack-m" href="path-progress.html">
+                  <div class="between"><span class="badge badge-ok">✓ Selesai</span><span class="helper">3 kursus · 10 jam</span></div>
+                  <div class="stack" style="gap:.2rem">
+                    <h3 class="h3">Orientasi Pegawai Baru</h3>
+                    <p class="helper">Struktur organisasi, kode etik dasar, sistem internal.</p>
+                  </div>
+                  <div class="bar thin"><span data-bar="100" style="width:0"></span></div>
+                  <span class="helper">Selesai 20 Februari 2026</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

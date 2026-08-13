@@ -1,6 +1,6 @@
 # Understanding User Roles
 
-Enteraksi uses role-based access control (RBAC) with four distinct roles. Each role has specific permissions and capabilities.
+EnterLMS uses role-based access control (RBAC) with four distinct roles. Each role has specific permissions and capabilities.
 
 ## Role Hierarchy
 

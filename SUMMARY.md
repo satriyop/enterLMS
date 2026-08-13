@@ -1,10 +1,10 @@
-# Final Project Summary: Enteraksi
+# Final Project Summary: EnterLMS
 
 **Last Updated:** 2025-12-20T09:43:52.591Z (UTC)
 
 ## Overview
 
-This project, named "Enteraksi," is a Laravel-based Learning Management System (LMS) application designed for e-learning. It includes various components such as controllers, models, policies, and services, along with frontend assets and configuration files. The project follows Indonesian context requirements and has extensive test coverage.
+This project, named "EnterLMS," is a Laravel-based Learning Management System (LMS) application designed for e-learning. It includes various components such as controllers, models, policies, and services, along with frontend assets and configuration files. The project follows Indonesian context requirements and has extensive test coverage.
 
 ## Technologies Used
 

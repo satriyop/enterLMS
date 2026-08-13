@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kelola kursus · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="cm-courses" data-role="content_manager">
+
+<header data-shell></header>
+
+<main class="page">
+  <div class="wrap stack-l">
+
+    <div class="between">
+      <div class="stack">
+        <h1 class="h1">Kelola kursus</h1>
+        <p class="lead">42 kursus · 6 draf menunggu penerbitan.</p>
+      </div>
+      <div class="row">
+        <a class="btn btn-outline" href="question-bank.html">Bank soal</a>
+        <a class="btn btn-primary" href="cm-course-edit.html">Kursus baru</a>
+      </div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat"><span class="stat-num">28</span><span class="stat-label">Terbit</span></div>
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">Draf</span></div>
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">Diarsipkan</span></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-label">Dihapus</span></div>
+    </div>
+
+    <div class="stack-m">
+      <div class="row-w" style="gap:.75rem">
+        <div class="search" style="flex:1;min-width:240px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input class="input" placeholder="Cari judul kursus…" />
+        </div>
+        <select class="select" style="width:auto"><option>Semua kategori</option><option>Anti Pencucian Uang</option><option>Keamanan Siber</option><option>Tata Kelola & Risiko</option></select>
+        <select class="select" style="width:auto"><option>Semua penulis</option><option>Milik saya</option></select>
+      </div>
+
+      <div class="row-w" data-chip-group="single">
+        <button class="chip" data-chip aria-pressed="true">Semua</button>
+        <button class="chip" data-chip aria-pressed="false">Terbit</button>
+        <button class="chip" data-chip aria-pressed="false">Draf</button>
+        <button class="chip" data-chip aria-pressed="false">Diarsipkan</button>
+        <button class="chip" data-chip aria-pressed="false">Arsip terhapus</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="t">
+        <thead>
+          <tr>
+            <th style="width:34px"><input type="checkbox" /></th>
+            <th>Kursus</th>
+            <th>Status</th>
+            <th>Peserta</th>
+            <th>Rating</th>
+            <th>Diperbarui</th>
+            <th class="t-right">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td>
+              <div class="stack" style="gap:.1rem">
+                <strong>Dasar APU-PPT untuk Frontliner</strong>
+                <span class="tiny">Anti Pencucian Uang · 24 pelajaran · 2 asesmen</span>
+              </div>
+            </td>
+            <td><span class="badge badge-ok">Terbit</span></td>
+            <td class="num">2.140</td>
+            <td><span class="badge badge-gold">★ 4,8</span></td>
+            <td class="tiny">2 Jul 2026</td>
+            <td class="t-right"><a class="link-arrow" href="cm-course-edit.html">Edit</a></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td>
+              <div class="stack" style="gap:.1rem">
+                <strong>Keamanan Informasi & Rekayasa Sosial</strong>
+                <span class="tiny">Keamanan Siber · 31 pelajaran · 3 asesmen</span>
+              </div>
+            </td>
+            <td><span class="badge badge-ok">Terbit</span></td>
+            <td class="num">1.870</td>
+            <td><span class="badge badge-gold">★ 4,9</span></td>
+            <td class="tiny">28 Jun 2026</td>
+            <td class="t-right"><a class="link-arrow" href="cm-course-edit.html">Edit</a></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td>
+              <div class="stack" style="gap:.1rem">
+                <strong>Manajemen Krisis Likuiditas</strong>
+                <span class="tiny">Prudensial · 12 pelajaran · 1 asesmen</span>
+              </div>
+            </td>
+            <td><span class="badge badge-warn">Draf</span></td>
+            <td class="num">—</td>
+            <td class="tiny">—</td>
+            <td class="tiny">10 Agu 2026</td>
+            <td class="t-right"><a class="link-arrow" href="cm-course-edit.html">Lanjutkan</a></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td>
+              <div class="stack" style="gap:.1rem">
+                <strong>Pelaporan & Transparansi OJK</strong>
+                <span class="tiny">Pelaporan OJK · 19 pelajaran · 2 asesmen</span>
+              </div>
+            </td>
+            <td><span class="badge badge-ok">Terbit</span></td>
+            <td class="num">1.203</td>
+            <td><span class="badge badge-gold">★ 4,7</span></td>
+            <td class="tiny">14 Mei 2026</td>
+            <td class="t-right"><a class="link-arrow" href="cm-course-edit.html">Edit</a></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td>
+              <div class="stack" style="gap:.1rem">
+                <strong>Kode Etik & Benturan Kepentingan</strong>
+                <span class="tiny">Kepatuhan · paket SCORM · 1 asesmen</span>
+              </div>
+            </td>
+            <td><span class="badge badge-ok">Terbit</span></td>
+            <td class="num">946</td>
+            <td><span class="badge badge-gold">★ 4,4</span></td>
+            <td class="tiny">3 Apr 2026</td>
+            <td class="t-right"><a class="link-arrow" href="cm-course-edit.html">Edit</a></td>
+          </tr>
+          <tr style="opacity:.6">
+            <td><input type="checkbox" /></td>
+            <td>
+              <div class="stack" style="gap:.1rem">
+                <strong>Produk Bancassurance (versi 2024)</strong>
+                <span class="tiny">Produk · digantikan versi 2026</span>
+              </div>
+            </td>
+            <td><span class="badge">Diarsipkan</span></td>
+            <td class="num">412</td>
+            <td><span class="badge badge-gold">★ 4,1</span></td>
+            <td class="tiny">18 Nov 2025</td>
+            <td class="t-right"><button class="link-arrow" data-toast="Kursus dipulihkan">Pulihkan</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="between">
+      <span class="tiny">Menampilkan 6 dari 42 kursus</span>
+      <div class="row" style="gap:.4rem">
+        <button class="btn btn-outline btn-sm">←</button>
+        <button class="btn btn-primary btn-sm">1</button>
+        <button class="btn btn-ghost btn-sm">2</button>
+        <button class="btn btn-ghost btn-sm">3</button>
+        <button class="btn btn-outline btn-sm">→</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

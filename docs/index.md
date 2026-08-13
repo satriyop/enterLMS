@@ -1,13 +1,13 @@
-# Enteraksi LMS Documentation
+# EnterLMS Documentation
 
-Welcome to the Enteraksi Learning Management System documentation. This documentation follows the [Diátaxis framework](https://diataxis.fr/) for technical documentation.
+Welcome to the EnterLMS Learning Management System documentation. This documentation follows the [Diátaxis framework](https://diataxis.fr/) for technical documentation.
 
 ## Documentation Structure
 
 ### Tutorials (Learning-oriented)
 Step-by-step lessons for newcomers to learn by doing.
 
-- [Getting Started](./getting-started/installation.md) - Set up and run Enteraksi
+- [Getting Started](./getting-started/installation.md) - Set up and run EnterLMS
 - [Your First Course](./getting-started/first-course.md) - Create your first course
 - [Understanding Roles](./getting-started/roles.md) - Learn about user roles
 

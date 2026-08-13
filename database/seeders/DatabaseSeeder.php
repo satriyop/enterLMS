@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * Default local/demo seed for Enteraksi (banking compliance LMS).
+ * Default local/demo seed for EnterLMS (banking compliance LMS).
  *
  * Primary accounts come from FreeFlowDemoSeeder (password: password).
  * Content stack: banking courses → learning paths → enrollments → assessments → question bank.

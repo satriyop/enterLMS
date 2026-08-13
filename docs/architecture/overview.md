@@ -6,7 +6,7 @@ This document follows the [Arc42](https://arc42.org/) template for software arch
 
 ### 1.1 Requirements Overview
 
-Enteraksi is a Learning Management System (LMS) designed for:
+EnterLMS is a Learning Management System (LMS) designed for:
 
 | Requirement | Description |
 |-------------|-------------|
@@ -85,7 +85,7 @@ Enteraksi is a Learning Management System (LMS) designed for:
         ▼            ▼            ▼                 ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                                                                  │
-│                      Enteraksi LMS                               │
+│                      EnterLMS                               │
 │                                                                  │
 │   ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐       │
 │   │  Course  │  │Assessment│  │  User    │  │ Progress │       │

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pengaturan · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="settings" data-role="learner">
+
+<header data-shell></header>
+
+<main class="page">
+  <div class="wrap stack-l">
+
+    <div class="stack">
+      <h1 class="h1">Pengaturan</h1>
+      <p class="lead">Profil, keamanan, tampilan, dan riwayat transaksi.</p>
+    </div>
+
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab" data-tab="profile" aria-selected="true">Profil</button>
+        <button class="tab" data-tab="password" aria-selected="false">Kata sandi</button>
+        <button class="tab" data-tab="2fa" aria-selected="false">Verifikasi dua langkah</button>
+        <button class="tab" data-tab="appearance" aria-selected="false">Tampilan</button>
+        <button class="tab" data-tab="payments" aria-selected="false">Transaksi</button>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="panel" data-panel="profile" style="padding-top:1.75rem">
+        <div class="split">
+          <div class="stack-m">
+            <div class="row" style="gap:1rem">
+              <span class="avatar lg">BS</span>
+              <div class="stack">
+                <button class="btn btn-outline btn-sm" data-toast="Pemilih berkas dibuka">Ganti foto</button>
+                <span class="tiny">JPG atau PNG, maksimum 2 MB</span>
+              </div>
+            </div>
+            <hr class="hairline" />
+            <div class="grid-2" style="gap:.9rem">
+              <div class="field"><label class="label">Nama lengkap</label><input class="input" value="Budi Santoso" /></div>
+              <div class="field"><label class="label">Nama panggilan</label><input class="input" value="Budi" /></div>
+            </div>
+            <div class="field">
+              <label class="label">Email</label>
+              <input class="input" value="budi.santoso@banknusantara.co.id" disabled style="opacity:.6" />
+              <span class="hint">Email disinkronkan dari HRIS dan tidak dapat diubah di sini.</span>
+            </div>
+            <div class="grid-2" style="gap:.9rem">
+              <div class="field"><label class="label">NIP</label><input class="input mono" value="10293847" disabled style="opacity:.6" /></div>
+              <div class="field"><label class="label">Unit kerja</label><input class="input" value="Layanan Nasabah" disabled style="opacity:.6" /></div>
+            </div>
+            <div class="field"><label class="label">Bahasa antarmuka</label><select class="select"><option>Bahasa Indonesia</option><option>English</option></select></div>
+            <div class="field"><label class="label">Zona waktu</label><select class="select"><option>WIB (UTC+7)</option><option>WITA (UTC+8)</option><option>WIT (UTC+9)</option></select></div>
+            <button class="btn btn-primary" style="align-self:flex-start" data-toast="Profil disimpan">Simpan perubahan</button>
+          </div>
+          <aside class="card card-pad stack">
+            <span class="eyebrow">Data dari HRIS</span>
+            <p class="tiny">Nama, NIP, dan unit kerja disinkronkan otomatis setiap malam. Bila ada kekeliruan, ajukan koreksi melalui portal SDM.</p>
+          </aside>
+        </div>
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="panel" data-panel="password" hidden style="padding-top:1.75rem">
+        <div class="read" style="margin-inline:0">
+          <div class="stack-m">
+            <div class="field">
+              <div class="between"><label class="label" for="cur">Kata sandi saat ini</label><button class="tiny" data-reveal="cur" style="color:var(--primary)">Tampilkan</button></div>
+              <input class="input" id="cur" type="password" />
+            </div>
+            <div class="field">
+              <div class="between"><label class="label" for="new">Kata sandi baru</label><button class="tiny" data-reveal="new" style="color:var(--primary)">Tampilkan</button></div>
+              <input class="input" id="new" type="password" />
+              <span class="hint">Minimal 12 karakter, mengandung huruf besar, angka, dan simbol.</span>
+            </div>
+            <div class="field"><label class="label">Ulangi kata sandi baru</label><input class="input" type="password" /></div>
+            <div class="notice notice-info"><span>Kebijakan institusi mewajibkan penggantian kata sandi setiap 90 hari. Terakhir diganti 62 hari lalu.</span></div>
+            <button class="btn btn-primary" style="align-self:flex-start" data-toast="Kata sandi diperbarui">Perbarui kata sandi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2FA -->
+      <div class="panel" data-panel="2fa" hidden style="padding-top:1.75rem">
+        <div class="split">
+          <div class="stack-m">
+            <div class="card card-pad">
+              <div class="between">
+                <div class="stack"><strong class="body-sm">Aplikasi autentikator</strong><span class="tiny">Diaktifkan 14 Maret 2026</span></div>
+                <span class="badge badge-ok">Aktif</span>
+              </div>
+            </div>
+            <div class="card card-pad stack-m">
+              <span class="eyebrow">Kode pemulihan</span>
+              <p class="tiny">Simpan di tempat aman. Setiap kode hanya dapat dipakai sekali.</p>
+              <div class="grid-2" style="gap:.5rem">
+                <span class="mono card card-quiet" style="padding:.5rem .7rem;text-align:center">4f2a-91bc</span>
+                <span class="mono card card-quiet" style="padding:.5rem .7rem;text-align:center">7d13-4e88</span>
+                <span class="mono card card-quiet" style="padding:.5rem .7rem;text-align:center">a902-3f5d</span>
+                <span class="mono card card-quiet" style="padding:.5rem .7rem;text-align:center">c418-b70e</span>
+                <span class="mono card card-quiet" style="padding:.5rem .7rem;text-align:center">e651-2a94</span>
+                <span class="mono card card-quiet" style="padding:.5rem .7rem;text-align:center">18df-6c03</span>
+              </div>
+              <div class="row">
+                <button class="btn btn-outline btn-sm" data-toast="Kode pemulihan diunduh">Unduh</button>
+                <button class="btn btn-ghost btn-sm" data-toast="Kode baru dibuat">Buat ulang</button>
+              </div>
+            </div>
+            <div class="card card-pad" style="border-color:var(--danger)">
+              <div class="between">
+                <div class="stack"><strong class="body-sm" style="color:var(--danger)">Nonaktifkan 2FA</strong><span class="tiny">Tidak disarankan. Kebijakan institusi mewajibkan 2FA untuk peran tertentu.</span></div>
+                <button class="btn btn-danger btn-sm is-disabled">Nonaktifkan</button>
+              </div>
+            </div>
+          </div>
+          <aside class="card card-pad stack">
+            <span class="eyebrow">Mengapa 2FA wajib</span>
+            <p class="tiny">Akun EnterLMS memuat rekam jejak kepatuhan yang dijadikan bukti pemeriksaan. Verifikasi dua langkah memenuhi kontrol akses ISO 27001 A.9.4.2.</p>
+          </aside>
+        </div>
+      </div>
+
+      <!-- APPEARANCE -->
+      <div class="panel" data-panel="appearance" hidden style="padding-top:1.75rem">
+        <div class="read" style="margin-inline:0">
+          <div class="stack-m">
+            <div class="field">
+              <label class="label">Tema</label>
+              <span class="hint" style="margin-bottom:.4rem">Tombol matahari/bulan di bilah atas juga mengubah tema secara langsung.</span>
+              <div class="grid-3" style="gap:.75rem">
+                <button class="card card-pad stack" style="align-items:center;gap:.6rem" data-theme-toggle>
+                  <div style="width:100%;height:52px;border-radius:6px;background:#F8F7F4;border:1px solid #E4E0D7"></div>
+                  <span class="body-sm">Terang</span>
+                </button>
+                <button class="card card-pad stack" style="align-items:center;gap:.6rem" data-theme-toggle>
+                  <div style="width:100%;height:52px;border-radius:6px;background:#101311;border:1px solid #262C29"></div>
+                  <span class="body-sm">Gelap</span>
+                </button>
+                <button class="card card-pad stack" style="align-items:center;gap:.6rem">
+                  <div style="width:100%;height:52px;border-radius:6px;background:linear-gradient(105deg,#F8F7F4 50%,#101311 50%);border:1px solid var(--border)"></div>
+                  <span class="body-sm">Ikuti sistem</span>
+                </button>
+              </div>
+            </div>
+            <hr class="hairline" />
+            <div class="field"><label class="label">Ukuran teks</label><select class="select"><option>Normal</option><option>Besar</option><option>Sangat besar</option></select></div>
+            <label class="check"><input type="checkbox" /> <span class="body-sm">Kurangi animasi (mengikuti preferensi sistem bila aktif)</span></label>
+            <label class="check"><input type="checkbox" checked /> <span class="body-sm">Putar video secara otomatis saat membuka pelajaran</span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYMENTS -->
+      <div class="panel" data-panel="payments" hidden style="padding-top:1.75rem">
+        <div class="stack-m">
+          <div class="table-wrap">
+            <table class="t">
+              <thead><tr><th>Faktur</th><th>Kursus</th><th>Jumlah</th><th>Metode</th><th>Status</th><th>Tanggal</th><th class="t-right">Aksi</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">INV-2026-0431</td><td>Manajemen Risiko Operasional Lanjutan</td><td class="num">Rp 1.179.375</td><td class="tiny">VA BCA</td><td><span class="badge badge-ok">Lunas</span></td><td class="tiny">2 Jul 2026</td><td class="t-right"><button class="link-arrow" data-toast="Faktur diunduh">Faktur</button></td></tr>
+                <tr><td class="mono">INV-2026-0198</td><td>Komunikasi Krisis untuk Manajer Cabang</td><td class="num">Rp 640.000</td><td class="tiny">Kuota institusi</td><td><span class="badge badge-ok">Lunas</span></td><td class="tiny">18 Apr 2026</td><td class="t-right"><button class="link-arrow" data-toast="Faktur diunduh">Faktur</button></td></tr>
+                <tr><td class="mono">INV-2026-0102</td><td>Dasar Analitik Data untuk Perbankan</td><td class="num">Rp 890.000</td><td class="tiny">VA Mandiri</td><td><span class="badge badge-danger">Kedaluwarsa</span></td><td class="tiny">3 Mar 2026</td><td class="t-right"><button class="link-arrow" data-toast="Pesanan dibuat ulang">Pesan ulang</button></td></tr>
+                <tr><td class="mono">INV-2026-0512</td><td>Manajemen Krisis Likuiditas</td><td class="num">Rp 1.100.000</td><td class="tiny">Tagihan unit kerja</td><td><span class="badge badge-warn">Menunggu persetujuan</span></td><td class="tiny">10 Agu 2026</td><td class="t-right"><button class="link-arrow" data-toast="Pesanan dibatalkan">Batalkan</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <span class="tiny">Faktur pajak tersedia untuk transaksi berstatus lunas.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

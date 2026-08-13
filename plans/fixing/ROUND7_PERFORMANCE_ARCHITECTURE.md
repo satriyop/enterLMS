@@ -523,6 +523,6 @@ it('transforms learning path for browse', function () {
 ## Related Documentation
 
 - `plans/fixing/ROUND6_CODE_QUALITY.md` - Previous code quality fixes
-- `.claude/skills/enteraksi-batch-loading/SKILL.md` - Batch loading patterns
-- `.claude/skills/enteraksi-architecture/SKILL.md` - Service/DTO patterns
+- `.claude/skills/enterlms-batch-loading/SKILL.md` - Batch loading patterns
+- `.claude/skills/enterlms-architecture/SKILL.md` - Service/DTO patterns
 - `CLAUDE.md` - Database query strategy guidelines

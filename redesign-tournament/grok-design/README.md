@@ -1,4 +1,4 @@
-# Enteraksi LMS — Redesign Tournament (Grok)
+# EnterLMS — Redesign Tournament (Grok)
 
 Mockup **desain saja** (HTML/CSS/JS). Bukan implementasi ke Laravel/Vue app.
 
@@ -83,4 +83,4 @@ Bandingkan A vs B pada:
 
 - Data dummy / fake, tombol tidak memanggil backend
 - Bahasa UI: **Indonesia**
-- Brand: **Enteraksi** (kepatuhan perbankan / OJK)
+- Brand: **EnterLMS** (kepatuhan perbankan / OJK)

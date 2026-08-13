@@ -1,6 +1,6 @@
 <?php
 
-use App\Mcp\Servers\EnteraksiAgentServer;
+use App\Mcp\Servers\EnterLmsAgentServer;
 use Laravel\Mcp\Facades\Mcp;
 
 /*
@@ -14,5 +14,5 @@ use Laravel\Mcp\Facades\Mcp;
 |
 */
 
-Mcp::web('/mcp/enteraksi', EnteraksiAgentServer::class)
+Mcp::web('/mcp/enterlms', EnterLmsAgentServer::class)
     ->middleware(['auth:sanctum', 'throttle:mcp']);

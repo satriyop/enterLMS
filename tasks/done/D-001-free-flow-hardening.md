@@ -19,7 +19,7 @@ commit: 4945234
 
 ```bash
 php artisan db:seed --class=FreeFlowDemoSeeder
-# learner@enteraksi.test / password
+# learner@enterlms.test / password
 ```
 
 ## Related

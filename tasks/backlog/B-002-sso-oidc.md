@@ -16,7 +16,7 @@ Login hanya email/password Fortify. Bank biasanya butuh SSO (Google Workspace / 
 
 ## Goal
 
-User korporat login via OIDC provider terpilih; akun di-link ke role Enteraksi.
+User korporat login via OIDC provider terpilih; akun di-link ke role EnterLMS.
 
 ## Scope
 

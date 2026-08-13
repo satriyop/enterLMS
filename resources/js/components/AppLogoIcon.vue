@@ -14,8 +14,8 @@ defineProps<Props>();
 
 <template>
     <img
-        src="/storage/enteraksi-logo-min.svg"
-        alt="Enteraksi Logo"
+        src="/storage/enterlms-logo-min.svg"
+        alt="EnterLMS Logo"
         :class="className"
         v-bind="$attrs"
     />

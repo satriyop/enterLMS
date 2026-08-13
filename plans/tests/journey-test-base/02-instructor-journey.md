@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document covers the Content Manager and Trainer workflows in the Enteraksi LMS, including course creation, content management, assessment creation, and student management.
+This document covers the Content Manager and Trainer workflows in the EnterLMS, including course creation, content management, assessment creation, and student management.
 
 ---
 

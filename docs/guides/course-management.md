@@ -1,6 +1,6 @@
 # Course Management Guide
 
-How to create, edit, and manage courses in Enteraksi LMS.
+How to create, edit, and manage courses in EnterLMS.
 
 ## Prerequisites
 

@@ -18,7 +18,7 @@ it('posts signed payload when enrollment completes', function () {
 
     $endpoint = AgentWebhookEndpoint::query()->create([
         'name' => 'openclaw',
-        'url' => 'https://hooks.example.test/enteraksi',
+        'url' => 'https://hooks.example.test/enterlms',
         'secret' => 'test-secret-key',
         'events' => ['enrollment.completed'],
         'is_active' => true,
@@ -40,8 +40,8 @@ it('posts signed payload when enrollment completes', function () {
             return false;
         }
 
-        $signature = $request->header('X-Enteraksi-Signature')[0] ?? '';
-        $event = $request->header('X-Enteraksi-Event')[0] ?? '';
+        $signature = $request->header('X-EnterLMS-Signature')[0] ?? '';
+        $event = $request->header('X-EnterLMS-Event')[0] ?? '';
         $body = $request->body();
 
         $dispatcher = app(AgentWebhookDispatcher::class);

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jelajahi kursus · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="browse" data-role="learner">
+
+<header data-shell></header>
+
+<main class="page">
+  <div class="wrap stack-l">
+
+    <div class="stack">
+      <h1 class="h1">Katalog kursus</h1>
+      <p class="lead">340 modul kepatuhan, teknis, dan kepemimpinan untuk sektor jasa keuangan.</p>
+    </div>
+
+    <!-- search + filters -->
+    <div class="stack-m">
+      <div class="row-w" style="gap:.75rem">
+        <div class="search" style="flex:1;min-width:260px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input class="input" placeholder="Cari kursus, topik, atau regulasi…" />
+        </div>
+        <select class="select" style="width:auto;min-width:170px">
+          <option>Paling relevan</option>
+          <option>Terbaru</option>
+          <option>Rating tertinggi</option>
+          <option>Durasi terpendek</option>
+        </select>
+      </div>
+
+      <div class="row-w" data-chip-group="multi">
+        <button class="chip" data-chip aria-pressed="true">Wajib</button>
+        <button class="chip" data-chip aria-pressed="false">Anti Pencucian Uang</button>
+        <button class="chip" data-chip aria-pressed="false">Keamanan Siber</button>
+        <button class="chip" data-chip aria-pressed="false">Tata Kelola & Risiko</button>
+        <button class="chip" data-chip aria-pressed="false">Transformasi Digital</button>
+        <button class="chip" data-chip aria-pressed="false">Prudensial</button>
+        <button class="chip" data-chip aria-pressed="false">Gratis</button>
+      </div>
+
+      <div class="between" style="padding-bottom:.85rem;border-bottom:1px solid var(--border)">
+        <span class="tiny" data-chip-count>1 filter aktif</span>
+        <span class="tiny">Menampilkan 9 dari 42 kursus</span>
+      </div>
+    </div>
+
+    <!-- grid -->
+    <div class="grid-3">
+      <a class="card card-hover" href="course-detail.html">
+        <div class="thumb"><span class="thumb-tag badge badge-danger">Wajib</span></div>
+        <div class="card-pad stack">
+          <span class="eyebrow">Anti Pencucian Uang</span>
+          <h3 class="h3">Dasar APU-PPT untuk Frontliner</h3>
+          <p class="tiny">Mengenali transaksi mencurigakan di titik layanan nasabah.</p>
+          <div class="row-w" style="margin-top:.35rem"><span class="badge">6 modul</span><span class="badge">4 jam</span><span class="badge badge-gold">★ 4,8</span></div>
+        </div>
+      </a>
+      <a class="card card-hover" href="course-detail.html">
+        <div class="thumb"><span class="thumb-tag badge badge-danger">Wajib</span></div>
+        <div class="card-pad stack">
+          <span class="eyebrow">Keamanan Siber</span>
+          <h3 class="h3">Keamanan Informasi & Rekayasa Sosial</h3>
+          <p class="tiny">Pertahanan terhadap phishing, vishing, dan kebocoran data internal.</p>
+          <div class="row-w" style="margin-top:.35rem"><span class="badge">8 modul</span><span class="badge">5 jam</span><span class="badge badge-gold">★ 4,9</span></div>
+        </div>
+      </a>
+      <a class="card card-hover" href="course-detail.html">
+        <div class="thumb"><span class="thumb-tag badge badge-warn">Berbayar</span></div>
+        <div class="card-pad stack">
+          <span class="eyebrow">Tata Kelola & Risiko</span>
+          <h3 class="h3">Manajemen Risiko Operasional Lanjutan</h3>
+          <p class="tiny">Kerangka three lines of defence dan pengukuran risiko residual.</p>
+          <div class="row-w" style="margin-top:.35rem"><span class="badge">10 modul</span><span class="badge">7 jam</span><span class="badge badge-primary">Rp 1.250.000</span></div>
+        </div>
+      </a>
+      <a class="card card-hover" href="course-detail.html">
+        <div class="thumb"><span class="thumb-tag badge badge-info">Pilihan</span></div>
+        <div class="card-pad stack">
+          <span class="eyebrow">Transformasi Digital</span>
+          <h3 class="h3">Layanan Perbankan Digital & UX</h3>
+          <p class="tiny">Merancang pengalaman kanal digital yang inklusif dan aman.</p>
+          <div class="row-w" style="margin-top:.35rem"><span class="badge">5 modul</span><span class="badge">3 jam</span><span class="badge badge-gold">★ 4,6</span></div>
+        </div>
+      </a>
+      <a class="card card-hover" href="course-detail.html">
+        <div class="thumb"><span class="thumb-tag badge badge-danger">Wajib</span></div>
+        <div class="card-pad stack">
+          <span class="eyebrow">Pelaporan OJK</span>
+          <h3 class="h3">Pelaporan & Transparansi OJK</h3>
+          <p class="tiny">Struktur, tenggat, dan konsekuensi keterlambatan pelaporan berkala.</p>
+          <div class="row-w" style="margin-top:.35rem"><span class="badge">7 modul</span><span class="badge">4,5 jam</span><span class="badge badge-gold">★ 4,7</span></div>
+        </div>
+      </a>
+      <a class="card card-hover" href="course-detail.html">
+        <div class="thumb"><span class="thumb-tag badge badge-info">Pilihan</span></div>
+        <div class="card-pad stack">
+          <span class="eyebrow">Prudensial</span>
+          <h3 class="h3">Kesehatan Bank & Rasio Kecukupan Modal</h3>
+          <p class="tiny">Membaca CAR, NPL, dan LDR sebagai indikator dini.</p>
+          <div class="row-w" style="margin-top:.35rem"><span class="badge">6 modul</span><span class="badge">4 jam</span><span class="badge badge-gold">★ 4,5</span></div>
+        </div>
+      </a>
+      <a class="card card-hover" href="course-detail.html">
+        <div class="thumb"><span class="thumb-tag badge">SCORM</span></div>
+        <div class="card-pad stack">
+          <span class="eyebrow">Kepatuhan</span>
+          <h3 class="h3">Kode Etik & Benturan Kepentingan</h3>
+          <p class="tiny">Paket SCORM interaktif dengan simulasi keputusan.</p>
+          <div class="row-w" style="margin-top:.35rem"><span class="badge">4 modul</span><span class="badge">2 jam</span><span class="badge badge-gold">★ 4,4</span></div>
+        </div>
+      </a>
+      <a class="card card-hover" href="course-detail.html">
+        <div class="thumb"><span class="thumb-tag badge badge-info">Pilihan</span></div>
+        <div class="card-pad stack">
+          <span class="eyebrow">Kepemimpinan</span>
+          <h3 class="h3">Komunikasi Krisis untuk Manajer Cabang</h3>
+          <p class="tiny">Menangani eskalasi nasabah dan liputan media.</p>
+          <div class="row-w" style="margin-top:.35rem"><span class="badge">5 modul</span><span class="badge">3 jam</span><span class="badge badge-gold">★ 4,7</span></div>
+        </div>
+      </a>
+      <a class="card card-hover" href="course-detail.html">
+        <div class="thumb"><span class="thumb-tag badge badge-info">Pilihan</span></div>
+        <div class="card-pad stack">
+          <span class="eyebrow">Teknologi</span>
+          <h3 class="h3">Dasar Analitik Data untuk Perbankan</h3>
+          <p class="tiny">Dari pertanyaan bisnis ke visualisasi yang dapat ditindaklanjuti.</p>
+          <div class="row-w" style="margin-top:.35rem"><span class="badge">9 modul</span><span class="badge">6 jam</span><span class="badge badge-gold">★ 4,6</span></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="row" style="justify-content:center;gap:.4rem">
+      <button class="btn btn-outline btn-sm">←</button>
+      <button class="btn btn-primary btn-sm">1</button>
+      <button class="btn btn-ghost btn-sm">2</button>
+      <button class="btn btn-ghost btn-sm">3</button>
+      <span class="tiny" style="padding:0 .4rem">…</span>
+      <button class="btn btn-ghost btn-sm">5</button>
+      <button class="btn btn-outline btn-sm">→</button>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

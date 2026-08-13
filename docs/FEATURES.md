@@ -1,4 +1,4 @@
-# Enteraksi LMS - Feature Flows Documentation
+# EnterLMS - Feature Flows Documentation
 
 > **Purpose**: This document describes how each feature works end-to-end, from user action to database changes to UI updates. Use this to understand feature behavior before implementing changes or debugging issues.
 

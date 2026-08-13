@@ -435,5 +435,5 @@ No new tests needed - existing tests cover state queries.
 ## Related Documentation
 
 - `plans/fixing/ROUND5_SECURITY_FIXES.md` - Previous scoping fixes
-- `.claude/skills/enteraksi-resource-scoping/SKILL.md` - Scoping patterns
-- `.claude/skills/enteraksi-concurrency/SKILL.md` - Race condition handling
+- `.claude/skills/enterlms-resource-scoping/SKILL.md` - Scoping patterns
+- `.claude/skills/enterlms-concurrency/SKILL.md` - Race condition handling

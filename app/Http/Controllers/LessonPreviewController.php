@@ -41,6 +41,9 @@ class LessonPreviewController extends Controller
         ]);
 
         $lesson->load(['section', 'media']);
+        // Same as LessonController@show: TipTap JSON must be HTML for the frontend.
+        // Without this, PreviewContentCard v-html's the TipTap `content` array → "[object Object],…"
+        $lesson->append('rich_content_html');
 
         // Get user enrollment status if logged in
         $user = $request->user();

@@ -21,7 +21,7 @@ i need you to write a new plan at this project directory : plans , you can call 
 
 
 ## SKILLS
-from our application patterns, from file organization, code pattern, how we apply solid principle, strategy design pattern, event driven, state machine, component architecture, component pattern  etc. create new skills (can be multiple for effective and efficient for you to use) as : enteraksi-{something} skill in this project directory, as many as skills you could think of. Help your self, design the skill to be useful for you that will make your job easier in the future, lets build this application effective and efficient, high quality & stability above all.
+from our application patterns, from file organization, code pattern, how we apply solid principle, strategy design pattern, event driven, state machine, component architecture, component pattern  etc. create new skills (can be multiple for effective and efficient for you to use) as : enterlms-{something} skill in this project directory, as many as skills you could think of. Help your self, design the skill to be useful for you that will make your job easier in the future, lets build this application effective and efficient, high quality & stability above all.
 
 
 # POST IMPLEMENTATION

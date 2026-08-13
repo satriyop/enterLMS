@@ -25,7 +25,8 @@ import type { ContentType, Media } from '@/types';
 
 interface Props {
     contentType: ContentType;
-    richContent: { content?: string } | null;
+    /** Pre-rendered HTML from TipTap (server-side). Never pass raw TipTap JSON. */
+    richContentHtml?: string | null;
     youtubeVideoId: string | null;
     media: Media[];
 }
@@ -102,9 +103,12 @@ const getDocumentType = (mimeType: string): string => {
                 />
             </div>
 
-            <!-- Text Content -->
-            <div v-else-if="contentType === 'text' && richContent?.content" class="prose prose-sm dark:prose-invert max-w-none">
-                <div v-html="richContent.content" />
+            <!-- Text Content — HTML from rich_content_html (TipTap rendered server-side) -->
+            <div
+                v-else-if="contentType === 'text' && richContentHtml"
+                class="prose prose-sm dark:prose-invert max-w-none"
+            >
+                <div v-html="richContentHtml" />
             </div>
 
             <!-- Video Content (Uploaded) -->

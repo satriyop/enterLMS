@@ -12,14 +12,14 @@ depends_on: []
 
 ## Problem
 
-Enteraksi siap sebagai free internal LMS, tapi **belum first-class** untuk agent (Hermes / OpenClaw). Domain services ada, tapi tidak ada capability layer yang aman untuk AI client: no token API product, no MCP server produk, no agent audit.
+EnterLMS siap sebagai free internal LMS, tapi **belum first-class** untuk agent (Hermes / OpenClaw). Domain services ada, tapi tidak ada capability layer yang aman untuk AI client: no token API product, no MCP server produk, no agent audit.
 
 ## Goal (Depth B v1)
 
 Fondasi resmi:
 
 1. **Auth token** (Laravel Sanctum) untuk agent / automation client
-2. **MCP web server** produk (`/mcp/enteraksi`) via `laravel/mcp`
+2. **MCP web server** produk (`/mcp/enterlms`) via `laravel/mcp`
 3. **Scopes/abilities** ketat (read vs limited write)
 4. **Agent action audit log** (siapa token, tool apa, acting-as siapa, hasil)
 5. **Tidak** embed agent runtime, WhatsApp channel, ACP/A2A multi-agent mesh
@@ -28,7 +28,7 @@ Fondasi resmi:
 
 - [ ] Install Sanctum; `HasApiTokens` pada `User`
 - [ ] Promote `laravel/mcp` sebagai dependency produk (bukan hanya transitive via Boost)
-- [ ] Publish `routes/ai.php`; register `EnteraksiAgentServer` web + `auth:sanctum` + throttle
+- [ ] Publish `routes/ai.php`; register `EnterLmsAgentServer` web + `auth:sanctum` + throttle
 - [ ] Ability constants (scopes agent)
 - [ ] Artisan `agent:token` untuk issue/revoke personal access token ber-ability
 - [ ] Tabel `agent_action_logs` + service logger
@@ -52,10 +52,10 @@ Fondasi resmi:
 Hermes / OpenClaw
     |  Authorization: Bearer <sanctum-token>
     v
-POST /mcp/enteraksi   (Laravel MCP web server)
+POST /mcp/enterlms   (Laravel MCP web server)
     |  auth:sanctum + throttle
     v
-EnteraksiAgentServer
+EnterLmsAgentServer
     |  tools thin → Domain/* services
     |  acting-as = token owner (User)
     v
@@ -86,7 +86,7 @@ Token **hanya** boleh ability yang di-issue. Tool cek ability sebelum domain cal
 
 ## Acceptance
 
-1. Unauthenticated request ke `/mcp/enteraksi` → 401.
+1. Unauthenticated request ke `/mcp/enterlms` → 401.
 2. Token dengan ability `agent:ping` bisa call tool ping; response identity + app name.
 3. Token tanpa ability relevan → tool error / not available (bukan silent success).
 4. Setiap call tool sukses/gagal menulis `agent_action_logs` (tool, user_id, token_id, status, latency).

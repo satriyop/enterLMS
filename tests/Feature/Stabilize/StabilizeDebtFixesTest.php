@@ -109,18 +109,18 @@ it('rejects SCORM content paths that escape the package root', function () {
 it('binds xAPI actor to authenticated user and ignores spoofed actor_id', function () {
     $user = User::factory()->learner()->create([
         'name' => 'Learner Asli',
-        'email' => 'asli@enteraksi.test',
+        'email' => 'asli@enterlms.test',
     ]);
     $victim = User::factory()->learner()->create([
         'name' => 'Korban',
-        'email' => 'korban@enteraksi.test',
+        'email' => 'korban@enterlms.test',
     ]);
 
     $this->actingAs($user)
         ->postJson(route('api.xapi.statements.store'), [
             'verb_id' => 'http://adlnet.gov/expapi/verbs/experienced',
             'verb_display' => 'experienced',
-            'object_id' => 'http://enteraksi.test/activities/lesson/9',
+            'object_id' => 'http://enterlms.test/activities/lesson/9',
             'actor_id' => $victim->id,
             'actor_name' => 'Spoofed Name',
             'actor_mbox' => 'mailto:spoof@evil.test',
@@ -131,7 +131,7 @@ it('binds xAPI actor to authenticated user and ignores spoofed actor_id', functi
     $statement = XapiStatement::latest('id')->first();
     expect($statement->actor_id)->toBe($user->id)
         ->and($statement->actor_name)->toBe('Learner Asli')
-        ->and($statement->actor_mbox)->toBe('mailto:asli@enteraksi.test');
+        ->and($statement->actor_mbox)->toBe('mailto:asli@enterlms.test');
 });
 
 it('rejects xAPI context_enrollment_id owned by another user', function () {
@@ -147,7 +147,7 @@ it('rejects xAPI context_enrollment_id owned by another user', function () {
         ->postJson(route('api.xapi.statements.store'), [
             'verb_id' => 'http://adlnet.gov/expapi/verbs/experienced',
             'verb_display' => 'experienced',
-            'object_id' => 'http://enteraksi.test/activities/lesson/1',
+            'object_id' => 'http://enterlms.test/activities/lesson/1',
             'context_enrollment_id' => $bobEnrollment->id,
             'context_course_id' => $course->id,
         ])
@@ -169,7 +169,7 @@ it('accepts xAPI context when enrollment belongs to the actor', function () {
         ->postJson(route('api.xapi.statements.store'), [
             'verb_id' => 'http://adlnet.gov/expapi/verbs/experienced',
             'verb_display' => 'experienced',
-            'object_id' => 'http://enteraksi.test/activities/lesson/1',
+            'object_id' => 'http://enterlms.test/activities/lesson/1',
             'context_enrollment_id' => $enrollment->id,
             'context_course_id' => $course->id,
         ])
@@ -188,12 +188,12 @@ it('scopes xAPI index to the authenticated learner', function () {
     XapiStatement::factory()->create([
         'actor_id' => $alice->id,
         'verb_id' => 'http://adlnet.gov/expapi/verbs/experienced',
-        'object_id' => 'http://enteraksi.test/a',
+        'object_id' => 'http://enterlms.test/a',
     ]);
     XapiStatement::factory()->create([
         'actor_id' => $bob->id,
         'verb_id' => 'http://adlnet.gov/expapi/verbs/experienced',
-        'object_id' => 'http://enteraksi.test/b',
+        'object_id' => 'http://enterlms.test/b',
     ]);
 
     $response = $this->actingAs($alice)
@@ -202,8 +202,8 @@ it('scopes xAPI index to the authenticated learner', function () {
     $response->assertOk();
     $statements = collect($response->json('statements'));
     expect($statements)->toHaveCount(1)
-        ->and($statements->first()['object']['id'])->toBe('http://enteraksi.test/a')
-        ->and($statements->pluck('object.id'))->not->toContain('http://enteraksi.test/b');
+        ->and($statements->first()['object']['id'])->toBe('http://enterlms.test/a')
+        ->and($statements->pluck('object.id'))->not->toContain('http://enterlms.test/b');
 });
 
 // ---------------------------------------------------------------------------

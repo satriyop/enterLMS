@@ -13,7 +13,7 @@ depends_on: [D-012]
 
 ## Delivered
 
-Free-flow MCP tools on `EnteraksiAgentServer` (`/mcp/enteraksi`), thin wrappers over Domain services:
+Free-flow MCP tools on `EnterLmsAgentServer` (`/mcp/enterlms`), thin wrappers over Domain services:
 
 | Tool | Ability |
 |------|---------|
@@ -31,7 +31,7 @@ Plus existing `agent-ping`.
 
 ```bash
 php artisan agent:token learner@example.com --free-flow
-# Authorization: Bearer <token> → POST /mcp/enteraksi
+# Authorization: Bearer <token> → POST /mcp/enterlms
 ```
 
 Default without `--free-flow` remains **ping-only**.

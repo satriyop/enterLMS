@@ -19,14 +19,14 @@
             })();
         </script>
 
-        {{-- Inline style to set the HTML background color based on our theme in app.css --}}
+        {{-- FOUC: match Claude A warm paper / dark ink --}}
         <style>
             html {
-                background-color: oklch(1 0 0);
+                background-color: #f8f7f4;
             }
 
             html.dark {
-                background-color: oklch(0.145 0 0);
+                background-color: #101311;
             }
         </style>
 
@@ -36,8 +36,9 @@
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
+        {{-- Claude A: Inter (UI) + Fraunces (display) + IBM Plex Mono --}}
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=fraunces:400,500,600|inter:400,500,600,700|ibm-plex-mono:400,500" rel="stylesheet" />
 
         @vite(['resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
         @inertiaHead

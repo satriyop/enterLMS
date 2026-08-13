@@ -1,4 +1,4 @@
-# Enteraksi LMS - Data Model Documentation
+# EnterLMS - Data Model Documentation
 
 > **Purpose**: Complete reference for all database entities, their relationships, attributes, and behaviors. Use this document to understand the data structure before writing queries, migrations, or business logic.
 

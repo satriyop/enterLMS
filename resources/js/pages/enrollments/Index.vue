@@ -1,22 +1,19 @@
 <script setup lang="ts">
 // =============================================================================
-// My Learning Page - Shows all enrollments with filtering by status
-// Uses MyLearningCard component, status filter tabs, pagination
+// My Learning Page — AppLayout shell + guided empty states (Claude B)
 // =============================================================================
 
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
-import FlashMessages from '@/components/FlashMessages.vue';
 import MyLearningCard from '@/components/courses/MyLearningCard.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import { BookOpen, GraduationCap } from 'lucide-vue-next';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { BookOpen } from 'lucide-vue-next';
 import { computed } from 'vue';
 import MyLearningController from '@/actions/App/Http/Controllers/MyLearningController';
 import { index as coursesIndex } from '@/actions/App/Http/Controllers/CourseController';
-import type { DifficultyLevel, PaginationLink } from '@/types';
+import AppLayout from '@/layouts/AppLayout.vue';
+import type { BreadcrumbItem, DifficultyLevel, PaginationLink } from '@/types';
 
 // =============================================================================
 // Types
@@ -66,10 +63,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const page = usePage();
-const appName = computed(() => page.props.name || 'E-Learning');
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: '/learner/dashboard' },
+    { title: 'Pembelajaran saya', href: MyLearningController().url },
+];
 
-// Status filter configuration
 const statusFilters = computed(() => [
     {
         key: null,
@@ -95,9 +93,31 @@ const statusFilters = computed(() => [
 
 const currentStatus = computed(() => props.filters.status);
 
-// =============================================================================
-// Filter Actions
-// =============================================================================
+const emptyTitle = computed(() => {
+    if (currentStatus.value === 'active') {
+        return 'Tidak ada kursus yang sedang dipelajari';
+    }
+    if (currentStatus.value === 'completed') {
+        return 'Belum ada kursus yang diselesaikan';
+    }
+    if (currentStatus.value === 'dropped') {
+        return 'Tidak ada kursus yang dihentikan';
+    }
+    return 'Belum ada pembelajaran';
+});
+
+const emptyDescription = computed(() => {
+    if (currentStatus.value === 'active') {
+        return 'Filter ini hanya menampilkan kursus aktif. Pilih “Semua” untuk melihat riwayat, atau daftar ke kursus baru di katalog.';
+    }
+    if (currentStatus.value === 'completed') {
+        return 'Setelah Anda menyelesaikan kursus dan memenuhi syarat kelulusan, kursus akan muncul di sini beserta progres 100%.';
+    }
+    if (currentStatus.value === 'dropped') {
+        return 'Tidak ada pendaftaran yang dihentikan. Kembali ke filter “Semua” atau lanjutkan kursus yang masih aktif.';
+    }
+    return 'Anda belum terdaftar di kursus mana pun. Jelajahi katalog, pilih modul yang relevan, lalu mulai belajar — progres akan tercatat di halaman ini.';
+});
 
 const filterByStatus = (status: string | null) => {
     router.get(
@@ -106,7 +126,7 @@ const filterByStatus = (status: string | null) => {
         {
             preserveState: true,
             preserveScroll: true,
-        }
+        },
     );
 };
 </script>
@@ -114,32 +134,29 @@ const filterByStatus = (status: string | null) => {
 <template>
     <Head title="Pembelajaran Saya" />
 
-    <div class="min-h-screen bg-background">
-        <Navbar :app-name="appName" />
-
-        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <FlashMessages />
-
-            <!-- Page Header -->
-            <div class="mb-6">
-                <h1 class="flex items-center gap-3 text-2xl font-bold sm:text-3xl">
-                    <GraduationCap class="h-8 w-8 text-primary" />
-                    Pembelajaran Saya
-                    <Badge variant="secondary" class="text-base">
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-8 px-4 py-8 md:px-8 md:py-10">
+            <!-- Page Header — editorial calm -->
+            <div class="space-y-3">
+                <p class="text-eyebrow">Belajar</p>
+                <div class="flex flex-wrap items-center gap-3">
+                    <h1 class="text-editorial-h1">Pembelajaran Saya</h1>
+                    <Badge variant="secondary" class="text-sm font-normal">
                         {{ enrollments.total }}
                     </Badge>
-                </h1>
-                <p class="mt-2 text-muted-foreground">
-                    Kelola dan lanjutkan pembelajaran kursus Anda
+                </div>
+                <p class="text-lead max-w-2xl">
+                    Kelola dan lanjutkan kursus Anda. Gunakan filter status untuk memfokuskan daftar.
                 </p>
             </div>
 
             <!-- Status Filter Tabs -->
-            <div class="mb-6 border-b">
-                <nav class="-mb-px flex gap-4 overflow-x-auto">
+            <div class="border-b">
+                <nav class="-mb-px flex gap-4 overflow-x-auto" aria-label="Filter status">
                     <button
                         v-for="filter in statusFilters"
                         :key="filter.key || 'all'"
+                        type="button"
                         @click="filterByStatus(filter.key)"
                         :class="[
                             'flex items-center gap-2 whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium transition-colors',
@@ -166,7 +183,7 @@ const filterByStatus = (status: string | null) => {
                         v-for="item in enrollments.data"
                         :key="item.id"
                         :course="{
-                            id: item.id,
+                            id: item.course_id,
                             title: item.title,
                             slug: item.slug,
                             thumbnail_path: item.thumbnail_path,
@@ -180,7 +197,6 @@ const filterByStatus = (status: string | null) => {
                     />
                 </div>
 
-                <!-- Pagination -->
                 <nav
                     v-if="enrollments.last_page > 1"
                     class="flex items-center justify-center gap-2 pt-4"
@@ -205,16 +221,12 @@ const filterByStatus = (status: string | null) => {
                 </nav>
             </div>
 
-            <!-- Empty State -->
+            <!-- Empty State — cause + recovery (Claude B) -->
             <EmptyState
                 v-else
                 :icon="BookOpen"
-                :title="currentStatus ? 'Tidak ada kursus dengan status ini' : 'Belum ada pembelajaran'"
-                :description="
-                    currentStatus
-                        ? 'Coba pilih filter status lain, atau jelajahi kursus baru untuk memulai.'
-                        : 'Mulai perjalanan belajar Anda dengan mendaftar ke kursus gratis yang tersedia.'
-                "
+                :title="emptyTitle"
+                :description="emptyDescription"
             >
                 <template #action>
                     <div class="flex flex-wrap items-center justify-center gap-3">
@@ -223,16 +235,14 @@ const filterByStatus = (status: string | null) => {
                             variant="outline"
                             @click="filterByStatus(null)"
                         >
-                            Lihat Semua
+                            Lihat semua status
                         </Button>
                         <Button as-child>
-                            <Link :href="coursesIndex().url">Jelajahi Kursus</Link>
+                            <Link :href="coursesIndex().url">Jelajahi kursus</Link>
                         </Button>
                     </div>
                 </template>
             </EmptyState>
-        </main>
-
-        <Footer :app-name="appName" />
-    </div>
+        </div>
+    </AppLayout>
 </template>

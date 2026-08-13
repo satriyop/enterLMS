@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Masuk · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="login" data-role="learner">
+
+<div class="auth">
+  <aside class="auth-art">
+    <a class="brand" style="color:inherit" href="home.html"><span class="brand-mark" style="background:rgba(255,255,255,.16)">E</span> EnterLMS</a>
+    <div class="stack-m">
+      <h1 class="h1" style="color:inherit;font-size:2.4rem">“Kepatuhan bukan beban administratif. Itu cara kami menjaga kepercayaan nasabah.”</h1>
+      <p style="opacity:.8">Dr. Ratna Kusumawardhani<br /><span style="opacity:.7">Kepala Divisi Kepatuhan · Bank Nusantara</span></p>
+    </div>
+    <p class="tiny" style="color:inherit;opacity:.65">Terenkripsi · Jejak audit ISO 27001</p>
+  </aside>
+
+  <main class="auth-form">
+    <div class="auth-form-in stack-m">
+      <div class="stack">
+        <h1 class="h1">Masuk</h1>
+        <p class="muted body-sm">Gunakan email korporat yang terdaftar di HRIS.</p>
+      </div>
+
+      <form class="stack-m" onsubmit="event.preventDefault();window.mockToast('Autentikasi berhasil','ok');setTimeout(function(){location.href='dashboard.html'},700)">
+        <div class="field">
+          <label class="label" for="email">Email</label>
+          <input class="input" id="email" type="email" value="budi.santoso@banknusantara.co.id" autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <div class="between" style="gap:.5rem">
+            <label class="label" for="pwd">Kata sandi</label>
+            <button type="button" class="tiny" data-reveal="pwd" style="color:var(--primary)">Tampilkan</button>
+          </div>
+          <input class="input" id="pwd" type="password" value="rahasia-kuat" autocomplete="current-password" />
+        </div>
+
+        <div class="between">
+          <label class="check"><input type="checkbox" checked /> <span class="body-sm">Ingat saya</span></label>
+          <a class="tiny" href="#" style="color:var(--primary)">Lupa kata sandi?</a>
+        </div>
+
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Masuk</button>
+      </form>
+
+      <div class="notice notice-info">
+        <span>Akun Anda mengaktifkan verifikasi dua langkah. Kode 6 digit akan diminta setelah ini.</span>
+      </div>
+
+      <!-- 2FA step, revealed for demo -->
+      <details class="card card-pad">
+        <summary class="body-sm" style="cursor:pointer;font-weight:550">Pratinjau langkah 2FA</summary>
+        <div class="stack-m" style="margin-top:1rem">
+          <p class="tiny">Masukkan kode dari aplikasi autentikator Anda.</p>
+          <div class="row" style="gap:.5rem">
+            <input class="input" style="text-align:center;font-family:var(--font-mono);width:52px;padding:0" maxlength="1" value="4" />
+            <input class="input" style="text-align:center;font-family:var(--font-mono);width:52px;padding:0" maxlength="1" value="8" />
+            <input class="input" style="text-align:center;font-family:var(--font-mono);width:52px;padding:0" maxlength="1" value="2" />
+            <input class="input" style="text-align:center;font-family:var(--font-mono);width:52px;padding:0" maxlength="1" value="0" />
+            <input class="input" style="text-align:center;font-family:var(--font-mono);width:52px;padding:0" maxlength="1" value="1" />
+            <input class="input" style="text-align:center;font-family:var(--font-mono);width:52px;padding:0" maxlength="1" />
+          </div>
+          <a class="tiny" href="#" style="color:var(--primary)">Gunakan kode pemulihan</a>
+        </div>
+      </details>
+
+      <p class="body-sm muted" style="text-align:center">Belum punya akun? <a href="register.html" style="color:var(--primary);font-weight:550">Daftar</a></p>
+      <p class="tiny" style="text-align:center"><a href="../index.html">← Indeks mockup</a></p>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

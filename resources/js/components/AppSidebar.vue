@@ -12,55 +12,124 @@ import {
 } from '@/components/ui/sidebar';
 import { index as usersIndex } from '@/actions/App/Http/Controllers/Admin/UserController';
 import { index as questionBankIndex } from '@/actions/App/Http/Controllers/QuestionBankController';
+import { index as auditReportsIndex } from '@/actions/App/Http/Controllers/ComplianceReportController';
+import MyLearningController from '@/actions/App/Http/Controllers/MyLearningController';
 import { dashboard } from '@/routes';
 import { index as coursesIndex } from '@/routes/courses';
 import { index as learningPathsIndex } from '@/routes/learning-paths';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, LayoutGrid, Map, Users, FileText, HelpCircle } from 'lucide-vue-next';
-import { index as auditReportsIndex } from '@/actions/App/Http/Controllers/ComplianceReportController';
+import {
+    Award,
+    BookOpen,
+    FileText,
+    GraduationCap,
+    HelpCircle,
+    LayoutGrid,
+    Map,
+    Users,
+} from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
-const isLmsAdmin = computed(() => user.value?.role === 'lms_admin');
+const role = computed(() => user.value?.role ?? 'learner');
+const isLearner = computed(() => role.value === 'learner');
+const isLmsAdmin = computed(() => role.value === 'lms_admin');
+const canManageCourses = computed(() =>
+    ['content_manager', 'trainer', 'lms_admin'].includes(role.value ?? ''),
+);
+const canViewCompliance = computed(() =>
+    ['lms_admin', 'compliance_officer', 'auditor'].includes(role.value ?? ''),
+);
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Kursus',
-        href: coursesIndex(),
-        icon: BookOpen,
-    },
-    {
-        title: 'Jalur Pembelajaran',
-        href: learningPathsIndex(),
-        icon: Map,
-    },
-    {
-        title: 'Bank Soal',
-        href: questionBankIndex().url,
-        icon: HelpCircle,
-    },
-];
+/** Claude B — guided groups: Belajar / Mengelola / Administrasi */
+const learnNavItems = computed<NavItem[]>(() => {
+    if (isLearner.value) {
+        return [
+            {
+                title: 'Dashboard',
+                href: '/learner/dashboard',
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Cari kursus',
+                href: coursesIndex(),
+                icon: BookOpen,
+            },
+            {
+                title: 'Pembelajaran saya',
+                href: MyLearningController().url,
+                icon: GraduationCap,
+            },
+            {
+                title: 'Jalur pembelajaran',
+                href: '/learner/learning-paths/browse',
+                icon: Map,
+            },
+            {
+                title: 'Sertifikat',
+                href: '/certificates',
+                icon: Award,
+            },
+        ];
+    }
 
-const adminNavItems: NavItem[] = [
-    {
-        title: 'Manajemen Pengguna',
-        href: usersIndex().url,
-        icon: Users,
-    },
-    {
-        title: 'Laporan Kepatuhan',
-        href: auditReportsIndex().url,
-        icon: FileText,
-    },
-];
+    return [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Kursus',
+            href: coursesIndex(),
+            icon: BookOpen,
+        },
+        {
+            title: 'Jalur pembelajaran',
+            href: learningPathsIndex(),
+            icon: Map,
+        },
+    ];
+});
+
+const manageNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [];
+    if (canManageCourses.value) {
+        items.push({
+            title: 'Kelola kursus',
+            href: coursesIndex(),
+            icon: BookOpen,
+        });
+        items.push({
+            title: 'Bank soal',
+            href: questionBankIndex().url,
+            icon: HelpCircle,
+        });
+    }
+    return items;
+});
+
+const adminNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [];
+    if (isLmsAdmin.value) {
+        items.push({
+            title: 'Manajemen pengguna',
+            href: usersIndex().url,
+            icon: Users,
+        });
+    }
+    if (canViewCompliance.value) {
+        items.push({
+            title: 'Laporan kepatuhan',
+            href: auditReportsIndex().url,
+            icon: FileText,
+        });
+    }
+    return items;
+});
 </script>
 
 <template>
@@ -69,7 +138,7 @@ const adminNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link :href="isLearner ? '/learner/dashboard' : dashboard()">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
@@ -78,8 +147,17 @@ const adminNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
-            <NavMain v-if="isLmsAdmin" :items="adminNavItems" label="Admin" />
+            <NavMain :items="learnNavItems" label="Belajar" />
+            <NavMain
+                v-if="manageNavItems.length > 0"
+                :items="manageNavItems"
+                label="Mengelola"
+            />
+            <NavMain
+                v-if="adminNavItems.length > 0"
+                :items="adminNavItems"
+                label="Administrasi"
+            />
         </SidebarContent>
 
         <SidebarFooter>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="dashboard" data-role="learner">
+
+<header data-shell></header>
+
+<main class="page">
+  <div class="wrap stack-l">
+
+    <!-- greeting -->
+    <div class="between">
+      <div class="stack">
+        <span class="eyebrow">Selasa, 11 Agustus 2026</span>
+        <h1 class="h1">Selamat pagi, Budi.</h1>
+        <p class="lead">Dua modul wajib menunggu penyelesaian bulan ini.</p>
+      </div>
+      <a class="btn btn-outline" href="browse.html">Jelajahi kursus</a>
+    </div>
+
+    <!-- deadline alert -->
+    <div class="notice notice-warn">
+      <span><strong>Tenggat 30 September 2026.</strong> Modul <em>Tata Kelola Risiko Operasional</em> belum selesai. Sisa waktu 50 hari.</span>
+    </div>
+
+    <!-- continue learning -->
+    <section>
+      <div class="sec-head">
+        <h2 class="h2">Lanjutkan belajar</h2>
+        <a class="link-arrow" href="my-learning.html">Semua kursus saya →</a>
+      </div>
+
+      <div class="grid-3">
+        <a class="card card-hover" href="lesson.html">
+          <div class="thumb"><span class="thumb-tag badge badge-danger">Wajib</span></div>
+          <div class="card-pad stack">
+            <span class="eyebrow">Tata Kelola Risiko</span>
+            <h3 class="h3">Tata Kelola Risiko Operasional</h3>
+            <div class="bar" style="margin-top:.4rem"><span data-bar="45" style="width:0"></span></div>
+            <p class="tiny">45% · Berikutnya: Identifikasi Risiko Proses</p>
+          </div>
+        </a>
+        <a class="card card-hover" href="lesson.html">
+          <div class="thumb"><span class="thumb-tag badge badge-danger">Wajib</span></div>
+          <div class="card-pad stack">
+            <span class="eyebrow">Pelaporan OJK</span>
+            <h3 class="h3">Pelaporan & Transparansi OJK</h3>
+            <div class="bar" style="margin-top:.4rem"><span data-bar="12" style="width:0"></span></div>
+            <p class="tiny">12% · Berikutnya: Struktur Laporan Berkala</p>
+          </div>
+        </a>
+        <a class="card card-hover" href="lesson.html">
+          <div class="thumb"><span class="thumb-tag badge badge-info">Pilihan</span></div>
+          <div class="card-pad stack">
+            <span class="eyebrow">Transformasi Digital</span>
+            <h3 class="h3">Layanan Perbankan Digital & UX</h3>
+            <div class="bar" style="margin-top:.4rem"><span data-bar="72" style="width:0"></span></div>
+            <p class="tiny">72% · Berikutnya: Studi Kasus Onboarding</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <div class="split">
+      <!-- left column -->
+      <div class="stack-l">
+        <!-- compliance -->
+        <section>
+          <div class="sec-head"><h2 class="h2">Kepatuhan tahun ini</h2><span class="tiny">Periode Jan–Des 2026</span></div>
+          <div class="card">
+            <div class="card-pad" style="border-bottom:1px solid var(--border)">
+              <div class="row" style="gap:1.25rem">
+                <div class="ring lg" data-ring="78"><b>78%</b></div>
+                <div class="stack">
+                  <strong style="font-size:1.05rem">7 dari 9 modul wajib selesai</strong>
+                  <p class="tiny">Unit kerja Anda rata-rata 71%. Anda di atas rata-rata.</p>
+                </div>
+              </div>
+            </div>
+            <ul>
+              <li class="row" style="padding:.85rem 1.35rem;border-bottom:1px solid var(--border);gap:.75rem">
+                <span class="tick on">✓</span><span class="body-sm spacer">Dasar APU-PPT untuk Frontliner</span><span class="badge badge-ok">88</span>
+              </li>
+              <li class="row" style="padding:.85rem 1.35rem;border-bottom:1px solid var(--border);gap:.75rem">
+                <span class="tick on">✓</span><span class="body-sm spacer">Keamanan Informasi & Rekayasa Sosial</span><span class="badge badge-ok">92</span>
+              </li>
+              <li class="row" style="padding:.85rem 1.35rem;border-bottom:1px solid var(--border);gap:.75rem">
+                <span class="tick"></span><span class="body-sm spacer">Tata Kelola Risiko Operasional</span><span class="badge badge-warn">45%</span>
+              </li>
+              <li class="row" style="padding:.85rem 1.35rem;gap:.75rem">
+                <span class="tick"></span><span class="body-sm spacer">Pelaporan & Transparansi OJK</span><span class="badge badge-outline">Baru mulai</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- activity -->
+        <section>
+          <div class="sec-head"><h2 class="h2">Aktivitas terakhir</h2></div>
+          <ul class="stack-m">
+            <li class="row" style="gap:.85rem;align-items:flex-start">
+              <span class="avatar sm" style="background:var(--ok-soft);color:var(--ok)">✓</span>
+              <div class="stack" style="gap:.1rem">
+                <span class="body-sm">Menyelesaikan kuis <strong>Modul 3 — Klasifikasi Risiko</strong> dengan skor 90.</span>
+                <span class="tiny">Kemarin, 16:42</span>
+              </div>
+            </li>
+            <li class="row" style="gap:.85rem;align-items:flex-start">
+              <span class="avatar sm" style="background:var(--gold-soft);color:var(--gold)">★</span>
+              <div class="stack" style="gap:.1rem">
+                <span class="body-sm">Sertifikat <strong>Keamanan Informasi</strong> diterbitkan.</span>
+                <span class="tiny">8 Agustus 2026</span>
+              </div>
+            </li>
+            <li class="row" style="gap:.85rem;align-items:flex-start">
+              <span class="avatar sm">↳</span>
+              <div class="stack" style="gap:.1rem">
+                <span class="body-sm">Terdaftar pada jalur <strong>Spesialis Kepatuhan Tahap 1</strong>.</span>
+                <span class="tiny">3 Agustus 2026</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- right rail -->
+      <aside class="stack-l sticky-side">
+        <div class="card card-pad stack-m">
+          <div class="between"><span class="eyebrow">Jalur aktif</span><a class="tiny" href="path-progress.html">Detail</a></div>
+          <div class="stack">
+            <h3 class="h3">Spesialis Kepatuhan — Tahap 1</h3>
+            <div class="bar thick"><span data-bar="60" style="width:0"></span></div>
+            <p class="tiny">3 dari 5 kursus selesai</p>
+          </div>
+          <a class="btn btn-outline btn-sm btn-block" href="path-progress.html">Lihat timeline</a>
+        </div>
+
+        <div class="card card-pad stack-m">
+          <div class="between"><span class="eyebrow">Undangan</span><span class="badge badge-primary">2 baru</span></div>
+          <div class="stack">
+            <p class="body-sm"><strong>Manajemen Krisis Likuiditas</strong></p>
+            <p class="tiny">Diundang oleh Div. Manajemen Risiko · kedaluwarsa 5 hari lagi</p>
+          </div>
+          <div class="row">
+            <button class="btn btn-primary btn-sm" data-toast="Undangan diterima">Terima</button>
+            <button class="btn btn-ghost btn-sm" data-toast="Undangan ditolak">Tolak</button>
+          </div>
+        </div>
+
+        <div class="card card-pad stack-m" style="background:var(--gold-soft);border-color:transparent">
+          <span class="eyebrow" style="color:var(--gold)">Pencapaian</span>
+          <p class="body-sm">Anda memiliki <strong>2 sertifikat aktif</strong>. Satu lagi untuk membuka lencana <em>Compliance Ready</em>.</p>
+          <a class="link-arrow" href="certificates.html">Lihat sertifikat →</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

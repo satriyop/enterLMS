@@ -200,5 +200,54 @@ describe('LessonPreviewController', function () {
                 ->has('lesson.section')
             );
         });
+
+        it('renders tip tap text as html string not raw content array', function () {
+            $user = User::factory()->create(['role' => 'learner']);
+            $course = Course::factory()->published()->create();
+            $section = CourseSection::factory()->create([
+                'course_id' => $course->id,
+            ]);
+
+            $lesson = Lesson::factory()->text()->create([
+                'course_section_id' => $section->id,
+                'is_free_preview' => true,
+                'title' => 'Apa itu Pencucian Uang?',
+                'rich_content' => [
+                    'type' => 'doc',
+                    'content' => [
+                        [
+                            'type' => 'paragraph',
+                            'content' => [
+                                ['type' => 'text', 'text' => 'Pencucian uang adalah proses menyembunyikan asal-usul dana ilegal.'],
+                            ],
+                        ],
+                        [
+                            'type' => 'paragraph',
+                            'content' => [
+                                ['type' => 'text', 'text' => 'APU-PPT mewajibkan pelaporan transaksi mencurigakan.'],
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+
+            $response = $this
+                ->actingAs($user)
+                ->get(route('courses.lessons.preview', [$course, $lesson]));
+
+            $response->assertSuccessful();
+            $response->assertInertia(fn ($page) => $page
+                ->component('courses/LessonPreview')
+                ->where('lesson.content_type', 'text')
+                // Must be a string of HTML — not TipTap JSON array (which becomes "[object Object],…")
+                ->where('lesson.rich_content_html', fn ($html) => is_string($html)
+                    && str_contains($html, 'Pencucian uang')
+                    && str_contains($html, '<p')
+                    && ! str_contains($html, '[object Object]'))
+                // Raw TipTap document still present for structure; frontend must not v-html this
+                ->where('lesson.rich_content.type', 'doc')
+                ->has('lesson.rich_content.content')
+            );
+        });
     });
 });

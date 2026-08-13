@@ -118,7 +118,7 @@ describe('Free Flow Certificate Journey', function () {
     it('seeds free flow demo course that learners can enroll into', function () {
         $this->seed(FreeFlowDemoSeeder::class);
 
-        $learner = User::query()->where('email', 'learner@enteraksi.test')->first();
+        $learner = User::query()->where('email', 'learner@enterlms.test')->first();
         expect($learner)->not->toBeNull();
         expect(Hash::check(FreeFlowDemoSeeder::DEMO_PASSWORD, $learner->password))->toBeTrue();
 

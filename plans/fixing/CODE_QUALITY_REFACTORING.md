@@ -1,6 +1,6 @@
 # Code Quality Refactoring Plan
 
-> Prioritized fixes for the top 3 code quality issues identified in the Enteraksi codebase.
+> Prioritized fixes for the top 3 code quality issues identified in the EnterLMS codebase.
 
 ## Status: ✅ COMPLETED
 

@@ -1,7 +1,7 @@
 <?php
 
 use App\Domain\Agent\Abilities\AgentAbility;
-use App\Mcp\Servers\EnteraksiAgentServer;
+use App\Mcp\Servers\EnterLmsAgentServer;
 use App\Mcp\Tools\Agent\EnrollCourseTool;
 use App\Mcp\Tools\Agent\GetCourseTool;
 use App\Mcp\Tools\Agent\GetEnrollmentTool;
@@ -38,7 +38,7 @@ it('lists published public courses in catalog', function () {
 
     actingAgent($user);
 
-    EnteraksiAgentServer::tool(ListCatalogTool::class, [])
+    EnterLmsAgentServer::tool(ListCatalogTool::class, [])
         ->assertOk()
         ->assertStructuredContent(function ($json) use ($public) {
             $json->where('ok', true)
@@ -52,7 +52,7 @@ it('denies list-catalog without ability', function () {
     $user = User::factory()->learner()->create();
     actingAgent($user, [AgentAbility::PING]);
 
-    EnteraksiAgentServer::tool(ListCatalogTool::class)
+    EnterLmsAgentServer::tool(ListCatalogTool::class)
         ->assertSee("ability 'agent:catalog.read'");
 });
 
@@ -64,7 +64,7 @@ it('returns course outline for public published course', function () {
 
     actingAgent($user);
 
-    EnteraksiAgentServer::tool(GetCourseTool::class, ['course_id' => $course->id])
+    EnterLmsAgentServer::tool(GetCourseTool::class, ['course_id' => $course->id])
         ->assertOk()
         ->assertStructuredContent(function ($json) use ($course, $lesson) {
             $json->where('ok', true)
@@ -85,7 +85,7 @@ it('runs free-flow enroll and mark lesson complete with audit', function () {
 
     actingAgent($user);
 
-    EnteraksiAgentServer::tool(EnrollCourseTool::class, ['course_id' => $course->id])
+    EnterLmsAgentServer::tool(EnrollCourseTool::class, ['course_id' => $course->id])
         ->assertOk()
         ->assertStructuredContent(function ($json) use ($course) {
             $json->where('ok', true)
@@ -97,11 +97,11 @@ it('runs free-flow enroll and mark lesson complete with audit', function () {
     $enrollment = Enrollment::query()->where('user_id', $user->id)->where('course_id', $course->id)->first();
     expect($enrollment)->not->toBeNull();
 
-    EnteraksiAgentServer::tool(ListMyEnrollmentsTool::class)
+    EnterLmsAgentServer::tool(ListMyEnrollmentsTool::class)
         ->assertOk()
         ->assertSee((string) $enrollment->id);
 
-    EnteraksiAgentServer::tool(GetEnrollmentTool::class, ['enrollment_id' => $enrollment->id])
+    EnterLmsAgentServer::tool(GetEnrollmentTool::class, ['enrollment_id' => $enrollment->id])
         ->assertOk()
         ->assertStructuredContent(function ($json) use ($enrollment) {
             $json->where('ok', true)
@@ -109,7 +109,7 @@ it('runs free-flow enroll and mark lesson complete with audit', function () {
                 ->etc();
         });
 
-    EnteraksiAgentServer::tool(MarkLessonCompleteTool::class, [
+    EnterLmsAgentServer::tool(MarkLessonCompleteTool::class, [
         'enrollment_id' => $enrollment->id,
         'lesson_id' => $lesson->id,
     ])
@@ -120,7 +120,7 @@ it('runs free-flow enroll and mark lesson complete with audit', function () {
                 ->etc();
         });
 
-    EnteraksiAgentServer::tool(GetProgressTool::class, ['enrollment_id' => $enrollment->id])
+    EnterLmsAgentServer::tool(GetProgressTool::class, ['enrollment_id' => $enrollment->id])
         ->assertOk()
         ->assertStructuredContent(function ($json) use ($lesson) {
             $json->where('ok', true)
@@ -146,7 +146,7 @@ it('rejects enroll when payments enabled and course is paid', function () {
 
     actingAgent($user);
 
-    EnteraksiAgentServer::tool(EnrollCourseTool::class, ['course_id' => $course->id])
+    EnterLmsAgentServer::tool(EnrollCourseTool::class, ['course_id' => $course->id])
         ->assertSee('payment_required');
 
     expect(Enrollment::query()->where('user_id', $user->id)->where('course_id', $course->id)->exists())->toBeFalse();
@@ -165,12 +165,12 @@ it('forbids marking progress on another users enrollment', function () {
 
     actingAgent($alice);
 
-    EnteraksiAgentServer::tool(MarkLessonCompleteTool::class, [
+    EnterLmsAgentServer::tool(MarkLessonCompleteTool::class, [
         'enrollment_id' => $bobEnrollment->id,
         'lesson_id' => $lesson->id,
     ])->assertSee('tidak milik');
 
-    EnteraksiAgentServer::tool(GetEnrollmentTool::class, [
+    EnterLmsAgentServer::tool(GetEnrollmentTool::class, [
         'enrollment_id' => $bobEnrollment->id,
     ])->assertSee('tidak milik');
 });
@@ -180,7 +180,7 @@ it('exposes free-flow tools when listing tools over http', function () {
     $token = $user->createToken('t', freeFlowAbilities());
 
     $response = $this->withToken($token->plainTextToken)
-        ->postJson('/mcp/enteraksi', [
+        ->postJson('/mcp/enterlms', [
             'jsonrpc' => '2.0',
             'id' => 1,
             'method' => 'tools/list',

@@ -1,8 +1,8 @@
 # API Reference
 
-HTTP endpoints for Enteraksi LMS. All routes use Inertia.js for rendering, not JSON API responses.
+HTTP endpoints for EnterLMS. All routes use Inertia.js for rendering, not JSON API responses.
 
-> **Note:** This is not a REST API. Enteraksi uses Inertia.js which returns HTML/Inertia responses. For programmatic access, a REST API is planned for future development.
+> **Note:** This is not a REST API. EnterLMS uses Inertia.js which returns HTML/Inertia responses. For programmatic access, a REST API is planned for future development.
 
 ---
 

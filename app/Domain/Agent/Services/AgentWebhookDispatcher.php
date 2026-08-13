@@ -14,11 +14,11 @@ use Throwable;
  */
 class AgentWebhookDispatcher
 {
-    public const HEADER_SIGNATURE = 'X-Enteraksi-Signature';
+    public const HEADER_SIGNATURE = 'X-EnterLMS-Signature';
 
-    public const HEADER_EVENT = 'X-Enteraksi-Event';
+    public const HEADER_EVENT = 'X-EnterLMS-Event';
 
-    public const HEADER_DELIVERY = 'X-Enteraksi-Delivery';
+    public const HEADER_DELIVERY = 'X-EnterLMS-Delivery';
 
     /**
      * @param  array<string, mixed>  $payload
@@ -78,7 +78,7 @@ class AgentWebhookDispatcher
                         self::HEADER_EVENT => $eventName,
                         self::HEADER_DELIVERY => $deliveryId,
                         'Content-Type' => 'application/json',
-                        'User-Agent' => 'Enteraksi-AgentWebhook/1.0',
+                        'User-Agent' => 'EnterLMS-AgentWebhook/1.0',
                     ])
                     ->withBody($body, 'application/json')
                     ->post($endpoint->url);

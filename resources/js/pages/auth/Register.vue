@@ -18,6 +18,41 @@ import { Form, Head } from '@inertiajs/vue3';
     >
         <Head title="Register" />
 
+        <!-- Claude B guided cue: step identity for registration -->
+        <nav
+            class="mb-6 flex flex-wrap items-center gap-2 text-sm"
+            aria-label="Langkah pendaftaran"
+        >
+            <span
+                class="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground"
+            >
+                <span
+                    class="flex h-5 w-5 items-center justify-center rounded-full bg-primary-foreground/20 text-[11px]"
+                    >1</span
+                >
+                Data akun
+            </span>
+            <span class="text-muted-foreground" aria-hidden="true">→</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+                <span
+                    class="flex h-5 w-5 items-center justify-center rounded-full bg-background text-[11px]"
+                    >2</span
+                >
+                Verifikasi email
+            </span>
+            <span class="text-muted-foreground" aria-hidden="true">→</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+                <span
+                    class="flex h-5 w-5 items-center justify-center rounded-full bg-background text-[11px]"
+                    >3</span
+                >
+                Keamanan
+            </span>
+        </nav>
+        <p class="mb-4 text-sm text-muted-foreground">
+            Langkah 1 dari 3 — isi data akun. Setelah berhasil, periksa email untuk verifikasi.
+        </p>
+
         <Form
             v-bind="store.form()"
             :reset-on-success="['password', 'password_confirmation']"

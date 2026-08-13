@@ -26,7 +26,7 @@ class XapiStatementFactory extends Factory
             'verb_id' => 'http://adlnet.gov/expapi/verbs/experienced',
             'verb_display' => 'experienced',
             'object_type' => 'Activity',
-            'object_id' => 'http://enteraksi.test/activities/lesson/'.fake()->numberBetween(1, 100),
+            'object_id' => 'http://enterlms.test/activities/lesson/'.fake()->numberBetween(1, 100),
             'object_name' => fake('id_ID')->sentence(4),
             'source' => 'native',
             'timestamp' => now(),

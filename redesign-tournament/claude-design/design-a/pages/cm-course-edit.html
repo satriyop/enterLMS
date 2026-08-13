@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Editor kursus · EnterLMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/styles.css" />
+<script src="../assets/shell.js"></script>
+</head>
+<body data-page="cm-courses" data-role="content_manager">
+
+<header data-shell></header>
+
+<main class="page-tight">
+  <div class="wrap stack-m">
+
+    <nav class="crumbs"><a href="cm-courses.html">Kelola kursus</a> <span>/</span> <span>Manajemen Krisis Likuiditas</span></nav>
+
+    <div class="between">
+      <div class="stack">
+        <div class="row-w"><span class="badge badge-warn">Draf</span><span class="tiny">Disimpan otomatis 2 menit lalu</span></div>
+        <h1 class="h1" style="font-size:1.75rem">Manajemen Krisis Likuiditas</h1>
+      </div>
+      <div class="row">
+        <a class="btn btn-ghost" href="#">Pratinjau</a>
+        <button class="btn btn-outline" data-toast="Draf disimpan">Simpan draf</button>
+        <button class="btn btn-primary" data-modal-open="publish">Terbitkan</button>
+      </div>
+    </div>
+
+    <div class="notice notice-warn">
+      <span><strong>Belum siap terbit.</strong> Dua hal perlu dilengkapi: deskripsi kursus kosong, dan Seksi 3 belum memiliki pelajaran.</span>
+    </div>
+
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab" data-tab="outline" aria-selected="true">Struktur</button>
+        <button class="tab" data-tab="info" aria-selected="false">Informasi</button>
+        <button class="tab" data-tab="assess" aria-selected="false">Asesmen</button>
+        <button class="tab" data-tab="learners" aria-selected="false">Peserta</button>
+        <button class="tab" data-tab="settings" aria-selected="false">Pengaturan</button>
+      </div>
+
+      <!-- OUTLINE -->
+      <div class="panel" data-panel="outline" style="padding-top:1.75rem">
+        <div class="split">
+          <div class="stack-m">
+            <div class="between">
+              <span class="tiny">3 seksi · 12 pelajaran · estimasi 5 jam</span>
+              <button class="btn btn-outline btn-sm" data-toast="Seksi baru ditambahkan">+ Tambah seksi</button>
+            </div>
+
+            <!-- section 1 -->
+            <div class="card">
+              <div class="card-pad" style="border-bottom:1px solid var(--border);background:var(--surface-2)">
+                <div class="row" style="gap:.7rem">
+                  <svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                  <strong class="body-sm spacer">Seksi 1 — Dasar Likuiditas Bank</strong>
+                  <span class="tiny">5 pelajaran</span>
+                  <button class="tiny" style="color:var(--muted-foreground)">Ubah</button>
+                </div>
+              </div>
+              <div class="card-pad stack">
+                <div class="drag-row">
+                  <svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                  <span class="badge badge-info">Video</span>
+                  <span class="spacer">Apa itu risiko likuiditas</span>
+                  <span class="tiny">9 mnt</span>
+                  <button class="tiny" style="color:var(--muted-foreground)">Ubah</button>
+                </div>
+                <div class="drag-row">
+                  <svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                  <span class="badge">Teks</span>
+                  <span class="spacer">Rasio LCR dan NSFR</span>
+                  <span class="tiny">12 mnt</span>
+                  <button class="tiny" style="color:var(--muted-foreground)">Ubah</button>
+                </div>
+                <div class="drag-row">
+                  <svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                  <span class="badge">SCORM</span>
+                  <span class="spacer">Simulasi arus kas 30 hari</span>
+                  <span class="tiny">20 mnt</span>
+                  <button class="tiny" style="color:var(--muted-foreground)">Ubah</button>
+                </div>
+                <button class="btn btn-ghost btn-sm" style="align-self:flex-start" data-modal-open="addlesson">+ Tambah pelajaran</button>
+              </div>
+            </div>
+
+            <!-- section 2 -->
+            <div class="card">
+              <div class="card-pad" style="border-bottom:1px solid var(--border);background:var(--surface-2)">
+                <div class="row" style="gap:.7rem">
+                  <svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                  <strong class="body-sm spacer">Seksi 2 — Deteksi Dini & Indikator</strong>
+                  <span class="tiny">7 pelajaran</span>
+                  <button class="tiny" style="color:var(--muted-foreground)">Ubah</button>
+                </div>
+              </div>
+              <div class="card-pad stack">
+                <div class="drag-row">
+                  <svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                  <span class="badge badge-info">Video</span>
+                  <span class="spacer">Early warning indicators</span>
+                  <span class="tiny">14 mnt</span>
+                  <button class="tiny" style="color:var(--muted-foreground)">Ubah</button>
+                </div>
+                <button class="btn btn-ghost btn-sm" style="align-self:flex-start" data-modal-open="addlesson">+ Tambah pelajaran</button>
+              </div>
+            </div>
+
+            <!-- section 3 empty -->
+            <div class="card">
+              <div class="card-pad" style="border-bottom:1px solid var(--border);background:var(--surface-2)">
+                <div class="row" style="gap:.7rem">
+                  <svg class="grip" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                  <strong class="body-sm spacer">Seksi 3 — Rencana Kontinjensi</strong>
+                  <span class="badge badge-warn">Kosong</span>
+                </div>
+              </div>
+              <div class="card-pad">
+                <div class="empty" style="padding:2rem 1rem">
+                  <span class="empty-icon">+</span>
+                  <p class="body-sm muted">Seksi ini belum memiliki pelajaran. Kursus tidak dapat diterbitkan sampai setiap seksi terisi.</p>
+                  <button class="btn btn-primary btn-sm" data-modal-open="addlesson">Tambah pelajaran pertama</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="sticky-side stack-m">
+            <div class="card card-pad stack-m">
+              <span class="eyebrow">Kesiapan terbit</span>
+              <div class="stack">
+                <div class="row" style="gap:.6rem"><span class="tick on">✓</span><span class="body-sm">Judul & kategori</span></div>
+                <div class="row" style="gap:.6rem"><span class="tick on">✓</span><span class="body-sm">Gambar sampul</span></div>
+                <div class="row" style="gap:.6rem"><span class="tick"></span><span class="body-sm">Deskripsi kursus</span></div>
+                <div class="row" style="gap:.6rem"><span class="tick on">✓</span><span class="body-sm">Minimal 1 asesmen</span></div>
+                <div class="row" style="gap:.6rem"><span class="tick"></span><span class="body-sm">Semua seksi terisi</span></div>
+              </div>
+              <div class="bar"><span data-bar="60" style="width:0"></span></div>
+              <span class="tiny">3 dari 5 syarat terpenuhi</span>
+            </div>
+
+            <div class="card card-pad stack">
+              <span class="eyebrow">Estimasi durasi</span>
+              <div class="between"><span class="body-sm">Terhitung otomatis</span><strong>5j 12m</strong></div>
+              <button class="btn btn-outline btn-sm" data-toast="Durasi dihitung ulang">Hitung ulang</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- INFO -->
+      <div class="panel" data-panel="info" hidden style="padding-top:1.75rem">
+        <div class="split">
+          <div class="stack-m">
+            <div class="field"><label class="label">Judul kursus</label><input class="input" value="Manajemen Krisis Likuiditas" /></div>
+            <div class="field">
+              <label class="label">Deskripsi <span style="color:var(--danger)">*</span></label>
+              <textarea class="textarea is-err" placeholder="Jelaskan tujuan pembelajaran dan untuk siapa kursus ini…"></textarea>
+              <span class="err">Deskripsi wajib diisi sebelum kursus dapat diterbitkan.</span>
+            </div>
+            <div class="grid-2" style="gap:.9rem">
+              <div class="field"><label class="label">Kategori</label><select class="select"><option>Prudensial</option><option>Tata Kelola & Risiko</option></select></div>
+              <div class="field"><label class="label">Tingkat</label><select class="select"><option>Menengah</option><option>Dasar</option><option>Lanjutan</option></select></div>
+            </div>
+            <div class="field">
+              <label class="label">Tag</label>
+              <div class="row-w"><span class="badge badge-primary">likuiditas ✕</span><span class="badge badge-primary">LCR ✕</span><span class="badge badge-primary">kontinjensi ✕</span><button class="chip">+ tambah</button></div>
+            </div>
+            <div class="field">
+              <label class="label">Rujukan regulasi</label>
+              <input class="input" value="POJK 42/POJK.03/2015 — Kewajiban Pemenuhan Rasio Kecukupan Likuiditas" />
+            </div>
+          </div>
+          <aside class="stack-m">
+            <div class="field">
+              <label class="label">Gambar sampul</label>
+              <div class="thumb tall" style="border-radius:var(--r)"></div>
+              <button class="btn btn-outline btn-sm btn-block" style="margin-top:.6rem" data-toast="Pemilih berkas dibuka">Ganti gambar</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- ASSESSMENTS -->
+      <div class="panel" data-panel="assess" hidden style="padding-top:1.75rem">
+        <div class="stack-m">
+          <div class="between">
+            <span class="tiny">2 asesmen</span>
+            <div class="row"><a class="btn btn-outline btn-sm" href="question-bank.html">Impor dari bank soal</a><button class="btn btn-primary btn-sm" data-toast="Asesmen baru dibuat">+ Asesmen baru</button></div>
+          </div>
+          <div class="table-wrap">
+            <table class="t">
+              <thead><tr><th>Asesmen</th><th>Tipe</th><th>Soal</th><th>Nilai lulus</th><th>Status</th><th class="t-right">Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Kuis Seksi 1</strong></td><td>Formatif</td><td class="num">8</td><td class="num">70</td><td><span class="badge badge-ok">Terbit</span></td><td class="t-right"><a class="link-arrow" href="#">Edit</a></td></tr>
+                <tr><td><strong>Ujian Akhir</strong></td><td>Sumatif</td><td class="num">20</td><td class="num">75</td><td><span class="badge badge-warn">Draf</span></td><td class="t-right"><a class="link-arrow" href="#">Edit</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEARNERS -->
+      <div class="panel" data-panel="learners" hidden style="padding-top:1.75rem">
+        <div class="stack-m">
+          <div class="between">
+            <span class="tiny">Belum ada peserta — kursus masih draf</span>
+            <div class="row"><button class="btn btn-outline btn-sm" data-modal-open="invite">Undang peserta</button><button class="btn btn-outline btn-sm" data-toast="Unggah CSV">Daftarkan massal (CSV)</button></div>
+          </div>
+          <div class="empty">
+            <span class="empty-icon">◇</span>
+            <h3 class="h3">Belum ada peserta</h3>
+            <p class="body-sm muted" style="max-width:44ch">Setelah kursus diterbitkan, Anda dapat mengundang peserta satu per satu atau mendaftarkan seluruh unit kerja sekaligus.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" data-panel="settings" hidden style="padding-top:1.75rem">
+        <div class="read" style="margin-inline:0">
+          <div class="stack-m">
+            <div class="field"><label class="label">Visibilitas</label><select class="select"><option>Publik — muncul di katalog</option><option>Terbatas — hanya via undangan</option><option>Tersembunyi</option></select></div>
+            <div class="field"><label class="label">Harga</label><select class="select"><option>Gratis untuk pegawai</option><option>Berbayar</option></select></div>
+            <div class="field"><label class="label">Batas percobaan asesmen</label><input class="input" type="number" value="3" /></div>
+            <label class="check"><input type="checkbox" checked /> <span class="body-sm">Terbitkan sertifikat otomatis setelah lulus</span></label>
+            <label class="check"><input type="checkbox" checked /> <span class="body-sm">Wajibkan urutan pelajaran (tidak bisa melompat)</span></label>
+            <label class="check"><input type="checkbox" /> <span class="body-sm">Tandai sebagai modul kepatuhan wajib</span></label>
+            <hr class="hairline" />
+            <div class="card card-pad" style="border-color:var(--danger)">
+              <div class="between">
+                <div class="stack"><strong class="body-sm" style="color:var(--danger)">Hapus kursus</strong><span class="tiny">Kursus dipindahkan ke arsip terhapus selama 30 hari.</span></div>
+                <button class="btn btn-danger btn-sm" data-toast="Kursus dipindahkan ke arsip">Hapus</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- publish modal -->
+<div class="backdrop" id="publish">
+  <div class="modal">
+    <div class="card-pad-lg stack-m">
+      <h3 class="h2">Belum dapat diterbitkan</h3>
+      <p class="body-sm muted">Dua syarat belum terpenuhi:</p>
+      <div class="stack">
+        <div class="row" style="gap:.6rem"><span style="color:var(--danger)">✕</span><span class="body-sm">Deskripsi kursus masih kosong</span></div>
+        <div class="row" style="gap:.6rem"><span style="color:var(--danger)">✕</span><span class="body-sm">Seksi 3 belum memiliki pelajaran</span></div>
+      </div>
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn btn-ghost" data-modal-close>Tutup</button>
+        <button class="btn btn-primary" data-modal-close>Perbaiki sekarang</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- add lesson modal -->
+<div class="backdrop" id="addlesson">
+  <div class="modal">
+    <div class="card-pad" style="border-bottom:1px solid var(--border)">
+      <div class="between"><h3 class="h3">Tambah pelajaran</h3><button class="icon-btn" data-modal-close>✕</button></div>
+    </div>
+    <div class="card-pad stack-m">
+      <div class="field"><label class="label">Judul pelajaran</label><input class="input" placeholder="mis. Menyusun rencana pendanaan darurat" /></div>
+      <div class="field">
+        <label class="label">Tipe konten</label>
+        <div class="stack">
+          <button class="opt" aria-pressed="true"><span class="opt-key">▸</span><span>Video — unggah atau tempel tautan</span></button>
+          <button class="opt" aria-pressed="false"><span class="opt-key">¶</span><span>Teks kaya — editor artikel</span></button>
+          <button class="opt" aria-pressed="false"><span class="opt-key">◱</span><span>Paket SCORM — unggah .zip</span></button>
+          <button class="opt" aria-pressed="false"><span class="opt-key">?</span><span>Kuis — tarik dari bank soal</span></button>
+        </div>
+      </div>
+      <div class="field"><label class="label">Estimasi durasi (menit)</label><input class="input" type="number" value="10" /></div>
+    </div>
+    <div class="card-pad row" style="justify-content:flex-end;border-top:1px solid var(--border)">
+      <button class="btn btn-ghost" data-modal-close>Batal</button>
+      <button class="btn btn-primary" data-modal-close data-toast="Pelajaran ditambahkan">Tambah</button>
+    </div>
+  </div>
+</div>
+
+<!-- invite modal -->
+<div class="backdrop" id="invite">
+  <div class="modal">
+    <div class="card-pad-lg stack-m">
+      <h3 class="h2">Undang peserta</h3>
+      <div class="field">
+        <label class="label">Cari pegawai</label>
+        <input class="input" placeholder="Nama, NIP, atau email…" />
+        <span class="hint">Ketik minimal 3 karakter untuk mencari di direktori HRIS.</span>
+      </div>
+      <div class="stack">
+        <div class="drag-row"><span class="avatar sm">SW</span><span class="spacer">Siti Wulandari · Kepatuhan</span><button class="tiny" style="color:var(--danger)">Hapus</button></div>
+        <div class="drag-row"><span class="avatar sm">AH</span><span class="spacer">Ahmad Hidayat · Manajemen Risiko</span><button class="tiny" style="color:var(--danger)">Hapus</button></div>
+      </div>
+      <div class="field"><label class="label">Batas waktu tanggapan</label><input class="input" type="date" value="2026-08-25" /></div>
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn btn-ghost" data-modal-close>Batal</button>
+        <button class="btn btn-primary" data-modal-close data-toast="2 undangan terkirim">Kirim undangan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

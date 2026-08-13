@@ -1,7 +1,7 @@
 <?php
 
 use App\Domain\Agent\Abilities\AgentAbility;
-use App\Mcp\Servers\EnteraksiAgentServer;
+use App\Mcp\Servers\EnterLmsAgentServer;
 use App\Mcp\Tools\Agent\GetUserTrainingStatusTool;
 use App\Mcp\Tools\Agent\ListAuditEventsTool;
 use App\Mcp\Tools\Agent\ListCertificatesTool;
@@ -22,7 +22,7 @@ it('denies compliance tools for learner even with ability', function () {
     $learner = User::factory()->learner()->create();
     Sanctum::actingAs($learner, complianceAbilities());
 
-    EnteraksiAgentServer::tool(ListAuditEventsTool::class, [])
+    EnterLmsAgentServer::tool(ListAuditEventsTool::class, [])
         ->assertSee('role_forbidden');
 
     expect(AgentActionLog::query()->where('tool', 'list-audit-events')->where('status', 'denied')->exists())
@@ -33,7 +33,7 @@ it('denies compliance tools without ability for admin', function () {
     $admin = User::factory()->lmsAdmin()->create();
     Sanctum::actingAs($admin, [AgentAbility::PING]);
 
-    EnteraksiAgentServer::tool(ListAuditEventsTool::class, [])
+    EnterLmsAgentServer::tool(ListAuditEventsTool::class, [])
         ->assertSee("ability 'agent:compliance.read'");
 });
 
@@ -54,7 +54,7 @@ it('lists audit events for compliance officer with ability', function () {
 
     Sanctum::actingAs($officer, complianceAbilities());
 
-    EnteraksiAgentServer::tool(ListAuditEventsTool::class, [
+    EnterLmsAgentServer::tool(ListAuditEventsTool::class, [
         'start_date' => now()->subDays(7)->toDateString(),
         'end_date' => now()->toDateString(),
         'event_name' => 'UserEnrolled',
@@ -87,7 +87,7 @@ it('returns user training status for auditor', function () {
 
     Sanctum::actingAs($auditor, complianceAbilities());
 
-    EnteraksiAgentServer::tool(GetUserTrainingStatusTool::class, [
+    EnterLmsAgentServer::tool(GetUserTrainingStatusTool::class, [
         'user_id' => $learner->id,
     ])
         ->assertOk()
@@ -116,7 +116,7 @@ it('lists certificates for lms admin', function () {
 
     Sanctum::actingAs($admin, complianceAbilities());
 
-    EnteraksiAgentServer::tool(ListCertificatesTool::class, [
+    EnterLmsAgentServer::tool(ListCertificatesTool::class, [
         'user_id' => $learner->id,
         'limit' => 20,
     ])

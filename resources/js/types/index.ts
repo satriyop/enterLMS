@@ -1,5 +1,5 @@
 /**
- * Enteraksi LMS Type Definitions
+ * EnterLMS Type Definitions
  *
  * This file exports all type definitions used across the application.
  * Import types from this file for consistent type usage.

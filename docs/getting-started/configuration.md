@@ -1,6 +1,6 @@
 # Configuration Guide
 
-This guide covers all configuration options for Enteraksi LMS.
+This guide covers all configuration options for EnterLMS.
 
 ## Environment Variables
 
@@ -9,7 +9,7 @@ All configuration is managed through the `.env` file. Never commit this file to 
 ### Application Settings
 
 ```env
-APP_NAME="Enteraksi LMS"
+APP_NAME="EnterLMS"
 APP_ENV=local              # local, staging, production
 APP_KEY=                   # Auto-generated, don't change
 APP_DEBUG=true             # false in production
@@ -30,7 +30,7 @@ APP_URL=http://localhost:8000
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=enteraksi
+DB_DATABASE=enterlms
 DB_USERNAME=root
 DB_PASSWORD=secret
 ```
@@ -45,7 +45,7 @@ DB_CONNECTION=sqlite
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_DATABASE=enteraksi
+DB_DATABASE=enterlms
 DB_USERNAME=postgres
 DB_PASSWORD=secret
 ```
@@ -98,7 +98,7 @@ FILESYSTEM_DISK=s3
 AWS_ACCESS_KEY_ID=your_key
 AWS_SECRET_ACCESS_KEY=your_secret
 AWS_DEFAULT_REGION=ap-southeast-1
-AWS_BUCKET=enteraksi-media
+AWS_BUCKET=enterlms-media
 ```
 
 ### Session & Cache
@@ -203,8 +203,8 @@ php --ini
 ```nginx
 server {
     listen 80;
-    server_name enteraksi.test;
-    root /path/to/enteraksi/public;
+    server_name enterlms.test;
+    root /path/to/enterlms/public;
 
     index index.php;
 
@@ -232,10 +232,10 @@ Ensure `mod_rewrite` is enabled. The `.htaccess` in `public/` handles routing.
 
 ```apache
 <VirtualHost *:80>
-    ServerName enteraksi.test
-    DocumentRoot /path/to/enteraksi/public
+    ServerName enterlms.test
+    DocumentRoot /path/to/enterlms/public
 
-    <Directory /path/to/enteraksi/public>
+    <Directory /path/to/enterlms/public>
         AllowOverride All
         Require all granted
     </Directory>

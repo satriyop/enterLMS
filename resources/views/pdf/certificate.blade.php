@@ -215,7 +215,7 @@
 
             <div class="header">
                 <div class="logo-area">
-                    <div class="logo-text">ENTERAKSI LMS</div>
+                    <div class="logo-text">EnterLMS</div>
                 </div>
                 <div class="certificate-title">Sertifikat</div>
                 <div class="certificate-subtitle">Penyelesaian Kursus</div>
@@ -255,7 +255,7 @@
                     <div class="signature-area">
                         <div class="signature-line"></div>
                         <div class="signature-name">Administrator LMS</div>
-                        <div class="signature-title">Enteraksi Learning Platform</div>
+                        <div class="signature-title">EnterLMS Learning Platform</div>
                     </div>
                 </div>
 
