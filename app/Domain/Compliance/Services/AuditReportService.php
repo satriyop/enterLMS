@@ -7,9 +7,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Generates compliance audit reports from domain event logs.
+ * Generates academy activity reports from domain event logs.
  *
- * OJK-relevant event categories:
+ * Event categories:
  * - Enrollment: UserEnrolled, EnrollmentCompleted, UserDropped, UserReenrolled, CourseStarted
  * - Assessment: AssessmentAttemptStarted, AssessmentAttemptSubmitted, AssessmentGraded
  * - Progress: LessonCompleted, ProgressUpdated
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 class AuditReportService
 {
     /**
-     * OJK compliance-relevant event types grouped by category.
+     * Academy activity event types grouped by category.
      *
      * @var array<string, array<string>>
      */

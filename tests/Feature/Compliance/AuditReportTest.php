@@ -135,6 +135,11 @@ describe('ComplianceReportController', function () {
             ->has('assessmentActivity')
             ->has('eventCategories')
         );
+
+        $page = file_get_contents(resource_path('js/pages/compliance/AuditReportIndex.vue'));
+        expect($page)
+            ->toContain('Jejak Aktivitas Academy')
+            ->not->toContain('OJK');
     });
 
     it('denies learner access to audit reports', function () {

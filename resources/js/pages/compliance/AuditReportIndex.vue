@@ -1,7 +1,6 @@
 <script setup lang="ts">
 // =============================================================================
-// Compliance Audit Report Dashboard
-// OJK-compliant audit reporting with filtering, summary stats, and export
+// Academy activity report: enrollments, progress, assessments, export
 // =============================================================================
 
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -84,8 +83,7 @@ const endDate = ref(props.filters.end_date);
 const isFiltering = ref(false);
 
 const breadcrumbItems: BreadcrumbItem[] = [
-    { title: 'Kepatuhan', href: '#' },
-    { title: 'Laporan Audit', href: index().url },
+    { title: 'Jejak aktivitas', href: index().url },
 ];
 
 // =============================================================================
@@ -158,14 +156,14 @@ const formatDate = (dateStr: string) => {
 </script>
 
 <template>
-    <Head title="Laporan Audit Kepatuhan" />
+    <Head title="Jejak Aktivitas Academy" />
 
     <AppLayout :breadcrumbs="breadcrumbItems">
         <div class="space-y-6">
             <!-- Page Header -->
             <PageHeader
-                title="Laporan Audit Kepatuhan"
-                description="Pantau aktivitas pembelajaran untuk kepatuhan regulasi OJK"
+                title="Jejak Aktivitas Academy"
+                description="Pantau enrollment, progress, dan penilaian di academy ini."
                 :icon="FileText"
             >
                 <template #actions>
