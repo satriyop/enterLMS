@@ -23,7 +23,7 @@ class LearningPathEnrollmentPolicy
         // Users can view their own enrollments
         // LMS admins and trainers can view any enrollment
         return $user->id === $enrollment->user_id
-            || $user->hasRole(['lms_admin', 'trainer']);
+            || $user->hasRole(['lms_admin', 'lms_admin']);
     }
 
     /**

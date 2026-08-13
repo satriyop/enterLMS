@@ -57,7 +57,7 @@ class AssessmentSubmissionTest extends TestCase
         $this->learner = User::factory()->create(['role' => 'learner']);
         $this->admin = User::factory()->create(['role' => 'lms_admin']);
 
-        $contentManager = User::factory()->create(['role' => 'content_manager']);
+        $contentManager = User::factory()->create(['role' => 'lms_admin']);
 
         $this->course = Course::factory()->published()->create([
             'user_id' => $contentManager->id,

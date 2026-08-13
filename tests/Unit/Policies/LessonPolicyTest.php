@@ -24,10 +24,10 @@ beforeEach(function () {
     $this->policy = new LessonPolicy;
 
     $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-    $this->contentManager = User::factory()->create(['role' => 'content_manager']);
-    $this->trainer = User::factory()->create(['role' => 'trainer']);
+    $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
+    $this->trainer = User::factory()->create(['role' => 'lms_admin']);
     $this->learner = User::factory()->create(['role' => 'learner']);
-    $this->courseOwner = User::factory()->create(['role' => 'content_manager']);
+    $this->courseOwner = User::factory()->create(['role' => 'lms_admin']);
 
     // Create DRAFT course for owner to be able to update
     $this->course = Course::factory()->draft()->create(['user_id' => $this->courseOwner->id]);
@@ -46,14 +46,6 @@ it('allows lms_admin to view any lessons', function () {
     expect($this->policy->viewAny($this->lmsAdmin))->toBeTrue();
 });
 
-it('allows content_manager to view any lessons', function () {
-    expect($this->policy->viewAny($this->contentManager))->toBeTrue();
-});
-
-it('allows trainer to view any lessons', function () {
-    expect($this->policy->viewAny($this->trainer))->toBeTrue();
-});
-
 it('denies learner to view any lessons', function () {
     expect($this->policy->viewAny($this->learner))->toBeFalse();
 });
@@ -62,14 +54,6 @@ it('denies learner to view any lessons', function () {
 
 it('allows lms_admin to view lesson', function () {
     expect($this->policy->view($this->lmsAdmin, $this->lesson))->toBeTrue();
-});
-
-it('allows content_manager to view lesson', function () {
-    expect($this->policy->view($this->contentManager, $this->lesson))->toBeTrue();
-});
-
-it('allows trainer to view lesson', function () {
-    expect($this->policy->view($this->trainer, $this->lesson))->toBeTrue();
 });
 
 it('allows course owner to view their lesson', function () {
@@ -134,12 +118,6 @@ it('allows course owner to update their lesson', function () {
 it('allows lms_admin to update any lesson', function () {
     $this->actingAs($this->lmsAdmin);
     expect(Gate::check('update', $this->lesson))->toBeTrue();
-});
-
-it('denies non-owner content_manager to update lesson', function () {
-    $otherManager = User::factory()->create(['role' => 'content_manager']);
-    $this->actingAs($otherManager);
-    expect(Gate::denies('update', $this->lesson))->toBeTrue();
 });
 
 it('denies learner to update lesson', function () {

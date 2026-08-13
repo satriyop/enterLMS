@@ -25,7 +25,7 @@ describe('Required Assessment Blocking Completion', function () {
 
     beforeEach(function () {
         $this->calculator = new AssessmentInclusiveProgressCalculator;
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
     });
 
     describe('Basic Required Assessment Blocking', function () {

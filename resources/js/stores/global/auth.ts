@@ -27,24 +27,16 @@ const isLearner = computed(() =>
     user.value?.role === 'learner'
 );
 
-const isContentManager = computed(() =>
-    user.value?.role === 'content_manager'
-);
-
-const isTrainer = computed(() =>
-    user.value?.role === 'trainer'
-);
-
 const isAdmin = computed(() =>
     user.value?.role === 'lms_admin'
 );
 
 const canManageCourses = computed(() =>
-    user.value?.role !== 'learner'
+    user.value?.role === 'lms_admin'
 );
 
 const canManageAssessments = computed(() =>
-    ['content_manager', 'trainer', 'lms_admin'].includes(user.value?.role ?? '')
+    user.value?.role === 'lms_admin'
 );
 
 // =============================================================================
@@ -113,8 +105,6 @@ export function useAuth() {
         isAuthenticated,
         userRole,
         isLearner,
-        isContentManager,
-        isTrainer,
         isAdmin,
         canManageCourses,
         canManageAssessments,

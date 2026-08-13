@@ -25,7 +25,7 @@ beforeEach(function () {
 
 describe('View Learning Path Details', function () {
     it('can view published learning path details when not enrolled', function () {
-        $creator = User::factory()->create(['role' => 'content_manager']);
+        $creator = User::factory()->create(['role' => 'lms_admin']);
 
         $path = LearningPath::factory()->published()->create([
             'title' => 'Jalur Keamanan Siber',

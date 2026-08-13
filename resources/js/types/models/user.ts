@@ -11,12 +11,11 @@ import type { Timestamps, UserId } from './common';
 // =============================================================================
 
 /**
- * User role - matches database ENUM('learner', 'content_manager', 'trainer', 'lms_admin')
+ * User role - matches database ENUM('learner', 'lms_admin').
+ * See CONTEXT.md; Tenant Admin / Tenant Owner / Operator arrive with ADR 005.
  */
 export const UserRole = {
     LEARNER: 'learner',
-    CONTENT_MANAGER: 'content_manager',
-    TRAINER: 'trainer',
     LMS_ADMIN: 'lms_admin',
 } as const;
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
@@ -43,8 +42,6 @@ export interface User extends Timestamps {
 
     // Computed properties from model accessors (rarely serialized)
     is_learner?: boolean;
-    is_content_manager?: boolean;
-    is_trainer?: boolean;
     is_lms_admin?: boolean;
     can_manage_courses?: boolean;
 }
@@ -140,10 +137,10 @@ export function hasRole(user: User, role: UserRole): boolean {
 }
 
 /**
- * Check if user can manage courses (content_manager, trainer, or lms_admin).
+ * Check if user can manage courses.
  */
 export function canManageCourses(user: User): boolean {
-    return ['content_manager', 'trainer', 'lms_admin'].includes(user.role);
+    return user.role === 'lms_admin';
 }
 
 /**

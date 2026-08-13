@@ -22,8 +22,8 @@ beforeEach(function () {
     $this->policy = new QuestionPolicy;
 
     $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-    $this->contentManager = User::factory()->create(['role' => 'content_manager']);
-    $this->otherContentManager = User::factory()->create(['role' => 'content_manager']);
+    $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
+    $this->otherContentManager = User::factory()->create(['role' => 'lms_admin']);
     $this->learner = User::factory()->create(['role' => 'learner']);
 
     // Create DRAFT course for content_manager to be able to update
@@ -53,16 +53,6 @@ it('allows lms_admin to view any questions for any assessment', function () {
     expect(Gate::check('viewAny', [Question::class, $this->otherAssessment]))->toBeTrue();
 });
 
-it('allows content_manager to view any questions for their own assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::check('viewAny', [Question::class, $this->assessment]))->toBeTrue();
-});
-
-it('denies content_manager to view any questions for other assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::denies('viewAny', [Question::class, $this->otherAssessment]))->toBeTrue();
-});
-
 it('denies learner to view any questions', function () {
     $this->actingAs($this->learner);
     expect(Gate::denies('viewAny', [Question::class, $this->assessment]))->toBeTrue();
@@ -76,32 +66,12 @@ it('allows lms_admin to view any question', function () {
     expect(Gate::check('view', $this->otherQuestion))->toBeTrue();
 });
 
-it('allows content_manager to view questions from their own assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::check('view', $this->question))->toBeTrue();
-});
-
-it('denies content_manager to view questions from other assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::denies('view', $this->otherQuestion))->toBeTrue();
-});
-
 // ========== create (delegates to AssessmentPolicy::update via Gate) ==========
 
 it('allows lms_admin to create questions in any assessment', function () {
     $this->actingAs($this->lmsAdmin);
     expect(Gate::check('create', [Question::class, $this->assessment]))->toBeTrue();
     expect(Gate::check('create', [Question::class, $this->otherAssessment]))->toBeTrue();
-});
-
-it('allows content_manager to create questions in their own assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::check('create', [Question::class, $this->assessment]))->toBeTrue();
-});
-
-it('denies content_manager to create questions in other assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::denies('create', [Question::class, $this->otherAssessment]))->toBeTrue();
 });
 
 it('denies learner to create questions', function () {
@@ -117,16 +87,6 @@ it('allows lms_admin to update any question', function () {
     expect(Gate::check('update', $this->otherQuestion))->toBeTrue();
 });
 
-it('allows content_manager to update questions in their own assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::check('update', $this->question))->toBeTrue();
-});
-
-it('denies content_manager to update questions in other assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::denies('update', $this->otherQuestion))->toBeTrue();
-});
-
 it('denies learner to update questions', function () {
     $this->actingAs($this->learner);
     expect(Gate::denies('update', $this->question))->toBeTrue();
@@ -140,16 +100,6 @@ it('allows lms_admin to delete any question', function () {
     expect(Gate::check('delete', $this->otherQuestion))->toBeTrue();
 });
 
-it('allows content_manager to delete questions in their own assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::check('delete', $this->question))->toBeTrue();
-});
-
-it('denies content_manager to delete questions in other assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::denies('delete', $this->otherQuestion))->toBeTrue();
-});
-
 it('denies learner to delete questions', function () {
     $this->actingAs($this->learner);
     expect(Gate::denies('delete', $this->question))->toBeTrue();
@@ -161,16 +111,6 @@ it('allows lms_admin to reorder questions in any assessment', function () {
     $this->actingAs($this->lmsAdmin);
     expect(Gate::check('reorder', [Question::class, $this->assessment]))->toBeTrue();
     expect(Gate::check('reorder', [Question::class, $this->otherAssessment]))->toBeTrue();
-});
-
-it('allows content_manager to reorder questions in their own assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::check('reorder', [Question::class, $this->assessment]))->toBeTrue();
-});
-
-it('denies content_manager to reorder questions in other assessment', function () {
-    $this->actingAs($this->contentManager);
-    expect(Gate::denies('reorder', [Question::class, $this->otherAssessment]))->toBeTrue();
 });
 
 it('denies learner to reorder questions', function () {

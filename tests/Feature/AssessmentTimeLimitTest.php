@@ -12,7 +12,7 @@ use App\Models\User;
 
 beforeEach(function () {
     $this->learner = User::factory()->create(['role' => 'learner']);
-    $this->contentManager = User::factory()->create(['role' => 'content_manager']);
+    $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
 
     $this->course = Course::factory()->published()->create([
         'user_id' => $this->contentManager->id,

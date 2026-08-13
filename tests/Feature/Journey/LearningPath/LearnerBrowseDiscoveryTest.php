@@ -35,18 +35,6 @@ describe('Browse Page Access', function () {
         $response->assertRedirect(route('login'));
     });
 
-    it('admin and content manager can also access browse page', function () {
-        $admin = User::factory()->create(['role' => 'lms_admin']);
-        $cm = User::factory()->create(['role' => 'content_manager']);
-
-        $this->actingAs($admin)
-            ->get(route('learner.learning-paths.browse'))
-            ->assertOk();
-
-        $this->actingAs($cm)
-            ->get(route('learner.learning-paths.browse'))
-            ->assertOk();
-    });
 });
 
 describe('Learning Path Listing', function () {
@@ -64,7 +52,7 @@ describe('Learning Path Listing', function () {
     });
 
     it('learning paths show correct metadata', function () {
-        $creator = User::factory()->create(['role' => 'content_manager']);
+        $creator = User::factory()->create(['role' => 'lms_admin']);
 
         $path = LearningPath::factory()->published()->create([
             'title' => 'Jalur Keamanan Siber',

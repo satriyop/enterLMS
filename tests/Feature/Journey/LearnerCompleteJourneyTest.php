@@ -128,7 +128,7 @@ describe('Learner Complete Journey', function () {
 
         it('completes restricted course journey via invitation', function () {
             // 1. Create restricted course
-            $contentManager = User::factory()->create(['role' => 'content_manager']);
+            $contentManager = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create([
                 'user_id' => $contentManager->id,
                 'visibility' => 'restricted',
@@ -199,7 +199,7 @@ describe('Learner Complete Journey', function () {
 
         it('completes course with passing required assessment', function () {
             // 1. Create course with lesson and required assessment
-            $contentManager = User::factory()->create(['role' => 'content_manager']);
+            $contentManager = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create([
                 'user_id' => $contentManager->id,
                 'visibility' => 'public',
@@ -268,7 +268,7 @@ describe('Learner Complete Journey', function () {
         });
 
         it('fails assessment and can retry within attempt limit', function () {
-            $contentManager = User::factory()->create(['role' => 'content_manager']);
+            $contentManager = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create([
                 'user_id' => $contentManager->id,
                 'visibility' => 'public',
@@ -406,7 +406,7 @@ describe('Learner Complete Journey', function () {
         });
 
         it('completed learner can view their assessment attempts', function () {
-            $contentManager = User::factory()->create(['role' => 'content_manager']);
+            $contentManager = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create([
                 'user_id' => $contentManager->id,
             ]);

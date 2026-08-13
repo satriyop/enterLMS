@@ -36,12 +36,8 @@ const user = computed(() => page.props.auth.user);
 const role = computed(() => user.value?.role ?? 'learner');
 const isLearner = computed(() => role.value === 'learner');
 const isLmsAdmin = computed(() => role.value === 'lms_admin');
-const canManageCourses = computed(() =>
-    ['content_manager', 'trainer', 'lms_admin'].includes(role.value ?? ''),
-);
-const canViewCompliance = computed(() =>
-    ['lms_admin', 'compliance_officer', 'auditor'].includes(role.value ?? ''),
-);
+const canManageCourses = computed(() => role.value === 'lms_admin');
+const canViewCompliance = computed(() => role.value === 'lms_admin');
 
 /** Claude B — guided groups: Belajar / Mengelola / Administrasi */
 const learnNavItems = computed<NavItem[]>(() => {

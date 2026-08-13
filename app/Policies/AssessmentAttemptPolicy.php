@@ -18,7 +18,7 @@ class AssessmentAttemptPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isLmsAdmin() || $user->isContentManager();
+        return $user->isLmsAdmin();
     }
 
     /**
@@ -32,7 +32,7 @@ class AssessmentAttemptPolicy
         }
 
         // Content managers can view attempts for their own assessments
-        if ($user->isContentManager() && $attempt->assessment->user_id === $user->id) {
+        if ($user->isLmsAdmin() && $attempt->assessment->user_id === $user->id) {
             return true;
         }
 
@@ -109,7 +109,7 @@ class AssessmentAttemptPolicy
         }
 
         // Content managers can view attempts for their own assessments
-        if ($user->isContentManager() && $assessment->user_id === $user->id) {
+        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
 
@@ -171,7 +171,7 @@ class AssessmentAttemptPolicy
         }
 
         // Content managers can grade attempts for their own assessments
-        if ($user->isContentManager() && $assessment->user_id === $user->id) {
+        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
 

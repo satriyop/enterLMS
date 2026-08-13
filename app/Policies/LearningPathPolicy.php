@@ -32,14 +32,18 @@ class LearningPathPolicy
         }
 
         // Content managers can view learning paths they created
-        if ($user->isContentManager()) {
+        if ($user->isLmsAdmin()) {
             return $user->id === $learningPath->created_by;
         }
 
-        // Any authenticated user can view published learning paths
-        // (covers learners and users without explicit roles)
-        if ($learningPath->is_published) {
+        if ($learningPath->isOpenForSelfEnrollment()) {
             return true;
+        }
+
+        if ($learningPath->isPublished() && $learningPath->isRestricted()) {
+            return $learningPath->learnerEnrollments()
+                ->where('user_id', $user->id)
+                ->exists();
         }
 
         return false;
@@ -64,7 +68,7 @@ class LearningPathPolicy
         }
 
         // Content managers can update learning paths they created
-        if ($user->isContentManager()) {
+        if ($user->isLmsAdmin()) {
             return $user->id === $learningPath->created_by;
         }
 
@@ -82,7 +86,7 @@ class LearningPathPolicy
         }
 
         // Content managers can delete learning paths they created
-        if ($user->isContentManager()) {
+        if ($user->isLmsAdmin()) {
             return $user->id === $learningPath->created_by;
         }
 
@@ -100,7 +104,7 @@ class LearningPathPolicy
         }
 
         // Content managers can publish learning paths they created
-        if ($user->isContentManager()) {
+        if ($user->isLmsAdmin()) {
             return $user->id === $learningPath->created_by;
         }
 

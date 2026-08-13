@@ -7,47 +7,11 @@ use App\Models\User;
 
 describe('CourseDurationController', function () {
     describe('POST /courses/{course}/recalculate-duration', function () {
-        it('allows content manager to recalculate own draft course duration', function () {
-            $contentManager = User::factory()->create(['role' => 'content_manager']);
-            $this->actingAs($contentManager);
-
-            $course = Course::factory()->draft()->create([
-                'user_id' => $contentManager->id,
-                'estimated_duration_minutes' => 0,
-            ]);
-
-            $section = CourseSection::factory()->create([
-                'course_id' => $course->id,
-            ]);
-
-            Lesson::factory()->create([
-                'course_section_id' => $section->id,
-                'estimated_duration_minutes' => 30,
-            ]);
-
-            Lesson::factory()->create([
-                'course_section_id' => $section->id,
-                'estimated_duration_minutes' => 45,
-            ]);
-
-            Lesson::factory()->create([
-                'course_section_id' => $section->id,
-                'estimated_duration_minutes' => 60,
-            ]);
-
-            $response = $this->post(route('courses.recalculate-duration', $course));
-
-            $response->assertRedirect(route('courses.edit', $course));
-            $response->assertSessionHas('success', 'Durasi kursus berhasil diperbarui berdasarkan durasi materi.');
-
-            $course->refresh();
-            expect($course->estimated_duration_minutes)->toBe(135);
-        });
 
         it('allows admin to recalculate any course duration', function () {
             asAdmin();
 
-            $otherUser = User::factory()->create(['role' => 'content_manager']);
+            $otherUser = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->published()->create([
                 'user_id' => $otherUser->id,
@@ -86,22 +50,8 @@ describe('CourseDurationController', function () {
             $response->assertForbidden();
         });
 
-        it('prevents content manager from recalculating others course duration', function () {
-            asContentManager();
-
-            $otherUser = User::factory()->create(['role' => 'content_manager']);
-
-            $course = Course::factory()->draft()->create([
-                'user_id' => $otherUser->id,
-            ]);
-
-            $response = $this->post(route('courses.recalculate-duration', $course));
-
-            $response->assertForbidden();
-        });
-
         it('correctly sums lesson durations from multiple sections', function () {
-            $contentManager = User::factory()->create(['role' => 'content_manager']);
+            $contentManager = User::factory()->create(['role' => 'lms_admin']);
             $this->actingAs($contentManager);
 
             $course = Course::factory()->draft()->create([
@@ -146,7 +96,7 @@ describe('CourseDurationController', function () {
         });
 
         it('handles course with no lessons', function () {
-            $contentManager = User::factory()->create(['role' => 'content_manager']);
+            $contentManager = User::factory()->create(['role' => 'lms_admin']);
             $this->actingAs($contentManager);
 
             $course = Course::factory()->draft()->create([
@@ -163,7 +113,7 @@ describe('CourseDurationController', function () {
         });
 
         it('redirects to courses.edit with success flash message', function () {
-            $contentManager = User::factory()->create(['role' => 'content_manager']);
+            $contentManager = User::factory()->create(['role' => 'lms_admin']);
             $this->actingAs($contentManager);
 
             $course = Course::factory()->draft()->create([
@@ -187,7 +137,7 @@ describe('CourseDurationController', function () {
         });
 
         it('ignores soft-deleted lessons in calculation', function () {
-            $contentManager = User::factory()->create(['role' => 'content_manager']);
+            $contentManager = User::factory()->create(['role' => 'lms_admin']);
             $this->actingAs($contentManager);
 
             $course = Course::factory()->draft()->create([

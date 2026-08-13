@@ -31,7 +31,7 @@ class FreeFlowDemoSeeder extends Seeder
 {
     public const DEMO_PASSWORD = 'password';
 
-    public const FREE_COURSE_TITLE = 'Orientasi Kepatuhan Perbankan (Demo Gratis)';
+    public const FREE_COURSE_TITLE = 'Pengenalan Agen AI';
 
     /**
      * @var array<int, array{name: string, email: string, role: string}>
@@ -45,12 +45,12 @@ class FreeFlowDemoSeeder extends Seeder
         [
             'name' => 'Siti Rahayu',
             'email' => 'content@enterlms.test',
-            'role' => 'content_manager',
+            'role' => 'lms_admin',
         ],
         [
             'name' => 'Andi Wijaya',
             'email' => 'trainer@enterlms.test',
-            'role' => 'trainer',
+            'role' => 'lms_admin',
         ],
         [
             'name' => 'Dewi Lestari',
@@ -63,8 +63,8 @@ class FreeFlowDemoSeeder extends Seeder
     {
         $users = $this->seedUsers();
         $category = $this->ensureCategory();
-        $course = $this->seedFreeDemoCourse($users['content_manager'], $users['lms_admin'], $category);
-        $this->seedOptionalQuiz($course, $users['content_manager']);
+        $course = $this->seedFreeDemoCourse($users['lms_admin'], $users['lms_admin'], $category);
+        $this->seedOptionalQuiz($course, $users['lms_admin']);
 
         $this->printSummary($users, $course);
     }
@@ -92,8 +92,8 @@ class FreeFlowDemoSeeder extends Seeder
 
         return [
             'learner' => $map['learner'],
-            'content_manager' => $map['content_manager'],
-            'trainer' => $map['trainer'],
+            'lms_admin' => $map['lms_admin'],
+            'lms_admin' => $map['lms_admin'],
             'lms_admin' => $map['lms_admin'],
         ];
     }
@@ -101,10 +101,10 @@ class FreeFlowDemoSeeder extends Seeder
     private function ensureCategory(): Category
     {
         return Category::query()->firstOrCreate(
-            ['slug' => 'kepatuhan-perbankan'],
+            ['slug' => 'pengenalan-agen'],
             [
-                'name' => 'Kepatuhan Perbankan',
-                'description' => 'Pelatihan kepatuhan, regulasi OJK, dan tata kelola untuk industri jasa keuangan.',
+                'name' => 'Pengenalan Agen',
+                'description' => 'Kursus terbuka tentang apa itu agen AI dan bagaimana academy ini bekerja.',
             ]
         );
     }
@@ -129,15 +129,15 @@ class FreeFlowDemoSeeder extends Seeder
             'user_id' => $contentManager->id,
             'title' => self::FREE_COURSE_TITLE,
             'slug' => Str::slug(self::FREE_COURSE_TITLE).'-demo',
-            'short_description' => 'Kursus onboarding gratis untuk memahami alur belajar EnterLMS: daftar, belajar, selesai, dan dapat sertifikat.',
-            'long_description' => 'Kursus demo gratis ini dirancang agar peserta baru bisa merasakan alur lengkap LMS EnterLMS tanpa pembayaran. Materi mencakup pengenalan kepatuhan perbankan, peran OJK, dan praktik pelaporan dasar.',
+            'short_description' => 'Kursus gratis untuk memahami apa itu agen AI, apa yang dilakukan Enteraksi, dan apa yang tidak kamu operasikan di academy ini.',
+            'long_description' => 'Pengenalan terbuka untuk siapa pun. Tidak ada asumsi kamu punya tenant. Kamu akan mengenal agen AI, peran Tenant Admin versus Operator, dan batas academy ini — EnterLMS bukan control plane.',
             'objectives' => [
-                'Memahami alur belajar di EnterLMS',
-                'Mengenal konsep dasar kepatuhan perbankan',
-                'Menyelesaikan kursus gratis hingga memperoleh sertifikat',
+                'Memahami apa itu agen AI dalam bahasa sehari-hari',
+                'Membedakan peran Tenant Admin, Tenant Owner, dan Operator',
+                'Mengetahui apa yang tidak dioperasikan di EnterLMS',
             ],
             'prerequisites' => [
-                'Tidak ada prasyarat — cocok untuk peserta baru',
+                'Tidak ada prasyarat — terbuka untuk peserta baru',
             ],
             'category_id' => $category->id,
             'thumbnail_path' => $thumbnailPath,
@@ -151,16 +151,16 @@ class FreeFlowDemoSeeder extends Seeder
             'published_by' => $admin->id,
         ]);
 
-        $complianceTag = Tag::query()->firstOrCreate(
-            ['slug' => 'kepatuhan'],
-            ['name' => 'Kepatuhan']
+        $agentTag = Tag::query()->firstOrCreate(
+            ['slug' => 'agen-ai'],
+            ['name' => 'Agen AI']
         );
-        $course->tags()->syncWithoutDetaching([$complianceTag->id]);
+        $course->tags()->syncWithoutDetaching([$agentTag->id]);
 
         $sections = [
             [
                 'title' => 'Memulai di EnterLMS',
-                'description' => 'Orientasi platform dan cara menyelesaikan kursus',
+                'description' => 'Orientasi academy dan cara menyelesaikan kursus',
                 'lessons' => [
                     [
                         'title' => 'Selamat Datang di EnterLMS',
@@ -169,7 +169,7 @@ class FreeFlowDemoSeeder extends Seeder
                         'is_free_preview' => true,
                         'rich_content' => $this->richContent(
                             'Selamat Datang di EnterLMS',
-                            'EnterLMS adalah platform pembelajaran untuk industri perbankan. Selesaikan setiap pelajaran untuk menandai progres Anda, lalu selesaikan kursus untuk memperoleh sertifikat.'
+                            'EnterLMS adalah academy untuk orang yang menjalankan dan membangun keluarga produk AI. Ini bukan sekolah AI generik dan bukan tempat men-deploy agen. Selesaikan setiap pelajaran untuk menandai progres, lalu selesaikan kursus.'
                         ),
                     ],
                     [
@@ -178,40 +178,40 @@ class FreeFlowDemoSeeder extends Seeder
                         'duration' => 5,
                         'rich_content' => $this->richContent(
                             'Cara Menyelesaikan Pelajaran',
-                            'Buka setiap pelajaran secara berurutan. Progres tersimpan otomatis. Setelah semua pelajaran selesai, status enrollment Anda menjadi completed dan sertifikat diterbitkan otomatis.'
+                            'Buka setiap pelajaran secara berurutan. Progres tersimpan otomatis. Setelah semua pelajaran selesai, enrollment menjadi completed dan sertifikat diterbitkan otomatis.'
                         ),
                     ],
                 ],
             ],
             [
-                'title' => 'Dasar Kepatuhan Perbankan',
-                'description' => 'Materi singkat regulasi dan budaya kepatuhan',
+                'title' => 'Apa itu Agen AI',
+                'description' => 'Pengenalan tanpa asumsi kamu punya tenant',
                 'lessons' => [
                     [
-                        'title' => 'Apa itu Kepatuhan (Compliance)?',
+                        'title' => 'Agen yang bekerja untuk manusia',
                         'content_type' => 'text',
                         'duration' => 10,
                         'rich_content' => $this->richContent(
-                            'Apa itu Kepatuhan (Compliance)?',
-                            'Kepatuhan adalah kepatuhan bank terhadap peraturan perundang-undangan, ketentuan OJK, serta kebijakan internal. Tujuannya melindungi nasabah, bank, dan sistem keuangan.'
+                            'Agen yang bekerja untuk manusia',
+                            'Agen AI adalah program yang menerima tujuan, memakai alat, dan bertindak berulang. Di keluarga produk ini, agen itu dijalankan sebagai layanan terkelola — bukan chatbot yang kamu install sendiri.'
                         ),
                     ],
                     [
-                        'title' => 'Peran OJK dalam Industri Perbankan',
+                        'title' => 'Enteraksi, Operator, dan Tenant',
                         'content_type' => 'text',
                         'duration' => 10,
                         'rich_content' => $this->richContent(
-                            'Peran OJK dalam Industri Perbankan',
-                            'OJK mengatur dan mengawasi lembaga jasa keuangan, termasuk bank. Pegawai bank wajib memahami POJK relevan agar operasional tetap aman dan patuh.'
+                            'Enteraksi, Operator, dan Tenant',
+                            'Enteraksi adalah control plane: Tenant Owner dan Tenant Admin mengatur anggota, knowledge, dan kebijakan tenant mereka. Operator Enteraksi menjalankan Deployment. EnterLMS hanya mengajarkan itu, tidak menjalankan runtime.'
                         ),
                     ],
                     [
-                        'title' => 'Ringkasan & Langkah Berikutnya',
+                        'title' => 'Apa yang tidak kamu operasikan di sini',
                         'content_type' => 'text',
                         'duration' => 5,
                         'rich_content' => $this->richContent(
-                            'Ringkasan & Langkah Berikutnya',
-                            'Anda telah menyelesaikan materi demo. Cek halaman Sertifikat Saya untuk mengunduh PDF dan memverifikasi kode sertifikat secara publik.'
+                            'Apa yang tidak kamu operasikan di sini',
+                            'Tidak ada konsol agen hidup di academy ini. Menyelesaikan kursus ini tidak membuka akses produksi. Jika kamu Operator, LMS Admin akan memasukkanmu ke jalur Administrasi OpenClaw setelah kursus ini selesai.'
                         ),
                     ],
                 ],
@@ -252,9 +252,9 @@ class FreeFlowDemoSeeder extends Seeder
         $assessment = Assessment::query()->create([
             'course_id' => $course->id,
             'user_id' => $contentManager->id,
-            'title' => 'Kuis Singkat Orientasi Kepatuhan',
-            'slug' => 'kuis-orientasi-kepatuhan-demo-'.Str::lower(Str::random(6)),
-            'description' => 'Kuis opsional untuk menguji pemahaman materi demo.',
+            'title' => 'Kuis Singkat Pengenalan Agen AI',
+            'slug' => 'kuis-pengenalan-agen-ai-'.Str::lower(Str::random(6)),
+            'description' => 'Kuis opsional untuk menguji pemahaman materi pengenalan.',
             'status' => 'published',
             'passing_score' => 60,
             'max_attempts' => 3,
@@ -265,24 +265,24 @@ class FreeFlowDemoSeeder extends Seeder
 
         $question = Question::query()->create([
             'assessment_id' => $assessment->id,
-            'question_text' => 'OJK adalah lembaga yang mengatur dan mengawasi industri jasa keuangan di Indonesia.',
+            'question_text' => 'EnterLMS adalah control plane untuk men-deploy agen OpenClaw.',
             'question_type' => 'true_false',
             'points' => 10,
             'order' => 1,
-            'correct_answer' => 'true',
+            'correct_answer' => 'false',
         ]);
 
         QuestionOption::query()->create([
             'question_id' => $question->id,
             'option_text' => 'Benar',
-            'is_correct' => true,
+            'is_correct' => false,
             'order' => 1,
         ]);
 
         QuestionOption::query()->create([
             'question_id' => $question->id,
             'option_text' => 'Salah',
-            'is_correct' => false,
+            'is_correct' => true,
             'order' => 2,
         ]);
     }
@@ -327,8 +327,8 @@ class FreeFlowDemoSeeder extends Seeder
             ['Role', 'Name', 'Email'],
             [
                 ['learner', $users['learner']->name, $users['learner']->email],
-                ['content_manager', $users['content_manager']->name, $users['content_manager']->email],
-                ['trainer', $users['trainer']->name, $users['trainer']->email],
+                ['lms_admin', $users['lms_admin']->name, $users['lms_admin']->email],
+                ['lms_admin', $users['lms_admin']->name, $users['lms_admin']->email],
                 ['lms_admin', $users['lms_admin']->name, $users['lms_admin']->email],
             ]
         );

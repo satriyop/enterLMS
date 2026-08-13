@@ -27,7 +27,7 @@ describe('Data Integrity', function () {
     describe('Soft Delete Behavior', function () {
 
         it('soft deleted course is hidden from queries', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
             // Course exists in normal query
@@ -76,7 +76,7 @@ describe('Data Integrity', function () {
         });
 
         it('soft deleted assessment is hidden from course assessments', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $assessment1 = Assessment::factory()->create([
                 'course_id' => $course->id,
@@ -143,7 +143,7 @@ describe('Data Integrity', function () {
         });
 
         it('deleting assessment cascades soft delete to questions', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $cm->id]);
             $q1 = Question::factory()->create(['assessment_id' => $assessment->id]);
             $q2 = Question::factory()->create(['assessment_id' => $assessment->id]);
@@ -160,7 +160,7 @@ describe('Data Integrity', function () {
         });
 
         it('restoring assessment restores cascaded questions', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $cm->id]);
             $q1 = Question::factory()->create(['assessment_id' => $assessment->id]);
             $q2 = Question::factory()->create(['assessment_id' => $assessment->id]);
@@ -207,7 +207,7 @@ describe('Data Integrity', function () {
         });
 
         it('force deleting assessment cascades force delete to questions and attempts', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $assessment = Assessment::factory()->create(['user_id' => $cm->id]);
             $question = Question::factory()->create(['assessment_id' => $assessment->id]);
@@ -268,7 +268,7 @@ describe('Data Integrity', function () {
         });
 
         it('assessment attempts preserved when assessment is soft deleted', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
@@ -358,7 +358,7 @@ describe('Data Integrity', function () {
 
         it('published_at is set when course is published', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
             Lesson::factory()->create(['course_section_id' => $section->id]);
@@ -376,7 +376,7 @@ describe('Data Integrity', function () {
         });
 
         it('submitted_at is set when attempt is submitted', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([

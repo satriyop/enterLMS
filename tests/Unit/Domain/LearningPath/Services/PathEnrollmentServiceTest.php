@@ -196,6 +196,40 @@ describe('PathEnrollmentService', function () {
 
             expect($this->service->canEnroll($user, $path))->toBeTrue();
         });
+
+        it('returns false for a published restricted path', function () {
+            $user = User::factory()->create();
+            $path = LearningPath::factory()->published()->restricted()->create();
+
+            expect($this->service->canEnroll($user, $path))->toBeFalse();
+        });
+    });
+
+    describe('enrollByAdmin', function () {
+        it('enrolls a learner in a restricted published path', function () {
+            $admin = User::factory()->lmsAdmin()->create();
+            $learner = User::factory()->learner()->create();
+            $path = LearningPath::factory()->published()->restricted()->create();
+            $course = Course::factory()->published()->public()->create();
+            $path->courses()->attach($course->id, [
+                'position' => 1,
+                'is_required' => true,
+            ]);
+
+            $enrollment = $this->service->enrollByAdmin($admin, $learner, $path);
+
+            expect($enrollment->user_id)->toBe($learner->id);
+            expect($enrollment->learning_path_id)->toBe($path->id);
+            expect($enrollment->isActive())->toBeTrue();
+        });
+
+        it('rejects a non-admin grant', function () {
+            $actor = User::factory()->learner()->create();
+            $learner = User::factory()->learner()->create();
+            $path = LearningPath::factory()->published()->restricted()->create();
+
+            $this->service->enrollByAdmin($actor, $learner, $path);
+        })->throws(\App\Domain\LearningPath\Exceptions\PathNotOpenForSelfEnrollmentException::class);
     });
 
     describe('re-enrollment', function () {

@@ -14,91 +14,6 @@ class QuestionCrudTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_content_managers_can_create_questions(): void
-    {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        $course = Course::factory()->create(['user_id' => $user->id]);
-        $assessment = Assessment::factory()->create([
-            'course_id' => $course->id,
-            'user_id' => $user->id,
-            'status' => 'draft',
-        ]);
-
-        $response = $this->actingAs($user)->put("/courses/{$course->id}/assessments/{$assessment->id}/questions", [
-            'questions' => [[
-                'question_text' => 'What is 2 + 2?',
-                'question_type' => 'multiple_choice',
-                'points' => 1,
-                'options' => [
-                    ['option_text' => '3', 'is_correct' => false],
-                    ['option_text' => '4', 'is_correct' => true],
-                    ['option_text' => '5', 'is_correct' => false],
-                ],
-            ]],
-        ]);
-
-        $response->assertRedirect();
-        $this->assertDatabaseHas('questions', [
-            'question_text' => 'What is 2 + 2?',
-            'assessment_id' => $assessment->id,
-        ]);
-        $this->assertDatabaseCount('question_options', 3);
-    }
-
-    public function test_content_managers_can_update_questions(): void
-    {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        $course = Course::factory()->create(['user_id' => $user->id]);
-        $assessment = Assessment::factory()->create([
-            'course_id' => $course->id,
-            'user_id' => $user->id,
-            'status' => 'draft',
-        ]);
-        $question = Question::factory()->create([
-            'assessment_id' => $assessment->id,
-            'question_type' => 'multiple_choice',
-        ]);
-
-        $response = $this->actingAs($user)->put("/courses/{$course->id}/assessments/{$assessment->id}/questions", [
-            'questions' => [[
-                'id' => $question->id,
-                'question_text' => 'Updated question text',
-                'question_type' => 'multiple_choice',
-                'points' => 2,
-                'options' => [
-                    ['option_text' => 'Option 1', 'is_correct' => true],
-                    ['option_text' => 'Option 2', 'is_correct' => false],
-                ],
-            ]],
-        ]);
-
-        $response->assertRedirect();
-        $this->assertDatabaseHas('questions', [
-            'id' => $question->id,
-            'question_text' => 'Updated question text',
-            'points' => 2,
-        ]);
-    }
-
-    public function test_content_managers_can_delete_questions(): void
-    {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        $course = Course::factory()->create(['user_id' => $user->id]);
-        $assessment = Assessment::factory()->create([
-            'course_id' => $course->id,
-            'user_id' => $user->id,
-            'status' => 'draft',
-        ]);
-        $question = Question::factory()->create([
-            'assessment_id' => $assessment->id,
-        ]);
-
-        $response = $this->actingAs($user)->delete("/courses/{$course->id}/assessments/{$assessment->id}/questions/{$question->id}");
-
-        $response->assertRedirect();
-        $this->assertSoftDeleted('questions', ['id' => $question->id]);
-    }
-
     public function test_questions_can_have_options(): void
     {
         $question = Question::factory()->create([
@@ -114,7 +29,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_question_validation_requires_text(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,
@@ -135,7 +50,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_question_validation_requires_valid_type(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,
@@ -157,7 +72,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_multiple_choice_questions_require_options(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,
@@ -180,7 +95,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_question_points_must_be_positive(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,
@@ -201,7 +116,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_true_false_question_creation(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,
@@ -232,7 +147,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_short_answer_question_creation(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,
@@ -259,7 +174,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_essay_question_creation(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,
@@ -286,7 +201,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_file_upload_question_creation(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,
@@ -313,7 +228,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_matching_question_creation(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,
@@ -403,7 +318,7 @@ class QuestionCrudTest extends TestCase
 
     public function test_question_with_multiple_correct_options(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->create(['user_id' => $user->id]);
         $assessment = Assessment::factory()->create([
             'course_id' => $course->id,

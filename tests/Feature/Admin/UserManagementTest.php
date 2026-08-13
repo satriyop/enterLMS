@@ -26,18 +26,6 @@ it('denies learner access to user list', function () {
         ->assertForbidden();
 });
 
-it('denies content_manager access to user list', function () {
-    asContentManager()
-        ->get(route('admin.users.index'))
-        ->assertForbidden();
-});
-
-it('denies trainer access to user list', function () {
-    asRole('trainer')
-        ->get(route('admin.users.index'))
-        ->assertForbidden();
-});
-
 // =============================================================================
 // Index Tests
 // =============================================================================
@@ -78,7 +66,7 @@ it('allows lms_admin to search users by email', function () {
 
 it('allows lms_admin to filter users by role', function () {
     User::factory()->create(['role' => 'learner']);
-    User::factory()->create(['role' => 'content_manager']);
+    User::factory()->create(['role' => 'lms_admin']);
 
     asAdmin()
         ->get(route('admin.users.index', ['role' => 'learner']))
@@ -228,7 +216,7 @@ it('allows lms_admin to update user', function () {
         ->put(route('admin.users.update', $user), [
             'name' => 'New Name',
             'email' => 'new@example.com',
-            'role' => 'content_manager',
+            'role' => 'lms_admin',
         ])
         ->assertRedirect(route('admin.users.index'))
         ->assertSessionHas('success');
@@ -236,7 +224,7 @@ it('allows lms_admin to update user', function () {
     $user->refresh();
     expect($user->name)->toBe('New Name');
     expect($user->email)->toBe('new@example.com');
-    expect($user->role)->toBe('content_manager');
+    expect($user->role)->toBe('lms_admin');
 });
 
 it('allows lms_admin to update user password', function () {
@@ -352,7 +340,7 @@ it('denies learner to delete user', function () {
 // =============================================================================
 
 it('includes courses_count and enrollments_count in user list', function () {
-    $user = User::factory()->create(['role' => 'content_manager']);
+    $user = User::factory()->create(['role' => 'lms_admin']);
 
     asAdmin()
         ->get(route('admin.users.index'))

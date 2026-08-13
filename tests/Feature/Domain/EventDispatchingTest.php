@@ -174,7 +174,7 @@ describe('Progress Events', function () {
 
 describe('Assessment Events', function () {
     beforeEach(function () {
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
         $this->learner = User::factory()->create(['role' => 'learner']);
 
         $this->course = Course::factory()->published()->public()->create([

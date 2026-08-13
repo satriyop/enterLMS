@@ -6,38 +6,20 @@ use App\Models\Category;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
-/**
- * Banking / compliance categories for EnterLMS.
- */
 class CategorySeeder extends Seeder
 {
     public function run(): void
     {
         $categories = [
             [
-                'name' => 'Kepatuhan Perbankan',
-                'description' => 'Regulasi OJK, GCG, dan kontrol internal lembaga jasa keuangan.',
+                'name' => 'Pengenalan Agen',
+                'description' => 'Kursus terbuka tentang agen AI dan academy EnterLMS.',
                 'order' => 1,
             ],
             [
-                'name' => 'APU-PPT',
-                'description' => 'Anti pencucian uang, pencegahan pendanaan terorisme, dan due diligence nasabah.',
+                'name' => 'Operasi Agen',
+                'description' => 'Kursus terbatas untuk Operator yang menjalankan runtime agen.',
                 'order' => 2,
-            ],
-            [
-                'name' => 'Transformasi Digital',
-                'description' => 'Digital banking, open banking, API, dan keamanan siber perbankan.',
-                'order' => 3,
-            ],
-            [
-                'name' => 'Manajemen Risiko',
-                'description' => 'Basel, risiko kredit, operasional, likuiditas, dan framework risiko bank.',
-                'order' => 4,
-            ],
-            [
-                'name' => 'Dasar Perbankan',
-                'description' => 'Onboarding industri perbankan Indonesia, produk, dan layanan bank.',
-                'order' => 5,
             ],
         ];
 

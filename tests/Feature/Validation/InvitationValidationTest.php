@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 
 beforeEach(function () {
-    $this->contentManager = User::factory()->create(['role' => 'content_manager']);
+    $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
     $this->course = Course::factory()->published()->create(['user_id' => $this->contentManager->id]);
 });
 
@@ -30,7 +30,7 @@ describe('Store Course Invitation Validation', function () {
     });
 
     it('validates user must be a learner', function () {
-        $trainer = User::factory()->create(['role' => 'trainer']);
+        $trainer = User::factory()->create(['role' => 'lms_admin']);
 
         $this->actingAs($this->contentManager)
             ->post(route('courses.invitations.store', $this->course), [

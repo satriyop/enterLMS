@@ -49,7 +49,7 @@ class EdgeCasesAndBusinessRulesTest extends TestCase
         parent::setUp();
 
         $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
         $this->learner = User::factory()->create(['role' => 'learner']);
 
         $this->course = Course::factory()->published()->create([

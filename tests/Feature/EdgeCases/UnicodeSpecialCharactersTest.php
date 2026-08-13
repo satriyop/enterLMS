@@ -18,14 +18,13 @@ use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\User;
-use Illuminate\Support\Str;
 
 describe('Unicode and Special Character Handling', function () {
 
     describe('Indonesian Characters', function () {
 
         it('course title accepts Indonesian characters', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $indonesianTitle = 'Manajemen Keuangan untuk Pemula';
 
@@ -44,11 +43,11 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('course handles Indonesian long description', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $indonesianDescription = 'Kursus ini membahas tentang manajemen keuangan dasar yang meliputi '
-                . 'pengelolaan anggaran, investasi, dan perencanaan keuangan jangka panjang. '
-                . 'Peserta akan belajar cara membuat laporan keuangan sederhana.';
+                .'pengelolaan anggaran, investasi, dan perencanaan keuangan jangka panjang. '
+                .'Peserta akan belajar cara membuat laporan keuangan sederhana.';
 
             $course = Course::factory()->draft()->create([
                 'user_id' => $cm->id,
@@ -59,7 +58,7 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('lesson content accepts Indonesian text', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
 
@@ -79,7 +78,7 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('rating review accepts Indonesian text', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
 
@@ -89,7 +88,7 @@ describe('Unicode and Special Character Handling', function () {
             ]);
 
             $indonesianReview = 'Kursus yang sangat bagus dan mudah dipahami. '
-                . 'Instruktur menjelaskan dengan sangat jelas dan sabar.';
+                .'Instruktur menjelaskan dengan sangat jelas dan sabar.';
 
             $this->actingAs($learner)
                 ->post(route('courses.ratings.store', $course), [
@@ -108,7 +107,7 @@ describe('Unicode and Special Character Handling', function () {
     describe('Emoji Handling', function () {
 
         it('course title accepts emoji', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $emojiTitle = '🎯 Belajar Python untuk Pemula 🐍';
 
@@ -127,7 +126,7 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('rating review accepts emoji', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
 
@@ -154,7 +153,7 @@ describe('Unicode and Special Character Handling', function () {
     describe('Special Characters', function () {
 
         it('course title handles ampersand', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $this->actingAs($cm)
                 ->post(route('courses.store'), [
@@ -170,7 +169,7 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('course title handles quotes', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $this->actingAs($cm)
                 ->post(route('courses.store'), [
@@ -186,7 +185,7 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('course title handles HTML entities safely', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             // This should be stored safely without XSS risk
             $this->actingAs($cm)
@@ -205,7 +204,7 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('section title handles parentheses and brackets', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
             $this->actingAs($cm)
@@ -224,7 +223,7 @@ describe('Unicode and Special Character Handling', function () {
     describe('Slug Generation', function () {
 
         it('generates valid slug from Indonesian title', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $this->actingAs($cm)
                 ->post(route('courses.store'), [
@@ -241,7 +240,7 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('generates unique slugs for duplicate titles', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             // Create first course
             $course1 = Course::factory()->draft()->create([
@@ -270,7 +269,7 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('slug handles emoji by stripping them', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $this->actingAs($cm)
                 ->post(route('courses.store'), [
@@ -293,7 +292,7 @@ describe('Unicode and Special Character Handling', function () {
 
         it('course browse handles search with special characters', function () {
             $learner = User::factory()->create(['role' => 'learner']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             Course::factory()->published()->public()->create([
                 'user_id' => $cm->id,
@@ -308,7 +307,7 @@ describe('Unicode and Special Character Handling', function () {
 
         it('course browse handles search with SQL wildcards', function () {
             $learner = User::factory()->create(['role' => 'learner']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             Course::factory()->published()->public()->create([
                 'user_id' => $cm->id,
@@ -334,7 +333,7 @@ describe('Unicode and Special Character Handling', function () {
     describe('Unicode in Assessment', function () {
 
         it('question text accepts unicode characters', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->draft()->create([
                 'course_id' => $course->id,
@@ -364,7 +363,7 @@ describe('Unicode and Special Character Handling', function () {
         });
 
         it('essay answer accepts long unicode text', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);

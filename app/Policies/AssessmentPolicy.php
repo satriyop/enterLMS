@@ -23,7 +23,7 @@ class AssessmentPolicy
         }
 
         // Content managers can view assessments for their own courses
-        if ($user->isContentManager() && $course->user_id === $user->id) {
+        if ($user->isLmsAdmin() && $course->user_id === $user->id) {
             return true;
         }
 
@@ -53,7 +53,7 @@ class AssessmentPolicy
         }
 
         // Content managers can view their own assessments
-        if ($user->isContentManager() && $assessment->user_id === $user->id) {
+        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
 
@@ -76,7 +76,7 @@ class AssessmentPolicy
         }
 
         // Content managers can create assessments for their own courses
-        if ($user->isContentManager() && $course->user_id === $user->id) {
+        if ($user->isLmsAdmin() && $course->user_id === $user->id) {
             return true;
         }
 
@@ -95,7 +95,7 @@ class AssessmentPolicy
 
         // LMS Admin can update any assessment
         // Content managers can update their own assessments
-        if ($user->isLmsAdmin() or ($user->isContentManager() && $assessment->user_id === $user->id)) {
+        if ($user->isLmsAdmin()) {
             return true;
         }
 
@@ -128,7 +128,7 @@ class AssessmentPolicy
         }
 
         // Content managers can delete their own assessments
-        if ($user->isContentManager() && $assessment->user_id === $user->id) {
+        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
 
@@ -184,7 +184,7 @@ class AssessmentPolicy
         }
 
         // Content managers can view attempts for their own assessments
-        if ($user->isContentManager() && $assessment->user_id === $user->id) {
+        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
 
@@ -241,7 +241,7 @@ class AssessmentPolicy
         }
 
         // Content managers can grade attempts for their own assessments
-        if ($user->isContentManager() && $assessment->user_id === $user->id) {
+        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
 

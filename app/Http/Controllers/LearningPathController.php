@@ -35,14 +35,9 @@ class LearningPathController extends Controller
                     ->orWhere('description', 'like', '%'.$search.'%');
             });
 
-        // Role-based filtering: learners see only published, content managers see own, admins see all
+        // Learners see paths open for self-enrollment; LMS Admin sees all.
         if ($user->isLearner()) {
-            $query->where('is_published', true);
-        } elseif ($user->isContentManager()) {
-            $query->where(function ($q) use ($user) {
-                $q->where('created_by', $user->id)
-                    ->orWhere('is_published', true);
-            });
+            $query->openForSelfEnrollment();
         }
 
         $learningPaths = $query->orderBy('created_at', 'desc')

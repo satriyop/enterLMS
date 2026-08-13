@@ -53,10 +53,10 @@ class AssessmentPolicyTest extends TestCase
         $this->policy = new AssessmentPolicy;
 
         $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
-        $this->otherContentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
+        $this->otherContentManager = User::factory()->create(['role' => 'lms_admin']);
         $this->learner = User::factory()->create(['role' => 'learner']);
-        $this->trainer = User::factory()->create(['role' => 'trainer']);
+        $this->trainer = User::factory()->create(['role' => 'lms_admin']);
 
         $this->course = Course::factory()->published()->create([
             'user_id' => $this->contentManager->id,
@@ -79,20 +79,6 @@ class AssessmentPolicyTest extends TestCase
     public function test_lms_admin_can_view_any_assessments(): void
     {
         $this->assertTrue($this->policy->viewAny($this->lmsAdmin, $this->course));
-    }
-
-    public function test_content_manager_can_view_any_assessments_for_own_course(): void
-    {
-        $this->assertTrue($this->policy->viewAny($this->contentManager, $this->course));
-    }
-
-    public function test_content_manager_cannot_view_any_assessments_for_other_course(): void
-    {
-        $otherCourse = Course::factory()->create([
-            'user_id' => $this->otherContentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->viewAny($this->contentManager, $otherCourse));
     }
 
     public function test_enrolled_learner_can_view_any_assessments(): void
@@ -128,21 +114,6 @@ class AssessmentPolicyTest extends TestCase
     {
         $this->assertTrue($this->policy->view($this->lmsAdmin, $this->draftAssessment, $this->course));
         $this->assertTrue($this->policy->view($this->lmsAdmin, $this->publishedAssessment, $this->course));
-    }
-
-    public function test_content_manager_can_view_own_assessment(): void
-    {
-        $this->assertTrue($this->policy->view($this->contentManager, $this->draftAssessment, $this->course));
-    }
-
-    public function test_content_manager_cannot_view_other_assessment(): void
-    {
-        $otherAssessment = Assessment::factory()->create([
-            'course_id' => $this->course->id,
-            'user_id' => $this->otherContentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->view($this->contentManager, $otherAssessment, $this->course));
     }
 
     public function test_enrolled_learner_can_view_published_assessment(): void
@@ -191,20 +162,6 @@ class AssessmentPolicyTest extends TestCase
         $this->assertTrue($this->policy->create($this->lmsAdmin, $this->course));
     }
 
-    public function test_content_manager_can_create_assessment_for_own_course(): void
-    {
-        $this->assertTrue($this->policy->create($this->contentManager, $this->course));
-    }
-
-    public function test_content_manager_cannot_create_assessment_for_other_course(): void
-    {
-        $otherCourse = Course::factory()->create([
-            'user_id' => $this->otherContentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->create($this->contentManager, $otherCourse));
-    }
-
     public function test_learner_cannot_create_assessment(): void
     {
         $this->assertFalse($this->policy->create($this->learner, $this->course));
@@ -216,28 +173,6 @@ class AssessmentPolicyTest extends TestCase
     {
         $this->assertTrue($this->policy->update($this->lmsAdmin, $this->draftAssessment, $this->course));
         $this->assertTrue($this->policy->update($this->lmsAdmin, $this->publishedAssessment, $this->course));
-    }
-
-    public function test_content_manager_can_update_own_draft_assessment(): void
-    {
-        $this->assertTrue($this->policy->update($this->contentManager, $this->draftAssessment, $this->course));
-    }
-
-    public function test_content_manager_can_update_own_published_assessment(): void
-    {
-        // Note: Current implementation allows CM to update published assessments they own
-        $this->assertTrue($this->policy->update($this->contentManager, $this->publishedAssessment, $this->course));
-    }
-
-    public function test_content_manager_cannot_update_other_assessment(): void
-    {
-        $otherAssessment = Assessment::factory()->create([
-            'course_id' => $this->course->id,
-            'user_id' => $this->otherContentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $this->assertFalse($this->policy->update($this->contentManager, $otherAssessment, $this->course));
     }
 
     public function test_learner_cannot_update_assessment(): void
@@ -265,27 +200,6 @@ class AssessmentPolicyTest extends TestCase
         $this->assertFalse($this->policy->delete($this->lmsAdmin, $this->publishedAssessment, $this->course));
     }
 
-    public function test_content_manager_can_delete_own_draft_assessment(): void
-    {
-        $this->assertTrue($this->policy->delete($this->contentManager, $this->draftAssessment, $this->course));
-    }
-
-    public function test_content_manager_cannot_delete_own_published_assessment(): void
-    {
-        $this->assertFalse($this->policy->delete($this->contentManager, $this->publishedAssessment, $this->course));
-    }
-
-    public function test_content_manager_cannot_delete_other_assessment(): void
-    {
-        $otherAssessment = Assessment::factory()->create([
-            'course_id' => $this->course->id,
-            'user_id' => $this->otherContentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $this->assertFalse($this->policy->delete($this->contentManager, $otherAssessment, $this->course));
-    }
-
     public function test_learner_cannot_delete_assessment(): void
     {
         $this->assertFalse($this->policy->delete($this->learner, $this->draftAssessment, $this->course));
@@ -296,11 +210,6 @@ class AssessmentPolicyTest extends TestCase
     public function test_lms_admin_can_publish_assessment(): void
     {
         $this->assertTrue($this->policy->publish($this->lmsAdmin, $this->draftAssessment, $this->course));
-    }
-
-    public function test_content_manager_cannot_publish_assessment(): void
-    {
-        $this->assertFalse($this->policy->publish($this->contentManager, $this->draftAssessment, $this->course));
     }
 
     public function test_learner_cannot_publish_assessment(): void
@@ -353,31 +262,6 @@ class AssessmentPolicyTest extends TestCase
         ]);
 
         $this->assertTrue($this->policy->viewAttempt($this->lmsAdmin, $attempt, $this->publishedAssessment, $this->course));
-    }
-
-    public function test_content_manager_can_view_attempts_for_own_assessment(): void
-    {
-        $attempt = AssessmentAttempt::factory()->create([
-            'assessment_id' => $this->publishedAssessment->id,
-            'user_id' => $this->learner->id,
-        ]);
-
-        $this->assertTrue($this->policy->viewAttempt($this->contentManager, $attempt, $this->publishedAssessment, $this->course));
-    }
-
-    public function test_content_manager_cannot_view_attempts_for_other_assessment(): void
-    {
-        $otherAssessment = Assessment::factory()->published()->create([
-            'course_id' => $this->course->id,
-            'user_id' => $this->otherContentManager->id,
-        ]);
-
-        $attempt = AssessmentAttempt::factory()->create([
-            'assessment_id' => $otherAssessment->id,
-            'user_id' => $this->learner->id,
-        ]);
-
-        $this->assertFalse($this->policy->viewAttempt($this->contentManager, $attempt, $otherAssessment, $this->course));
     }
 
     public function test_learner_can_view_own_attempt(): void
@@ -481,31 +365,6 @@ class AssessmentPolicyTest extends TestCase
         ]);
 
         $this->assertTrue($this->policy->grade($this->lmsAdmin, $attempt, $this->publishedAssessment, $this->course));
-    }
-
-    public function test_content_manager_can_grade_attempts_for_own_assessment(): void
-    {
-        $attempt = AssessmentAttempt::factory()->submitted()->create([
-            'assessment_id' => $this->publishedAssessment->id,
-            'user_id' => $this->learner->id,
-        ]);
-
-        $this->assertTrue($this->policy->grade($this->contentManager, $attempt, $this->publishedAssessment, $this->course));
-    }
-
-    public function test_content_manager_cannot_grade_attempts_for_other_assessment(): void
-    {
-        $otherAssessment = Assessment::factory()->published()->create([
-            'course_id' => $this->course->id,
-            'user_id' => $this->otherContentManager->id,
-        ]);
-
-        $attempt = AssessmentAttempt::factory()->submitted()->create([
-            'assessment_id' => $otherAssessment->id,
-            'user_id' => $this->learner->id,
-        ]);
-
-        $this->assertFalse($this->policy->grade($this->contentManager, $attempt, $otherAssessment, $this->course));
     }
 
     public function test_learner_cannot_grade_attempt(): void

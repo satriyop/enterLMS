@@ -39,21 +39,6 @@ it('does not show trashed courses in normal index', function () {
         );
 });
 
-it('ignores trashed filter for non-admin users', function () {
-    $user = User::factory()->create(['role' => 'content_manager']);
-    Course::factory()->draft()->create(['user_id' => $user->id, 'title' => 'My Course']);
-    $trashed = Course::factory()->draft()->create(['user_id' => $user->id, 'title' => 'Deleted Course']);
-    $trashed->delete();
-
-    $this->actingAs($user)->get('/courses?trashed=1')
-        ->assertOk()
-        ->assertInertia(fn (AssertableInertia $page) => $page
-            ->component('courses/Index')
-            ->has('courses.data', 1)
-            ->where('courses.data.0.title', 'My Course')
-        );
-});
-
 // =============================================================================
 // Restore
 // =============================================================================
@@ -70,17 +55,6 @@ it('allows lms admins to restore soft-deleted courses', function () {
         'id' => $course->id,
         'deleted_at' => null,
     ]);
-});
-
-it('forbids content managers from restoring courses', function () {
-    $user = User::factory()->create(['role' => 'content_manager']);
-    $course = Course::factory()->draft()->create(['user_id' => $user->id]);
-    $course->delete();
-
-    $this->actingAs($user)->post("/courses/{$course->id}/restore")
-        ->assertForbidden();
-
-    $this->assertSoftDeleted('courses', ['id' => $course->id]);
 });
 
 it('forbids learners from restoring courses', function () {
@@ -122,17 +96,6 @@ it('deletes thumbnail when force-deleting a course', function () {
 
     Storage::disk('public')->assertMissing('courses/thumbnails/test.jpg');
     $this->assertDatabaseMissing('courses', ['id' => $course->id]);
-});
-
-it('forbids content managers from force-deleting courses', function () {
-    $user = User::factory()->create(['role' => 'content_manager']);
-    $course = Course::factory()->draft()->create(['user_id' => $user->id]);
-    $course->delete();
-
-    $this->actingAs($user)->delete("/courses/{$course->id}/force-delete")
-        ->assertForbidden();
-
-    $this->assertSoftDeleted('courses', ['id' => $course->id]);
 });
 
 it('forbids learners from force-deleting courses', function () {

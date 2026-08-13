@@ -4,8 +4,6 @@ use App\Domain\LearningPath\Services\PathEnrollmentService;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\LearningPath;
-use App\Models\LearningPathCourseProgress;
-use App\Models\LearningPathEnrollment;
 use App\Models\User;
 
 beforeEach(function () {

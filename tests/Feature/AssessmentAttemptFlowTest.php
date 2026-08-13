@@ -48,7 +48,7 @@ class AssessmentAttemptFlowTest extends TestCase
         // Create users with different roles
         $this->learner = User::factory()->create(['role' => 'learner']);
         $this->admin = User::factory()->create(['role' => 'lms_admin']);
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
 
         // Create course with section and lesson (required for valid enrollment)
         $this->course = Course::factory()->published()->create([
@@ -392,19 +392,6 @@ class AssessmentAttemptFlowTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->admin)
-            ->get("/courses/{$this->course->id}/assessments/{$this->assessment->id}/attempts/{$attempt->id}");
-
-        $response->assertOk();
-    }
-
-    public function test_content_manager_can_view_attempts_on_own_assessment(): void
-    {
-        $attempt = AssessmentAttempt::factory()->create([
-            'assessment_id' => $this->assessment->id,
-            'user_id' => $this->learner->id,
-        ]);
-
-        $response = $this->actingAs($this->contentManager)
             ->get("/courses/{$this->course->id}/assessments/{$this->assessment->id}/attempts/{$attempt->id}");
 
         $response->assertOk();

@@ -219,7 +219,7 @@ describe('Data Isolation', function () {
         });
 
         it('assessments belong to single course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course1 = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $course2 = Course::factory()->draft()->create(['user_id' => $cm->id]);
@@ -259,101 +259,9 @@ describe('Data Isolation', function () {
 
     });
 
-    describe('Content Manager Isolation', function () {
-
-        it('CM can only see own courses in management index', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-
-            // Each CM creates their own courses
-            $course1 = Course::factory()->draft()->create(['user_id' => $cm1->id, 'title' => 'CM1 Course']);
-            $course2 = Course::factory()->published()->public()->create(['user_id' => $cm1->id, 'title' => 'CM1 Published']);
-            $course3 = Course::factory()->draft()->create(['user_id' => $cm2->id, 'title' => 'CM2 Course']);
-
-            // CM1 sees only their own courses
-            $this->actingAs($cm1)
-                ->get(route('courses.index'))
-                ->assertOk()
-                ->assertInertia(fn ($page) => $page
-                    ->has('courses.data', 2) // Only CM1's 2 courses
-                );
-
-            // CM2 sees only their own course
-            $this->actingAs($cm2)
-                ->get(route('courses.index'))
-                ->assertOk()
-                ->assertInertia(fn ($page) => $page
-                    ->has('courses.data', 1) // Only CM2's 1 course
-                );
-        });
-
-        it('CM cannot edit other CMs draft course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-
-            $course = Course::factory()->draft()->create([
-                'user_id' => $cm2->id,
-                'title' => 'Original Title',
-            ]);
-
-            // CM1 cannot edit CM2's course
-            $this->actingAs($cm1)
-                ->patch(route('courses.update', $course), [
-                    'title' => 'Hacked Title',
-                    'short_description' => 'Hacked',
-                    'difficulty_level' => 'beginner',
-                    'visibility' => 'public',
-                ])
-                ->assertForbidden();
-
-            // Verify title unchanged
-            expect($course->refresh()->title)->toBe('Original Title');
-        });
-
-        it('CM cannot delete other CMs section', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-
-            // CM1 cannot delete CM2's section
-            $this->actingAs($cm1)
-                ->delete(route('sections.destroy', $section))
-                ->assertForbidden();
-
-            // Verify section still exists
-            $this->assertNotSoftDeleted('course_sections', ['id' => $section->id]);
-        });
-
-        it('CM cannot access other CMs assessment attempts for grading', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm2->id]);
-            $assessment = Assessment::factory()->published()->create([
-                'course_id' => $course->id,
-                'user_id' => $cm2->id,
-            ]);
-
-            Enrollment::factory()->active()->create([
-                'user_id' => $learner->id,
-                'course_id' => $course->id,
-            ]);
-
-            $attempt = AssessmentAttempt::factory()->submitted()->create([
-                'assessment_id' => $assessment->id,
-                'user_id' => $learner->id,
-            ]);
-
-            // CM1 cannot view CM2's assessment attempts
-            $this->actingAs($cm1)
-                ->get(route('assessments.show', [$course, $assessment]))
-                ->assertForbidden();
-        });
-
-    });
+    // 'Content Manager Isolation' lived here. The role collapse (ADR 007) removed
+    // staff-vs-staff isolation: every staff member is now LMS Admin, so there is
+    // no second author to be isolated from.
 
     describe('Cross-Course Progress Isolation', function () {
 

@@ -20,7 +20,7 @@ describe('Status-Based Restrictions', function () {
     describe('Draft Course Restrictions', function () {
 
         it('learner cannot view draft course details', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
@@ -30,7 +30,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('cannot enroll in draft course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->draft()->create([
                 'user_id' => $cm->id,
@@ -43,7 +43,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('course owner can view their draft course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
             $this->actingAs($cm)
@@ -52,7 +52,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('admin can view any draft course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
@@ -66,7 +66,7 @@ describe('Status-Based Restrictions', function () {
     describe('Archived Course Restrictions', function () {
 
         it('cannot enroll in archived course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->create([
                 'user_id' => $cm->id,
@@ -128,7 +128,7 @@ describe('Status-Based Restrictions', function () {
     describe('Draft Assessment Restrictions', function () {
 
         it('cannot start draft assessment', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->create([
@@ -148,7 +148,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('learner cannot view draft assessment details', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->create([
@@ -168,7 +168,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('course owner can view their draft assessment', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->create([
                 'course_id' => $course->id,
@@ -186,7 +186,7 @@ describe('Status-Based Restrictions', function () {
     describe('Archived Assessment Restrictions', function () {
 
         it('cannot start archived assessment', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->create([
@@ -207,7 +207,7 @@ describe('Status-Based Restrictions', function () {
 
         it('existing attempts preserved when assessment is archived', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
@@ -274,7 +274,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('dropped enrollment cannot start assessment', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
@@ -309,7 +309,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('completed enrollment can retake assessments if attempts remain', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
@@ -341,7 +341,7 @@ describe('Status-Based Restrictions', function () {
     describe('Attempt Status Restrictions', function () {
 
         it('cannot submit already submitted attempt', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
@@ -373,7 +373,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('cannot submit graded attempt', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
@@ -405,7 +405,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('cannot grade in-progress attempt', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
@@ -430,7 +430,7 @@ describe('Status-Based Restrictions', function () {
         });
 
         it('learner can view their graded attempt results', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
@@ -457,56 +457,9 @@ describe('Status-Based Restrictions', function () {
 
     describe('Published Course Content Modification Restrictions', function () {
 
-        it('content manager cannot add section to published course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-
-            $this->actingAs($cm)
-                ->post(route('courses.sections.store', $course), ['title' => 'New Section'])
-                ->assertForbidden();
-        });
-
-        it('content manager cannot add lesson to published course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-
-            $this->actingAs($cm)
-                ->post(route('sections.lessons.store', $section), [
-                    'title' => 'New Lesson',
-                    'content_type' => 'text',
-                ])
-                ->assertForbidden();
-        });
-
-        it('content manager cannot delete section from published course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-
-            $this->actingAs($cm)
-                ->delete(route('sections.destroy', $section))
-                ->assertForbidden();
-
-            $this->assertDatabaseHas('course_sections', ['id' => $section->id]);
-        });
-
-        it('content manager cannot delete lesson from published course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-            $lesson = Lesson::factory()->create(['course_section_id' => $section->id]);
-
-            $this->actingAs($cm)
-                ->delete(route('lessons.destroy', $lesson))
-                ->assertForbidden();
-
-            $this->assertDatabaseHas('lessons', ['id' => $lesson->id]);
-        });
-
         it('admin can add section to published course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
 
             $this->actingAs($admin)
@@ -521,7 +474,7 @@ describe('Status-Based Restrictions', function () {
 
         it('admin can add lesson to published course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
 

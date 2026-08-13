@@ -21,13 +21,6 @@ describe('Tag Authorization', function () {
             ->assertOk();
     });
 
-    it('allows content managers to create tags', function () {
-        $user = User::factory()->create(['role' => 'content_manager']);
-
-        $this->actingAs($user)->get(route('admin.tags.create'))
-            ->assertOk();
-    });
-
     it('forbids learners from creating tags', function () {
         $learner = User::factory()->create(['role' => 'learner']);
 
@@ -35,23 +28,6 @@ describe('Tag Authorization', function () {
             ->assertForbidden();
     });
 
-    it('forbids content managers from updating tags', function () {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        $tag = Tag::factory()->create();
-
-        $this->actingAs($user)->put(route('admin.tags.update', $tag), [
-            'name' => 'Updated',
-            'slug' => 'updated',
-        ])->assertForbidden();
-    });
-
-    it('forbids content managers from deleting tags', function () {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        $tag = Tag::factory()->create();
-
-        $this->actingAs($user)->delete(route('admin.tags.destroy', $tag))
-            ->assertForbidden();
-    });
 });
 
 // =============================================================================

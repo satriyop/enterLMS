@@ -6,7 +6,7 @@ use App\Models\Lesson;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->user = User::factory()->create(['role' => 'content_manager']);
+    $this->user = User::factory()->create(['role' => 'lms_admin']);
     $this->course = Course::factory()->draft()->create(['user_id' => $this->user->id]);
 });
 

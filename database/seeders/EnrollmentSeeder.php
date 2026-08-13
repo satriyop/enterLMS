@@ -12,23 +12,24 @@ use Illuminate\Database\Seeder;
 class EnrollmentSeeder extends Seeder
 {
     /**
-     * Alasan drop dalam konteks perbankan Indonesia.
+     * Alasan drop untuk demo academy.
      */
     private array $dropReasons = [
-        'Promosi ke posisi lain yang tidak memerlukan pelatihan ini',
-        'Mutasi ke cabang dengan prioritas pelatihan berbeda',
-        'Cuti panjang karena alasan pribadi',
         'Beban kerja operasional terlalu tinggi',
-        'Mengikuti pelatihan eksternal serupa yang disetujui manajemen',
-        'Perubahan kebijakan pelatihan divisi',
-        'Tidak memenuhi prasyarat teknis yang diperlukan',
+        'Mengikuti pelatihan lain yang disetujui',
+        'Perubahan prioritas tim',
+        'Tidak memenuhi prasyarat yang diperlukan',
         'Terlambat menyelesaikan modul awal sesuai deadline',
+        'Cuti panjang karena alasan pribadi',
     ];
 
     public function run(): void
     {
         $learners = User::where('role', 'learner')->get();
-        $publishedCourses = Course::where('status', 'published')->get();
+        $publishedCourses = Course::query()
+            ->where('status', 'published')
+            ->where('visibility', 'public')
+            ->get();
 
         if ($learners->isEmpty()) {
             $this->command->warn('No learner users found. Run DatabaseSeeder first.');
@@ -37,7 +38,7 @@ class EnrollmentSeeder extends Seeder
         }
 
         if ($publishedCourses->isEmpty()) {
-            $this->command->warn('No published courses found. Run BankingCourseSeeder / FreeFlowDemoSeeder first.');
+            $this->command->warn('No published public courses found. Run FreeFlowDemoSeeder first.');
 
             return;
         }
@@ -52,7 +53,7 @@ class EnrollmentSeeder extends Seeder
 
         $this->command->info('Creating enrollments for learners...');
 
-        $trainerUser = User::where('role', 'trainer')->first();
+        $trainerUser = User::where('role', 'lms_admin')->first();
 
         foreach ($learners as $learner) {
             // Skip courses where this learner already has an enrollment

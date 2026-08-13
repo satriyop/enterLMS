@@ -26,8 +26,8 @@ describe('Admin Capabilities', function () {
 
         it('admin can view all courses from any owner', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
+            $cm1 = User::factory()->create(['role' => 'lms_admin']);
+            $cm2 = User::factory()->create(['role' => 'lms_admin']);
 
             Course::factory()->draft()->create(['user_id' => $cm1->id, 'title' => 'CM1 Draft']);
             Course::factory()->published()->create(['user_id' => $cm1->id, 'title' => 'CM1 Published']);
@@ -44,7 +44,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can view draft courses they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $draftCourse = Course::factory()->draft()->create([
                 'user_id' => $cm->id,
@@ -63,7 +63,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can edit courses they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create([
                 'user_id' => $cm->id,
@@ -90,7 +90,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can delete courses they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
@@ -103,7 +103,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can publish courses they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $draftCourse = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $draftCourse->id]);
@@ -118,7 +118,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can unpublish courses they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $publishedCourse = Course::factory()->published()->create(['user_id' => $cm->id]);
 
@@ -135,7 +135,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can create sections in courses they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
@@ -152,7 +152,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can delete sections from courses they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
@@ -166,7 +166,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can create lessons in courses they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
@@ -184,7 +184,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can delete lessons from courses they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
@@ -203,7 +203,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can view all assessments from any course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
@@ -218,7 +218,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can edit assessments they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->draft()->create([
@@ -246,7 +246,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can delete assessments they do not own', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->draft()->create([
@@ -263,7 +263,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can view all assessment attempts from any learner', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
@@ -290,7 +290,7 @@ describe('Admin Capabilities', function () {
 
         it('admin can grade any assessment attempt', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
@@ -328,9 +328,9 @@ describe('Admin Capabilities', function () {
 
         it('admin can access content from multiple different owners in same session', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $trainer = User::factory()->create(['role' => 'trainer']);
+            $cm1 = User::factory()->create(['role' => 'lms_admin']);
+            $cm2 = User::factory()->create(['role' => 'lms_admin']);
+            $trainer = User::factory()->create(['role' => 'lms_admin']);
 
             $course1 = Course::factory()->draft()->create(['user_id' => $cm1->id]);
             $course2 = Course::factory()->published()->create(['user_id' => $cm2->id]);
@@ -365,7 +365,7 @@ describe('Admin Capabilities', function () {
 
         it('admin cannot be restricted by course visibility', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             // Create restricted course
             $restrictedCourse = Course::factory()->published()->create([
@@ -387,26 +387,18 @@ describe('Admin Capabilities', function () {
 
     describe('Admin-Only Actions', function () {
 
-        it('only admin can publish courses from other CMs', function () {
+        it('only admin can publish a course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
+            $learner = User::factory()->create(['role' => 'learner']);
 
-            $course = Course::factory()->draft()->create(['user_id' => $cm1->id]);
+            $course = Course::factory()->draft()->create(['user_id' => $admin->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
             Lesson::factory()->create(['course_section_id' => $section->id]);
 
-            // CM2 cannot publish CM1's course
-            $this->actingAs($cm2)
+            $this->actingAs($learner)
                 ->post(route('courses.publish', $course))
                 ->assertForbidden();
 
-            // CM1 also cannot publish own course (only admin can)
-            $this->actingAs($cm1)
-                ->post(route('courses.publish', $course))
-                ->assertForbidden();
-
-            // Admin CAN publish
             $this->actingAs($admin)
                 ->post(route('courses.publish', $course))
                 ->assertRedirect();
@@ -416,22 +408,19 @@ describe('Admin Capabilities', function () {
 
         it('only admin can delete courses with enrollments', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
             $learner = User::factory()->create(['role' => 'learner']);
 
-            $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
+            $course = Course::factory()->published()->public()->create(['user_id' => $admin->id]);
 
             Enrollment::factory()->active()->create([
                 'user_id' => $learner->id,
                 'course_id' => $course->id,
             ]);
 
-            // CM cannot delete course with active enrollments
-            $this->actingAs($cm)
+            $this->actingAs($learner)
                 ->delete(route('courses.destroy', $course))
                 ->assertForbidden();
 
-            // Admin CAN delete course with enrollments
             $this->actingAs($admin)
                 ->delete(route('courses.destroy', $course))
                 ->assertRedirect();
@@ -453,7 +442,7 @@ describe('Admin Capabilities', function () {
 
         it('admin sees system-wide statistics', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             // Create some data
@@ -474,7 +463,7 @@ describe('Admin Capabilities', function () {
 
             // Verify user counts show different roles exist
             expect(User::where('role', 'lms_admin')->count())->toBeGreaterThanOrEqual(1);
-            expect(User::where('role', 'content_manager')->count())->toBeGreaterThanOrEqual(1);
+            expect(User::where('role', 'lms_admin')->count())->toBeGreaterThanOrEqual(1);
             expect(User::where('role', 'learner')->count())->toBeGreaterThanOrEqual(1);
         });
 

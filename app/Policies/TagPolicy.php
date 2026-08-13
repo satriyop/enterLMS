@@ -19,7 +19,7 @@ class TagPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isLmsAdmin() || $user->isContentManager();
+        return $user->isLmsAdmin();
     }
 
     /**

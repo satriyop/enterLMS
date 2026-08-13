@@ -21,10 +21,10 @@ beforeEach(function () {
     $this->policy = new CourseSectionPolicy;
 
     $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-    $this->contentManager = User::factory()->create(['role' => 'content_manager']);
-    $this->trainer = User::factory()->create(['role' => 'trainer']);
+    $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
+    $this->trainer = User::factory()->create(['role' => 'lms_admin']);
     $this->learner = User::factory()->create(['role' => 'learner']);
-    $this->courseOwner = User::factory()->create(['role' => 'content_manager']);
+    $this->courseOwner = User::factory()->create(['role' => 'lms_admin']);
 
     // Create DRAFT course for owner to be able to update
     $this->course = Course::factory()->draft()->create(['user_id' => $this->courseOwner->id]);
@@ -39,14 +39,6 @@ beforeEach(function () {
 
 it('allows lms_admin to view any sections', function () {
     expect($this->policy->viewAny($this->lmsAdmin))->toBeTrue();
-});
-
-it('allows content_manager to view any sections', function () {
-    expect($this->policy->viewAny($this->contentManager))->toBeTrue();
-});
-
-it('allows trainer to view any sections', function () {
-    expect($this->policy->viewAny($this->trainer))->toBeTrue();
 });
 
 it('denies learner to view any sections', function () {
@@ -80,12 +72,6 @@ it('allows lms_admin to create section in any course', function () {
     expect(Gate::check('create', [CourseSection::class, $this->course]))->toBeTrue();
 });
 
-it('denies non-owner content_manager to create section', function () {
-    $otherManager = User::factory()->create(['role' => 'content_manager']);
-    $this->actingAs($otherManager);
-    expect(Gate::denies('create', [CourseSection::class, $this->course]))->toBeTrue();
-});
-
 it('denies learner to create section', function () {
     $this->actingAs($this->learner);
     expect(Gate::denies('create', [CourseSection::class, $this->course]))->toBeTrue();
@@ -101,12 +87,6 @@ it('allows course owner to update their section', function () {
 it('allows lms_admin to update any section', function () {
     $this->actingAs($this->lmsAdmin);
     expect(Gate::check('update', $this->section))->toBeTrue();
-});
-
-it('denies non-owner to update section', function () {
-    $otherManager = User::factory()->create(['role' => 'content_manager']);
-    $this->actingAs($otherManager);
-    expect(Gate::denies('update', $this->section))->toBeTrue();
 });
 
 it('denies learner to update section', function () {
@@ -141,12 +121,6 @@ it('allows course owner to reorder sections in their course', function () {
 it('allows lms_admin to reorder sections in any course', function () {
     $this->actingAs($this->lmsAdmin);
     expect(Gate::check('reorder', [CourseSection::class, $this->course]))->toBeTrue();
-});
-
-it('denies non-owner to reorder sections', function () {
-    $otherManager = User::factory()->create(['role' => 'content_manager']);
-    $this->actingAs($otherManager);
-    expect(Gate::denies('reorder', [CourseSection::class, $this->course]))->toBeTrue();
 });
 
 it('denies learner to reorder sections', function () {

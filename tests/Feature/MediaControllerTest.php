@@ -46,10 +46,10 @@ class MediaControllerTest extends TestCase
         Storage::fake('public');
 
         $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
-        $this->otherContentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
+        $this->otherContentManager = User::factory()->create(['role' => 'lms_admin']);
         $this->learner = User::factory()->create(['role' => 'learner']);
-        $this->trainer = User::factory()->create(['role' => 'trainer']);
+        $this->trainer = User::factory()->create(['role' => 'lms_admin']);
     }
 
     // ========== Authorization Tests ==========
@@ -60,101 +60,6 @@ class MediaControllerTest extends TestCase
 
         $response = $this->actingAs($this->learner)->postJson('/media', [
             'file' => UploadedFile::fake()->image('photo.jpg'),
-            'mediable_type' => 'course',
-            'mediable_id' => $course->id,
-            'collection_name' => 'thumbnail',
-        ]);
-
-        $response->assertForbidden();
-    }
-
-    public function test_trainer_can_upload_media(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->trainer->id,
-            'status' => 'draft',
-        ]);
-
-        $response = $this->actingAs($this->trainer)->postJson('/media', [
-            'file' => UploadedFile::fake()->image('photo.jpg'),
-            'mediable_type' => 'course',
-            'mediable_id' => $course->id,
-            'collection_name' => 'thumbnail',
-        ]);
-
-        $response->assertStatus(201);
-    }
-
-    public function test_content_manager_can_upload_media_to_own_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $file = UploadedFile::fake()->image('thumbnail.jpg');
-
-        $response = $this->actingAs($this->contentManager)->postJson('/media', [
-            'file' => $file,
-            'mediable_type' => 'course',
-            'mediable_id' => $course->id,
-            'collection_name' => 'thumbnail',
-        ]);
-
-        $response->assertStatus(201);
-        $response->assertJsonStructure([
-            'message',
-            'media' => [
-                'id',
-                'name',
-                'file_name',
-                'mime_type',
-                'size',
-                'human_readable_size',
-                'url',
-                'is_image',
-                'is_video',
-                'is_audio',
-                'is_document',
-            ],
-        ]);
-
-        $this->assertDatabaseHas('media', [
-            'mediable_type' => Course::class,
-            'mediable_id' => $course->id,
-            'collection_name' => 'thumbnail',
-        ]);
-    }
-
-    public function test_content_manager_cannot_upload_media_to_others_published_course(): void
-    {
-        $course = Course::factory()->published()->create([
-            'user_id' => $this->otherContentManager->id,
-        ]);
-
-        $file = UploadedFile::fake()->image('thumbnail.jpg');
-
-        $response = $this->actingAs($this->contentManager)->postJson('/media', [
-            'file' => $file,
-            'mediable_type' => 'course',
-            'mediable_id' => $course->id,
-            'collection_name' => 'thumbnail',
-        ]);
-
-        $response->assertForbidden();
-    }
-
-    public function test_content_manager_cannot_upload_media_to_others_draft_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->otherContentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $file = UploadedFile::fake()->image('thumbnail.jpg');
-
-        $response = $this->actingAs($this->contentManager)->postJson('/media', [
-            'file' => $file,
             'mediable_type' => 'course',
             'mediable_id' => $course->id,
             'collection_name' => 'thumbnail',
@@ -250,54 +155,6 @@ class MediaControllerTest extends TestCase
     }
 
     // ========== Lesson Upload Tests ==========
-
-    public function test_content_manager_can_upload_media_to_own_lesson(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-        $section = CourseSection::factory()->create(['course_id' => $course->id]);
-        $lesson = Lesson::factory()->create([
-            'course_section_id' => $section->id,
-            'content_type' => 'video',
-        ]);
-
-        $file = UploadedFile::fake()->create('video.mp4', 1024, 'video/mp4');
-
-        $response = $this->actingAs($this->contentManager)->postJson('/media', [
-            'file' => $file,
-            'mediable_type' => 'lesson',
-            'mediable_id' => $lesson->id,
-            'collection_name' => 'video',
-        ]);
-
-        $response->assertStatus(201);
-        $this->assertDatabaseHas('media', [
-            'mediable_type' => Lesson::class,
-            'mediable_id' => $lesson->id,
-            'collection_name' => 'video',
-            'mime_type' => 'video/mp4',
-        ]);
-    }
-
-    public function test_content_manager_cannot_upload_media_to_others_lesson(): void
-    {
-        $course = Course::factory()->create(['user_id' => $this->otherContentManager->id]);
-        $section = CourseSection::factory()->create(['course_id' => $course->id]);
-        $lesson = Lesson::factory()->create(['course_section_id' => $section->id]);
-
-        $file = UploadedFile::fake()->create('video.mp4', 1024, 'video/mp4');
-
-        $response = $this->actingAs($this->contentManager)->postJson('/media', [
-            'file' => $file,
-            'mediable_type' => 'lesson',
-            'mediable_id' => $lesson->id,
-            'collection_name' => 'video',
-        ]);
-
-        $response->assertForbidden();
-    }
 
     public function test_admin_can_upload_media_to_any_lesson(): void
     {
@@ -447,41 +304,6 @@ class MediaControllerTest extends TestCase
         $response = $this->actingAs($this->learner)->deleteJson("/media/{$media->id}");
 
         $response->assertForbidden();
-    }
-
-    public function test_content_manager_cannot_delete_others_media(): void
-    {
-        $course = Course::factory()->create(['user_id' => $this->otherContentManager->id]);
-        $media = Media::factory()->thumbnail()->create([
-            'mediable_type' => Course::class,
-            'mediable_id' => $course->id,
-        ]);
-
-        $response = $this->actingAs($this->contentManager)->deleteJson("/media/{$media->id}");
-
-        $response->assertForbidden();
-    }
-
-    public function test_content_manager_can_delete_own_lesson_media(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-        $section = CourseSection::factory()->create(['course_id' => $course->id]);
-        $lesson = Lesson::factory()->create(['course_section_id' => $section->id]);
-
-        $media = Media::factory()->video()->create([
-            'mediable_type' => Lesson::class,
-            'mediable_id' => $lesson->id,
-        ]);
-
-        Storage::disk('public')->put($media->path, 'fake content');
-
-        $response = $this->actingAs($this->contentManager)->deleteJson("/media/{$media->id}");
-
-        $response->assertOk();
-        $this->assertDatabaseMissing('media', ['id' => $media->id]);
     }
 
     // ========== File Storage Tests ==========

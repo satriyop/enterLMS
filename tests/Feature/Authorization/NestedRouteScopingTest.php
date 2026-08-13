@@ -20,7 +20,7 @@ describe('Nested Route Scoping', function () {
     describe('Lesson through wrong Course', function () {
 
         it('cannot view lesson through wrong course URL', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $courseA = Course::factory()->published()->create(['user_id' => $cm->id]);
@@ -45,7 +45,7 @@ describe('Nested Route Scoping', function () {
         });
 
         it('cannot complete lesson through wrong course URL', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $courseA = Course::factory()->published()->create(['user_id' => $cm->id]);
@@ -73,7 +73,7 @@ describe('Nested Route Scoping', function () {
     describe('Assessment through wrong Course', function () {
 
         it('cannot view assessment through wrong course URL', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $courseA = Course::factory()->published()->create(['user_id' => $cm->id]);
@@ -102,7 +102,7 @@ describe('Nested Route Scoping', function () {
         });
 
         it('cannot start assessment attempt through wrong course URL', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $courseA = Course::factory()->published()->create(['user_id' => $cm->id]);
@@ -128,29 +128,12 @@ describe('Nested Route Scoping', function () {
             expect($response->status())->toBeIn([403, 404]);
         });
 
-        it('content manager cannot edit assessment through wrong course URL', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-
-            $courseA = Course::factory()->draft()->create(['user_id' => $cm->id]);
-            $assessmentA = Assessment::factory()->draft()->create([
-                'course_id' => $courseA->id,
-                'user_id' => $cm->id,
-            ]);
-
-            $courseB = Course::factory()->draft()->create(['user_id' => $cm->id]);
-
-            $response = $this->actingAs($cm)
-                ->get(route('assessments.edit', [$courseB, $assessmentA]));
-
-            expect($response->status())->toBeIn([403, 404]);
-        });
-
     });
 
     describe('Reorder with cross-resource IDs', function () {
 
         it('reorder sections rejects IDs from another course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $courseA = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $sectionA1 = CourseSection::factory()->create(['course_id' => $courseA->id, 'order' => 1]);
@@ -168,7 +151,7 @@ describe('Nested Route Scoping', function () {
         });
 
         it('reorder questions rejects IDs from another assessment', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
@@ -200,7 +183,7 @@ describe('Nested Route Scoping', function () {
     describe('Question through wrong Assessment', function () {
 
         it('cannot delete question through wrong assessment URL', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
             $assessmentA = Assessment::factory()->draft()->create([

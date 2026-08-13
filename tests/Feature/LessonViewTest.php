@@ -68,7 +68,7 @@ class LessonViewTest extends TestCase
 
     public function test_course_owner_can_view_any_lesson(): void
     {
-        $owner = User::factory()->create(['role' => 'content_manager']);
+        $owner = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->draft()->create(['user_id' => $owner->id]);
         $section = CourseSection::factory()->create(['course_id' => $course->id]);
         $lesson = Lesson::factory()->create(['course_section_id' => $section->id]);
@@ -81,7 +81,7 @@ class LessonViewTest extends TestCase
     public function test_lms_admin_can_view_any_lesson(): void
     {
         $admin = User::factory()->create(['role' => 'lms_admin']);
-        $owner = User::factory()->create(['role' => 'content_manager']);
+        $owner = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->draft()->create(['user_id' => $owner->id]);
         $section = CourseSection::factory()->create(['course_id' => $course->id]);
         $lesson = Lesson::factory()->create(['course_section_id' => $section->id]);

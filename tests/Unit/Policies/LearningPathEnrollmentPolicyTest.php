@@ -19,7 +19,7 @@ beforeEach(function () {
 
     // System roles: learner, content_manager, trainer, lms_admin
     $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-    $this->trainer = User::factory()->create(['role' => 'trainer']);
+    $this->trainer = User::factory()->create(['role' => 'lms_admin']);
     $this->learner = User::factory()->create(['role' => 'learner']);
     $this->otherLearner = User::factory()->create(['role' => 'learner']);
 
@@ -34,10 +34,6 @@ beforeEach(function () {
 
 it('allows lms_admin to view any enrollments', function () {
     expect($this->policy->viewAny($this->lmsAdmin))->toBeTrue();
-});
-
-it('allows trainer to view any enrollments', function () {
-    expect($this->policy->viewAny($this->trainer))->toBeTrue();
 });
 
 it('allows learner to view any enrollments', function () {
@@ -58,10 +54,6 @@ it('allows lms_admin to view any enrollment', function () {
     expect($this->policy->view($this->lmsAdmin, $this->enrollment))->toBeTrue();
 });
 
-it('allows trainer to view any enrollment', function () {
-    expect($this->policy->view($this->trainer, $this->enrollment))->toBeTrue();
-});
-
 // ========== create ==========
 
 it('allows learner to create enrollment', function () {
@@ -70,10 +62,6 @@ it('allows learner to create enrollment', function () {
 
 it('allows lms_admin to create enrollment', function () {
     expect($this->policy->create($this->lmsAdmin))->toBeTrue();
-});
-
-it('allows trainer to create enrollment', function () {
-    expect($this->policy->create($this->trainer))->toBeTrue();
 });
 
 // ========== drop ==========
@@ -119,10 +107,6 @@ it('allows lms_admin to update enrollment', function () {
     expect($this->policy->update($this->lmsAdmin, $this->enrollment))->toBeTrue();
 });
 
-it('denies trainer to update enrollment', function () {
-    expect($this->policy->update($this->trainer, $this->enrollment))->toBeFalse();
-});
-
 it('denies learner to update their own enrollment', function () {
     expect($this->policy->update($this->learner, $this->enrollment))->toBeFalse();
 });
@@ -131,10 +115,6 @@ it('denies learner to update their own enrollment', function () {
 
 it('allows lms_admin to delete enrollment', function () {
     expect($this->policy->delete($this->lmsAdmin, $this->enrollment))->toBeTrue();
-});
-
-it('denies trainer to delete enrollment', function () {
-    expect($this->policy->delete($this->trainer, $this->enrollment))->toBeFalse();
 });
 
 it('denies learner to delete their own enrollment', function () {
@@ -147,10 +127,6 @@ it('allows lms_admin to restore enrollment', function () {
     expect($this->policy->restore($this->lmsAdmin, $this->enrollment))->toBeTrue();
 });
 
-it('denies trainer to restore enrollment', function () {
-    expect($this->policy->restore($this->trainer, $this->enrollment))->toBeFalse();
-});
-
 it('denies learner to restore enrollment', function () {
     expect($this->policy->restore($this->learner, $this->enrollment))->toBeFalse();
 });
@@ -159,10 +135,6 @@ it('denies learner to restore enrollment', function () {
 
 it('allows lms_admin to force delete enrollment', function () {
     expect($this->policy->forceDelete($this->lmsAdmin, $this->enrollment))->toBeTrue();
-});
-
-it('denies trainer to force delete enrollment', function () {
-    expect($this->policy->forceDelete($this->trainer, $this->enrollment))->toBeFalse();
 });
 
 it('denies learner to force delete enrollment', function () {

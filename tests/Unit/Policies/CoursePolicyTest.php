@@ -46,10 +46,10 @@ class CoursePolicyTest extends TestCase
         $this->policy = new CoursePolicy;
 
         $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
-        $this->otherContentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
+        $this->otherContentManager = User::factory()->create(['role' => 'lms_admin']);
         $this->learner = User::factory()->create(['role' => 'learner']);
-        $this->trainer = User::factory()->create(['role' => 'trainer']);
+        $this->trainer = User::factory()->create(['role' => 'lms_admin']);
     }
 
     // ========== viewAny ==========
@@ -81,38 +81,6 @@ class CoursePolicyTest extends TestCase
         $this->assertTrue($this->policy->view($this->lmsAdmin, $draftCourse, $context));
         $this->assertTrue($this->policy->view($this->lmsAdmin, $publishedCourse, $context));
         $this->assertTrue($this->policy->view($this->lmsAdmin, $archivedCourse, $context));
-    }
-
-    public function test_content_manager_can_view_own_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-
-        // Owner bypasses enrollment checks
-        $context = EnrollmentContext::fromData(
-            isActivelyEnrolled: false,
-            hasPendingInvitation: false,
-        );
-
-        $this->assertTrue($this->policy->view($this->contentManager, $course, $context));
-    }
-
-    public function test_content_manager_can_view_other_published_public_course(): void
-    {
-        $course = Course::factory()->published()->create([
-            'user_id' => $this->otherContentManager->id,
-            'visibility' => 'public',
-        ]);
-
-        // Content manager can manage courses - bypasses enrollment checks
-        $context = EnrollmentContext::fromData(
-            isActivelyEnrolled: false,
-            hasPendingInvitation: false,
-        );
-
-        $this->assertTrue($this->policy->view($this->contentManager, $course, $context));
     }
 
     public function test_enrolled_learner_can_view_draft_course(): void
@@ -215,11 +183,6 @@ class CoursePolicyTest extends TestCase
         $this->assertTrue($this->policy->create($this->lmsAdmin));
     }
 
-    public function test_content_manager_can_create_course(): void
-    {
-        $this->assertTrue($this->policy->create($this->contentManager));
-    }
-
     public function test_learner_cannot_create_course(): void
     {
         $this->assertFalse($this->policy->create($this->learner));
@@ -234,37 +197,6 @@ class CoursePolicyTest extends TestCase
 
         $this->assertTrue($this->policy->update($this->lmsAdmin, $draftCourse));
         $this->assertTrue($this->policy->update($this->lmsAdmin, $publishedCourse));
-    }
-
-    public function test_content_manager_can_update_own_draft_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $this->assertTrue($this->policy->update($this->contentManager, $course));
-    }
-
-    public function test_content_manager_cannot_update_own_published_course(): void
-    {
-        $course = Course::factory()->published()->create([
-            'user_id' => $this->contentManager->id,
-        ]);
-
-        // Content managers can only edit their own DRAFT courses
-        // Published courses are "frozen" - must ask admin to unpublish first
-        $this->assertFalse($this->policy->update($this->contentManager, $course));
-    }
-
-    public function test_content_manager_cannot_update_other_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->otherContentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $this->assertFalse($this->policy->update($this->contentManager, $course));
     }
 
     public function test_learner_cannot_update_course(): void
@@ -285,35 +217,6 @@ class CoursePolicyTest extends TestCase
         $this->assertTrue($this->policy->delete($this->lmsAdmin, $publishedCourse));
     }
 
-    public function test_content_manager_can_delete_own_draft_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $this->assertTrue($this->policy->delete($this->contentManager, $course));
-    }
-
-    public function test_content_manager_cannot_delete_own_published_course(): void
-    {
-        $course = Course::factory()->published()->create([
-            'user_id' => $this->contentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->delete($this->contentManager, $course));
-    }
-
-    public function test_content_manager_cannot_delete_other_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->otherContentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $this->assertFalse($this->policy->delete($this->contentManager, $course));
-    }
-
     public function test_learner_cannot_delete_course(): void
     {
         $course = Course::factory()->create(['status' => 'draft']);
@@ -331,17 +234,6 @@ class CoursePolicyTest extends TestCase
         $this->assertTrue($this->policy->restore($this->lmsAdmin, $course));
     }
 
-    public function test_content_manager_cannot_restore_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-        $course->delete();
-
-        $this->assertFalse($this->policy->restore($this->contentManager, $course));
-    }
-
     // ========== forceDelete ==========
 
     public function test_lms_admin_can_force_delete_course(): void
@@ -351,16 +243,6 @@ class CoursePolicyTest extends TestCase
         $this->assertTrue($this->policy->forceDelete($this->lmsAdmin, $course));
     }
 
-    public function test_content_manager_cannot_force_delete_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $this->assertFalse($this->policy->forceDelete($this->contentManager, $course));
-    }
-
     // ========== publish ==========
 
     public function test_lms_admin_can_publish_course(): void
@@ -368,16 +250,6 @@ class CoursePolicyTest extends TestCase
         $course = Course::factory()->create(['status' => 'draft']);
 
         $this->assertTrue($this->policy->publish($this->lmsAdmin, $course));
-    }
-
-    public function test_content_manager_cannot_publish_course(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $this->assertFalse($this->policy->publish($this->contentManager, $course));
     }
 
     public function test_learner_cannot_publish_course(): void
@@ -396,15 +268,6 @@ class CoursePolicyTest extends TestCase
         $this->assertTrue($this->policy->unpublish($this->lmsAdmin, $course));
     }
 
-    public function test_content_manager_cannot_unpublish_course(): void
-    {
-        $course = Course::factory()->published()->create([
-            'user_id' => $this->contentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->unpublish($this->contentManager, $course));
-    }
-
     // ========== archive ==========
 
     public function test_lms_admin_can_archive_course(): void
@@ -412,15 +275,6 @@ class CoursePolicyTest extends TestCase
         $course = Course::factory()->published()->create();
 
         $this->assertTrue($this->policy->archive($this->lmsAdmin, $course));
-    }
-
-    public function test_content_manager_cannot_archive_course(): void
-    {
-        $course = Course::factory()->published()->create([
-            'user_id' => $this->contentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->archive($this->contentManager, $course));
     }
 
     // ========== setStatus ==========
@@ -432,16 +286,6 @@ class CoursePolicyTest extends TestCase
         $this->assertTrue($this->policy->setStatus($this->lmsAdmin, $course));
     }
 
-    public function test_content_manager_cannot_set_status(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'status' => 'draft',
-        ]);
-
-        $this->assertFalse($this->policy->setStatus($this->contentManager, $course));
-    }
-
     // ========== setVisibility ==========
 
     public function test_lms_admin_can_set_visibility(): void
@@ -449,16 +293,6 @@ class CoursePolicyTest extends TestCase
         $course = Course::factory()->create(['visibility' => 'public']);
 
         $this->assertTrue($this->policy->setVisibility($this->lmsAdmin, $course));
-    }
-
-    public function test_content_manager_cannot_set_visibility(): void
-    {
-        $course = Course::factory()->create([
-            'user_id' => $this->contentManager->id,
-            'visibility' => 'public',
-        ]);
-
-        $this->assertFalse($this->policy->setVisibility($this->contentManager, $course));
     }
 
     // ========== enroll ==========

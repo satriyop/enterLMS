@@ -15,7 +15,7 @@ it('redirects guests to login', function () {
 });
 
 it('denies non-learner access', function () {
-    asContentManager()
+    asAdmin()
         ->get(route('my-learning'))
         ->assertForbidden();
 });

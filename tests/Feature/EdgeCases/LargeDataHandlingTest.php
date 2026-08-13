@@ -26,7 +26,7 @@ describe('Large Data Handling', function () {
     describe('Course with Many Lessons', function () {
 
         it('handles course with 50 lessons correctly', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
@@ -65,7 +65,7 @@ describe('Large Data Handling', function () {
         });
 
         it('course show page loads with many lessons', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
@@ -100,7 +100,7 @@ describe('Large Data Handling', function () {
     describe('Assessment with Many Questions', function () {
 
         it('handles assessment with 30 questions correctly', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
@@ -135,7 +135,7 @@ describe('Large Data Handling', function () {
         });
 
         it('assessment grading handles many questions', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
@@ -178,7 +178,7 @@ describe('Large Data Handling', function () {
     describe('Course with Many Enrollments', function () {
 
         it('handles course with 100 enrollments', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
 
             // Create 100 learners and enroll them
@@ -201,7 +201,7 @@ describe('Large Data Handling', function () {
         });
 
         it('enrollment list paginates correctly', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
 
             // Create 25 enrollments
@@ -222,7 +222,7 @@ describe('Large Data Handling', function () {
 
         it('learner dashboard loads with many enrollments', function () {
             $learner = User::factory()->create(['role' => 'learner']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             // Create 15 courses manually to avoid factory unique constraints
             for ($i = 1; $i <= 15; $i++) {
@@ -295,7 +295,7 @@ describe('Large Data Handling', function () {
     describe('String Length Limits', function () {
 
         it('course title accepts max 255 characters', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $maxTitle = str_repeat('A', 255);
 
             $this->actingAs($cm)
@@ -313,7 +313,7 @@ describe('Large Data Handling', function () {
         });
 
         it('course title rejects more than 255 characters', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $tooLongTitle = str_repeat('A', 256);
 
             $this->actingAs($cm)
@@ -327,7 +327,7 @@ describe('Large Data Handling', function () {
         });
 
         it('lesson title accepts max length', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
 
@@ -345,7 +345,7 @@ describe('Large Data Handling', function () {
         });
 
         it('assessment description accepts long text', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
             $longDescription = str_repeat('This is a detailed description. ', 100); // ~3200 chars
@@ -372,7 +372,7 @@ describe('Large Data Handling', function () {
     describe('Empty String Validation', function () {
 
         it('course title cannot be empty', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $this->actingAs($cm)
                 ->post(route('courses.store'), [
@@ -385,7 +385,7 @@ describe('Large Data Handling', function () {
         });
 
         it('lesson title cannot be empty', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = CourseSection::factory()->create(['course_id' => $course->id]);
 
@@ -399,7 +399,7 @@ describe('Large Data Handling', function () {
         });
 
         it('assessment title cannot be empty', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
             $this->actingAs($cm)
@@ -413,7 +413,7 @@ describe('Large Data Handling', function () {
         });
 
         it('section title cannot be empty', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
             $this->actingAs($cm)

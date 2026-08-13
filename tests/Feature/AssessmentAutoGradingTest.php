@@ -10,7 +10,6 @@ use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\Question;
-use App\Models\QuestionOption;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -43,7 +42,7 @@ class AssessmentAutoGradingTest extends TestCase
         parent::setUp();
 
         $this->learner = User::factory()->create(['role' => 'learner']);
-        $contentManager = User::factory()->create(['role' => 'content_manager']);
+        $contentManager = User::factory()->create(['role' => 'lms_admin']);
 
         $this->course = Course::factory()->published()->create([
             'user_id' => $contentManager->id,

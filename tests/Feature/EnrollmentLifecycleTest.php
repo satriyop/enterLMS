@@ -45,7 +45,7 @@ class EnrollmentLifecycleTest extends TestCase
 
         $this->learner = User::factory()->create(['role' => 'learner']);
         $this->admin = User::factory()->create(['role' => 'lms_admin']);
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
 
         $this->progressService = app(ProgressTrackingService::class);
 
@@ -611,7 +611,7 @@ class EnrollmentLifecycleTest extends TestCase
 
     public function test_enrollment_invited_by_relationship(): void
     {
-        $trainer = User::factory()->create(['role' => 'trainer']);
+        $trainer = User::factory()->create(['role' => 'lms_admin']);
 
         $enrollment = Enrollment::factory()->create([
             'user_id' => $this->learner->id,

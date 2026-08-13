@@ -159,7 +159,7 @@ describe('Concurrent Operations', function () {
     describe('Assessment Attempt Isolation', function () {
 
         it('multiple learners can attempt same assessment independently', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
                 'course_id' => $course->id,
@@ -187,7 +187,7 @@ describe('Concurrent Operations', function () {
         });
 
         it('attempt limits are tracked per user', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
                 'course_id' => $course->id,
@@ -229,7 +229,7 @@ describe('Concurrent Operations', function () {
         });
 
         it('grading one attempt does not affect others', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
                 'course_id' => $course->id,

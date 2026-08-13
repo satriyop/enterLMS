@@ -15,7 +15,7 @@ class CourseInvitationPolicy
     {
         // Course owner, lms_admin, or trainer can view invitations
         return $user->id === $course->user_id
-            || in_array($user->role, ['lms_admin', 'trainer']);
+            || in_array($user->role, ['lms_admin', 'lms_admin']);
     }
 
     /**
@@ -30,7 +30,7 @@ class CourseInvitationPolicy
 
         // Course owner, lms_admin, or trainer can view
         return $user->id === $invitation->course->user_id
-            || in_array($user->role, ['lms_admin', 'trainer']);
+            || in_array($user->role, ['lms_admin', 'lms_admin']);
     }
 
     /**
@@ -40,7 +40,7 @@ class CourseInvitationPolicy
     {
         // Course owner, lms_admin, or trainer can invite
         return $user->id === $course->user_id
-            || in_array($user->role, ['lms_admin', 'trainer']);
+            || in_array($user->role, ['lms_admin', 'lms_admin']);
     }
 
     /**

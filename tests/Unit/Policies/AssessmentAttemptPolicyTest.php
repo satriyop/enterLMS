@@ -19,9 +19,9 @@ beforeEach(function () {
     $this->policy = new AssessmentAttemptPolicy;
 
     $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-    $this->contentManager = User::factory()->create(['role' => 'content_manager']);
-    $this->otherContentManager = User::factory()->create(['role' => 'content_manager']);
-    $this->trainer = User::factory()->create(['role' => 'trainer']);
+    $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
+    $this->otherContentManager = User::factory()->create(['role' => 'lms_admin']);
+    $this->trainer = User::factory()->create(['role' => 'lms_admin']);
     $this->learner = User::factory()->create(['role' => 'learner']);
     $this->otherLearner = User::factory()->create(['role' => 'learner']);
 
@@ -43,14 +43,6 @@ it('allows lms_admin to view any attempts', function () {
     expect($this->policy->viewAny($this->lmsAdmin))->toBeTrue();
 });
 
-it('allows content_manager to view any attempts', function () {
-    expect($this->policy->viewAny($this->contentManager))->toBeTrue();
-});
-
-it('denies trainer to view any attempts', function () {
-    expect($this->policy->viewAny($this->trainer))->toBeFalse();
-});
-
 it('denies learner to view any attempts', function () {
     expect($this->policy->viewAny($this->learner))->toBeFalse();
 });
@@ -59,14 +51,6 @@ it('denies learner to view any attempts', function () {
 
 it('allows lms_admin to view any attempt', function () {
     expect($this->policy->view($this->lmsAdmin, $this->attempt))->toBeTrue();
-});
-
-it('allows content_manager to view attempts for their own assessment', function () {
-    expect($this->policy->view($this->contentManager, $this->attempt))->toBeTrue();
-});
-
-it('denies content_manager to view attempts for other assessments', function () {
-    expect($this->policy->view($this->otherContentManager, $this->attempt))->toBeFalse();
 });
 
 it('allows learner to view their own attempt', function () {
@@ -87,22 +71,10 @@ it('denies lms_admin to create attempt', function () {
     expect($this->policy->create($this->lmsAdmin))->toBeFalse();
 });
 
-it('denies content_manager to create attempt', function () {
-    expect($this->policy->create($this->contentManager))->toBeFalse();
-});
-
-it('denies trainer to create attempt', function () {
-    expect($this->policy->create($this->trainer))->toBeFalse();
-});
-
 // ========== update ==========
 
 it('allows lms_admin to update attempt', function () {
     expect($this->policy->update($this->lmsAdmin, $this->attempt))->toBeTrue();
-});
-
-it('denies content_manager to update attempt', function () {
-    expect($this->policy->update($this->contentManager, $this->attempt))->toBeFalse();
 });
 
 it('denies learner to update their own attempt', function () {
@@ -113,10 +85,6 @@ it('denies learner to update their own attempt', function () {
 
 it('allows lms_admin to delete attempt', function () {
     expect($this->policy->delete($this->lmsAdmin, $this->attempt))->toBeTrue();
-});
-
-it('denies content_manager to delete attempt', function () {
-    expect($this->policy->delete($this->contentManager, $this->attempt))->toBeFalse();
 });
 
 it('denies learner to delete their own attempt', function () {
@@ -133,10 +101,6 @@ it('allows lms_admin to force delete attempt', function () {
     expect($this->policy->forceDelete($this->lmsAdmin, $this->attempt))->toBeTrue();
 });
 
-it('denies content_manager to restore attempt', function () {
-    expect($this->policy->restore($this->contentManager, $this->attempt))->toBeFalse();
-});
-
 // ========== viewAttempt (with context) ==========
 
 it('denies viewing attempt when assessment does not belong to course', function () {
@@ -151,10 +115,6 @@ it('denies viewing attempt when attempt does not belong to assessment', function
 
 it('allows lms_admin to view attempt with valid context', function () {
     expect($this->policy->viewAttempt($this->lmsAdmin, $this->attempt, $this->assessment, $this->course))->toBeTrue();
-});
-
-it('allows content_manager to view attempt for their assessment', function () {
-    expect($this->policy->viewAttempt($this->contentManager, $this->attempt, $this->assessment, $this->course))->toBeTrue();
 });
 
 it('allows learner to view their own attempt with context', function () {
@@ -196,26 +156,8 @@ it('allows lms_admin to grade submitted attempt', function () {
     expect($this->policy->grade($this->lmsAdmin, $submittedAttempt, $this->assessment, $this->course))->toBeTrue();
 });
 
-it('allows content_manager to grade attempt for their assessment', function () {
-    $submittedAttempt = AssessmentAttempt::factory()->submitted()->create([
-        'assessment_id' => $this->assessment->id,
-        'user_id' => $this->learner->id,
-    ]);
-
-    expect($this->policy->grade($this->contentManager, $submittedAttempt, $this->assessment, $this->course))->toBeTrue();
-});
-
 it('denies grading in-progress attempt', function () {
     expect($this->policy->grade($this->lmsAdmin, $this->attempt, $this->assessment, $this->course))->toBeFalse();
-});
-
-it('denies content_manager to grade attempt for other assessments', function () {
-    $submittedAttempt = AssessmentAttempt::factory()->submitted()->create([
-        'assessment_id' => $this->assessment->id,
-        'user_id' => $this->learner->id,
-    ]);
-
-    expect($this->policy->grade($this->otherContentManager, $submittedAttempt, $this->assessment, $this->course))->toBeFalse();
 });
 
 it('denies learner to grade attempt', function () {

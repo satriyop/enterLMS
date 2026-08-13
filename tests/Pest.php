@@ -64,14 +64,6 @@ function asAdmin(): Tests\TestCase
 }
 
 /**
- * Create a content manager and authenticate.
- */
-function asContentManager(): Tests\TestCase
-{
-    return asRole('content_manager');
-}
-
-/**
  * Create a learner and authenticate.
  */
 function asLearner(): Tests\TestCase

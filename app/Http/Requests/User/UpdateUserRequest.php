@@ -31,7 +31,7 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
             'password' => ['nullable', 'confirmed', Password::min(8)],
-            'role' => ['required', Rule::in(['learner', 'content_manager', 'trainer', 'lms_admin'])],
+            'role' => ['required', Rule::in(['learner', 'lms_admin', 'lms_admin', 'lms_admin'])],
         ];
     }
 

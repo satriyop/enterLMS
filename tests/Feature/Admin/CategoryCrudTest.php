@@ -21,13 +21,6 @@ describe('Category Authorization', function () {
             ->assertOk();
     });
 
-    it('allows content managers to create categories', function () {
-        $user = User::factory()->create(['role' => 'content_manager']);
-
-        $this->actingAs($user)->get(route('admin.categories.create'))
-            ->assertOk();
-    });
-
     it('forbids learners from creating categories', function () {
         $learner = User::factory()->create(['role' => 'learner']);
 
@@ -35,23 +28,6 @@ describe('Category Authorization', function () {
             ->assertForbidden();
     });
 
-    it('forbids content managers from updating categories', function () {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        $category = Category::factory()->create();
-
-        $this->actingAs($user)->put(route('admin.categories.update', $category), [
-            'name' => 'Updated',
-            'slug' => 'updated',
-        ])->assertForbidden();
-    });
-
-    it('forbids content managers from deleting categories', function () {
-        $user = User::factory()->create(['role' => 'content_manager']);
-        $category = Category::factory()->create();
-
-        $this->actingAs($user)->delete(route('admin.categories.destroy', $category))
-            ->assertForbidden();
-    });
 });
 
 // =============================================================================

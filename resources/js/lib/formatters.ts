@@ -340,8 +340,6 @@ export function attemptStatusBadgeColor(status: string | null | undefined): stri
 export function roleLabel(role: UserRole | string | null | undefined): string {
     const labels: Record<string, string> = {
         lms_admin: 'Admin LMS',
-        content_manager: 'Pengelola Konten',
-        trainer: 'Pelatih',
         learner: 'Peserta Didik',
     };
     return role ? labels[role] ?? role : '-';
@@ -353,8 +351,6 @@ export function roleLabel(role: UserRole | string | null | undefined): string {
 export function roleBadgeVariant(role: UserRole | string | null | undefined): 'default' | 'secondary' | 'outline' {
     const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
         lms_admin: 'default',
-        content_manager: 'secondary',
-        trainer: 'secondary',
         learner: 'outline',
     };
     return role ? variants[role] ?? 'outline' : 'outline';

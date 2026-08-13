@@ -103,11 +103,11 @@ describe('Admin Trash Dashboard', function () {
         });
 
         it('denies restore to non-admin users', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->draft()->create();
             $course->delete();
 
-            $this->actingAs($cm)
+            $this->actingAs($learner)
                 ->post(route('admin.trash.restore', ['type' => 'course', 'id' => $course->id]))
                 ->assertForbidden();
         });
@@ -148,11 +148,11 @@ describe('Admin Trash Dashboard', function () {
         });
 
         it('denies force-delete to non-admin users', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $learner = User::factory()->create(['role' => 'learner']);
             $course = Course::factory()->draft()->create();
             $course->delete();
 
-            $this->actingAs($cm)
+            $this->actingAs($learner)
                 ->delete(route('admin.trash.force-delete', ['type' => 'course', 'id' => $course->id]))
                 ->assertForbidden();
         });

@@ -19,199 +19,8 @@ use App\Models\User;
  */
 describe('Resource Isolation', function () {
 
-    describe('Course Isolation', function () {
 
-        it('content manager cannot update another users course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create([
-                'user_id' => $cm2->id,
-                'title' => 'Original Title',
-            ]);
 
-            $this->actingAs($cm1)
-                ->patch(route('courses.update', $course), ['title' => 'Hijacked Title'])
-                ->assertForbidden();
-
-            expect($course->refresh()->title)->toBe('Original Title');
-        });
-
-        it('content manager cannot delete another users course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-
-            $this->actingAs($cm1)
-                ->delete(route('courses.destroy', $course))
-                ->assertForbidden();
-
-            $this->assertNotSoftDeleted($course);
-        });
-
-        it('content manager can view but not edit another users draft course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-
-            // Can view (for collaboration/review purposes)
-            $this->actingAs($cm1)
-                ->get(route('courses.show', $course))
-                ->assertOk();
-
-            // But cannot edit
-            $this->actingAs($cm1)
-                ->get(route('courses.edit', $course))
-                ->assertForbidden();
-        });
-
-        it('content manager cannot add section to another users course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-
-            $this->actingAs($cm1)
-                ->post(route('courses.sections.store', $course), ['title' => 'Hacked Section'])
-                ->assertForbidden();
-
-            expect($course->sections()->count())->toBe(0);
-        });
-
-    });
-
-    describe('Section and Lesson Isolation', function () {
-
-        it('content manager cannot update another users section', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-            $section = CourseSection::factory()->create([
-                'course_id' => $course->id,
-                'title' => 'Original Section',
-            ]);
-
-            $this->actingAs($cm1)
-                ->patch(route('sections.update', $section), ['title' => 'Hijacked Section'])
-                ->assertForbidden();
-
-            expect($section->refresh()->title)->toBe('Original Section');
-        });
-
-        it('content manager cannot delete another users section', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-
-            $this->actingAs($cm1)
-                ->delete(route('sections.destroy', $section))
-                ->assertForbidden();
-
-            $this->assertDatabaseHas('course_sections', ['id' => $section->id]);
-        });
-
-        it('content manager cannot add lesson to another users section', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-
-            $this->actingAs($cm1)
-                ->post(route('sections.lessons.store', $section), [
-                    'title' => 'Hacked Lesson',
-                    'content_type' => 'text',
-                ])
-                ->assertForbidden();
-
-            expect($section->lessons()->count())->toBe(0);
-        });
-
-        it('content manager cannot update another users lesson', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-            $lesson = Lesson::factory()->create([
-                'course_section_id' => $section->id,
-                'title' => 'Original Lesson',
-            ]);
-
-            $this->actingAs($cm1)
-                ->patch(route('lessons.update', $lesson), ['title' => 'Hijacked Lesson'])
-                ->assertForbidden();
-
-            expect($lesson->refresh()->title)->toBe('Original Lesson');
-        });
-
-        it('content manager cannot delete another users lesson', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-            $lesson = Lesson::factory()->create(['course_section_id' => $section->id]);
-
-            $this->actingAs($cm1)
-                ->delete(route('lessons.destroy', $lesson))
-                ->assertForbidden();
-
-            $this->assertDatabaseHas('lessons', ['id' => $lesson->id]);
-        });
-
-    });
-
-    describe('Assessment Isolation', function () {
-
-        it('content manager cannot update another users assessment', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-            $assessment = Assessment::factory()->create([
-                'course_id' => $course->id,
-                'user_id' => $cm2->id,
-                'title' => 'Original Assessment',
-            ]);
-
-            $this->actingAs($cm1)
-                ->put(route('assessments.update', [$course, $assessment]), [
-                    'title' => 'Hijacked Assessment',
-                ])
-                ->assertForbidden();
-
-            expect($assessment->refresh()->title)->toBe('Original Assessment');
-        });
-
-        it('content manager cannot delete another users assessment', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-            $assessment = Assessment::factory()->create([
-                'course_id' => $course->id,
-                'user_id' => $cm2->id,
-            ]);
-
-            $this->actingAs($cm1)
-                ->delete(route('assessments.destroy', [$course, $assessment]))
-                ->assertForbidden();
-
-            $this->assertNotSoftDeleted($assessment);
-        });
-
-        it('content manager cannot add questions to another users assessment', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-            $assessment = Assessment::factory()->create([
-                'course_id' => $course->id,
-                'user_id' => $cm2->id,
-            ]);
-
-            // Question creation typically happens via the assessment edit page
-            // The forbidden check should happen at the assessment level
-            $this->actingAs($cm1)
-                ->get(route('assessments.edit', [$course, $assessment]))
-                ->assertForbidden();
-        });
-
-    });
 
     describe('Enrollment Isolation', function () {
 
@@ -266,7 +75,7 @@ describe('Resource Isolation', function () {
     describe('Assessment Attempt Isolation', function () {
 
         it('learner cannot view another users attempt', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
                 'course_id' => $course->id,
@@ -296,7 +105,7 @@ describe('Resource Isolation', function () {
         });
 
         it('learner cannot submit answers to another users attempt', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
                 'course_id' => $course->id,
@@ -331,32 +140,6 @@ describe('Resource Isolation', function () {
                         ['question_id' => $question->id, 'answer_text' => 'true'],
                     ],
                 ])
-                ->assertForbidden();
-        });
-
-        it('content manager cannot grade another content managers assessment attempts', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm2->id]);
-            $assessment = Assessment::factory()->published()->create([
-                'course_id' => $course->id,
-                'user_id' => $cm2->id,
-            ]);
-
-            Enrollment::factory()->active()->create([
-                'user_id' => $learner->id,
-                'course_id' => $course->id,
-            ]);
-
-            $attempt = AssessmentAttempt::factory()->submitted()->create([
-                'assessment_id' => $assessment->id,
-                'user_id' => $learner->id,
-            ]);
-
-            $this->actingAs($cm1)
-                ->get(route('assessments.grade', [$course, $assessment, $attempt]))
                 ->assertForbidden();
         });
 
@@ -446,7 +229,7 @@ describe('Resource Isolation', function () {
     describe('Cross-Resource Validation', function () {
 
         it('cannot access lesson through wrong course URL', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             // Create two courses
@@ -473,7 +256,7 @@ describe('Resource Isolation', function () {
         });
 
         it('cannot access assessment through wrong course URL', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course1 = Course::factory()->published()->create(['user_id' => $cm->id]);
@@ -501,7 +284,7 @@ describe('Resource Isolation', function () {
         });
 
         it('cannot start assessment attempt through wrong course URL', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course1 = Course::factory()->published()->create(['user_id' => $cm->id]);

@@ -131,157 +131,7 @@ describe('Role Escalation Prevention', function () {
 
     });
 
-    describe('Content Manager Cannot Publish or Admin Actions', function () {
 
-        it('content manager cannot publish their own course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
-
-            $this->actingAs($cm)
-                ->post(route('courses.publish', $course))
-                ->assertForbidden();
-
-            expect($course->refresh()->isDraft())->toBeTrue();
-        });
-
-        it('content manager cannot unpublish a course', function () {
-            $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->create([
-                'user_id' => $cm->id,
-                'status' => 'published',
-                'published_by' => $admin->id,
-            ]);
-
-            $this->actingAs($cm)
-                ->post(route('courses.unpublish', $course))
-                ->assertForbidden();
-
-            expect($course->refresh()->isPublished())->toBeTrue();
-        });
-
-        it('content manager cannot archive a course', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-
-            $this->actingAs($cm)
-                ->post(route('courses.archive', $course))
-                ->assertForbidden();
-
-            expect($course->refresh()->isArchived())->toBeFalse();
-        });
-
-        it('content manager cannot set course status directly', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
-
-            $this->actingAs($cm)
-                ->patch(route('courses.status', $course), [
-                    'status' => 'published',
-                ])
-                ->assertForbidden();
-
-            expect($course->refresh()->isDraft())->toBeTrue();
-        });
-
-        it('content manager cannot set course visibility', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create([
-                'user_id' => $cm->id,
-                'visibility' => 'public',
-            ]);
-
-            $this->actingAs($cm)
-                ->patch(route('courses.visibility', $course), [
-                    'visibility' => 'restricted',
-                ])
-                ->assertForbidden();
-
-            expect($course->refresh()->visibility)->toBe('public');
-        });
-
-        it('content manager cannot edit other users course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-
-            $this->actingAs($cm1)
-                ->get(route('courses.edit', $course))
-                ->assertForbidden();
-        });
-
-        it('content manager cannot update other users course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create([
-                'user_id' => $cm2->id,
-                'title' => 'Original',
-            ]);
-
-            $this->actingAs($cm1)
-                ->patch(route('courses.update', $course), ['title' => 'Hacked'])
-                ->assertForbidden();
-
-            expect($course->refresh()->title)->toBe('Original');
-        });
-
-        it('content manager cannot delete other users course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $course = Course::factory()->draft()->create(['user_id' => $cm2->id]);
-
-            $this->actingAs($cm1)
-                ->delete(route('courses.destroy', $course))
-                ->assertForbidden();
-
-            $this->assertNotSoftDeleted($course);
-        });
-
-    });
-
-    describe('Trainer Restrictions', function () {
-
-        it('trainer cannot publish a course', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $course = Course::factory()->draft()->create(['user_id' => $trainer->id]);
-
-            $this->actingAs($trainer)
-                ->post(route('courses.publish', $course))
-                ->assertForbidden();
-
-            expect($course->refresh()->isDraft())->toBeTrue();
-        });
-
-        it('trainer cannot unpublish a course', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $course = Course::factory()->published()->create(['user_id' => $trainer->id]);
-
-            $this->actingAs($trainer)
-                ->post(route('courses.unpublish', $course))
-                ->assertForbidden();
-        });
-
-        it('trainer cannot archive a course', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $course = Course::factory()->published()->create(['user_id' => $trainer->id]);
-
-            $this->actingAs($trainer)
-                ->post(route('courses.archive', $course))
-                ->assertForbidden();
-        });
-
-        it('trainer cannot set course status directly', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $course = Course::factory()->draft()->create(['user_id' => $trainer->id]);
-
-            $this->actingAs($trainer)
-                ->patch(route('courses.status', $course), ['status' => 'published'])
-                ->assertForbidden();
-
-            expect($course->refresh()->isDraft())->toBeTrue();
-        });
-
-    });
 
     describe('Guest Access Prevention', function () {
 
@@ -316,7 +166,7 @@ describe('Role Escalation Prevention', function () {
         });
 
         it('guest cannot start assessment', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
             $assessment = Assessment::factory()->published()->create([
                 'course_id' => $course->id,
@@ -333,7 +183,7 @@ describe('Role Escalation Prevention', function () {
 
         it('admin can publish any course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
             $section = \App\Models\CourseSection::factory()->create(['course_id' => $course->id]);
             \App\Models\Lesson::factory()->create(['course_section_id' => $section->id]);
@@ -380,7 +230,7 @@ describe('Role Escalation Prevention', function () {
 
         it('admin can edit any course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
             $this->actingAs($admin)
@@ -390,7 +240,7 @@ describe('Role Escalation Prevention', function () {
 
         it('admin can delete any course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
             $this->actingAs($admin)

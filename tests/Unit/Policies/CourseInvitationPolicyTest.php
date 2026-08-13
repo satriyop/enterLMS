@@ -18,10 +18,10 @@ beforeEach(function () {
     $this->policy = new CourseInvitationPolicy;
 
     $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-    $this->contentManager = User::factory()->create(['role' => 'content_manager']);
-    $this->trainer = User::factory()->create(['role' => 'trainer']);
+    $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
+    $this->trainer = User::factory()->create(['role' => 'lms_admin']);
     $this->learner = User::factory()->create(['role' => 'learner']);
-    $this->courseOwner = User::factory()->create(['role' => 'content_manager']);
+    $this->courseOwner = User::factory()->create(['role' => 'lms_admin']);
     $this->invitee = User::factory()->create(['role' => 'learner']);
 
     $this->course = Course::factory()->published()->create(['user_id' => $this->courseOwner->id]);
@@ -42,14 +42,6 @@ it('allows lms_admin to view any invitations', function () {
     expect($this->policy->viewAny($this->lmsAdmin, $this->course))->toBeTrue();
 });
 
-it('allows trainer to view any invitations', function () {
-    expect($this->policy->viewAny($this->trainer, $this->course))->toBeTrue();
-});
-
-it('denies non-owner content_manager to view invitations', function () {
-    expect($this->policy->viewAny($this->contentManager, $this->course))->toBeFalse();
-});
-
 it('denies learner to view any invitations', function () {
     expect($this->policy->viewAny($this->learner, $this->course))->toBeFalse();
 });
@@ -68,17 +60,9 @@ it('allows lms_admin to view any invitation', function () {
     expect($this->policy->view($this->lmsAdmin, $this->invitation))->toBeTrue();
 });
 
-it('allows trainer to view any invitation', function () {
-    expect($this->policy->view($this->trainer, $this->invitation))->toBeTrue();
-});
-
 it('denies other learners to view invitation', function () {
     $otherLearner = User::factory()->create(['role' => 'learner']);
     expect($this->policy->view($otherLearner, $this->invitation))->toBeFalse();
-});
-
-it('denies non-owner content_manager to view invitation', function () {
-    expect($this->policy->view($this->contentManager, $this->invitation))->toBeFalse();
 });
 
 // ========== create ==========
@@ -89,14 +73,6 @@ it('allows course owner to create invitations for their course', function () {
 
 it('allows lms_admin to create invitations for any course', function () {
     expect($this->policy->create($this->lmsAdmin, $this->course))->toBeTrue();
-});
-
-it('allows trainer to create invitations', function () {
-    expect($this->policy->create($this->trainer, $this->course))->toBeTrue();
-});
-
-it('denies non-owner content_manager to create invitations', function () {
-    expect($this->policy->create($this->contentManager, $this->course))->toBeFalse();
 });
 
 it('denies learner to create invitations', function () {
@@ -131,16 +107,6 @@ it('denies deleting declined invitation', function () {
     expect($this->policy->delete($this->courseOwner, $declinedInvitation))->toBeFalse();
 });
 
-it('denies non-inviter to delete invitation', function () {
-    $otherManager = User::factory()->create(['role' => 'content_manager']);
-    expect($this->policy->delete($otherManager, $this->invitation))->toBeFalse();
-});
-
 it('denies invitee to delete their own invitation', function () {
     expect($this->policy->delete($this->invitee, $this->invitation))->toBeFalse();
-});
-
-it('denies trainer who is not inviter to delete invitation', function () {
-    $otherTrainer = User::factory()->create(['role' => 'trainer']);
-    expect($this->policy->delete($otherTrainer, $this->invitation))->toBeFalse();
 });

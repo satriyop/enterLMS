@@ -140,7 +140,7 @@ describe('CourseInvitationService', function () {
     describe('importFromCsv', function () {
         it('successfully imports valid learners from CSV', function () {
             $course = Course::factory()->published()->create();
-            $inviter = User::factory()->create(['role' => 'trainer']);
+            $inviter = User::factory()->create(['role' => 'lms_admin']);
             $learner1 = User::factory()->create([
                 'email' => 'learner1@example.com',
                 'role' => 'learner',
@@ -172,7 +172,7 @@ describe('CourseInvitationService', function () {
 
         it('skips non-existent email addresses', function () {
             $course = Course::factory()->published()->create();
-            $inviter = User::factory()->create(['role' => 'trainer']);
+            $inviter = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create([
                 'email' => 'valid@example.com',
                 'role' => 'learner',
@@ -198,10 +198,10 @@ describe('CourseInvitationService', function () {
 
         it('skips users who are not learners', function () {
             $course = Course::factory()->published()->create();
-            $inviter = User::factory()->create(['role' => 'trainer']);
+            $inviter = User::factory()->create(['role' => 'lms_admin']);
             $trainer = User::factory()->create([
                 'email' => 'trainer@example.com',
-                'role' => 'trainer',
+                'role' => 'lms_admin',
             ]);
 
             $csvData = [
@@ -222,7 +222,7 @@ describe('CourseInvitationService', function () {
 
         it('skips already enrolled users', function () {
             $course = Course::factory()->published()->create();
-            $inviter = User::factory()->create(['role' => 'trainer']);
+            $inviter = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create([
                 'email' => 'enrolled@example.com',
                 'role' => 'learner',
@@ -251,7 +251,7 @@ describe('CourseInvitationService', function () {
 
         it('skips users with pending invitations', function () {
             $course = Course::factory()->published()->create();
-            $inviter = User::factory()->create(['role' => 'trainer']);
+            $inviter = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create([
                 'email' => 'invited@example.com',
                 'role' => 'learner',
@@ -280,7 +280,7 @@ describe('CourseInvitationService', function () {
 
         it('creates invitations with message and expiration', function () {
             $course = Course::factory()->published()->create();
-            $inviter = User::factory()->create(['role' => 'trainer']);
+            $inviter = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create([
                 'email' => 'learner@example.com',
                 'role' => 'learner',
@@ -313,7 +313,7 @@ describe('CourseInvitationService', function () {
         });
 
         it('returns empty result when course does not exist', function () {
-            $inviter = User::factory()->create(['role' => 'trainer']);
+            $inviter = User::factory()->create(['role' => 'lms_admin']);
 
             $csvData = [
                 ['learner@example.com'],
@@ -333,7 +333,7 @@ describe('CourseInvitationService', function () {
 
         it('batch loads users to avoid N+1 queries', function () {
             $course = Course::factory()->published()->create();
-            $inviter = User::factory()->create(['role' => 'trainer']);
+            $inviter = User::factory()->create(['role' => 'lms_admin']);
 
             $learners = User::factory()->count(10)->create(['role' => 'learner']);
 
@@ -352,7 +352,7 @@ describe('CourseInvitationService', function () {
 
         it('skips empty rows in CSV', function () {
             $course = Course::factory()->published()->create();
-            $inviter = User::factory()->create(['role' => 'trainer']);
+            $inviter = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create([
                 'email' => 'learner@example.com',
                 'role' => 'learner',
@@ -388,7 +388,7 @@ describe('CourseInvitationService', function () {
         });
 
         it('rejects non-learner users', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
+            $trainer = User::factory()->create(['role' => 'lms_admin']);
             $course = Course::factory()->published()->create();
 
             $result = $this->service->canInvite($trainer, $course);

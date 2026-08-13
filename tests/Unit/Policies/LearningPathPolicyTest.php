@@ -39,8 +39,8 @@ class LearningPathPolicyTest extends TestCase
         $this->policy = new LearningPathPolicy;
 
         $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
-        $this->otherContentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
+        $this->otherContentManager = User::factory()->create(['role' => 'lms_admin']);
         $this->learner = User::factory()->create(['role' => 'learner']);
     }
 
@@ -64,24 +64,6 @@ class LearningPathPolicyTest extends TestCase
         $this->assertTrue($this->policy->view($this->lmsAdmin, $published));
     }
 
-    public function test_content_manager_can_view_own_learning_path(): void
-    {
-        $learningPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->contentManager->id,
-        ]);
-
-        $this->assertTrue($this->policy->view($this->contentManager, $learningPath));
-    }
-
-    public function test_content_manager_cannot_view_other_unpublished_learning_path(): void
-    {
-        $learningPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->otherContentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->view($this->contentManager, $learningPath));
-    }
-
     public function test_learner_can_view_published_learning_path(): void
     {
         $learningPath = LearningPath::factory()->published()->create();
@@ -103,11 +85,6 @@ class LearningPathPolicyTest extends TestCase
         $this->assertTrue($this->policy->create($this->lmsAdmin));
     }
 
-    public function test_content_manager_can_create_learning_path(): void
-    {
-        $this->assertTrue($this->policy->create($this->contentManager));
-    }
-
     public function test_learner_cannot_create_learning_path(): void
     {
         $this->assertFalse($this->policy->create($this->learner));
@@ -122,24 +99,6 @@ class LearningPathPolicyTest extends TestCase
 
         $this->assertTrue($this->policy->update($this->lmsAdmin, $unpublished));
         $this->assertTrue($this->policy->update($this->lmsAdmin, $published));
-    }
-
-    public function test_content_manager_can_update_own_learning_path(): void
-    {
-        $learningPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->contentManager->id,
-        ]);
-
-        $this->assertTrue($this->policy->update($this->contentManager, $learningPath));
-    }
-
-    public function test_content_manager_cannot_update_other_learning_path(): void
-    {
-        $learningPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->otherContentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->update($this->contentManager, $learningPath));
     }
 
     public function test_learner_cannot_update_learning_path(): void
@@ -160,24 +119,6 @@ class LearningPathPolicyTest extends TestCase
         $this->assertTrue($this->policy->delete($this->lmsAdmin, $published));
     }
 
-    public function test_content_manager_can_delete_own_learning_path(): void
-    {
-        $learningPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->contentManager->id,
-        ]);
-
-        $this->assertTrue($this->policy->delete($this->contentManager, $learningPath));
-    }
-
-    public function test_content_manager_cannot_delete_other_learning_path(): void
-    {
-        $learningPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->otherContentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->delete($this->contentManager, $learningPath));
-    }
-
     public function test_learner_cannot_delete_learning_path(): void
     {
         $learningPath = LearningPath::factory()->unpublished()->create();
@@ -194,24 +135,6 @@ class LearningPathPolicyTest extends TestCase
         $this->assertTrue($this->policy->publish($this->lmsAdmin, $learningPath));
     }
 
-    public function test_content_manager_can_publish_own_learning_path(): void
-    {
-        $learningPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->contentManager->id,
-        ]);
-
-        $this->assertTrue($this->policy->publish($this->contentManager, $learningPath));
-    }
-
-    public function test_content_manager_cannot_publish_other_learning_path(): void
-    {
-        $learningPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->otherContentManager->id,
-        ]);
-
-        $this->assertFalse($this->policy->publish($this->contentManager, $learningPath));
-    }
-
     public function test_learner_cannot_publish_learning_path(): void
     {
         $learningPath = LearningPath::factory()->unpublished()->create();
@@ -223,22 +146,12 @@ class LearningPathPolicyTest extends TestCase
 
     public function test_reorder_follows_update_policy(): void
     {
-        $ownPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->contentManager->id,
-        ]);
-        $otherPath = LearningPath::factory()->unpublished()->create([
-            'created_by' => $this->otherContentManager->id,
+        $path = LearningPath::factory()->unpublished()->create([
+            'created_by' => $this->lmsAdmin->id,
         ]);
 
-        // Same as update - owner can reorder own path
-        $this->assertTrue($this->policy->reorder($this->contentManager, $ownPath));
-        $this->assertFalse($this->policy->reorder($this->contentManager, $otherPath));
-
-        // Admin can reorder any
-        $this->assertTrue($this->policy->reorder($this->lmsAdmin, $otherPath));
-
-        // Learner cannot reorder
-        $this->assertFalse($this->policy->reorder($this->learner, $ownPath));
+        $this->assertTrue($this->policy->reorder($this->lmsAdmin, $path));
+        $this->assertFalse($this->policy->reorder($this->learner, $path));
     }
 
     // ========== canManageLearningPaths Helper ==========
@@ -246,11 +159,6 @@ class LearningPathPolicyTest extends TestCase
     public function test_can_manage_learning_paths_helper(): void
     {
         $this->assertTrue($this->lmsAdmin->canManageLearningPaths());
-        $this->assertTrue($this->contentManager->canManageLearningPaths());
         $this->assertFalse($this->learner->canManageLearningPaths());
-
-        // Trainer cannot manage learning paths (unlike courses)
-        $trainer = User::factory()->create(['role' => 'trainer']);
-        $this->assertFalse($trainer->canManageLearningPaths());
     }
 }

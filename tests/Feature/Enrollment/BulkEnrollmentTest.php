@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-    $this->trainer = User::factory()->trainer()->create();
+    $this->trainer = User::factory()->lmsAdmin()->create();
     $this->admin = User::factory()->lmsAdmin()->create();
     $this->learner = User::factory()->learner()->create();
     $this->course = Course::factory()->published()->create();
@@ -39,7 +39,7 @@ describe('BulkEnrollmentService', function () {
 
         it('skips non-learner users', function () {
             $learner = User::factory()->learner()->create();
-            $trainer = User::factory()->trainer()->create();
+            $trainer = User::factory()->lmsAdmin()->create();
 
             $results = $this->service->bulkEnroll(
                 userIds: [$learner->id, $trainer->id],
@@ -208,19 +208,6 @@ describe('BulkEnrollmentService', function () {
 });
 
 describe('BulkEnrollmentController', function () {
-    it('allows trainer to bulk enroll via user_ids', function () {
-        $learners = User::factory()->learner()->count(2)->create();
-
-        $response = $this->actingAs($this->trainer)
-            ->post(route('courses.bulk-enroll', $this->course), [
-                'user_ids' => $learners->pluck('id')->toArray(),
-            ]);
-
-        $response->assertRedirect(route('courses.show', $this->course));
-        $response->assertSessionHas('success');
-
-        expect(Enrollment::where('course_id', $this->course->id)->count())->toBe(2);
-    });
 
     it('allows lms_admin to bulk enroll', function () {
         $learner = User::factory()->learner()->create();
@@ -240,18 +227,6 @@ describe('BulkEnrollmentController', function () {
         $response = $this->actingAs($this->learner)
             ->post(route('courses.bulk-enroll', $this->course), [
                 'user_ids' => [$otherLearner->id],
-            ]);
-
-        $response->assertForbidden();
-    });
-
-    it('denies content manager from bulk enrolling', function () {
-        $contentManager = User::factory()->contentManager()->create();
-        $learner = User::factory()->learner()->create();
-
-        $response = $this->actingAs($contentManager)
-            ->post(route('courses.bulk-enroll', $this->course), [
-                'user_ids' => [$learner->id],
             ]);
 
         $response->assertForbidden();
@@ -317,7 +292,7 @@ describe('BulkEnrollmentController', function () {
 
     it('shows mixed results message', function () {
         $learners = User::factory()->learner()->count(2)->create();
-        $trainer = User::factory()->trainer()->create();
+        $trainer = User::factory()->lmsAdmin()->create();
 
         // One will enroll, one will be skipped (already enrolled)
         Enrollment::factory()->active()->create([
@@ -339,9 +314,6 @@ describe('BulkEnrollmentController', function () {
 });
 
 describe('BulkEnrollment Policy', function () {
-    it('allows trainer for published course', function () {
-        expect($this->trainer->can('bulkEnroll', $this->course))->toBeTrue();
-    });
 
     it('allows lms_admin for published course', function () {
         expect($this->admin->can('bulkEnroll', $this->course))->toBeTrue();
@@ -351,28 +323,9 @@ describe('BulkEnrollment Policy', function () {
         expect($this->learner->can('bulkEnroll', $this->course))->toBeFalse();
     });
 
-    it('denies content_manager', function () {
-        $contentManager = User::factory()->contentManager()->create();
-        expect($contentManager->can('bulkEnroll', $this->course))->toBeFalse();
-    });
-
     it('denies for unpublished course', function () {
         $draftCourse = Course::factory()->draft()->create();
         expect($this->trainer->can('bulkEnroll', $draftCourse))->toBeFalse();
     });
 
-    it('denies compliance_officer', function () {
-        $complianceOfficer = User::factory()->complianceOfficer()->create();
-        expect($complianceOfficer->can('bulkEnroll', $this->course))->toBeFalse();
-    });
-
-    it('denies auditor', function () {
-        $auditor = User::factory()->auditor()->create();
-        expect($auditor->can('bulkEnroll', $this->course))->toBeFalse();
-    });
-
-    it('denies teaching_assistant', function () {
-        $ta = User::factory()->teachingAssistant()->create();
-        expect($ta->can('bulkEnroll', $this->course))->toBeFalse();
-    });
 });

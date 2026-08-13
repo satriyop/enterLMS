@@ -90,8 +90,6 @@ const confirmation = useConfirmation();
 const roleTabs = computed(() => [
     { value: '', label: 'Semua', count: undefined },
     { value: 'learner', label: 'Peserta Didik' },
-    { value: 'content_manager', label: 'Pengelola Konten' },
-    { value: 'trainer', label: 'Pelatih' },
     { value: 'lms_admin', label: 'Admin LMS' },
 ]);
 

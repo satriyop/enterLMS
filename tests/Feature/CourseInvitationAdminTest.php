@@ -14,31 +14,10 @@ class CourseInvitationAdminTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_content_manager_can_invite_learner_to_own_course(): void
-    {
-        $contentManager = User::factory()->create(['role' => 'content_manager']);
-        $learner = User::factory()->create(['role' => 'learner']);
-        $course = Course::factory()->published()->create(['user_id' => $contentManager->id]);
-
-        $response = $this->actingAs($contentManager)->post("/courses/{$course->id}/invitations", [
-            'user_id' => $learner->id,
-            'message' => 'Please join this course.',
-        ]);
-
-        $response->assertRedirect();
-        $this->assertDatabaseHas('course_invitations', [
-            'user_id' => $learner->id,
-            'course_id' => $course->id,
-            'invited_by' => $contentManager->id,
-            'status' => 'pending',
-            'message' => 'Please join this course.',
-        ]);
-    }
-
     public function test_lms_admin_can_invite_learner_to_any_course(): void
     {
         $admin = User::factory()->create(['role' => 'lms_admin']);
-        $contentManager = User::factory()->create(['role' => 'content_manager']);
+        $contentManager = User::factory()->create(['role' => 'lms_admin']);
         $learner = User::factory()->create(['role' => 'learner']);
         $course = Course::factory()->published()->create(['user_id' => $contentManager->id]);
 
@@ -52,38 +31,6 @@ class CourseInvitationAdminTest extends TestCase
             'course_id' => $course->id,
             'invited_by' => $admin->id,
         ]);
-    }
-
-    public function test_trainer_can_invite_learner_to_any_course(): void
-    {
-        $trainer = User::factory()->create(['role' => 'trainer']);
-        $contentManager = User::factory()->create(['role' => 'content_manager']);
-        $learner = User::factory()->create(['role' => 'learner']);
-        $course = Course::factory()->published()->create(['user_id' => $contentManager->id]);
-
-        $response = $this->actingAs($trainer)->post("/courses/{$course->id}/invitations", [
-            'user_id' => $learner->id,
-        ]);
-
-        $response->assertRedirect();
-        $this->assertDatabaseHas('course_invitations', [
-            'user_id' => $learner->id,
-            'course_id' => $course->id,
-        ]);
-    }
-
-    public function test_content_manager_cannot_invite_to_others_course(): void
-    {
-        $contentManager1 = User::factory()->create(['role' => 'content_manager']);
-        $contentManager2 = User::factory()->create(['role' => 'content_manager']);
-        $learner = User::factory()->create(['role' => 'learner']);
-        $course = Course::factory()->published()->create(['user_id' => $contentManager2->id]);
-
-        $response = $this->actingAs($contentManager1)->post("/courses/{$course->id}/invitations", [
-            'user_id' => $learner->id,
-        ]);
-
-        $response->assertForbidden();
     }
 
     public function test_learner_cannot_invite_others(): void
@@ -102,7 +49,7 @@ class CourseInvitationAdminTest extends TestCase
     public function test_cannot_invite_non_learner_user(): void
     {
         $admin = User::factory()->create(['role' => 'lms_admin']);
-        $contentManager = User::factory()->create(['role' => 'content_manager']);
+        $contentManager = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->published()->create();
 
         $response = $this->actingAs($admin)->post("/courses/{$course->id}/invitations", [
@@ -172,7 +119,7 @@ class CourseInvitationAdminTest extends TestCase
 
     public function test_inviter_can_cancel_own_invitation(): void
     {
-        $contentManager = User::factory()->create(['role' => 'content_manager']);
+        $contentManager = User::factory()->create(['role' => 'lms_admin']);
         $learner = User::factory()->create(['role' => 'learner']);
         $course = Course::factory()->published()->create(['user_id' => $contentManager->id]);
 
@@ -211,7 +158,7 @@ class CourseInvitationAdminTest extends TestCase
         $course = Course::factory()->published()->create();
         $learner1 = User::factory()->create(['role' => 'learner', 'name' => 'Ahmad Wijaya', 'email' => 'ahmad@example.com']);
         $learner2 = User::factory()->create(['role' => 'learner', 'name' => 'Siti Rahayu', 'email' => 'siti@example.com']);
-        User::factory()->create(['role' => 'content_manager', 'name' => 'Ahmad Manager']);
+        User::factory()->create(['role' => 'lms_admin', 'name' => 'Ahmad Manager']);
 
         $response = $this->actingAs($admin)->get("/api/users/search?q=ahmad&course_id={$course->id}");
 
@@ -258,20 +205,9 @@ class CourseInvitationAdminTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_content_manager_cannot_search_learners_for_others_course(): void
-    {
-        $contentManager1 = User::factory()->create(['role' => 'content_manager']);
-        $contentManager2 = User::factory()->create(['role' => 'content_manager']);
-        $course = Course::factory()->published()->create(['user_id' => $contentManager2->id]);
-
-        $response = $this->actingAs($contentManager1)->getJson("/api/users/search?q=test&course_id={$course->id}");
-
-        $response->assertForbidden();
-    }
-
     public function test_course_owner_can_search_learners(): void
     {
-        $contentManager = User::factory()->create(['role' => 'content_manager']);
+        $contentManager = User::factory()->create(['role' => 'lms_admin']);
         $course = Course::factory()->published()->create(['user_id' => $contentManager->id]);
         User::factory()->create(['role' => 'learner', 'name' => 'Test Learner']);
 

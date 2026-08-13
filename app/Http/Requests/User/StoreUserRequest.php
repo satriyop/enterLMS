@@ -29,7 +29,7 @@ class StoreUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)],
-            'role' => ['required', Rule::in(['learner', 'content_manager', 'trainer', 'lms_admin'])],
+            'role' => ['required', Rule::in(['learner', 'lms_admin', 'lms_admin', 'lms_admin'])],
         ];
     }
 

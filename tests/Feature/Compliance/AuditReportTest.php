@@ -149,33 +149,6 @@ describe('ComplianceReportController', function () {
         $response->assertForbidden();
     });
 
-    it('allows compliance officer to access audit reports', function () {
-        $complianceOfficer = User::factory()->complianceOfficer()->create();
-
-        $response = $this->actingAs($complianceOfficer)
-            ->get(route('compliance.audit-reports.index'));
-
-        $response->assertOk();
-    });
-
-    it('allows auditor to access audit reports', function () {
-        $auditor = User::factory()->auditor()->create();
-
-        $response = $this->actingAs($auditor)
-            ->get(route('compliance.audit-reports.index'));
-
-        $response->assertOk();
-    });
-
-    it('denies teaching assistant access to audit reports', function () {
-        $ta = User::factory()->teachingAssistant()->create();
-
-        $response = $this->actingAs($ta)
-            ->get(route('compliance.audit-reports.index'));
-
-        $response->assertForbidden();
-    });
-
     it('returns audit log via API endpoint', function () {
         $response = $this->actingAs($this->admin)
             ->get(route('compliance.audit-reports.logs', [

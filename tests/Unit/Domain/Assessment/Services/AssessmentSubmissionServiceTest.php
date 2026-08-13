@@ -384,7 +384,7 @@ describe('AssessmentSubmissionService', function () {
     describe('submitBulkGrades', function () {
         it('updates answer scores for manual grading', function () {
             $user = User::factory()->create();
-            $grader = User::factory()->create(['role' => 'content_manager']);
+            $grader = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->published()->create([
                 'passing_score' => 70,
             ]);
@@ -435,7 +435,7 @@ describe('AssessmentSubmissionService', function () {
 
         it('preserves auto-graded scores when grading manual answers in mixed assessment', function () {
             $user = User::factory()->create();
-            $grader = User::factory()->create(['role' => 'content_manager']);
+            $grader = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->published()->create([
                 'passing_score' => 60,
             ]);
@@ -500,7 +500,7 @@ describe('AssessmentSubmissionService', function () {
             Log::spy();
 
             $user = User::factory()->create();
-            $grader = User::factory()->create(['role' => 'content_manager']);
+            $grader = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->published()->create([
                 'passing_score' => 70,
             ]);

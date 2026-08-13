@@ -6,7 +6,7 @@ use App\Models\Tag;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->user = User::factory()->create(['role' => 'content_manager']);
+    $this->user = User::factory()->create(['role' => 'lms_admin']);
 });
 
 describe('Course Store Validation', function () {

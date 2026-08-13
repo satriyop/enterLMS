@@ -40,10 +40,10 @@ class EnrollmentPolicyTest extends TestCase
         $this->policy = new EnrollmentPolicy;
 
         $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
         $this->learner = User::factory()->create(['role' => 'learner']);
         $this->otherLearner = User::factory()->create(['role' => 'learner']);
-        $this->trainer = User::factory()->create(['role' => 'trainer']);
+        $this->trainer = User::factory()->create(['role' => 'lms_admin']);
     }
 
     // ========== viewAny ==========

@@ -40,7 +40,7 @@ class CoursePublishingStateMachineTest extends TestCase
         parent::setUp();
 
         $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
-        $this->contentManager = User::factory()->create(['role' => 'content_manager']);
+        $this->contentManager = User::factory()->create(['role' => 'lms_admin']);
         $this->learner = User::factory()->create(['role' => 'learner']);
         $this->category = Category::factory()->create();
     }
@@ -127,19 +127,6 @@ class CoursePublishingStateMachineTest extends TestCase
         $this->assertEquals($this->lmsAdmin->id, $course->published_by);
     }
 
-    public function test_content_manager_cannot_publish_own_course(): void
-    {
-        $course = $this->createDraftCourse($this->contentManager);
-
-        $response = $this->actingAs($this->contentManager)
-            ->post("/courses/{$course->id}/publish");
-
-        $response->assertForbidden();
-
-        $course->refresh();
-        $this->assertEquals('draft', $course->status);
-    }
-
     public function test_learner_cannot_publish_course(): void
     {
         $course = $this->createDraftCourse();
@@ -199,19 +186,6 @@ class CoursePublishingStateMachineTest extends TestCase
         $this->assertNull($course->published_by);
     }
 
-    public function test_content_manager_cannot_unpublish_course(): void
-    {
-        $course = $this->createPublishedCourse($this->contentManager);
-
-        $response = $this->actingAs($this->contentManager)
-            ->post("/courses/{$course->id}/unpublish");
-
-        $response->assertForbidden();
-
-        $course->refresh();
-        $this->assertEquals('published', $course->status);
-    }
-
     public function test_learner_cannot_unpublish_course(): void
     {
         $course = $this->createPublishedCourse();
@@ -250,16 +224,6 @@ class CoursePublishingStateMachineTest extends TestCase
 
         $course->refresh();
         $this->assertEquals('archived', $course->status);
-    }
-
-    public function test_content_manager_cannot_archive_course(): void
-    {
-        $course = $this->createPublishedCourse($this->contentManager);
-
-        $response = $this->actingAs($this->contentManager)
-            ->post("/courses/{$course->id}/archive");
-
-        $response->assertForbidden();
     }
 
     // ========== SET STATUS (direct status changes by LMS Admin) ==========
@@ -309,18 +273,6 @@ class CoursePublishingStateMachineTest extends TestCase
 
         $course->refresh();
         $this->assertEquals('archived', $course->status);
-    }
-
-    public function test_content_manager_cannot_set_status(): void
-    {
-        $course = $this->createDraftCourse($this->contentManager);
-
-        $response = $this->actingAs($this->contentManager)
-            ->patch("/courses/{$course->id}/status", [
-                'status' => 'published',
-            ]);
-
-        $response->assertForbidden();
     }
 
     public function test_set_status_validates_allowed_values(): void
@@ -391,18 +343,6 @@ class CoursePublishingStateMachineTest extends TestCase
         $this->assertEquals('hidden', $course->visibility);
     }
 
-    public function test_content_manager_cannot_set_visibility(): void
-    {
-        $course = $this->createDraftCourse($this->contentManager);
-
-        $response = $this->actingAs($this->contentManager)
-            ->patch("/courses/{$course->id}/visibility", [
-                'visibility' => 'restricted',
-            ]);
-
-        $response->assertForbidden();
-    }
-
     public function test_set_visibility_validates_allowed_values(): void
     {
         $course = $this->createDraftCourse();
@@ -416,38 +356,6 @@ class CoursePublishingStateMachineTest extends TestCase
     }
 
     // ========== EDITABILITY BASED ON STATUS ==========
-
-    public function test_content_manager_can_edit_own_draft_course(): void
-    {
-        $course = $this->createDraftCourse($this->contentManager);
-
-        $response = $this->actingAs($this->contentManager)
-            ->put("/courses/{$course->id}", [
-                'title' => 'Updated Title',
-                'short_description' => 'Updated description',
-                'visibility' => 'public',
-                'difficulty_level' => 'beginner',
-            ]);
-
-        $response->assertRedirect();
-
-        $course->refresh();
-        $this->assertEquals('Updated Title', $course->title);
-    }
-
-    public function test_content_manager_cannot_edit_published_course(): void
-    {
-        $course = $this->createPublishedCourse($this->contentManager);
-
-        $response = $this->actingAs($this->contentManager)
-            ->put("/courses/{$course->id}", [
-                'title' => 'Updated Title',
-                'short_description' => 'Updated description',
-                'visibility' => 'public',
-            ]);
-
-        $response->assertForbidden();
-    }
 
     public function test_lms_admin_can_edit_published_course(): void
     {
@@ -588,27 +496,6 @@ class CoursePublishingStateMachineTest extends TestCase
     }
 
     // ========== DELETE CONSTRAINTS BASED ON STATUS ==========
-
-    public function test_content_manager_can_delete_own_draft_course(): void
-    {
-        $course = $this->createDraftCourse($this->contentManager);
-
-        $response = $this->actingAs($this->contentManager)
-            ->delete("/courses/{$course->id}");
-
-        $response->assertRedirect();
-        $this->assertSoftDeleted('courses', ['id' => $course->id]);
-    }
-
-    public function test_content_manager_cannot_delete_own_published_course(): void
-    {
-        $course = $this->createPublishedCourse($this->contentManager);
-
-        $response = $this->actingAs($this->contentManager)
-            ->delete("/courses/{$course->id}");
-
-        $response->assertForbidden();
-    }
 
     public function test_lms_admin_can_delete_any_course(): void
     {

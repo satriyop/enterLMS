@@ -19,7 +19,7 @@ describe('InvitationAcceptanceService', function () {
     it('accepts invitation and creates enrollment', function () {
         $user = User::factory()->create(['role' => 'learner']);
         $course = Course::factory()->published()->create();
-        $inviter = User::factory()->create(['role' => 'trainer']);
+        $inviter = User::factory()->create(['role' => 'lms_admin']);
 
         $invitation = CourseInvitation::factory()->create([
             'user_id' => $user->id,
@@ -46,7 +46,7 @@ describe('InvitationAcceptanceService', function () {
     it('rolls back invitation status when enrollment fails', function () {
         $user = User::factory()->create(['role' => 'learner']);
         $course = Course::factory()->published()->create();
-        $inviter = User::factory()->create(['role' => 'trainer']);
+        $inviter = User::factory()->create(['role' => 'lms_admin']);
 
         // Create enrollment first to trigger AlreadyEnrolledException
         Enrollment::factory()->active()->create([
@@ -132,7 +132,7 @@ describe('InvitationAcceptanceService', function () {
     it('handles the full invitation→enrollment flow with acceptWithLocking', function () {
         $user = User::factory()->create(['role' => 'learner']);
         $course = Course::factory()->published()->create();
-        $inviter = User::factory()->create(['role' => 'trainer']);
+        $inviter = User::factory()->create(['role' => 'lms_admin']);
 
         $invitation = CourseInvitation::factory()->create([
             'user_id' => $user->id,
@@ -163,7 +163,7 @@ describe('InvitationAcceptanceService', function () {
     it('propagates AlreadyEnrolledException through nested transaction', function () {
         $user = User::factory()->create(['role' => 'learner']);
         $course = Course::factory()->published()->create();
-        $inviter = User::factory()->create(['role' => 'trainer']);
+        $inviter = User::factory()->create(['role' => 'lms_admin']);
 
         // Create enrollment first
         Enrollment::factory()->active()->create([

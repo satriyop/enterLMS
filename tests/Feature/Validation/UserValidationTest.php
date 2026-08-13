@@ -191,8 +191,8 @@ describe('User Store Validation', function () {
         }
     })->with([
         'learner' => ['learner', false],
-        'content_manager' => ['content_manager', false],
-        'trainer' => ['trainer', false],
+        'lms_admin' => ['lms_admin', false],
+        'lms_admin' => ['lms_admin', false],
         'lms_admin' => ['lms_admin', false],
         'invalid role' => ['super_admin', true],
         'empty string' => ['', true],
@@ -374,8 +374,8 @@ describe('User Update Validation', function () {
         }
     })->with([
         'learner' => ['learner', false],
-        'content_manager' => ['content_manager', false],
-        'trainer' => ['trainer', false],
+        'lms_admin' => ['lms_admin', false],
+        'lms_admin' => ['lms_admin', false],
         'lms_admin' => ['lms_admin', false],
         'invalid role' => ['super_admin', true],
     ]);
@@ -412,7 +412,7 @@ describe('User Update Validation', function () {
             ->put(route('admin.users.update', $otherUser), [
                 'name' => 'Other User',
                 'email' => $otherUser->email,
-                'role' => 'content_manager',
+                'role' => 'lms_admin',
             ])
             ->assertSessionDoesntHaveErrors('role');
     });

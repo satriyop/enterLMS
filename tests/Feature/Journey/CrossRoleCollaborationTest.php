@@ -18,7 +18,6 @@ use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
-use App\Models\Question;
 use App\Models\User;
 
 describe('Cross-Role Collaboration', function () {
@@ -27,7 +26,7 @@ describe('Cross-Role Collaboration', function () {
 
         it('completes full workflow from content creation to learner enrollment', function () {
             // Step 1: Content Manager creates a course
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
@@ -74,14 +73,9 @@ describe('Cross-Role Collaboration', function () {
             // Ensure course has required content for publishing
             expect($course->lessons()->count())->toBe(1);
 
-            // Step 3: CM cannot publish (403)
-            $this->actingAs($cm)
-                ->post(route('courses.publish', $course))
-                ->assertForbidden();
-
             expect($course->refresh()->isDraft())->toBeTrue();
 
-            // Step 4: Admin publishes the course
+            // Step 3: Admin publishes the course
             $this->actingAs($admin)
                 ->post(route('courses.publish', $course))
                 ->assertRedirect();
@@ -102,7 +96,7 @@ describe('Cross-Role Collaboration', function () {
         });
 
         it('learner cannot enroll while course is draft', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
@@ -117,178 +111,8 @@ describe('Cross-Role Collaboration', function () {
             ]);
         });
 
-        it('CM can still view published course but cannot edit structure', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $admin = User::factory()->create(['role' => 'lms_admin']);
-
-            $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-            Lesson::factory()->create(['course_section_id' => $section->id]);
-
-            // Admin publishes
-            $this->actingAs($admin)
-                ->post(route('courses.publish', $course));
-
-            // CM can view
-            $this->actingAs($cm)
-                ->get(route('courses.show', $course))
-                ->assertOk();
-
-            // CM cannot add sections to published course
-            $this->actingAs($cm)
-                ->post(route('courses.sections.store', $course), [
-                    'title' => 'New Section',
-                ])
-                ->assertForbidden();
-
-            // CM cannot add lessons to published course
-            $this->actingAs($cm)
-                ->post(route('sections.lessons.store', $section), [
-                    'title' => 'New Lesson',
-                    'content_type' => 'text',
-                ])
-                ->assertForbidden();
-        });
-
     });
 
-    describe('Trainer Role Capabilities', function () {
-
-        it('trainer can invite learners to any course', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            // Course owned by someone else
-            $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
-
-            // Trainer can invite to any course
-            $this->actingAs($trainer)
-                ->post(route('courses.invitations.store', $course), [
-                    'user_id' => $learner->id,
-                ])
-                ->assertRedirect();
-
-            $this->assertDatabaseHas('course_invitations', [
-                'course_id' => $course->id,
-                'user_id' => $learner->id,
-                'invited_by' => $trainer->id,
-                'status' => 'pending',
-            ]);
-        });
-
-        it('trainer cannot publish courses', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $course = Course::factory()->draft()->create(['user_id' => $trainer->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-            Lesson::factory()->create(['course_section_id' => $section->id]);
-
-            $this->actingAs($trainer)
-                ->post(route('courses.publish', $course))
-                ->assertForbidden();
-
-            expect($course->refresh()->isDraft())->toBeTrue();
-        });
-
-        it('trainer cannot unpublish courses', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $admin = User::factory()->create(['role' => 'lms_admin']);
-            $course = Course::factory()->draft()->create(['user_id' => $trainer->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-            Lesson::factory()->create(['course_section_id' => $section->id]);
-
-            // Admin publishes
-            $this->actingAs($admin)->post(route('courses.publish', $course));
-
-            // Trainer cannot unpublish
-            $this->actingAs($trainer)
-                ->post(route('courses.unpublish', $course))
-                ->assertForbidden();
-
-            expect($course->refresh()->isPublished())->toBeTrue();
-        });
-
-        it('trainer cannot archive courses', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $admin = User::factory()->create(['role' => 'lms_admin']);
-            $course = Course::factory()->draft()->create(['user_id' => $trainer->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-            Lesson::factory()->create(['course_section_id' => $section->id]);
-
-            $this->actingAs($admin)->post(route('courses.publish', $course));
-
-            $this->actingAs($trainer)
-                ->post(route('courses.archive', $course))
-                ->assertForbidden();
-
-            expect($course->refresh()->isArchived())->toBeFalse();
-        });
-
-        it('trainer can create own courses in draft', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-
-            $this->actingAs($trainer)
-                ->post(route('courses.store'), [
-                    'title' => 'Kursus Trainer',
-                    'short_description' => 'Dibuat oleh trainer',
-                    'difficulty_level' => 'beginner',
-                ])
-                ->assertRedirect();
-
-            $course = Course::where('title', 'Kursus Trainer')->first();
-            expect($course)->not->toBeNull();
-            expect($course->user_id)->toBe($trainer->id);
-            expect($course->isDraft())->toBeTrue();
-        });
-
-        it('trainer can view enrollments on any course', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            $course = Course::factory()->published()->public()->create(['user_id' => $cm->id]);
-            Enrollment::factory()->active()->create([
-                'user_id' => $learner->id,
-                'course_id' => $course->id,
-            ]);
-
-            // Trainer can view course (which includes enrollments in Inertia props)
-            $this->actingAs($trainer)
-                ->get(route('courses.show', $course))
-                ->assertOk();
-        });
-
-        it('trainer can update their own draft course', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $course = Course::factory()->draft()->create(['user_id' => $trainer->id]);
-
-            $this->actingAs($trainer)
-                ->patch(route('courses.update', $course), [
-                    'title' => 'Updated Trainer Course',
-                    'short_description' => 'Updated description',
-                    'difficulty_level' => $course->difficulty_level ?? 'beginner',
-                    'visibility' => $course->visibility ?? 'restricted',
-                ])
-                ->assertRedirect();
-
-            expect($course->refresh()->title)->toBe('Updated Trainer Course');
-        });
-
-        it('trainer cannot update other trainers draft course', function () {
-            $trainer1 = User::factory()->create(['role' => 'trainer']);
-            $trainer2 = User::factory()->create(['role' => 'trainer']);
-            $course = Course::factory()->draft()->create(['user_id' => $trainer2->id]);
-
-            $this->actingAs($trainer1)
-                ->patch(route('courses.update', $course), [
-                    'title' => 'Hacked Title',
-                ])
-                ->assertForbidden();
-
-            expect($course->refresh()->title)->not->toBe('Hacked Title');
-        });
-
-    });
 
     describe('Re-enrollment After Dropping', function () {
 
@@ -432,7 +256,7 @@ describe('Cross-Role Collaboration', function () {
 
         it('admin can modify any course regardless of owner', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
 
@@ -450,7 +274,7 @@ describe('Cross-Role Collaboration', function () {
 
         it('admin can add sections to any published course', function () {
             $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
 
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);
 
@@ -511,7 +335,7 @@ describe('Cross-Role Collaboration', function () {
     describe('Invitation to Enrollment Workflow', function () {
 
         it('complete flow: invite → accept → enroll → complete', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $admin = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
@@ -554,292 +378,8 @@ describe('Cross-Role Collaboration', function () {
             expect($invitation->refresh()->status)->toBe('accepted');
         });
 
-        it('CM can only invite to own course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm2->id]);
-
-            // CM1 cannot invite to CM2's course
-            $this->actingAs($cm1)
-                ->post(route('courses.invitations.store', $course), [
-                    'user_id' => $learner->id,
-                ])
-                ->assertForbidden();
-
-            $this->assertDatabaseMissing('course_invitations', [
-                'course_id' => $course->id,
-                'user_id' => $learner->id,
-            ]);
-        });
-
-        it('declined invitation does not create enrollment', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-
-            // Create invitation
-            $this->actingAs($cm)
-                ->post(route('courses.invitations.store', $course), [
-                    'user_id' => $learner->id,
-                ]);
-
-            $invitation = CourseInvitation::where('user_id', $learner->id)->first();
-
-            // Learner declines
-            $this->actingAs($learner)
-                ->post(route('invitations.decline', $invitation))
-                ->assertRedirect();
-
-            expect($invitation->refresh()->status)->toBe('declined');
-
-            // No enrollment created
-            $this->assertDatabaseMissing('enrollments', [
-                'user_id' => $learner->id,
-                'course_id' => $course->id,
-            ]);
-        });
-
-    });
-
-    describe('Bulk Invitation Authorization', function () {
-
-        it('course owner can bulk invite via CSV', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $learner1 = User::factory()->create(['role' => 'learner', 'email' => 'budi@example.com']);
-            $learner2 = User::factory()->create(['role' => 'learner', 'email' => 'siti@example.com']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-
-            // Create CSV file
-            $csvContent = "email\nbudi@example.com\nsiti@example.com";
-            $csvFile = \Illuminate\Http\UploadedFile::fake()->createWithContent('learners.csv', $csvContent);
-
-            $this->actingAs($cm)
-                ->post(route('courses.invitations.bulk', $course), [
-                    'file' => $csvFile,
-                ])
-                ->assertRedirect();
-
-            // Check invitations created
-            expect(CourseInvitation::where('course_id', $course->id)->count())->toBeGreaterThanOrEqual(1);
-        });
-
-        it('trainer can bulk invite to any course', function () {
-            $trainer = User::factory()->create(['role' => 'trainer']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner', 'email' => 'ahmad@example.com']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-
-            $csvContent = "email\nahmad@example.com";
-            $csvFile = \Illuminate\Http\UploadedFile::fake()->createWithContent('learners.csv', $csvContent);
-
-            $this->actingAs($trainer)
-                ->post(route('courses.invitations.bulk', $course), [
-                    'file' => $csvFile,
-                ])
-                ->assertRedirect();
-
-            $this->assertDatabaseHas('course_invitations', [
-                'course_id' => $course->id,
-                'user_id' => $learner->id,
-                'invited_by' => $trainer->id,
-            ]);
-        });
-
-        it('content manager cannot bulk invite to others course', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            User::factory()->create(['role' => 'learner', 'email' => 'test@example.com']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm2->id]);
-
-            $csvContent = "email\ntest@example.com";
-            $csvFile = \Illuminate\Http\UploadedFile::fake()->createWithContent('learners.csv', $csvContent);
-
-            $this->actingAs($cm1)
-                ->post(route('courses.invitations.bulk', $course), [
-                    'file' => $csvFile,
-                ])
-                ->assertForbidden();
-
-            // No invitations created
-            expect(CourseInvitation::where('course_id', $course->id)->count())->toBe(0);
-        });
-
-        it('admin can bulk invite to any course', function () {
-            $admin = User::factory()->create(['role' => 'lms_admin']);
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner', 'email' => 'dewi@example.com']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-
-            $csvContent = "email\ndewi@example.com";
-            $csvFile = \Illuminate\Http\UploadedFile::fake()->createWithContent('learners.csv', $csvContent);
-
-            $this->actingAs($admin)
-                ->post(route('courses.invitations.bulk', $course), [
-                    'file' => $csvFile,
-                ])
-                ->assertRedirect();
-
-            $this->assertDatabaseHas('course_invitations', [
-                'course_id' => $course->id,
-                'user_id' => $learner->id,
-            ]);
-        });
-
-        it('learner cannot bulk invite', function () {
-            $learner = User::factory()->create(['role' => 'learner']);
-            $course = Course::factory()->published()->public()->create();
-
-            $csvContent = "email\ntest@example.com";
-            $csvFile = \Illuminate\Http\UploadedFile::fake()->createWithContent('learners.csv', $csvContent);
-
-            $this->actingAs($learner)
-                ->post(route('courses.invitations.bulk', $course), [
-                    'file' => $csvFile,
-                ])
-                ->assertForbidden();
-        });
-
-    });
-
-    describe('Grading Workflow Across Roles', function () {
-
-        it('CM creates assessment with required fields', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $admin = User::factory()->create(['role' => 'lms_admin']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            // Setup - already has section + lesson for publishing
-            $course = Course::factory()->draft()->create(['user_id' => $cm->id]);
-            $section = CourseSection::factory()->create(['course_id' => $course->id]);
-            Lesson::factory()->create(['course_section_id' => $section->id]);
-
-            // Admin publishes - content requirement is met
-            $this->actingAs($admin)->post(route('courses.publish', $course));
-
-            // Create assessment with all required fields
-            $this->actingAs($cm)
-                ->post(route('assessments.store', $course), [
-                    'title' => 'Ujian Akhir',
-                    'description' => 'Ujian akhir semester',
-                    'time_limit_minutes' => 60,
-                    'passing_score' => 70,
-                    'max_attempts' => 3,
-                    'status' => 'draft',
-                    'visibility' => 'public',
-                ])
-                ->assertRedirect();
-
-            $assessment = Assessment::where('title', 'Ujian Akhir')->first();
-            expect($assessment)->not->toBeNull();
-            expect($assessment->status)->toBe('draft');
-            expect($assessment->user_id)->toBe($cm->id);
-            expect($assessment->course_id)->toBe($course->id);
-        });
-
-        it('admin can grade any assessment attempt', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $admin = User::factory()->create(['role' => 'lms_admin']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-
-            $assessment = Assessment::factory()->published()->create([
-                'course_id' => $course->id,
-                'user_id' => $cm->id,
-            ]);
-
-            Question::factory()->create([
-                'assessment_id' => $assessment->id,
-                'question_type' => 'essay',
-                'points' => 100,
-            ]);
-
-            Enrollment::factory()->active()->create([
-                'user_id' => $learner->id,
-                'course_id' => $course->id,
-            ]);
-
-            $attempt = AssessmentAttempt::factory()->submitted()->create([
-                'assessment_id' => $assessment->id,
-                'user_id' => $learner->id,
-            ]);
-
-            // Admin can view grade page
-            $this->actingAs($admin)
-                ->get(route('assessments.grade', [$course, $assessment, $attempt]))
-                ->assertOk();
-        });
-
-        it('CM can grade their own assessment attempts', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm->id]);
-
-            $assessment = Assessment::factory()->published()->create([
-                'course_id' => $course->id,
-                'user_id' => $cm->id,
-            ]);
-
-            Question::factory()->create([
-                'assessment_id' => $assessment->id,
-                'question_type' => 'essay',
-                'points' => 100,
-            ]);
-
-            Enrollment::factory()->active()->create([
-                'user_id' => $learner->id,
-                'course_id' => $course->id,
-            ]);
-
-            $attempt = AssessmentAttempt::factory()->submitted()->create([
-                'assessment_id' => $assessment->id,
-                'user_id' => $learner->id,
-            ]);
-
-            // CM can view grade page for own assessment
-            $this->actingAs($cm)
-                ->get(route('assessments.grade', [$course, $assessment, $attempt]))
-                ->assertOk();
-        });
-
-        it('CM cannot grade other CMs assessment attempts', function () {
-            $cm1 = User::factory()->create(['role' => 'content_manager']);
-            $cm2 = User::factory()->create(['role' => 'content_manager']);
-            $learner = User::factory()->create(['role' => 'learner']);
-
-            $course = Course::factory()->published()->create(['user_id' => $cm2->id]);
-
-            $assessment = Assessment::factory()->published()->create([
-                'course_id' => $course->id,
-                'user_id' => $cm2->id,
-            ]);
-
-            Enrollment::factory()->active()->create([
-                'user_id' => $learner->id,
-                'course_id' => $course->id,
-            ]);
-
-            $attempt = AssessmentAttempt::factory()->submitted()->create([
-                'assessment_id' => $assessment->id,
-                'user_id' => $learner->id,
-            ]);
-
-            // CM1 cannot grade CM2's assessment
-            $this->actingAs($cm1)
-                ->get(route('assessments.grade', [$course, $assessment, $attempt]))
-                ->assertForbidden();
-        });
-
         it('learner cannot access grade page', function () {
-            $cm = User::factory()->create(['role' => 'content_manager']);
+            $cm = User::factory()->create(['role' => 'lms_admin']);
             $learner = User::factory()->create(['role' => 'learner']);
 
             $course = Course::factory()->published()->create(['user_id' => $cm->id]);

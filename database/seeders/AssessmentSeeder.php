@@ -26,49 +26,49 @@ class AssessmentSeeder extends Seeder
     ];
 
     /**
-     * Template pertanyaan umum untuk banking/compliance context.
+     * Template pertanyaan umum untuk academy agen.
      */
     private array $questionTemplates = [
-        'compliance' => [
-            'Apa yang dimaksud dengan prinsip kehati-hatian (prudential principle) dalam perbankan?',
-            'Sebutkan fungsi utama dari Otoritas Jasa Keuangan (OJK) dalam mengawasi perbankan.',
-            'Apa saja komponen utama dalam penerapan Good Corporate Governance (GCG)?',
-            'Jelaskan pentingnya sistem kontrol internal dalam operasional bank.',
+        'intro' => [
+            'Apa perbedaan EnterLMS dan control plane Enteraksi?',
+            'Siapa yang boleh mengambil Course terbuka Pengenalan Agen AI?',
+            'Mengapa menyelesaikan Course terbuka tidak membuka akses produksi?',
+            'Apa yang dimaksud dengan agen AI di academy ini?',
         ],
-        'apu' => [
-            'Apa definisi pencucian uang menurut Undang-Undang yang berlaku di Indonesia?',
-            'Sebutkan tahapan dalam proses Customer Due Diligence (CDD).',
-            'Apa yang dimaksud dengan Beneficial Owner dalam konteks APU-PPT?',
-            'Kapan bank wajib melaporkan transaksi keuangan mencurigakan (LTKM)?',
+        'operator' => [
+            'Apa pekerjaan harian Operator pada Deployment OpenClaw?',
+            'Kapan kill switch boleh dipakai?',
+            'Apa yang tidak boleh disentuh Operator pada keputusan bisnis tenant?',
+            'Mengapa isolasi tenant wajib dijaga?',
         ],
-        'digital' => [
-            'Apa yang dimaksud dengan Open Banking?',
-            'Sebutkan risiko keamanan utama dalam digital banking.',
-            'Jelaskan konsep API Economy dalam konteks perbankan.',
-            'Apa saja prinsip keamanan siber yang harus diterapkan bank?',
+        'roles' => [
+            'Apa perbedaan Tenant Admin dan Operator?',
+            'Apa wewenang Tenant Owner?',
+            'Mengapa Operator bukan peran di EnterLMS?',
+            'Siapa yang memberikan Enrollment ke Course terbatas?',
         ],
-        'risk' => [
-            'Apa yang dimaksud dengan Basel III dalam manajemen risiko perbankan?',
-            'Sebutkan jenis-jenis risiko utama yang dihadapi bank.',
-            'Jelaskan perbedaan antara risiko kredit dan risiko operasional.',
-            'Apa yang dimaksud dengan Capital Adequacy Ratio (CAR)?',
+        'runtime' => [
+            'Apa yang dicek setelah restart Deployment?',
+            'Bagaimana membedakan gagal konektor dan gagal runtime?',
+            'Mengapa kredensial konektor milik tenant?',
+            'Apa arti Learning Path yang tidak terbuka untuk publik?',
         ],
         'general' => [
-            'Sebutkan produk simpanan yang umumnya ditawarkan oleh bank.',
-            'Apa perbedaan antara bank umum dan BPR?',
-            'Jelaskan fungsi Bank Indonesia sebagai bank sentral.',
-            'Apa yang dimaksud dengan Lembaga Penjamin Simpanan (LPS)?',
+            'Apa itu Enrollment?',
+            'Apa beda Open Course dan Restricted Course?',
+            'Apa yang terjadi jika Learner publik menyelesaikan Pengenalan Agen AI?',
+            'Siapa LMS Admin di fase ini?',
         ],
     ];
 
     public function run(): void
     {
         $publishedCourses = Course::where('status', 'published')->get();
-        $contentManager = User::where('role', 'content_manager')->first();
+        $contentManager = User::where('role', 'lms_admin')->first();
         $lmsAdmin = User::where('role', 'lms_admin')->first();
 
         if ($publishedCourses->isEmpty()) {
-            $this->command->warn('No published courses found. Run BankingCourseSeeder / FreeFlowDemoSeeder first.');
+            $this->command->warn('No published courses found. Run FreeFlowDemoSeeder first.');
 
             return;
         }
@@ -206,10 +206,10 @@ INSTRUCTIONS;
         $title = strtolower($assessment->course->title);
 
         return match (true) {
-            str_contains($title, 'regulasi') || str_contains($title, 'gcg') || str_contains($title, 'kontrol') => 'compliance',
-            str_contains($title, 'pencucian') || str_contains($title, 'cdd') => 'apu',
-            str_contains($title, 'digital') || str_contains($title, 'siber') || str_contains($title, 'api') => 'digital',
-            str_contains($title, 'risiko') || str_contains($title, 'basel') => 'risk',
+            str_contains($title, 'pengenalan') => 'intro',
+            str_contains($title, 'openclaw') || str_contains($title, 'administrasi') => 'operator',
+            str_contains($title, 'tenant') || str_contains($title, 'operator') => 'roles',
+            str_contains($title, 'runtime') || str_contains($title, 'deploy') => 'runtime',
             default => 'general',
         };
     }

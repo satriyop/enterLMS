@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use App\Models\Course;
@@ -15,26 +16,30 @@ class LessonProgressCompletionTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Course $course;
+
     private CourseSection $section;
+
     private Lesson $lesson;
+
     private Enrollment $enrollment;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->user    = User::factory()->create(['role' => 'learner']);
-        $this->course  = Course::factory()->published()->create();
+        $this->user = User::factory()->create(['role' => 'learner']);
+        $this->course = Course::factory()->published()->create();
         $this->section = CourseSection::factory()->create(['course_id' => $this->course->id]);
-        $this->lesson  = Lesson::factory()->create([
+        $this->lesson = Lesson::factory()->create([
             'course_section_id' => $this->section->id,
-            'content_type'      => 'text',
+            'content_type' => 'text',
         ]);
         $this->enrollment = Enrollment::factory()->create([
-            'user_id'             => $this->user->id,
-            'course_id'           => $this->course->id,
-            'status'              => 'active',
+            'user_id' => $this->user->id,
+            'course_id' => $this->course->id,
+            'status' => 'active',
             'progress_percentage' => 0,
         ]);
     }
@@ -45,7 +50,7 @@ class LessonProgressCompletionTest extends TestCase
 
         $response = $this->actingAs($this->user)->patchJson("/courses/{$this->course->id}/lessons/{$this->lesson->id}/progress", [
             'current_page' => 1,
-            'total_pages'  => 5,
+            'total_pages' => 5,
         ]);
 
         $response->assertOk();
@@ -84,12 +89,12 @@ class LessonProgressCompletionTest extends TestCase
     {
         // Create progress with specific data
         LessonProgress::create([
-            'enrollment_id'          => $this->enrollment->id,
-            'lesson_id'              => $this->lesson->id,
-            'current_page'           => 3,
-            'total_pages'            => 10,
-            'highest_page_reached'   => 5,
-            'is_completed'           => false,
+            'enrollment_id' => $this->enrollment->id,
+            'lesson_id' => $this->lesson->id,
+            'current_page' => 3,
+            'total_pages' => 10,
+            'highest_page_reached' => 5,
+            'is_completed' => false,
             'media_position_seconds' => 120,
             'media_duration_seconds' => 600,
         ]);
@@ -97,15 +102,15 @@ class LessonProgressCompletionTest extends TestCase
         $response = $this->actingAs($this->user)->get("/courses/{$this->course->id}/lessons/{$this->lesson->id}");
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
-                ->component('lessons/Show')
-                ->has('lessonProgress')
-                ->where('lessonProgress.current_page', 3)
-                ->where('lessonProgress.total_pages', 10)
-                ->where('lessonProgress.highest_page_reached', 5)
-                ->where('lessonProgress.is_completed', false)
-                ->where('lessonProgress.media_position_seconds', 120)
-                ->where('lessonProgress.media_duration_seconds', 600)
+        $response->assertInertia(fn ($page) => $page
+            ->component('lessons/Show')
+            ->has('lessonProgress')
+            ->where('lessonProgress.current_page', 3)
+            ->where('lessonProgress.total_pages', 10)
+            ->where('lessonProgress.highest_page_reached', 5)
+            ->where('lessonProgress.is_completed', false)
+            ->where('lessonProgress.media_position_seconds', 120)
+            ->where('lessonProgress.media_duration_seconds', 600)
         );
     }
 
@@ -113,19 +118,19 @@ class LessonProgressCompletionTest extends TestCase
     {
         $lesson2 = Lesson::factory()->create([
             'course_section_id' => $this->section->id,
-            'content_type'      => 'text',
+            'content_type' => 'text',
         ]);
 
         // Progress on first lesson
         $this->actingAs($this->user)->patchJson("/courses/{$this->course->id}/lessons/{$this->lesson->id}/progress", [
             'current_page' => 5,
-            'total_pages'  => 5, // Complete first lesson
+            'total_pages' => 5, // Complete first lesson
         ]);
 
         // Progress on second lesson
         $response = $this->actingAs($this->user)->patchJson("/courses/{$this->course->id}/lessons/{$lesson2->id}/progress", [
             'current_page' => 2,
-            'total_pages'  => 8,
+            'total_pages' => 8,
         ]);
 
         $response->assertOk();
@@ -143,18 +148,18 @@ class LessonProgressCompletionTest extends TestCase
         // Create initial progress
         $this->actingAs($this->user)->patchJson("/courses/{$this->course->id}/lessons/{$this->lesson->id}/progress", [
             'current_page' => 3,
-            'total_pages'  => 7,
+            'total_pages' => 7,
         ]);
 
         // Simulate page refresh by getting the lesson view
         $response = $this->actingAs($this->user)->get("/courses/{$this->course->id}/lessons/{$this->lesson->id}");
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
-                ->component('lessons/Show')
-                ->has('lessonProgress')
-                ->where('lessonProgress.current_page', 3)
-                ->where('lessonProgress.total_pages', 7)
+        $response->assertInertia(fn ($page) => $page
+            ->component('lessons/Show')
+            ->has('lessonProgress')
+            ->where('lessonProgress.current_page', 3)
+            ->where('lessonProgress.total_pages', 7)
         );
     }
 
@@ -172,11 +177,11 @@ class LessonProgressCompletionTest extends TestCase
         $response = $this->actingAs($this->user)->get("/courses/{$this->course->id}/lessons/{$this->lesson->id}");
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page
-                ->component('lessons/Show')
-                ->has('lessonProgress')
-                ->where('lessonProgress.media_position_seconds', 150)
-                ->where('lessonProgress.media_duration_seconds', 420)
+        $response->assertInertia(fn ($page) => $page
+            ->component('lessons/Show')
+            ->has('lessonProgress')
+            ->where('lessonProgress.media_position_seconds', 150)
+            ->where('lessonProgress.media_duration_seconds', 420)
         );
     }
 
@@ -184,13 +189,13 @@ class LessonProgressCompletionTest extends TestCase
     {
         $metadata = [
             'viewportHeight' => 800,
-            'contentHeight'  => 1200,
-            'pageBreaks'     => [0, 400, 800, 1200],
+            'contentHeight' => 1200,
+            'pageBreaks' => [0, 400, 800, 1200],
         ];
 
         $response = $this->actingAs($this->user)->patchJson("/courses/{$this->course->id}/lessons/{$this->lesson->id}/progress", [
-            'current_page'        => 2,
-            'total_pages'         => 4,
+            'current_page' => 2,
+            'total_pages' => 4,
             'pagination_metadata' => $metadata,
         ]);
 
@@ -210,22 +215,22 @@ class LessonProgressCompletionTest extends TestCase
     {
         // First update with some time
         $this->actingAs($this->user)->patchJson("/courses/{$this->course->id}/lessons/{$this->lesson->id}/progress", [
-            'current_page'       => 1,
-            'total_pages'        => 5,
+            'current_page' => 1,
+            'total_pages' => 5,
             'time_spent_seconds' => 45,
         ]);
 
         // Second update with more time
         $this->actingAs($this->user)->patchJson("/courses/{$this->course->id}/lessons/{$this->lesson->id}/progress", [
-            'current_page'       => 2,
-            'total_pages'        => 5,
+            'current_page' => 2,
+            'total_pages' => 5,
             'time_spent_seconds' => 30,
         ]);
 
         // Third update with even more time
         $this->actingAs($this->user)->patchJson("/courses/{$this->course->id}/lessons/{$this->lesson->id}/progress", [
-            'current_page'       => 3,
-            'total_pages'        => 5,
+            'current_page' => 3,
+            'total_pages' => 5,
             'time_spent_seconds' => 60,
         ]);
 

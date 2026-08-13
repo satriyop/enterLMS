@@ -378,17 +378,6 @@ describe('Learning Path Store Validation', function () {
             ->assertSessionDoesntHaveErrors();
     });
 
-    it('only allows content_manager to create learning paths', function () {
-        $course = Course::factory()->published()->create();
-
-        asContentManager()
-            ->post(route('learning-paths.store'), [
-                'title' => 'Test Learning Path',
-                'courses' => [['id' => $course->id]],
-            ])
-            ->assertSessionDoesntHaveErrors();
-    });
-
     it('forbids learners from creating learning paths', function () {
         $course = Course::factory()->published()->create();
 

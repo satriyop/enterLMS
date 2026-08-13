@@ -281,7 +281,7 @@ describe('Submit Assessment Answers Validation', function () {
 describe('Bulk Grade Answers Validation', function () {
 
     beforeEach(function () {
-        $this->user = User::factory()->create(['role' => 'content_manager']);
+        $this->user = User::factory()->create(['role' => 'lms_admin']);
         $this->course = Course::factory()->published()->create(['user_id' => $this->user->id]);
         $this->learner = User::factory()->create(['role' => 'learner']);
 

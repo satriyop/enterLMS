@@ -22,7 +22,7 @@ beforeEach(function () {
     $this->lmsAdmin = User::factory()->create(['role' => 'lms_admin']);
     $this->learner = User::factory()->create(['role' => 'learner']);
     $this->otherLearner = User::factory()->create(['role' => 'learner']);
-    $this->courseOwner = User::factory()->create(['role' => 'content_manager']);
+    $this->courseOwner = User::factory()->create(['role' => 'lms_admin']);
 
     $this->course = Course::factory()->published()->create(['user_id' => $this->courseOwner->id]);
 
@@ -128,8 +128,10 @@ it('denies other user to delete rating', function () {
     expect($this->policy->delete($this->otherLearner, $this->rating))->toBeFalse();
 });
 
-it('denies course owner to delete ratings on their course', function () {
-    expect($this->policy->delete($this->courseOwner, $this->rating))->toBeFalse();
+it('allows the course owner to delete ratings, because they are LMS Admin', function () {
+    // Consequence of the role collapse (ADR 007): the founder is both course
+    // author and moderator, so nothing stops them removing a poor rating.
+    expect($this->policy->delete($this->courseOwner, $this->rating))->toBeTrue();
 });
 
 it('allows lms_admin to delete rating from any user', function () {

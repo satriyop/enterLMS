@@ -191,8 +191,8 @@ class CoursePolicy
      */
     public function bulkEnroll(User $user, Course $course): bool
     {
-        // Only trainer and LMS admin can bulk enroll
-        if (! $user->isTrainer() && ! $user->isLmsAdmin()) {
+        // Only LMS Admin can bulk enroll
+        if (! $user->isLmsAdmin()) {
             return false;
         }
 

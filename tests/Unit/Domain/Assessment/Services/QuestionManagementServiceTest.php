@@ -13,7 +13,7 @@ beforeEach(function () {
 describe('QuestionManagementService', function () {
     describe('bulkUpdate', function () {
         it('creates new questions with options', function () {
-            $user = User::factory()->create(['role' => 'content_manager']);
+            $user = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $user->id]);
 
             $questionsData = [
@@ -46,7 +46,7 @@ describe('QuestionManagementService', function () {
         });
 
         it('updates existing questions', function () {
-            $user = User::factory()->create(['role' => 'content_manager']);
+            $user = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $user->id]);
             $question = Question::factory()->multipleChoice()->create([
                 'assessment_id' => $assessment->id,
@@ -74,7 +74,7 @@ describe('QuestionManagementService', function () {
         });
 
         it('updates existing question options', function () {
-            $user = User::factory()->create(['role' => 'content_manager']);
+            $user = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $user->id]);
             $question = Question::factory()->multipleChoice()->create([
                 'assessment_id' => $assessment->id,
@@ -128,7 +128,7 @@ describe('QuestionManagementService', function () {
         });
 
         it('deletes questions not in the submitted data', function () {
-            $user = User::factory()->create(['role' => 'content_manager']);
+            $user = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $user->id]);
 
             $question1 = Question::factory()->create(['assessment_id' => $assessment->id]);
@@ -154,7 +154,7 @@ describe('QuestionManagementService', function () {
         });
 
         it('deletes options not in the submitted data', function () {
-            $user = User::factory()->create(['role' => 'content_manager']);
+            $user = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $user->id]);
             $question = Question::factory()->multipleChoice()->create([
                 'assessment_id' => $assessment->id,
@@ -191,7 +191,7 @@ describe('QuestionManagementService', function () {
         });
 
         it('handles mixed create, update, and delete operations', function () {
-            $user = User::factory()->create(['role' => 'content_manager']);
+            $user = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $user->id]);
 
             $existingQuestion = Question::factory()->create([
@@ -229,7 +229,7 @@ describe('QuestionManagementService', function () {
         });
 
         it('handles essay questions without options', function () {
-            $user = User::factory()->create(['role' => 'content_manager']);
+            $user = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $user->id]);
 
             $questionsData = [
@@ -250,7 +250,7 @@ describe('QuestionManagementService', function () {
         });
 
         it('batch loads existing questions instead of N+1 queries', function () {
-            $user = User::factory()->create(['role' => 'content_manager']);
+            $user = User::factory()->create(['role' => 'lms_admin']);
             $assessment = Assessment::factory()->create(['user_id' => $user->id]);
 
             $question1 = Question::factory()->create(['assessment_id' => $assessment->id]);
