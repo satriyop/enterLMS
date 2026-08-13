@@ -45,7 +45,7 @@ EnterLMS is a Learning Management System (LMS) designed for:
 
 | Constraint | Background |
 |------------|------------|
-| PHP 8.4+ | Laravel 12 requirement |
+| PHP 8.3+ (dev target 8.4) | Laravel 13 requirement |
 | MySQL 8.0+ / SQLite | Primary data storage |
 | Modern browsers | Chrome, Firefox, Safari, Edge (latest 2 versions) |
 | HTTPS required | Security compliance |
@@ -122,7 +122,7 @@ EnterLMS is a Learning Management System (LMS) designed for:
 ┌──────────────────────────────────────────────────────────────────┐
 │                       Application Layer                           │
 │  ┌────────────────────────────────────────────────────────────┐  │
-│  │                    Laravel 12                               │  │
+│  │                    Laravel 13                               │  │
 │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │  │
 │  │  │ Controllers │  │  Policies   │  │  Services   │        │  │
 │  │  └─────────────┘  └─────────────┘  └─────────────┘        │  │
@@ -150,7 +150,7 @@ EnterLMS is a Learning Management System (LMS) designed for:
 
 | Decision | Rationale |
 |----------|-----------|
-| Laravel 12 | Mature PHP framework, excellent ORM, built-in auth |
+| Laravel 13 | Mature PHP framework, excellent ORM, built-in auth |
 | Vue 3 + Inertia | SPA experience without API complexity |
 | Tailwind CSS v4 | Rapid UI development, consistent design |
 | MySQL | Reliable, widely supported RDBMS |

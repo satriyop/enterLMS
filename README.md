@@ -3,8 +3,9 @@
 A Learning Management System built for Indonesian banking and financial compliance training.
 
 [![PHP Version](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php)](https://php.net)
-[![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel)](https://laravel.com)
+[![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel)](https://laravel.com)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?logo=vue.js)](https://vuejs.org)
+[![Inertia](https://img.shields.io/badge/Inertia-3-9553E9)](https://inertiajs.com)
 [![License](https://img.shields.io/badge/License-Proprietary-blue)]()
 
 ## Overview
@@ -106,12 +107,12 @@ Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
 | Layer | Technology |
 |-------|------------|
-| Backend | Laravel 12, PHP 8.4 |
-| Frontend | Vue 3, TypeScript, Inertia.js v2 |
+| Backend | Laravel 13, PHP 8.3+ (dev target 8.4) |
+| Frontend | Vue 3, TypeScript, Inertia.js v3 |
 | Styling | Tailwind CSS v4 |
 | Database | MySQL / SQLite |
 | Authentication | Laravel Fortify |
-| Testing | PHPUnit 11 |
+| Testing | Pest 4, PHPUnit 12 |
 
 ## Project Structure
 

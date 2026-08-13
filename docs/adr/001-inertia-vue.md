@@ -14,7 +14,9 @@ We need to build a modern, responsive web application for the LMS. The options c
 
 ## Decision
 
-We will use **Inertia.js v2 with Vue 3** for the frontend.
+We will use **Inertia.js with Vue 3** for the frontend.
+
+> **Stack note (2026):** Originally adopted Inertia v2; the app currently runs **Inertia v3** (`inertiajs/inertia-laravel` ^3 / `@inertiajs/vue3` ^3) on **Laravel 13**.
 
 ## Rationale
 
