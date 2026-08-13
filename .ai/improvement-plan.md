@@ -1,4 +1,4 @@
-# Enteraksi LMS — Top 5 High-Impact Improvements
+# EnterLMS — Top 5 High-Impact Improvements
 
 > Analysis date: 2026-02-01
 > Scope: Feature velocity, stability, business alignment, consistency
