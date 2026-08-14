@@ -85,7 +85,7 @@ watch(name, (value) => {
                                 name="name"
                                 v-model="name"
                                 :default-value="tag?.name"
-                                placeholder="Contoh: OJK Regulation"
+                                placeholder="Contoh: Agen AI"
                                 class="h-11"
                                 required
                             />
@@ -101,7 +101,7 @@ watch(name, (value) => {
                                 name="slug"
                                 v-model="slug"
                                 :default-value="tag?.slug"
-                                placeholder="ojk-regulation"
+                                placeholder="agen-ai"
                                 class="h-11"
                                 :readonly="isEditing"
                                 required

@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 class AssessmentSeeder extends Seeder
 {
     /**
-     * Template judul assessment dalam konteks perbankan Indonesia.
+     * Template judul assessment untuk academy agen.
      */
     private array $assessmentTitles = [
         'Kuis Pemahaman: %s',

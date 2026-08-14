@@ -72,7 +72,7 @@ This project has detailed architectural patterns documented in `.claude/skills/`
 | `enterlms-architecture` | Creating services, rich models, DTOs, JsonResource, DomainServiceProvider |
 | `enterlms-state-machines` | Working with CourseState, EnrollmentState, status transitions |
 | `enterlms-events` | Domain events, listeners, audit logging |
-| `enterlms-strategies` | Grading strategies, progress calculators, prerequisite evaluators |
+| `enterlms-strategies` | Grading strategies, prerequisite evaluators (progress is NOT a strategy — ADR 008) |
 | `enterlms-testing` | Pest tests, factory states, policy tests, global helpers |
 | `enterlms-frontend` | Vue 3 + Inertia pages, composables, TypeScript types, constants/formatters |
 | `enterlms-crud` | CRUD pages, controllers, FormRequests, PageHeader/DataCard/FilterTabs |
@@ -113,7 +113,7 @@ app/
 
 ### Key Patterns Used
 - **State Machines**: `spatie/laravel-model-states` for Course, Enrollment status
-- **Strategy Pattern**: Grading strategies, progress calculators, prerequisite evaluators (tagged services)
+- **Strategy Pattern**: Grading strategies, prerequisite evaluators (tagged services). Progress calculation is a single plain class — see ADR 008
 - **Domain Events**: `UserEnrolled`, `CoursePublished`, etc. with audit logging
 - **Rich Models**: Models own state transitions (`$enrollment->drop()`, `$enrollment->complete()`)
 - **Service Layer**: Services return Models, injected directly (no contracts for single-impl)
@@ -711,67 +711,58 @@ it('has emails', function (string $email) {
 === .ai/general-requirement rules ===
 
 # General Requirement
+
+## Scope authority
+
+`CONTEXT.md` at the repo root owns the domain language; `docs/adr/` owns the decisions.
+This file carries only build requirements that cut across every feature.
+
+Where this file and `CONTEXT.md` disagree, `CONTEXT.md` wins and this file is the bug.
+
 ## Overview of the application
-- the application is learning management system, use common best practice of building LMS by industry standard : SCORM, xAPI, and LTI.
-- mobile friendly (responsive) user interface is mandatory.
-- always build test code. All features or user story should has test code.
-- security in mind such as : All input validated and sanitized, compliance to ISO27001 and other
-- build for Indonesian. such as : Primary Language is Bahasa Indonesia, if you seed any data use indonesian context (names, address, etc).
-- banking centric : course Context is for banking and to support Compliance with OJK regulation such as : cyber security, digital transformation, financial prudence & stability, governance & risk management, anti money laundering, ojk reporting & transparency ) more to found the regulation is here : https://ojk.go.id/en/regulasi/otoritas-jasa-keuangan/peraturan-ojk/default.aspx
-- can be integrated with external system / application such as : HRIS, ERP, other LMS system, and MOOC (such as udemy, etc), Video conference such as :  Zoom, Google Meet,etc.
 
+- EnterLMS is an academy for the people who run and build Satriyo's AI product family
+  (Enteraksi first). It is not a generic AI school and not a control plane for live
+  agents (ADR 004).
+- Two roles are modelled: **Learner** and **LMS Admin**. Tenant Admin, Tenant Owner and
+  Operator are Enteraksi roles, named so we can talk about the people; ADR 005 phases
+  them in.
+- The public catalog lists **Open Courses** only — a Learner may self-enroll.
+  **Restricted Courses** and **Learning Paths** are granted by LMS Admin.
+- Agent runtimes (OpenClaw, Hermes) are Course subjects, never systems operated from
+  inside this academy.
 
-## Reference
-- UI reference : udemy.com
+## Build requirements
 
+- Primary language is Bahasa Indonesia. Seed data uses Indonesian names and context.
+- Responsive UI is mandatory.
+- Every feature ships with tests. See the test enforcement rules in `CLAUDE.md`.
+- Input validated and sanitised. Authorization is enforced by policy, never by hiding UI.
+- The design conforms to the Tenang hybrid: semantic tokens and editorial type, no stock
+  Tailwind hues (ADR 007). The gate is `tests/Feature/Design/TenangConformanceTest.php`.
+- Lesson forms are text, video, audio, document, YouTube, and conference.
 
-## Key Features
-1. Content Management
-- Course creation and organization tools.
-- Support for various media (video, documents, quizzes, SCORM packages).
-- Content libraries and reusable learning objects.
+## Out of scope
 
-2. User Management
-- Learner enrollment and role-based access.
-- User profiles and progress tracking.
-- Group/cohort management.
+Frozen or deleted. Do not build against these, and do not restore them without an ADR:
 
-3. Assessment & Evaluation
-- Quizzes, tests, and assignments.
-- Automated grading and feedback.
-- Rubrics and competency tracking.
+- **Banking / OJK / APU-PPT** compliance domain — frozen (ADR 004)
+- **Payment, SCORM, Question Bank** — deleted with the frozen scope, not deprecated
+  (ADR 007). A priced Course has no self-serve path; LMS Admin grants Enrollment.
+- **LTI, xAPI, HRIS/ERP integration, MOOC import** — never built, not in this phase
+- **Unified Enteraksi login** — later. Public Learners register here.
+- **Tenant-facing Restricted Courses** — handover for Tenant Admins is not in this phase.
 
-4. Progress Tracking & Reporting
-- Dashboards showing learner progress.
-- Completion certificates.
-- Analytics on engagement, scores, and time spent
+## Key modules
 
-5. Communication Tools
-- Discussion forums and messaging
-- Announcements and notifications
-- Live session integrations (webinars, virtual classrooms)
-
-6. Mobile Access
-- Responsive design or dedicated apps
-- Offline learning capabilities
-
-7. Integration & Compliance
-- Single sign-on (SSO) and LTI support
-- API connections to HR systems, CRMs, etc.
-- Compliance tracking for regulatory training
-
-
-## Key Modules To Build
-1. **User Management Module**
-2. **Course Management Module**
-3. **Content Delivery Module**
-4. **Assessment & Grading Module**
-5. **Communication Module**
-6. **Reporting & Analytics Module**
-7. **Certificate Management Module**
-8. **Payment & Enrollment Module**
-9. **Compliance & Audit Module**
-10. **Mobile Application Support**
+1. User Management
+2. Course Management
+3. Content Delivery
+4. Assessment & Grading
+5. Progress Tracking & Reporting
+6. Certificate Management
+7. Enrollment
+8. Communication (notifications; forums and messaging are aspirational)
 
 
 === .ai/implementation-workflow rules ===
@@ -847,3 +838,17 @@ Fortify is a headless authentication backend that provides authentication routes
 10. **Nested route scoping** - Route model binding doesn't auto-scope children to parents. Always verify ownership (`$child->parent_id === $parent->id`) or use `Rule::exists()->where()` for submitted IDs
 11. **RequiresEagerLoading throws in tests** - Models using `RequiresEagerLoading` trait throw when accessing counts/averages without eager loading. Reload with `Course::withCount('lessons')->find($id)` in tests
 12. **Services return Models** - Services return Eloquent models, not DTOs. Controllers transform using `JsonResource` for API/Inertia responses
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues for `satriyop/enterLMS` via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` at the repo root and ADRs in `docs/adr/`. See `docs/agents/domain.md`.

@@ -18,12 +18,14 @@
 
 ## System Overview
 
-**EnterLMS** is a Learning Management System (LMS) built for Indonesian banking/financial compliance training. It follows industry standards (SCORM, xAPI, LTI) and is designed with:
+**EnterLMS** is an academy for the people who run and build Satriyo's AI product family
+(Enteraksi first). It is not a generic AI school and not a control plane for live agents.
+See `CONTEXT.md` for the domain language and ADR 004 for the positioning decision.
 
-- **Mobile-first responsive UI** (Udemy-inspired)
+- **Mobile-first responsive UI**, conforming to the Tenang design system (ADR 007)
 - **Bahasa Indonesia** as primary language
-- **Banking/OJK compliance** focus
-- **Integration-ready** architecture (HRIS, ERP, video conferencing)
+- **Two roles**: Learner and LMS Admin (ADR 007 collapsed the earlier seven)
+- **Open vs Restricted Courses**: the public catalog lists Open Courses only
 
 ### Core Capabilities
 | Module | Status | Description |

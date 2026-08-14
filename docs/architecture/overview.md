@@ -10,11 +10,11 @@ EnterLMS is a Learning Management System (LMS) designed for:
 
 | Requirement | Description |
 |-------------|-------------|
-| Indonesian Banking Compliance | Training for OJK regulations, AML, cyber security |
+| AI product family academy | Training for people who run and build Enteraksi (ADR 004) |
 | Multi-content Support | Text, video, audio, documents, live sessions |
 | Assessment & Grading | Quizzes with auto and manual grading |
 | Progress Tracking | Detailed learner progress and completion |
-| Role-based Access | Learner, Content Manager, Trainer, Admin |
+| Role-based Access | Learner and LMS Admin (ADR 007) |
 | Mobile Responsive | Full functionality on mobile devices |
 
 ### 1.2 Quality Goals
@@ -55,7 +55,7 @@ EnterLMS is a Learning Management System (LMS) designed for:
 | Constraint | Background |
 |------------|------------|
 | Indonesian language | Primary user base |
-| OJK compliance | Banking regulation requirements |
+| Single operator | LMS Admin in this phase is only the founder (ADR 004) |
 | Data residency | Data must remain in Indonesia |
 
 ### 2.3 Conventions
