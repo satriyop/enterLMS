@@ -24,7 +24,8 @@ use Illuminate\Support\Collection;
  * - A passed attempt (passed=true) counts the assessment as complete
  *
  * Completion Criteria:
- * - ALL lessons must be completed
+ * - A Course with no Lessons and no required Assessments is 0% and never complete
+ * - ALL existing lessons must be completed
  * - ALL required assessments must have at least one passed attempt
  * - Optional assessments (is_required=false) do NOT block completion
  *
@@ -38,6 +39,10 @@ class AssessmentInclusiveProgressCalculator
 
     public function calculateCourseProgress(Enrollment $enrollment): float
     {
+        if (! $this->hasCompletableContent($enrollment)) {
+            return 0.0;
+        }
+
         $lessonProgress = $this->calculateLessonProgress($enrollment);
         $assessmentProgress = $this->calculateAssessmentProgress($enrollment);
 
@@ -50,6 +55,10 @@ class AssessmentInclusiveProgressCalculator
 
     public function isCourseComplete(Enrollment $enrollment): bool
     {
+        if (! $this->hasCompletableContent($enrollment)) {
+            return false;
+        }
+
         // All lessons completed (only count lessons that still exist)
         $totalLessons = $enrollment->course->lessons()->count();
         $completedLessons = $enrollment->lessonProgress()
@@ -125,6 +134,22 @@ class AssessmentInclusiveProgressCalculator
             'required_total' => $requiredAssessments->count(),
             'required_passed' => $requiredPassedCount,
         ];
+    }
+
+    /**
+     * A Course with nothing to finish is not 100% done — there is no evidence of work.
+     */
+    protected function hasCompletableContent(Enrollment $enrollment): bool
+    {
+        if ($enrollment->course->lessons()->exists()) {
+            return true;
+        }
+
+        return Assessment::query()
+            ->where('course_id', $enrollment->course_id)
+            ->published()
+            ->where('is_required', true)
+            ->exists();
     }
 
     protected function calculateLessonProgress(Enrollment $enrollment): float

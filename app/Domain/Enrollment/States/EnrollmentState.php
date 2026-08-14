@@ -31,6 +31,8 @@ abstract class EnrollmentState extends State
             // Active -> Dropped (user drops out)
             ->allowTransition(ActiveState::class, DroppedState::class)
             // Allow reactivation from dropped
-            ->allowTransition(DroppedState::class, ActiveState::class);
+            ->allowTransition(DroppedState::class, ActiveState::class)
+            // Content disappeared (e.g. every Lesson soft-deleted)
+            ->allowTransition(CompletedState::class, ActiveState::class);
     }
 }

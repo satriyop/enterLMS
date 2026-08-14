@@ -145,9 +145,10 @@ class ProgressTrackingService
             'progress_percentage' => $percentage,
         ]);
 
-        // Check if enrollment should be marked complete
         if ($this->isEnrollmentComplete($enrollment) && ! $enrollment->isCompleted()) {
             $enrollment->complete();
+        } elseif (! $this->isEnrollmentComplete($enrollment) && $enrollment->isCompleted()) {
+            $enrollment->reopen();
         }
 
         return $percentage;

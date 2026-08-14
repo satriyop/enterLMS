@@ -123,6 +123,23 @@ class Enrollment extends Model
     }
 
     /**
+     * Return a completed enrollment to active when the Course is no longer completable.
+     */
+    public function reopen(): self
+    {
+        if (! $this->isCompleted()) {
+            return $this;
+        }
+
+        $this->update([
+            'status' => ActiveState::$name,
+            'completed_at' => null,
+        ]);
+
+        return $this;
+    }
+
+    /**
      * Reactivate a dropped enrollment.
      *
      * @param  bool  $preserveProgress  Whether to keep previous progress (default: true)

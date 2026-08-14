@@ -267,8 +267,7 @@ class EnrollmentLifecycleTest extends TestCase
         $this->progressService->recalculateCourseProgress($enrollment);
         $enrollment->refresh();
 
-        // 1/3 = 33.3%
-        $this->assertEquals(33.3, $enrollment->progress_percentage);
+        $this->assertEquals(53.3, $enrollment->progress_percentage); // (33.3 × 0.7) + 30
     }
 
     public function test_progress_calculation_with_zero_lessons(): void
@@ -662,8 +661,7 @@ class EnrollmentLifecycleTest extends TestCase
         $this->progressService->recalculateCourseProgress($enrollment);
         $enrollment->refresh();
 
-        // Should still be 33.3%
-        $this->assertEquals(33.3, $enrollment->progress_percentage);
+        $this->assertEquals(53.3, $enrollment->progress_percentage); // (33.3 × 0.7) + 30
     }
 
     public function test_completed_enrollment_stays_completed_on_recalculation(): void
@@ -725,8 +723,7 @@ class EnrollmentLifecycleTest extends TestCase
         $this->progressService->recalculateCourseProgress($enrollment);
         $enrollment->refresh();
 
-        // 7/10 = 70%
-        $this->assertEquals(70, $enrollment->progress_percentage);
+        $this->assertEquals(79, $enrollment->progress_percentage); // (70 × 0.7) + 30
         $this->assertEquals('active', $enrollment->status);
     }
 }

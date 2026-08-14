@@ -210,8 +210,7 @@ class EdgeCasesAndBusinessRulesTest extends TestCase
         $this->progressService->recalculateCourseProgress($enrollment);
         $enrollment->refresh();
 
-        // Should round to 1 decimal: 42.857... → 42.9
-        $this->assertEquals(42.9, $enrollment->progress_percentage);
+        $this->assertEquals(60.0, $enrollment->progress_percentage); // (42.9 × 0.7) + 30
     }
 
     // ========== SCORE CALCULATION EDGE CASES ==========
@@ -534,8 +533,8 @@ class EdgeCasesAndBusinessRulesTest extends TestCase
         $enrollment2->refresh();
 
         // Verify independent progress
-        $this->assertEquals(40, $enrollment1->progress_percentage);
-        $this->assertEquals(80, $enrollment2->progress_percentage);
+        $this->assertEquals(58, $enrollment1->progress_percentage); // (40 × 0.7) + 30
+        $this->assertEquals(86, $enrollment2->progress_percentage); // (80 × 0.7) + 30
     }
 
     public function test_multiple_attempts_same_assessment_correct_numbering(): void

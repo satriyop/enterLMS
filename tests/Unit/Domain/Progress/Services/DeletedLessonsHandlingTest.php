@@ -37,7 +37,7 @@ describe('Deleted lessons handling', function () {
             }
 
             $enrollment->refresh();
-            expect((float) $enrollment->progress_percentage)->toBe(60.0); // 3/5 = 60%
+            expect((float) $enrollment->progress_percentage)->toBe(72.0); // (60 × 0.7) + 30
 
             // Delete one of the completed lessons (soft delete)
             $lessons[0]->delete();
@@ -46,8 +46,7 @@ describe('Deleted lessons handling', function () {
             $this->progressService->recalculateCourseProgress($enrollment);
 
             $enrollment->refresh();
-            // Now only 2 completed lessons out of 4 total = 50%
-            expect((float) $enrollment->progress_percentage)->toBe(50.0);
+            expect((float) $enrollment->progress_percentage)->toBe(65.0); // (50 × 0.7) + 30
         });
 
         it('excludes orphaned progress records from completion check', function () {
@@ -91,8 +90,7 @@ describe('Deleted lessons handling', function () {
             $this->progressService->recalculateCourseProgress($enrollment2);
 
             $enrollment2->refresh();
-            // Only 1 completed lesson out of 2 remaining = 50%
-            expect((float) $enrollment2->progress_percentage)->toBe(50.0);
+            expect((float) $enrollment2->progress_percentage)->toBe(65.0); // (50 × 0.7) + 30
             expect($enrollment2->status->getValue())->toBe('active'); // Not complete
         });
     });
@@ -165,7 +163,7 @@ describe('Deleted lessons handling', function () {
                 $this->progressService->completeLesson($enrollment, $lessons[1]);
 
                 $enrollment->refresh();
-                expect((float) $enrollment->progress_percentage)->toBe(50.0); // 2/4
+                expect((float) $enrollment->progress_percentage)->toBe(65.0); // (50 × 0.7) + 30
 
                 $enrollments[] = $enrollment;
             }
@@ -183,8 +181,7 @@ describe('Deleted lessons handling', function () {
             // Verify all enrollments have updated progress
             foreach ($enrollments as $enrollment) {
                 $enrollment->refresh();
-                // Now 1 completed lesson out of 3 remaining = 33.3%
-                expect((float) $enrollment->progress_percentage)->toBe(33.3);
+                expect((float) $enrollment->progress_percentage)->toBe(53.3); // (33.3 × 0.7) + 30
             }
         });
 

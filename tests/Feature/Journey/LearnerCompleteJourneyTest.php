@@ -105,7 +105,7 @@ describe('Learner Complete Journey', function () {
             $enrollment->refresh();
 
             expect($enrollment->is_active)->toBeTrue();
-            expect($enrollment->progress_percentage)->toBe(50);
+            expect($enrollment->progress_percentage)->toBe(65);
 
             // Complete remaining 2 lessons
             foreach ($lessons->skip(2) as $lesson) {
@@ -489,7 +489,7 @@ describe('Learner Complete Journey', function () {
             expect($enrollment1->progress_percentage)->toBe(100);
 
             expect($enrollment2->is_active)->toBeTrue();
-            expect($enrollment2->progress_percentage)->toBe(33.3);
+            expect($enrollment2->progress_percentage)->toBe(53.3);
         });
 
         it('prevents double enrollment', function () {

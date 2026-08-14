@@ -17,15 +17,12 @@ describe('AssessmentInclusiveProgressCalculator', function () {
         $this->calculator = new AssessmentInclusiveProgressCalculator;
     });
 
-    it('returns 100 for course with no lessons and no assessments', function () {
+    it('returns 0 and is not complete when the course has no lessons and no required assessments', function () {
         $course = Course::factory()->create();
         $enrollment = Enrollment::factory()->create(['course_id' => $course->id]);
 
-        $progress = $this->calculator->calculateCourseProgress($enrollment);
-
-        // No lessons = 100% lesson progress, no assessments = 100% assessment progress
-        // (100 * 0.7) + (100 * 0.3) = 100
-        expect($progress)->toBe(100.0);
+        expect($this->calculator->calculateCourseProgress($enrollment))->toBe(0.0);
+        expect($this->calculator->isCourseComplete($enrollment))->toBeFalse();
     });
 
     it('calculates progress with only lessons (no assessments)', function () {
@@ -146,8 +143,33 @@ describe('AssessmentInclusiveProgressCalculator', function () {
 
         $progress = $this->calculator->calculateCourseProgress($enrollment);
 
-        // No lessons = 100%, draft assessment ignored = 100%
-        expect($progress)->toBe(100.0);
+        expect($progress)->toBe(0.0);
+        expect($this->calculator->isCourseComplete($enrollment))->toBeFalse();
+    });
+
+    it('is not complete after every lesson is soft-deleted and no required assessments remain', function () {
+        $course = Course::factory()->create();
+        $section = CourseSection::factory()->create(['course_id' => $course->id]);
+        $lessons = Lesson::factory()->count(2)->create(['course_section_id' => $section->id]);
+        $enrollment = Enrollment::factory()->create(['course_id' => $course->id]);
+
+        foreach ($lessons as $lesson) {
+            LessonProgress::factory()->completed()->create([
+                'enrollment_id' => $enrollment->id,
+                'lesson_id' => $lesson->id,
+            ]);
+        }
+
+        expect($this->calculator->isCourseComplete($enrollment))->toBeTrue();
+
+        foreach ($lessons as $lesson) {
+            $lesson->delete();
+        }
+
+        $enrollment->unsetRelation('course');
+
+        expect($this->calculator->calculateCourseProgress($enrollment))->toBe(0.0);
+        expect($this->calculator->isCourseComplete($enrollment))->toBeFalse();
     });
 
     it('isComplete returns true when all lessons completed and no assessments', function () {

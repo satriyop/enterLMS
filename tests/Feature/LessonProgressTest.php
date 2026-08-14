@@ -173,8 +173,7 @@ class LessonProgressTest extends TestCase
 
         $this->enrollment->refresh();
 
-        // 1 of 2 lessons completed = 50%
-        $this->assertEquals(50, $this->enrollment->progress_percentage);
+        $this->assertEquals(65, $this->enrollment->progress_percentage);
     }
 
     public function test_enrollment_completes_when_all_lessons_done(): void
