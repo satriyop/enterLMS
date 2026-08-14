@@ -28,14 +28,14 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="mb-6 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-4">
+    <div class="mb-6 rounded-lg border border-border bg-info-soft p-4">
         <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-                <Eye class="h-5 w-5 text-green-600 dark:text-green-400" />
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-info-soft">
+                <Eye class="h-5 w-5 text-info" />
             </div>
             <div class="flex-1">
-                <p class="font-medium text-green-800 dark:text-green-200">Mode Preview</p>
-                <p class="text-sm text-green-700 dark:text-green-300">
+                <p class="font-medium text-info">Mode Preview</p>
+                <p class="text-sm text-info">
                     Anda sedang melihat preview materi. Daftar ke kursus untuk akses penuh.
                 </p>
             </div>

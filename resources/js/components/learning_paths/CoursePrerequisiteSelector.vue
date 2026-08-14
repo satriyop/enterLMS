@@ -82,7 +82,7 @@ function toggle(courseId: number) {
         </div>
 
         <!-- Prerequisite checkboxes -->
-        <div v-else class="space-y-2 rounded-md border p-3 bg-muted/30">
+        <div v-else class="space-y-2 rounded-md border p-3 bg-surface-2/30">
             <p class="text-xs text-muted-foreground mb-2">
                 Pilih kursus yang harus diselesaikan terlebih dahulu:
             </p>

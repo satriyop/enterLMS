@@ -169,7 +169,7 @@ const allPreviewLessons = computed(() => {
                             <!-- Section Header -->
                             <button
                                 type="button"
-                                class="flex w-full items-center justify-between px-4 py-2 text-left hover:bg-muted/50 transition-colors"
+                                class="flex w-full items-center justify-between px-4 py-2 text-left hover:bg-surface-2/50 transition-colors"
                                 @click="toggleSection(section.id)"
                             >
                                 <div class="flex items-center gap-2">
@@ -188,20 +188,20 @@ const allPreviewLessons = computed(() => {
                             <!-- Section Preview Lessons -->
                             <div
                                 v-if="isSectionExpanded(section.id)"
-                                class="bg-muted/30"
+                                class="bg-surface-2/30"
                             >
                                 <template v-for="(lessonItem, index) in section.lessons" :key="lessonItem.id">
                                     <Link
                                         v-if="lessonItem.is_free_preview"
                                         :href="`/courses/${courseId}/lessons/${lessonItem.id}/preview`"
-                                        class="flex items-center gap-3 px-4 py-2 border-t hover:bg-muted/50 transition-colors"
+                                        class="flex items-center gap-3 px-4 py-2 border-t hover:bg-surface-2/50 transition-colors"
                                         :class="{ 'bg-primary/5': lessonItem.id === currentLessonId }"
                                     >
                                         <span
                                             class="flex h-5 w-5 items-center justify-center rounded-full text-xs shrink-0"
                                             :class="lessonItem.id === currentLessonId
                                                 ? 'bg-primary text-primary-foreground'
-                                                : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'"
+                                                : 'bg-info-soft text-info'"
                                         >
                                             {{ index + 1 }}
                                         </span>

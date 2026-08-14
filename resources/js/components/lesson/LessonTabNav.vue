@@ -29,7 +29,7 @@ const activeTab = defineModel<TabId>({ required: true });
 </script>
 
 <template>
-    <div class="border-b bg-background">
+    <div class="border-b bg-surface">
         <nav class="flex gap-6 px-4">
             <button
                 v-for="tab in tabs"

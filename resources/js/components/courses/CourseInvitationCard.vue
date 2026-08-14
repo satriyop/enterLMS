@@ -132,7 +132,7 @@ const declineInvitation = () => {
             <div class="flex gap-4">
                 <!-- Thumbnail -->
                 <Link :href="`/courses/${invitation.course_id}`" class="shrink-0">
-                    <div class="h-20 w-32 overflow-hidden rounded-lg bg-muted">
+                    <div class="h-20 w-32 overflow-hidden rounded-lg bg-surface-2">
                         <img
                             v-if="invitation.thumbnail_path"
                             :src="invitation.thumbnail_path"
@@ -172,7 +172,7 @@ const declineInvitation = () => {
             <!-- Message -->
             <div
                 v-if="invitation.message"
-                class="mt-3 rounded-lg border-l-4 border-primary/50 bg-muted/50 p-3"
+                class="mt-3 rounded-lg border-l-4 border-primary/50 bg-surface-2/50 p-3"
             >
                 <p class="text-sm italic text-muted-foreground">"{{ invitation.message }}"</p>
             </div>
@@ -180,7 +180,7 @@ const declineInvitation = () => {
             <!-- Expiration Warning -->
             <div
                 v-if="invitation.expires_at && isExpiringSoon(invitation.expires_at)"
-                class="mt-3 flex items-center gap-2 text-amber-600 dark:text-amber-500"
+                class="mt-3 flex items-center gap-2 text-warn"
             >
                 <AlertCircle class="h-4 w-4" />
                 <span class="text-sm font-medium">
@@ -190,7 +190,7 @@ const declineInvitation = () => {
         </CardContent>
 
         <!-- Actions -->
-        <div class="flex gap-2 border-t bg-muted/30 px-4 py-3">
+        <div class="flex gap-2 border-t bg-surface-2/30 px-4 py-3">
             <Button
                 @click="acceptInvitation"
                 :disabled="isProcessing"

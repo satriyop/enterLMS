@@ -105,7 +105,7 @@ const handleSubmit = () => {
                 <textarea
                     v-model="form.question_text"
                     rows="3"
-                    class="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+                    class="flex w-full rounded-lg border border-input bg-surface px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="Masukkan teks pertanyaan"
                 />
             </div>
@@ -115,7 +115,7 @@ const handleSubmit = () => {
                 <Label class="text-sm font-medium">Tipe Pertanyaan</Label>
                 <select
                     v-model="form.question_type"
-                    class="flex h-11 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
+                    class="flex h-11 w-full rounded-lg border border-input bg-surface px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
                 >
                     <option value="multiple_choice">Pilihan Ganda</option>
                     <option value="true_false">Benar/Salah</option>
@@ -138,7 +138,7 @@ const handleSubmit = () => {
                 <textarea
                     v-model="form.feedback"
                     rows="2"
-                    class="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+                    class="flex w-full rounded-lg border border-input bg-surface px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="Umpan balik untuk pertanyaan ini"
                 />
             </div>

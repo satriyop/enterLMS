@@ -34,15 +34,15 @@ const emit = defineEmits<{
 <template>
     <div class="mb-4">
         <Label>Kursus Tersedia</Label>
-        <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <div v-if="courses.length === 0" class="text-gray-500 dark:text-gray-400">
+        <div class="border border-border rounded-lg p-4">
+            <div v-if="courses.length === 0" class="text-muted-foreground">
                 Tidak ada kursus tersedia
             </div>
             <div v-else class="space-y-2">
                 <div
                     v-for="course in courses"
                     :key="course.id"
-                    class="flex justify-between items-center p-2 border border-gray-200 dark:border-gray-700 rounded"
+                    class="flex justify-between items-center p-2 border border-border rounded"
                 >
                     <span>{{ course.title }}</span>
                     <Button size="sm" @click="emit('add', course)">

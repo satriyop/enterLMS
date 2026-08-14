@@ -43,26 +43,26 @@ const totalCount = computed(() => props.answers.length);
         </CardHeader>
         <CardContent class="space-y-4">
             <div class="flex items-center gap-3">
-                <Check class="h-5 w-5 text-green-600" />
+                <Check class="h-5 w-5 text-ok" />
                 <div>
                     <p class="text-sm text-muted-foreground">Jawaban Benar</p>
-                    <p class="text-xl font-bold text-green-600">{{ correctCount }} / {{ totalCount }}</p>
+                    <p class="text-xl font-bold text-ok">{{ correctCount }} / {{ totalCount }}</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
-                <X class="h-5 w-5 text-red-600" />
+                <X class="h-5 w-5 text-danger" />
                 <div>
                     <p class="text-sm text-muted-foreground">Jawaban Salah</p>
-                    <p class="text-xl font-bold text-red-600">{{ wrongCount }}</p>
+                    <p class="text-xl font-bold text-danger">{{ wrongCount }}</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
-                <AlertTriangle class="h-5 w-5 text-yellow-600" />
+                <AlertTriangle class="h-5 w-5 text-warn" />
                 <div>
                     <p class="text-sm text-muted-foreground">Menunggu Penilaian</p>
-                    <p class="text-xl font-bold text-yellow-600">{{ pendingCount }}</p>
+                    <p class="text-xl font-bold text-warn">{{ pendingCount }}</p>
                 </div>
             </div>
         </CardContent>

@@ -91,7 +91,7 @@ const prerequisites = ref<string[]>(['']);
                                     id="short_description"
                                     name="short_description"
                                     rows="3"
-                                    class="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="flex w-full rounded-lg border border-input bg-surface px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
                                     placeholder="Ringkasan singkat yang menarik tentang kursus ini (maksimal 200 karakter)"
                                     required
                                 />
@@ -106,7 +106,7 @@ const prerequisites = ref<string[]>(['']);
                                     id="long_description"
                                     name="long_description"
                                     rows="6"
-                                    class="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="flex w-full rounded-lg border border-input bg-surface px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
                                     placeholder="Jelaskan secara detail apa yang akan dipelajari peserta"
                                 />
                                 <InputError :message="errors.long_description" />

@@ -48,7 +48,7 @@ const visibility = defineModel<AssessmentVisibility>('visibility', { required: t
                         id="status"
                         name="status"
                         v-model="status"
-                        class="flex h-11 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
+                        class="flex h-11 w-full rounded-lg border border-input bg-surface px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
                         required
                     >
                         <option value="draft">Draft</option>
@@ -66,7 +66,7 @@ const visibility = defineModel<AssessmentVisibility>('visibility', { required: t
                         id="visibility"
                         name="visibility"
                         v-model="visibility"
-                        class="flex h-11 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
+                        class="flex h-11 w-full rounded-lg border border-input bg-surface px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
                         required
                     >
                         <option value="public">Publik - Dapat dilihat semua peserta</option>
@@ -78,7 +78,7 @@ const visibility = defineModel<AssessmentVisibility>('visibility', { required: t
             </div>
         </FormSection>
 
-        <div class="sticky bottom-4 flex gap-3 rounded-xl border bg-card p-4 shadow-lg">
+        <div class="sticky bottom-4 flex gap-3 rounded-xl border bg-surface p-4 shadow-lg">
             <Link :href="cancelHref" class="flex-1">
                 <Button type="button" variant="outline" class="w-full h-11">
                     Batal

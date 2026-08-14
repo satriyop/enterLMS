@@ -75,23 +75,23 @@ defineProps<Props>();
                     <div
                         class="flex h-6 w-6 items-center justify-center rounded-full"
                         :class="{
-                            'bg-green-100': answer.is_correct,
-                            'bg-red-100': answer.is_correct === false,
-                            'bg-gray-100': answer.is_correct === null
+                            'bg-ok-soft': answer.is_correct,
+                            'bg-danger-soft': answer.is_correct === false,
+                            'bg-warn-soft': answer.is_correct === null
                         }"
                     >
-                        <Check v-if="answer.is_correct" class="h-4 w-4 text-green-600" />
-                        <X v-else-if="answer.is_correct === false" class="h-4 w-4 text-red-600" />
-                        <AlertTriangle v-else class="h-4 w-4 text-gray-600" />
+                        <Check v-if="answer.is_correct" class="h-4 w-4 text-ok" />
+                        <X v-else-if="answer.is_correct === false" class="h-4 w-4 text-danger" />
+                        <AlertTriangle v-else class="h-4 w-4 text-warn" />
                     </div>
                     <div>
                         <p class="text-sm font-medium">Status</p>
                         <p
                             class="text-sm"
                             :class="{
-                                'text-green-600': answer.is_correct,
-                                'text-red-600': answer.is_correct === false,
-                                'text-gray-600': answer.is_correct === null
+                                'text-ok': answer.is_correct,
+                                'text-danger': answer.is_correct === false,
+                                'text-warn': answer.is_correct === null
                             }"
                         >
                             {{ answer.is_correct ? 'Benar' : answer.is_correct === false ? 'Salah' : 'Menunggu Penilaian' }}
@@ -109,7 +109,7 @@ defineProps<Props>();
                     </div>
                 </div>
 
-                <div v-if="answer.feedback" class="mt-3 rounded-lg border p-3 bg-muted/50">
+                <div v-if="answer.feedback" class="mt-3 rounded-lg border p-3 bg-surface-2">
                     <p class="text-sm text-muted-foreground mb-1">Umpan Balik:</p>
                     <p class="whitespace-pre-wrap">{{ answer.feedback }}</p>
                 </div>

@@ -154,7 +154,7 @@ onMounted(() => {
 <template>
     <Head :title="lesson.title" />
 
-    <div class="h-screen flex flex-col bg-background">
+    <div class="h-screen flex flex-col">
         <LessonHeader
             :course-id="course.id"
             :course-title="course.title"

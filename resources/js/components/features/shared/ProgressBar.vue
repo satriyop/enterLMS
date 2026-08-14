@@ -69,13 +69,13 @@ const heightClasses = computed(() => {
 const barColorClasses = computed(() => {
     switch (props.color) {
         case 'success':
-            return 'bg-green-500';
+            return 'bg-ok';
         case 'warning':
-            return 'bg-yellow-500';
+            return 'bg-warn';
         case 'danger':
-            return 'bg-red-500';
+            return 'bg-danger';
         case 'info':
-            return 'bg-blue-500';
+            return 'bg-info';
         case 'default':
         default:
             return 'bg-primary';
@@ -84,7 +84,7 @@ const barColorClasses = computed(() => {
 
 const trackClasses = computed(() =>
     cn(
-        'w-full overflow-hidden rounded-full bg-muted',
+        'w-full overflow-hidden rounded-full bg-surface-2',
         heightClasses.value,
     )
 );

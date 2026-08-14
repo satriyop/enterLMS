@@ -111,8 +111,8 @@ const youtubeEmbedUrl = computed(() => {
 
 <template>
     <!-- Save First Notice -->
-    <div v-if="showSaveFirstNotice" class="rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4">
-        <p class="text-sm text-amber-800 dark:text-amber-200">
+    <div v-if="showSaveFirstNotice" class="rounded-lg bg-warn-soft border border-border p-4">
+        <p class="text-sm text-warn">
             Simpan materi terlebih dahulu untuk dapat mengunggah file.
         </p>
     </div>
@@ -163,7 +163,7 @@ const youtubeEmbedUrl = computed(() => {
         <!-- Preview -->
         <div v-if="youtubeUrl">
             <Label class="text-sm font-medium">Preview Video</Label>
-            <div class="mt-2 aspect-video w-full overflow-hidden rounded-xl bg-muted shadow-sm">
+            <div class="mt-2 aspect-video w-full overflow-hidden rounded-xl bg-surface-2 shadow-sm">
                 <iframe
                     v-if="youtubeEmbedUrl"
                     :src="youtubeEmbedUrl"
@@ -213,7 +213,7 @@ const youtubeEmbedUrl = computed(() => {
             <select
                 id="conference_type"
                 :value="conferenceType"
-                class="flex h-11 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
+                class="flex h-11 w-full rounded-lg border border-input bg-surface px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
                 @change="emit('update:conferenceType', ($event.target as HTMLSelectElement).value)"
             >
                 <option v-for="ct in conferenceTypes" :key="ct.value" :value="ct.value">

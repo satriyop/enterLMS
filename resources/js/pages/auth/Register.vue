@@ -33,17 +33,17 @@ import { Form, Head } from '@inertiajs/vue3';
                 Data akun
             </span>
             <span class="text-muted-foreground" aria-hidden="true">→</span>
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1 text-xs font-medium text-muted-foreground">
                 <span
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-background text-[11px]"
+                    class="flex h-5 w-5 items-center justify-center rounded-full bg-surface text-[11px]"
                     >2</span
                 >
                 Verifikasi email
             </span>
             <span class="text-muted-foreground" aria-hidden="true">→</span>
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1 text-xs font-medium text-muted-foreground">
                 <span
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-background text-[11px]"
+                    class="flex h-5 w-5 items-center justify-center rounded-full bg-surface text-[11px]"
                     >3</span
                 >
                 Keamanan

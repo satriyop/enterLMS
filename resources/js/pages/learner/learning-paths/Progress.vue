@@ -90,15 +90,15 @@ const dropEnrollment = () => {
 <template>
     <Head :title="`Progres - ${learningPath.title}`" />
 
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen">
         <Navbar :app-name="appName" />
 
         <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
             <FlashMessages />
 
             <!-- Drop error -->
-            <div v-if="dropError" class="mb-4 rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-                <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ dropError }}</p>
+            <div v-if="dropError" class="mb-4 rounded-md bg-danger-soft p-4">
+                <p class="text-sm font-medium text-danger">{{ dropError }}</p>
             </div>
 
             <!-- Breadcrumb -->
@@ -131,16 +131,16 @@ const dropEnrollment = () => {
             </div>
 
             <!-- Completion Banner -->
-            <Card v-if="isCompleted" class="mb-6 border-green-500 bg-green-50 dark:bg-green-950">
+            <Card v-if="isCompleted" class="mb-6 border-gold bg-gold-soft">
                 <CardContent class="flex items-center gap-4 p-6">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-                        <Award class="h-6 w-6 text-green-600 dark:text-green-400" />
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gold-soft">
+                        <Award class="h-6 w-6 text-gold" />
                     </div>
                     <div>
-                        <h2 class="text-lg font-semibold text-green-700 dark:text-green-300">
+                        <h2 class="text-lg font-semibold text-gold">
                             Selamat! Anda telah menyelesaikan Learning Path ini
                         </h2>
-                        <p class="text-sm text-green-600 dark:text-green-400">
+                        <p class="text-sm text-gold">
                             Diselesaikan pada {{ formatDate(enrollment.completed_at!) }}
                         </p>
                     </div>
@@ -167,7 +167,7 @@ const dropEnrollment = () => {
                         <div class="text-center sm:text-left">
                             <p class="text-sm text-muted-foreground mb-1">Kursus Selesai</p>
                             <div class="flex items-center gap-2">
-                                <CheckCircle class="h-5 w-5 text-green-500" />
+                                <CheckCircle class="h-5 w-5 text-gold" />
                                 <span class="text-2xl font-bold">
                                     {{ progress.completed_courses }}/{{ progress.total_courses }}
                                 </span>
@@ -178,7 +178,7 @@ const dropEnrollment = () => {
                         <div class="text-center sm:text-left">
                             <p class="text-sm text-muted-foreground mb-1">Sedang Dikerjakan</p>
                             <div class="flex items-center gap-2">
-                                <Play class="h-5 w-5 text-yellow-500" />
+                                <Play class="h-5 w-5 text-warn" />
                                 <span class="text-2xl font-bold">{{ progress.in_progress_courses }}</span>
                             </div>
                         </div>
@@ -187,7 +187,7 @@ const dropEnrollment = () => {
                         <div class="text-center sm:text-left">
                             <p class="text-sm text-muted-foreground mb-1">Waktu Belajar</p>
                             <div class="flex items-center gap-2">
-                                <Clock class="h-5 w-5 text-blue-500" />
+                                <Clock class="h-5 w-5 text-info" />
                                 <span class="text-2xl font-bold">
                                     {{ formatDuration(progress.total_time_spent_minutes, 'short') }}
                                 </span>

@@ -248,7 +248,7 @@ const otherLearning = computed(() => {
             <!-- Next-action: B hierarchy, A calm surface (hairline, soft pine, no heavy border) -->
             <section
                 v-if="nextAction && nextActionHref"
-                class="overflow-hidden rounded-[10px] border border-border bg-card"
+                class="overflow-hidden rounded-[10px] border border-border bg-surface"
                 aria-labelledby="next-action-heading"
             >
                 <div class="flex flex-wrap items-center gap-3 border-b border-border bg-primary-soft/70 px-5 py-3.5 sm:px-7">
@@ -271,7 +271,7 @@ const otherLearning = computed(() => {
                             role="img"
                             :aria-label="`Progres ${nextActionProgress} persen`"
                         >
-                            <div class="absolute inset-[5px] flex items-center justify-center rounded-full bg-card">
+                            <div class="absolute inset-[5px] flex items-center justify-center rounded-full bg-surface">
                                 <span class="text-sm font-semibold tabular-nums tracking-tight text-foreground">
                                     {{ nextActionProgress }}%
                                 </span>
@@ -332,7 +332,7 @@ const otherLearning = computed(() => {
                 </div>
                 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <Link :href="MyLearningController().url">
-                        <Card class="h-full gap-0 py-0 transition-colors hover:border-[color:var(--border)] hover:bg-secondary/40">
+                        <Card class="h-full gap-0 py-0 transition-colors hover:border-[color:var(--border)] hover:bg-surface-2/40">
                             <CardContent class="flex items-center gap-3.5 p-5">
                                 <div class="rounded-[8px] bg-primary-soft p-2.5">
                                     <BookOpen class="h-5 w-5 text-primary" />
@@ -347,7 +347,7 @@ const otherLearning = computed(() => {
                         </Card>
                     </Link>
                     <Link :href="MyLearningController().url + '?status=completed'">
-                        <Card class="h-full gap-0 py-0 transition-colors hover:bg-secondary/40">
+                        <Card class="h-full gap-0 py-0 transition-colors hover:bg-surface-2/40">
                             <CardContent class="flex items-center gap-3.5 p-5">
                                 <div class="rounded-[8px] bg-primary-soft p-2.5">
                                     <BookOpen class="h-5 w-5 text-primary" />
@@ -362,7 +362,7 @@ const otherLearning = computed(() => {
                         </Card>
                     </Link>
                     <Link href="/certificates">
-                        <Card class="h-full gap-0 py-0 transition-colors hover:bg-secondary/40">
+                        <Card class="h-full gap-0 py-0 transition-colors hover:bg-surface-2/40">
                             <CardContent class="flex items-center gap-3.5 p-5">
                                 <div class="rounded-[8px] bg-gold-soft p-2.5">
                                     <Award class="h-5 w-5 text-gold" />
@@ -379,7 +379,7 @@ const otherLearning = computed(() => {
                         v-if="invitedCourses.length > 0"
                         href="#undangan"
                     >
-                        <Card class="h-full gap-0 py-0 transition-colors hover:bg-secondary/40">
+                        <Card class="h-full gap-0 py-0 transition-colors hover:bg-surface-2/40">
                             <CardContent class="flex items-center gap-3.5 p-5">
                                 <div class="rounded-[8px] bg-primary-soft p-2.5">
                                     <Mail class="h-5 w-5 text-primary" />
@@ -397,7 +397,7 @@ const otherLearning = computed(() => {
                         v-else
                         :href="coursesIndex().url"
                     >
-                        <Card class="h-full gap-0 py-0 transition-colors hover:bg-secondary/40">
+                        <Card class="h-full gap-0 py-0 transition-colors hover:bg-surface-2/40">
                             <CardContent class="flex items-center gap-3.5 p-5">
                                 <div class="rounded-[8px] bg-primary-soft p-2.5">
                                     <Mail class="h-5 w-5 text-primary" />

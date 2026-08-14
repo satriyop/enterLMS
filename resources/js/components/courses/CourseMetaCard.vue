@@ -57,13 +57,13 @@ const props = withDefaults(defineProps<Props>(), {
         <CardContent class="p-6 space-y-4">
             <!-- Rating summary in sidebar -->
             <div v-if="averageRating" class="flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900">
-                    <Star class="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gold-soft">
+                    <Star class="h-5 w-5 text-gold" />
                 </div>
                 <div>
                     <div class="text-sm text-muted-foreground">Rating</div>
                     <div class="flex items-center gap-1">
-                        <span class="font-bold text-amber-600 dark:text-amber-400">{{ averageRating.toFixed(1) }}</span>
+                        <span class="font-bold text-gold">{{ averageRating.toFixed(1) }}</span>
                         <StarRating :rating="averageRating" readonly size="sm" />
                         <span class="text-sm text-muted-foreground">({{ ratingsCount }})</span>
                     </div>

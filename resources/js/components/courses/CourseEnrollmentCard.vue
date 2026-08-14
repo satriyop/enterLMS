@@ -138,7 +138,7 @@ const openReenrollDialog = () => {
         <CardContent class="p-6">
             <!-- Active Enrollment -->
             <div v-if="isActive" class="space-y-4">
-                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                <div class="flex items-center gap-2 text-ok">
                     <CheckCircle class="h-5 w-5" />
                     <span class="font-medium">Anda sudah terdaftar</span>
                 </div>
@@ -150,15 +150,15 @@ const openReenrollDialog = () => {
                     size="sm"
                 />
                 <!-- Assessment Status -->
-                <div v-if="hasAssessments" class="rounded-lg bg-muted/50 p-3 text-sm">
+                <div v-if="hasAssessments" class="rounded-lg bg-surface-2/50 p-3 text-sm">
                     <div class="flex items-center gap-2 mb-2">
                         <ClipboardCheck class="h-4 w-4 text-muted-foreground" />
                         <span class="font-medium">Assessment</span>
                     </div>
-                    <div v-if="hasPendingAssessments" class="text-orange-600 dark:text-orange-400">
+                    <div v-if="hasPendingAssessments" class="text-warn">
                         {{ assessmentStats?.required_pending }} assessment wajib belum selesai
                     </div>
-                    <div v-else class="text-green-600 dark:text-green-400">
+                    <div v-else class="text-ok">
                         Semua assessment wajib sudah lulus
                     </div>
                     <div class="text-xs text-muted-foreground mt-1">
@@ -186,7 +186,7 @@ const openReenrollDialog = () => {
 
             <!-- Completed Enrollment -->
             <div v-else-if="isCompleted" class="space-y-4">
-                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                <div class="flex items-center gap-2 text-gold">
                     <Trophy class="h-5 w-5" />
                     <span class="font-medium">Kursus Selesai!</span>
                 </div>
@@ -207,7 +207,7 @@ const openReenrollDialog = () => {
 
             <!-- Dropped Enrollment -->
             <div v-else-if="isDropped" class="space-y-4">
-                <div class="flex items-center gap-2 text-orange-600 dark:text-orange-400">
+                <div class="flex items-center gap-2 text-danger">
                     <XCircle class="h-5 w-5" />
                     <span class="font-medium">Pendaftaran Dibatalkan</span>
                 </div>
@@ -253,7 +253,7 @@ const openReenrollDialog = () => {
                     Kursus ini tidak tersedia untuk pendaftaran.
                 </p>
                 <div v-if="previewLessonsCount > 0" class="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">
-                    <Eye class="h-4 w-4 text-green-600" />
+                    <Eye class="h-4 w-4 text-info" />
                     <span>{{ previewLessonsCount }} materi dapat dipreview gratis</span>
                 </div>
             </div>

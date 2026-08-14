@@ -85,10 +85,10 @@ const formatRelativeTime = (dateString: string): string => {
 
 const getNotificationIcon = (type: string) => {
     if (type === 'enrollment.welcome') {
-        return { component: BookOpen, color: 'text-blue-500 dark:text-blue-400' };
+        return { component: BookOpen, color: 'text-info' };
     }
     if (type === 'enrollment.completed') {
-        return { component: GraduationCap, color: 'text-green-500 dark:text-green-400' };
+        return { component: GraduationCap, color: 'text-gold' };
     }
     return { component: Bell, color: 'text-muted-foreground' };
 };
@@ -131,7 +131,7 @@ const hasUnreadNotifications = computed(() => {
 <template>
     <Head title="Notifikasi" />
 
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen">
         <Navbar :app-name="appName" />
 
         <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
@@ -163,24 +163,16 @@ const hasUnreadNotifications = computed(() => {
                 <Card
                     v-for="notification in notifications.data"
                     :key="notification.id"
-                    class="cursor-pointer transition-colors hover:bg-muted/50"
-                    :class="{
-                        'border-l-4 border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20':
-                            !notification.read_at,
-                    }"
+                    class="cursor-pointer transition-colors hover:bg-surface-2/50"
+                    :class="{ 'border-l-4 border-l-info bg-info-soft/50': !notification.read_at, }"
                     @click="markAsRead(notification)"
                 >
                     <CardContent class="p-4">
                         <div class="flex items-start gap-4">
                             <!-- Icon -->
                             <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"
-                                :class="{
-                                    'bg-blue-100 dark:bg-blue-900/30':
-                                        notification.data.type === 'enrollment.welcome',
-                                    'bg-green-100 dark:bg-green-900/30':
-                                        notification.data.type === 'enrollment.completed',
-                                }"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-2"
+                                :class="{ 'bg-info-soft': notification.data.type === 'enrollment.welcome', 'bg-gold-soft': notification.data.type === 'enrollment.completed', }"
                             >
                                 <component
                                     :is="getNotificationIcon(notification.data.type).component"
@@ -193,19 +185,13 @@ const hasUnreadNotifications = computed(() => {
                             <div class="flex-1 min-w-0">
                                 <p
                                     class="text-sm"
-                                    :class="{
-                                        'font-semibold text-foreground': !notification.read_at,
-                                        'text-muted-foreground': notification.read_at,
-                                    }"
+                                    :class="{ 'font-semibold text-foreground': !notification.read_at, 'text-muted-foreground': notification.read_at, }"
                                 >
                                     {{ notification.data.message }}
                                 </p>
                                 <p
                                     class="mt-1 text-xs"
-                                    :class="{
-                                        'text-muted-foreground': !notification.read_at,
-                                        'text-muted-foreground/70': notification.read_at,
-                                    }"
+                                    :class="{ 'text-muted-foreground': !notification.read_at, 'text-muted-foreground/70': notification.read_at, }"
                                 >
                                     {{ formatRelativeTime(notification.created_at) }}
                                 </p>
@@ -216,7 +202,7 @@ const hasUnreadNotifications = computed(() => {
                                 <Badge
                                     v-if="!notification.read_at"
                                     variant="default"
-                                    class="bg-blue-500"
+                                    class="bg-info"
                                 >
                                     Baru
                                 </Badge>
@@ -247,11 +233,8 @@ const hasUnreadNotifications = computed(() => {
                     <Link
                         v-if="link.url"
                         :href="link.url"
-                        class="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-muted"
-                        :class="{
-                            'bg-primary text-primary-foreground hover:bg-primary/90':
-                                link.active,
-                        }"
+                        class="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-surface-2"
+                        :class="{ 'bg-primary text-primary-foreground hover:bg-primary/90': link.active, }"
                         v-html="link.label"
                         preserve-scroll
                     />

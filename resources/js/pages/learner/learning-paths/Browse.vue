@@ -87,7 +87,7 @@ watch(searchQuery, () => {
 <template>
     <Head title="Jelajahi Learning Path" />
 
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen">
         <Navbar :app-name="appName" />
 
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -125,14 +125,14 @@ watch(searchQuery, () => {
                 </div>
 
                 <!-- Filter Panel -->
-                <div v-if="showFilters" class="rounded-lg border bg-card p-4">
+                <div v-if="showFilters" class="rounded-lg border bg-surface p-4">
                     <div class="flex flex-wrap gap-4">
                         <div class="min-w-48">
                             <label class="mb-2 block text-sm font-medium">Tingkat Kesulitan</label>
                             <select
                                 v-model="selectedDifficulty"
                                 @change="applyFilters"
-                                class="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                                class="w-full rounded-md border bg-surface px-3 py-2 text-sm"
                             >
                                 <option value="">Semua Tingkat</option>
                                 <option value="beginner">Pemula</option>
@@ -189,7 +189,7 @@ watch(searchQuery, () => {
                     <Link
                         v-if="link.url"
                         :href="link.url"
-                        class="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-muted"
+                        class="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-surface-2"
                         :class="{ 'bg-primary text-primary-foreground hover:bg-primary/90': link.active }"
                         v-html="link.label"
                         preserve-scroll

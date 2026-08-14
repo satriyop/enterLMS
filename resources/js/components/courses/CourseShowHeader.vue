@@ -60,7 +60,7 @@ const props = defineProps<Props>();
 const statusConfig = computed(() => {
     switch (props.status) {
         case 'published':
-            return { label: 'Terbit', class: 'bg-emerald-500 hover:bg-emerald-500' };
+            return { label: 'Terbit', class: 'bg-ok hover:bg-ok' };
         case 'draft':
             return { label: 'Draft', class: '' };
         case 'archived':
@@ -94,7 +94,7 @@ const archiveCourse = () => {
 </script>
 
 <template>
-    <div class="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/90 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div class="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/90">
         <div class="absolute inset-0 opacity-10" />
         <div class="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <Link
@@ -188,7 +188,7 @@ const archiveCourse = () => {
                     <Button
                         v-if="can.delete"
                         variant="outline"
-                        class="justify-start border-red-300/50 bg-transparent text-red-200 hover:bg-red-500/20 lg:w-full"
+                        class="justify-start border-danger/50 bg-transparent text-danger hover:bg-danger/20 lg:w-full"
                         @click="deleteCourse"
                     >
                         <Trash2 class="size-4 shrink-0" />

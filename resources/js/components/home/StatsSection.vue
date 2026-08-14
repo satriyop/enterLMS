@@ -29,7 +29,7 @@ const iconMap = {
 </script>
 
 <template>
-    <section class="border-b bg-muted/30 py-12">
+    <section class="border-b bg-surface-2/30 py-12">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
                 <div

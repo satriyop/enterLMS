@@ -86,13 +86,13 @@ const formattedDate = computed(() => {
             <Alert
                 v-if="!canEditRole"
                 variant="destructive"
-                class="mx-auto w-full max-w-2xl border-yellow-500 bg-yellow-50 dark:bg-yellow-950"
+                class="mx-auto w-full max-w-2xl border-warn bg-warn-soft"
             >
-                <AlertTriangle class="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-                <AlertTitle class="text-yellow-800 dark:text-yellow-200">
+                <AlertTriangle class="h-4 w-4 text-warn" />
+                <AlertTitle class="text-warn">
                     Mengedit Akun Sendiri
                 </AlertTitle>
-                <AlertDescription class="text-yellow-700 dark:text-yellow-300">
+                <AlertDescription class="text-warn">
                     Anda tidak dapat mengubah peran Anda sendiri untuk mencegah kehilangan akses admin.
                 </AlertDescription>
             </Alert>
@@ -205,8 +205,8 @@ const formattedDate = computed(() => {
                         </div>
 
                         <div class="flex items-center gap-3 rounded-lg border p-4">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
-                                <GraduationCap class="h-5 w-5 text-green-500" />
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-ok-soft">
+                                <GraduationCap class="h-5 w-5 text-ok" />
                             </div>
                             <div>
                                 <p class="text-2xl font-bold">{{ user.enrollments_count ?? 0 }}</p>
@@ -215,8 +215,8 @@ const formattedDate = computed(() => {
                         </div>
 
                         <div class="flex items-center gap-3 rounded-lg border p-4">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
-                                <Calendar class="h-5 w-5 text-blue-500" />
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-info-soft">
+                                <Calendar class="h-5 w-5 text-info" />
                             </div>
                             <div>
                                 <p class="text-sm font-medium">{{ formattedDate }}</p>

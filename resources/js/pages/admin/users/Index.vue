@@ -164,11 +164,11 @@ const deleteUser = async (user: UserListItem) => {
 
             <template v-else>
                 <!-- User Table -->
-                <div class="rounded-xl border bg-card">
+                <div class="rounded-xl border bg-surface">
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead>
-                                <tr class="border-b bg-muted/50">
+                                <tr class="border-b bg-surface-2/50">
                                     <th class="px-6 py-4 text-left text-sm font-medium text-muted-foreground">
                                         Pengguna
                                     </th>
@@ -190,7 +190,7 @@ const deleteUser = async (user: UserListItem) => {
                                 <tr
                                     v-for="user in users.data"
                                     :key="user.id"
-                                    class="transition-colors hover:bg-muted/50"
+                                    class="transition-colors hover:bg-surface-2/50"
                                 >
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">

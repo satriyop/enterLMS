@@ -127,7 +127,7 @@ const cancelEditRating = () => {
             <!-- Rating Summary -->
             <div class="flex items-center gap-6 pb-4 border-b">
                 <div class="text-center">
-                    <div class="text-4xl font-bold text-amber-600 dark:text-amber-500">
+                    <div class="text-4xl font-bold text-gold">
                         {{ averageRating?.toFixed(1) || '-' }}
                     </div>
                     <StarRating

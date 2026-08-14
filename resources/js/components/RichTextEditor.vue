@@ -291,10 +291,10 @@ const toolbarGroups = ref<ToolbarButton[][]>([
 </script>
 
 <template>
-    <div class="rounded-lg border bg-background">
+    <div class="rounded-lg border bg-surface">
         <div
             v-if="editor && editable"
-            class="flex flex-wrap items-center gap-1 border-b bg-muted/30 p-2"
+            class="flex flex-wrap items-center gap-1 border-b bg-surface-2/30 p-2"
         >
             <template v-for="(group, groupIndex) in toolbarGroups" :key="groupIndex">
                 <div class="flex items-center gap-0.5">
@@ -306,7 +306,7 @@ const toolbarGroups = ref<ToolbarButton[][]>([
                         size="sm"
                         class="h-8 w-8 p-0"
                         :class="{
-                            'bg-muted text-foreground': button.isActive?.(),
+                            'bg-surface-2 text-foreground': button.isActive?.(),
                             'text-muted-foreground': !button.isActive?.(),
                         }"
                         :disabled="button.disabled?.()"

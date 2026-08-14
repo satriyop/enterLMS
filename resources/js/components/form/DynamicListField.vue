@@ -56,7 +56,7 @@ const removeItem = (index: number) => {
                 class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-medium"
                 :class="indicatorVariant === 'primary'
                     ? 'bg-primary/10 text-primary'
-                    : 'bg-muted text-muted-foreground'"
+                    : 'bg-surface-2 text-muted-foreground'"
             >
                 {{ index + 1 }}
             </div>

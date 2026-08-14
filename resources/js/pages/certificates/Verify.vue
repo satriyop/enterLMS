@@ -38,11 +38,11 @@ const handleVerify = () => {
 <template>
     <Head title="Verifikasi Sertifikat" />
 
-    <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 dark:bg-gray-900">
+    <div class="flex min-h-screen items-center justify-center bg-surface-2 px-4">
         <Card class="w-full max-w-md">
             <CardHeader class="text-center">
-                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                    <Shield class="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gold-soft">
+                    <Shield class="h-8 w-8 text-gold" />
                 </div>
                 <CardTitle class="text-2xl">Verifikasi Sertifikat</CardTitle>
                 <CardDescription>
@@ -61,7 +61,7 @@ const handleVerify = () => {
                             class="font-mono uppercase"
                             :disabled="isSearching"
                         />
-                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                        <p class="text-xs text-muted-foreground">
                             Kode verifikasi dapat ditemukan pada bagian bawah sertifikat
                         </p>
                     </div>
@@ -76,11 +76,11 @@ const handleVerify = () => {
                     </Button>
                 </form>
 
-                <div class="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
-                    <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <div class="mt-6 rounded-lg border border-border bg-surface-2 p-4">
+                    <h4 class="mb-2 text-sm font-medium text-foreground">
                         Cara Verifikasi:
                     </h4>
-                    <ol class="list-inside list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                    <ol class="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
                         <li>Temukan kode verifikasi pada sertifikat</li>
                         <li>Masukkan kode pada kolom di atas</li>
                         <li>Klik tombol "Verifikasi"</li>

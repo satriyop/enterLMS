@@ -358,7 +358,7 @@ watch(() => props.pdfUrl, () => {
         <!-- PDF Viewer -->
         <template v-else>
             <!-- Toolbar -->
-            <div class="flex items-center justify-between gap-2 mb-4 p-2 bg-muted/50 rounded-lg">
+            <div class="flex items-center justify-between gap-2 mb-4 p-2 bg-surface-2/50 rounded-lg">
                 <div class="flex items-center gap-1">
                     <Button
                         variant="ghost"
@@ -398,7 +398,7 @@ watch(() => props.pdfUrl, () => {
 
             <!-- Canvas container -->
             <div
-                class="relative overflow-auto bg-muted/30 rounded-lg flex items-start justify-center p-4"
+                class="relative overflow-auto bg-surface-2/30 rounded-lg flex items-start justify-center p-4"
                 :style="{ maxHeight: '70vh' }"
                 @touchstart.passive="handleTouchStart"
                 @touchend.passive="handleTouchEnd"
@@ -406,7 +406,7 @@ watch(() => props.pdfUrl, () => {
                 <!-- Rendering overlay -->
                 <div
                     v-if="isRendering"
-                    class="absolute inset-0 bg-background/50 flex items-center justify-center z-10"
+                    class="absolute inset-0 bg-surface/50 flex items-center justify-center z-10"
                 >
                     <Loader2 class="h-6 w-6 animate-spin text-primary" />
                 </div>

@@ -86,14 +86,14 @@ const formatDateTime = (date: string | null): string => {
             <div class="flex items-center gap-3">
                 <div
                     class="flex h-8 w-8 items-center justify-center rounded-full"
-                    :class="attempt.passed ? 'bg-green-100' : 'bg-red-100'"
+                    :class="attempt.passed ? 'bg-ok-soft' : 'bg-danger-soft'"
                 >
-                    <Check v-if="attempt.passed" class="h-5 w-5 text-green-600" />
-                    <X v-else class="h-5 w-5 text-red-600" />
+                    <Check v-if="attempt.passed" class="h-5 w-5 text-ok" />
+                    <X v-else class="h-5 w-5 text-danger" />
                 </div>
                 <div>
                     <p class="text-sm font-medium">Status Kelulusan</p>
-                    <p class="font-medium" :class="attempt.passed ? 'text-green-600' : 'text-red-600'">
+                    <p class="font-medium" :class="attempt.passed ? 'text-ok' : 'text-danger'">
                         {{ attempt.passed ? 'Lulus' : 'Tidak Lulus' }}
                     </p>
                 </div>

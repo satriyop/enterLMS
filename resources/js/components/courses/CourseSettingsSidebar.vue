@@ -39,7 +39,7 @@ defineProps<Props>();
                 <select
                     id="category_id"
                     name="category_id"
-                    class="flex h-11 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
+                    class="flex h-11 w-full rounded-lg border border-input bg-surface px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
                 >
                     <option value="">Pilih Kategori</option>
                     <option v-for="category in categories" :key="category.id" :value="category.id">
@@ -56,7 +56,7 @@ defineProps<Props>();
                 <select
                     id="difficulty_level"
                     name="difficulty_level"
-                    class="flex h-11 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
+                    class="flex h-11 w-full rounded-lg border border-input bg-surface px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
                     required
                 >
                     <option value="beginner">Pemula</option>
@@ -73,7 +73,7 @@ defineProps<Props>();
                 <select
                     id="visibility"
                     name="visibility"
-                    class="flex h-11 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
+                    class="flex h-11 w-full rounded-lg border border-input bg-surface px-4 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
                     required
                 >
                     <option value="public">Publik - Dapat dilihat semua orang</option>

@@ -285,10 +285,10 @@ watch(() => props.content, () => {
         <!-- Loading state -->
         <div v-if="!isInitialized" class="min-h-[50vh] flex items-center justify-center">
             <div class="animate-pulse space-y-4 w-full">
-                <div class="h-4 bg-muted rounded w-3/4" />
-                <div class="h-4 bg-muted rounded w-full" />
-                <div class="h-4 bg-muted rounded w-5/6" />
-                <div class="h-4 bg-muted rounded w-2/3" />
+                <div class="h-4 bg-surface-2 rounded w-3/4" />
+                <div class="h-4 bg-surface-2 rounded w-full" />
+                <div class="h-4 bg-surface-2 rounded w-5/6" />
+                <div class="h-4 bg-surface-2 rounded w-2/3" />
             </div>
         </div>
 

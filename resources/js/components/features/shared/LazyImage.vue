@@ -113,7 +113,7 @@ const fitClasses: Record<string, string> = {
     <div
         ref="imageRef"
         :class="[
-            'relative overflow-hidden bg-muted',
+            'relative overflow-hidden bg-surface-2',
             props.class,
         ]"
         :style="{
@@ -124,7 +124,7 @@ const fitClasses: Record<string, string> = {
         <!-- Error State -->
         <div
             v-if="hasError"
-            class="flex h-full w-full items-center justify-center bg-muted"
+            class="flex h-full w-full items-center justify-center bg-surface-2"
         >
             <ImageOff class="h-8 w-8 text-muted-foreground/50" />
         </div>
@@ -146,7 +146,7 @@ const fitClasses: Record<string, string> = {
         <!-- Loading Skeleton -->
         <div
             v-if="!isLoaded && !hasError"
-            class="absolute inset-0 animate-pulse bg-muted"
+            class="absolute inset-0 animate-pulse bg-surface-2"
         />
     </div>
 </template>

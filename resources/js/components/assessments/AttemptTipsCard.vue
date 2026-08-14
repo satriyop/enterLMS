@@ -15,7 +15,7 @@ import { Check, Clock, Upload } from 'lucide-vue-next';
         </CardHeader>
         <CardContent class="space-y-3">
             <div class="flex items-start gap-3">
-                <Check class="h-5 w-5 text-green-600 mt-0.5" />
+                <Check class="h-5 w-5 text-ok mt-0.5" />
                 <div>
                     <p class="text-sm font-medium">Jawab semua pertanyaan</p>
                     <p class="text-sm text-muted-foreground">
@@ -25,7 +25,7 @@ import { Check, Clock, Upload } from 'lucide-vue-next';
             </div>
 
             <div class="flex items-start gap-3">
-                <Clock class="h-5 w-5 text-blue-600 mt-0.5" />
+                <Clock class="h-5 w-5 text-info mt-0.5" />
                 <div>
                     <p class="text-sm font-medium">Kelola waktu dengan baik</p>
                     <p class="text-sm text-muted-foreground">
@@ -35,7 +35,7 @@ import { Check, Clock, Upload } from 'lucide-vue-next';
             </div>
 
             <div class="flex items-start gap-3">
-                <Upload class="h-5 w-5 text-purple-600 mt-0.5" />
+                <Upload class="h-5 w-5 text-primary mt-0.5" />
                 <div>
                     <p class="text-sm font-medium">Simpan pekerjaan Anda</p>
                     <p class="text-sm text-muted-foreground">

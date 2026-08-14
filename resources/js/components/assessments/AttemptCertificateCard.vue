@@ -15,7 +15,7 @@ import { Award, Trophy } from 'lucide-vue-next';
             <CardTitle>Sertifikat</CardTitle>
         </CardHeader>
         <CardContent class="flex flex-col items-center justify-center gap-4 py-8">
-            <Award class="h-16 w-16 text-yellow-600" />
+            <Award class="h-16 w-16 text-gold" />
             <p class="text-center text-muted-foreground">
                 Anda telah berhasil menyelesaikan penilaian ini dan memenuhi syarat untuk sertifikat.
             </p>

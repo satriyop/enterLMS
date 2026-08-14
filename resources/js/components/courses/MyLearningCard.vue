@@ -42,9 +42,9 @@ const difficultyLabel = (level: string) => {
 
 const difficultyColor = (level: string) => {
     const colors: Record<string, string> = {
-        beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-        intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-        advanced: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+        beginner: 'bg-ok-soft text-ok',
+        intermediate: 'bg-warn-soft text-warn',
+        advanced: 'bg-danger-soft text-danger',
     };
     return colors[level] || '';
 };
@@ -52,7 +52,7 @@ const difficultyColor = (level: string) => {
 
 <template>
     <Card class="group overflow-hidden hover:shadow-lg transition-shadow">
-        <div class="relative aspect-video bg-muted">
+        <div class="relative aspect-video bg-surface-2">
             <img
                 v-if="course.thumbnail_path"
                 :src="course.thumbnail_path"
@@ -64,7 +64,7 @@ const difficultyColor = (level: string) => {
             </div>
             
             <!-- Progress Overlay -->
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-muted">
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-surface-2">
                 <div
                     class="h-full bg-primary transition-all"
                     :style="{ width: `${course.progress_percentage || 0}%` }"
@@ -76,7 +76,7 @@ const difficultyColor = (level: string) => {
                 v-if="(course.progress_percentage || 0) >= 100"
                 class="absolute top-2 right-2"
             >
-                <Badge variant="secondary" class="gap-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                <Badge variant="secondary" class="gap-1 bg-gold-soft text-gold">
                     <CheckCircle class="h-3 w-3" />
                     Selesai
                 </Badge>
@@ -87,7 +87,7 @@ const difficultyColor = (level: string) => {
                 :href="course.last_lesson_id ? `/courses/${course.id}/lessons/${course.last_lesson_id}` : `/courses/${course.id}`"
                 class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
             >
-                <div class="rounded-full bg-white p-3">
+                <div class="rounded-full bg-surface p-3">
                     <Play class="h-6 w-6 text-primary" />
                 </div>
             </Link>

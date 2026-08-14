@@ -10,7 +10,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, CheckCircle, Play, Route } from 'lucide-vue-next';
-import type { LearningPathEnrollmentItem } from '@/types';
+import {
+    LEARNING_PATH_STATE_COLORS,
+    enrollmentStateLabel,
+    type LearningPathEnrollmentItem,
+} from '@/types';
 
 // =============================================================================
 // Types
@@ -30,23 +34,11 @@ const isCompleted = props.enrollment.state === 'completed';
 const isActive = props.enrollment.state === 'active';
 
 const getStateColor = () => {
-    const colors: Record<string, { bg: string; text: string }> = {
-        active: { bg: 'bg-blue-100 dark:bg-blue-900', text: 'text-blue-700 dark:text-blue-300' },
-        completed: { bg: 'bg-green-100 dark:bg-green-900', text: 'text-green-700 dark:text-green-300' },
-        dropped: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300' },
-    };
-    const color = colors[props.enrollment.state];
+    const color = LEARNING_PATH_STATE_COLORS[props.enrollment.state];
     return color ? `${color.bg} ${color.text}` : '';
 };
 
-const getStateLabel = () => {
-    const labels: Record<string, string> = {
-        active: 'Aktif',
-        completed: 'Selesai',
-        dropped: 'Dihentikan',
-    };
-    return labels[props.enrollment.state] ?? props.enrollment.state;
-};
+const getStateLabel = () => enrollmentStateLabel(props.enrollment.state);
 
 const getButtonLabel = () => {
     if (isCompleted) return 'Lihat';
@@ -58,7 +50,7 @@ const getButtonLabel = () => {
 <template>
     <Card class="group overflow-hidden">
         <Link :href="`/learner/learning-paths/${enrollment.learning_path.id}`">
-            <div class="relative aspect-video bg-muted">
+            <div class="relative aspect-video bg-surface-2">
                 <img
                     v-if="enrollment.learning_path.thumbnail_url"
                     :src="enrollment.learning_path.thumbnail_url"
@@ -76,7 +68,7 @@ const getButtonLabel = () => {
                 </Badge>
                 <Badge
                     v-if="isCompleted"
-                    class="absolute right-2 top-2 bg-green-600 text-white hover:bg-green-600"
+                    class="absolute right-2 top-2 bg-gold-soft text-gold hover:bg-gold-soft"
                 >
                     <CheckCircle class="mr-1 h-3 w-3" />
                     Selesai

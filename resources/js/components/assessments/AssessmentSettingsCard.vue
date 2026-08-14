@@ -70,8 +70,8 @@ defineProps<Props>();
             <div class="space-y-3">
                 <div class="flex items-center gap-3">
                     <div class="flex h-6 w-6 items-center justify-center rounded-full border">
-                        <Check v-if="shuffleQuestions" class="h-4 w-4 text-green-600" />
-                        <X v-else class="h-4 w-4 text-red-600" />
+                        <Check v-if="shuffleQuestions" class="h-4 w-4 text-ok" />
+                        <X v-else class="h-4 w-4 text-danger" />
                     </div>
                     <div>
                         <p class="text-sm font-medium">Acak Pertanyaan</p>
@@ -83,8 +83,8 @@ defineProps<Props>();
 
                 <div class="flex items-center gap-3">
                     <div class="flex h-6 w-6 items-center justify-center rounded-full border">
-                        <Check v-if="showCorrectAnswers" class="h-4 w-4 text-green-600" />
-                        <X v-else class="h-4 w-4 text-red-600" />
+                        <Check v-if="showCorrectAnswers" class="h-4 w-4 text-ok" />
+                        <X v-else class="h-4 w-4 text-danger" />
                     </div>
                     <div>
                         <p class="text-sm font-medium">Tampilkan Jawaban Benar</p>
@@ -96,8 +96,8 @@ defineProps<Props>();
 
                 <div class="flex items-center gap-3">
                     <div class="flex h-6 w-6 items-center justify-center rounded-full border">
-                        <Check v-if="allowReview" class="h-4 w-4 text-green-600" />
-                        <X v-else class="h-4 w-4 text-red-600" />
+                        <Check v-if="allowReview" class="h-4 w-4 text-ok" />
+                        <X v-else class="h-4 w-4 text-danger" />
                     </div>
                     <div>
                         <p class="text-sm font-medium">Izinkan Review</p>

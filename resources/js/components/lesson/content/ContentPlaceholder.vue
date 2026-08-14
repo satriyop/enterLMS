@@ -26,7 +26,7 @@ withDefaults(defineProps<Props>(), {
     <div
         :class="[
             'flex items-center justify-center',
-            minimal ? 'py-8' : 'min-h-[50vh] p-8 rounded-lg bg-muted',
+            minimal ? 'py-8' : 'min-h-[50vh] p-8 rounded-lg bg-surface-2',
         ]"
     >
         <div class="text-center text-muted-foreground">

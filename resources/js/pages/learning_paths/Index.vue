@@ -154,7 +154,7 @@ const deleteLearningPath = async (learningPath: LearningPathListItem) => {
                         <button
                             type="button"
                             class="rounded-md p-2 transition-colors"
-                            :class="viewMode === 'grid' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
+                            :class="viewMode === 'grid' ? 'bg-surface-2 text-foreground' : 'text-muted-foreground hover:text-foreground'"
                             @click="setMode('grid')"
                         >
                             <LayoutGrid class="h-4 w-4" />
@@ -162,7 +162,7 @@ const deleteLearningPath = async (learningPath: LearningPathListItem) => {
                         <button
                             type="button"
                             class="rounded-md p-2 transition-colors"
-                            :class="viewMode === 'list' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
+                            :class="viewMode === 'list' ? 'bg-surface-2 text-foreground' : 'text-muted-foreground hover:text-foreground'"
                             @click="setMode('list')"
                         >
                             <List class="h-4 w-4" />

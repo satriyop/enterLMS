@@ -117,7 +117,7 @@ const form = ref({
                                     name="description"
                                     v-model="form.description"
                                     rows="3"
-                                    class="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="flex w-full rounded-lg border border-input bg-surface px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
                                 />
                                 <InputError :message="errors.description" />
                             </div>
@@ -129,7 +129,7 @@ const form = ref({
                                     name="instructions"
                                     v-model="form.instructions"
                                     rows="6"
-                                    class="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="flex w-full rounded-lg border border-input bg-surface px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
                                 />
                                 <InputError :message="errors.instructions" />
                             </div>

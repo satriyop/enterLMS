@@ -88,13 +88,13 @@ const formattedStats = computed(() => {
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
 
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen">
         <Navbar :app-name="appName" :can-register="canRegister" />
 
         <main>
             <HeroSection
-                title="Belajar Tanpa Batas"
-                subtitle="Tingkatkan keterampilan Anda dengan ribuan kursus online dari instruktur terbaik. Mulai perjalanan belajar Anda hari ini."
+                title="Belajar menjalankan agen AI"
+                subtitle="Academy untuk orang yang menjalankan dan membangun keluarga produk AI. Mulai dari Pengenalan Agen AI — gratis dan terbuka."
             />
 
             <StatsSection v-if="formattedStats.length > 0" :stats="formattedStats" />
@@ -121,7 +121,7 @@ const formattedStats = computed(() => {
                 subtitle="Pelajari dari kursus terbaik yang dipilih oleh siswa kami"
                 :courses="popularCourses"
                 view-all-href="/courses?sort=popular"
-                class="bg-muted/30"
+                class="bg-surface-2/30"
             />
 
             <TestimonialsSection
@@ -130,13 +130,13 @@ const formattedStats = computed(() => {
             />
 
             <CTASection
-                title="Mulai Belajar Hari Ini"
-                subtitle="Bergabung dengan ribuan siswa lainnya dan mulai perjalanan belajar Anda."
+                title="Mulai dari pengenalan"
+                subtitle="Daftar, ambil Pengenalan Agen AI, dan selesaikan Course terbuka. Jalur Operator tidak tampil di katalog publik."
                 :features="[
-                    'Akses seumur hidup ke semua materi',
+                    'Course terbuka tanpa biaya',
                     'Sertifikat penyelesaian',
-                    'Komunitas belajar yang aktif',
-                    'Dukungan dari instruktur',
+                    'Bahasa Indonesia',
+                    'Bukan control plane — belajar, bukan men-deploy',
                 ]"
                 primary-button-text="Daftar Gratis"
                 primary-button-href="/register"

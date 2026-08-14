@@ -47,7 +47,7 @@ const toggleTheme = () => {
 </script>
 
 <template>
-    <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header class="sticky top-0 z-50 w-full border-b bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/60">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
                 <div class="flex items-center gap-8">
@@ -107,7 +107,7 @@ const toggleTheme = () => {
                         <input
                             type="text"
                             placeholder="Cari kursus..."
-                            class="h-10 w-full rounded-full border bg-muted/50 pl-10 pr-4 text-sm outline-none transition-colors focus:border-primary focus:bg-background"
+                            class="h-10 w-full rounded-full border bg-surface-2/50 pl-10 pr-4 text-sm outline-none transition-colors focus:border-primary focus:bg-surface"
                         />
                     </div>
                 </div>
@@ -203,38 +203,38 @@ const toggleTheme = () => {
                     <input
                         type="text"
                         placeholder="Cari kursus..."
-                        class="h-10 w-full rounded-lg border bg-muted/50 pl-10 pr-4 text-sm outline-none"
+                        class="h-10 w-full rounded-lg border bg-surface-2/50 pl-10 pr-4 text-sm outline-none"
                     />
                 </div>
 
                 <Link
                     v-if="user"
                     href="/learner/dashboard"
-                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-surface-2 hover:text-foreground"
                 >
                     Pembelajaran Saya
                 </Link>
                 <Link
                     href="/courses"
-                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-surface-2 hover:text-foreground"
                 >
                     Kursus
                 </Link>
                 <Link
                     href="/learner/learning-paths/browse"
-                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-surface-2 hover:text-foreground"
                 >
                     Learning Path
                 </Link>
                 <Link
                     href="/categories"
-                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-surface-2 hover:text-foreground"
                 >
                     Kategori
                 </Link>
                 <Link
                     href="/instructors"
-                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                    class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-surface-2 hover:text-foreground"
                 >
                     Instruktur
                 </Link>
@@ -243,13 +243,13 @@ const toggleTheme = () => {
                     <template v-if="user">
                         <Link
                             :href="dashboard()"
-                            class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                            class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-surface-2 hover:text-foreground"
                         >
                             Dashboard
                         </Link>
                         <Link
                             href="/certificates"
-                            class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                            class="block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-surface-2 hover:text-foreground"
                         >
                             Sertifikat Saya
                         </Link>
@@ -257,7 +257,7 @@ const toggleTheme = () => {
                             href="/logout"
                             method="post"
                             as="button"
-                            class="block w-full rounded-lg px-3 py-2 text-left text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                            class="block w-full rounded-lg px-3 py-2 text-left text-base font-medium text-muted-foreground hover:bg-surface-2 hover:text-foreground"
                         >
                             Keluar
                         </Link>

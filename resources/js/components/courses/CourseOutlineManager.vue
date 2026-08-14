@@ -117,7 +117,7 @@ const totalSectionDuration = (section: OutlineSection) => {
             >
                 <!-- Section Header -->
                 <button
-                    class="flex w-full items-center justify-between bg-muted/30 p-4 text-left transition-colors hover:bg-muted/50"
+                    class="flex w-full items-center justify-between bg-surface-2/30 p-4 text-left transition-colors hover:bg-surface-2/50"
                     @click="toggleSection(section.id)"
                 >
                     <div class="flex items-center gap-3">
@@ -145,7 +145,7 @@ const totalSectionDuration = (section: OutlineSection) => {
                     <div
                         v-for="(lesson, lessonIdx) in section.lessons"
                         :key="lesson.id"
-                        class="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-muted/20"
+                        class="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-surface-2/20"
                     >
                         <component
                             :is="contentTypeIcon(lesson.content_type)"

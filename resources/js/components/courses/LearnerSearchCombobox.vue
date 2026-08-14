@@ -138,7 +138,7 @@ const handleBlur = () => {
 
             <div
                 v-if="isOpen && searchQuery.length >= 2"
-                class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover shadow-md"
+                class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-border bg-surface shadow-md"
             >
                 <div v-if="isLoading" class="px-4 py-8 text-center text-sm text-muted-foreground">
                     <Spinner class="mx-auto h-5 w-5" />
@@ -156,7 +156,7 @@ const handleBlur = () => {
                         v-for="learner in learners"
                         :key="learner.id"
                         type="button"
-                        class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-accent"
+                        class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-2"
                         @click="selectLearner(learner)"
                     >
                         <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">

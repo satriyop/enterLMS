@@ -66,8 +66,8 @@ const coursesForSelector = computed(() =>
 <template>
     <div>
         <Label>Kursus Terpilih (Seret untuk mengurutkan)</Label>
-        <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <div v-if="courses.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-4">
+        <div class="border border-border rounded-lg p-4">
+            <div v-if="courses.length === 0" class="text-muted-foreground text-center py-4">
                 Belum ada kursus yang dipilih
             </div>
             <Draggable
@@ -77,10 +77,10 @@ const coursesForSelector = computed(() =>
                 class="space-y-4"
             >
                 <template #item="{ element, index }">
-                    <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+                    <div class="border border-border rounded-lg p-4 bg-surface-2">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <h4 class="font-medium text-gray-900 dark:text-gray-100">
+                                <h4 class="font-medium text-foreground">
                                     {{ index + 1 }}. {{ element.title }}
                                 </h4>
                                 <div class="mt-2 space-y-2">
@@ -114,7 +114,7 @@ const coursesForSelector = computed(() =>
                             </div>
                             <button
                                 type="button"
-                                class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
+                                class="text-danger hover:opacity-80"
                                 @click="emit('remove', element)"
                             >
                                 Hapus

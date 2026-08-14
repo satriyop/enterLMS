@@ -110,7 +110,7 @@ const handleMediaPause = () => {
 <template>
     <div
         class="lesson-content-router shrink-0 flex items-center justify-center"
-        :class="needsDarkBackground ? 'bg-black' : 'bg-muted/30'"
+        :class="needsDarkBackground ? 'bg-black' : 'bg-surface-2/30'"
     >
         <!-- YouTube Content -->
         <div v-if="contentType === 'youtube' && youtubeVideoId" class="w-full aspect-video max-h-[70vh]">

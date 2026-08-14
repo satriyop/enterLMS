@@ -81,7 +81,7 @@ defineEmits<{
                         Unduh Berkas Jawaban
                     </a>
                 </div>
-                <div v-else class="rounded-lg border p-3 bg-muted/50">
+                <div v-else class="rounded-lg border p-3 bg-surface-2">
                     <p>{{ answer.answer_text || 'Tidak ada jawaban' }}</p>
                 </div>
             </div>
@@ -115,7 +115,7 @@ defineEmits<{
                                 :name="`answers[${index}][is_correct]`"
                                 class="h-4 w-4"
                             />
-                            <Check class="h-4 w-4 text-green-600" />
+                            <Check class="h-4 w-4 text-ok" />
                             Benar
                         </Label>
                         <Label class="flex items-center gap-2 cursor-pointer">
@@ -126,7 +126,7 @@ defineEmits<{
                                 :name="`answers[${index}][is_correct]`"
                                 class="h-4 w-4"
                             />
-                            <X class="h-4 w-4 text-red-600" />
+                            <X class="h-4 w-4 text-danger" />
                             Salah
                         </Label>
                     </div>

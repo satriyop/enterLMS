@@ -203,13 +203,13 @@ const readinessGaps = computed(() => {
             <Alert
                 v-if="hasActiveEnrollments && course.status === 'published'"
                 variant="destructive"
-                class="border-yellow-500 bg-yellow-50 dark:bg-yellow-950"
+                class="border-warn bg-warn-soft"
             >
-                <AlertTriangle class="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-                <AlertTitle class="text-yellow-800 dark:text-yellow-200">
+                <AlertTriangle class="h-4 w-4 text-warn" />
+                <AlertTitle class="text-warn">
                     Perhatian: {{ activeEnrollmentsCount }} Peserta Aktif
                 </AlertTitle>
-                <AlertDescription class="text-yellow-700 dark:text-yellow-300">
+                <AlertDescription class="text-warn">
                     Kursus ini memiliki {{ activeEnrollmentsCount }} peserta yang sedang aktif belajar.
                     Perubahan pada konten akan langsung terlihat oleh mereka.
                     Hindari menghapus materi yang sedang dipelajari.
@@ -220,18 +220,14 @@ const readinessGaps = computed(() => {
             <div class="flex gap-2 border-b">
                 <button
                     class="px-4 py-2 text-sm font-medium transition-colors"
-                    :class="activeTab === 'outline'
-                        ? 'border-b-2 border-primary text-primary'
-                        : 'text-muted-foreground hover:text-foreground'"
+                    :class="activeTab === 'outline' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'"
                     @click="activeTab = 'outline'"
                 >
                     Outline Kursus
                 </button>
                 <button
                     class="px-4 py-2 text-sm font-medium transition-colors"
-                    :class="activeTab === 'info'
-                        ? 'border-b-2 border-primary text-primary'
-                        : 'text-muted-foreground hover:text-foreground'"
+                    :class="activeTab === 'info' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'"
                     @click="activeTab = 'info'"
                 >
                     Informasi Kursus

@@ -26,7 +26,7 @@ defineProps<Props>();
 </script>
 
 <template>
-    <div class="sticky bottom-4 flex gap-3 rounded-xl border bg-card p-4 shadow-lg">
+    <div class="sticky bottom-4 flex gap-3 rounded-xl border border-border bg-surface p-4 shadow-lg">
         <Link :href="cancelHref" class="flex-1">
             <Button type="button" variant="outline" class="w-full h-11">
                 Batal

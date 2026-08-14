@@ -93,8 +93,8 @@ const getInitials = (name: string) => {
                                 class="h-4 w-4"
                                 :class="
                                     i <= testimonial.rating
-                                        ? 'fill-amber-400 text-amber-400'
-                                        : 'fill-muted text-muted'
+                                        ? 'fill-gold text-gold'
+                                        : 'fill-surface-3 text-subtle'
                                 "
                             />
                         </div>

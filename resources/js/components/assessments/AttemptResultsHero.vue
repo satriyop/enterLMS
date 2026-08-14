@@ -54,13 +54,13 @@ const formatDateTime = (date: string): string => {
             <div class="flex flex-col items-center justify-center gap-4 py-8">
                 <div
                     class="flex h-20 w-20 items-center justify-center rounded-full"
-                    :class="passed ? 'bg-green-100' : 'bg-red-100'"
+                    :class="passed ? 'bg-ok-soft' : 'bg-danger-soft'"
                 >
-                    <Trophy v-if="passed" class="h-12 w-12 text-green-600" />
-                    <AlertTriangle v-else class="h-12 w-12 text-red-600" />
+                    <Trophy v-if="passed" class="h-12 w-12 text-ok" />
+                    <AlertTriangle v-else class="h-12 w-12 text-danger" />
                 </div>
 
-                <h2 class="text-2xl font-bold" :class="passed ? 'text-green-600' : 'text-red-600'">
+                <h2 class="text-2xl font-bold" :class="passed ? 'text-ok' : 'text-danger'">
                     {{ passed ? 'Selamat! Anda Lulus!' : 'Anda Belum Lulus' }}
                 </h2>
 
@@ -85,7 +85,7 @@ const formatDateTime = (date: string): string => {
             <div class="grid gap-6 md:grid-cols-2">
                 <div class="text-center">
                     <p class="text-sm text-muted-foreground mb-1">Jawaban Benar</p>
-                    <p class="text-2xl font-bold text-green-600">{{ correctAnswers }} / {{ totalQuestions }}</p>
+                    <p class="text-2xl font-bold text-ok">{{ correctAnswers }} / {{ totalQuestions }}</p>
                 </div>
                 <div class="text-center">
                     <p class="text-sm text-muted-foreground mb-1">Nilai Kelulusan</p>
@@ -117,7 +117,7 @@ const formatDateTime = (date: string): string => {
             <!-- Feedback -->
             <div v-if="feedback" class="space-y-2">
                 <p class="text-sm text-muted-foreground">Umpan Balik</p>
-                <div class="rounded-lg border p-3 bg-muted/50">
+                <div class="rounded-lg border p-3 bg-surface-2">
                     <p class="whitespace-pre-wrap">{{ feedback }}</p>
                 </div>
             </div>

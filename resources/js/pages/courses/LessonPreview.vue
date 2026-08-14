@@ -173,7 +173,7 @@ const lessonTypeLabel = (type: string) => {
 <template>
     <Head :title="`Preview: ${lesson.title}`" />
 
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen">
         <Navbar :app-name="appName" />
 
         <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
@@ -205,7 +205,7 @@ const lessonTypeLabel = (type: string) => {
                                 <component :is="lessonTypeIcon(lesson.content_type)" class="h-3 w-3" />
                                 {{ lessonTypeLabel(lesson.content_type) }}
                             </Badge>
-                            <Badge class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 gap-1">
+                            <Badge class="bg-ok-soft text-ok gap-1">
                                 <Eye class="h-3 w-3" />
                                 Preview
                             </Badge>

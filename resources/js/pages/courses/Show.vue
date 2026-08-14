@@ -189,7 +189,7 @@ const tabs = computed(() => {
                                         :key="idx"
                                         class="flex items-start gap-3"
                                     >
-                                        <CheckCircle class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+                                        <CheckCircle class="mt-0.5 h-5 w-5 shrink-0 text-ok" />
                                         <span class="text-muted-foreground">{{ objective }}</span>
                                     </div>
                                 </div>

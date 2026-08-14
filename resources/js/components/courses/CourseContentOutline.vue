@@ -132,7 +132,7 @@ onMounted(() => {
                     <button
                         type="button"
                         @click="toggleSection(section.id)"
-                        class="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-muted/50 transition-colors"
+                        class="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-surface-2/50 transition-colors"
                     >
                         <div class="flex items-center gap-2">
                             <ChevronDown
@@ -150,7 +150,7 @@ onMounted(() => {
                     <!-- Section Lessons -->
                     <div
                         v-if="isSectionExpanded(section.id)"
-                        class="border-t bg-muted/30"
+                        class="border-t bg-surface-2/30"
                     >
                         <template v-for="lesson in section.lessons" :key="lesson.id">
                             <!-- Enrolled users can click any lesson -->
@@ -189,7 +189,7 @@ onMounted(() => {
                                     </p>
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <Badge class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 gap-1">
+                                    <Badge class="bg-info-soft text-info gap-1">
                                         <Eye class="h-3 w-3" />
                                         Preview
                                     </Badge>

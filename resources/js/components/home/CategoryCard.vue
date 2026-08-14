@@ -53,7 +53,7 @@ const categoryHref = computed(() => {
 <template>
     <Link
         :href="categoryHref"
-        class="group flex flex-col items-center rounded-xl border bg-card p-6 text-center transition-all hover:border-primary hover:shadow-md dark:border-border"
+        class="group flex flex-col items-center rounded-xl border bg-surface p-6 text-center transition-all hover:border-primary hover:shadow-md"
     >
         <div
             class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"

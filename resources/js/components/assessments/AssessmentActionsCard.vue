@@ -70,7 +70,7 @@ const handleDelete = () => {
         </CardHeader>
         <CardContent class="space-y-3">
             <Link v-if="can.attempt" :href="`/courses/${courseId}/assessments/${assessmentId}/start`" class="w-full block">
-                <Button class="w-full gap-2 bg-green-600 hover:bg-green-700">
+                <Button class="w-full gap-2 bg-ok text-white hover:bg-ok/90">
                     <PlayCircle class="h-4 w-4" />
                     Mulai Penilaian
                 </Button>
@@ -93,7 +93,7 @@ const handleDelete = () => {
             <Button
                 v-if="can.publish && status === 'draft'"
                 type="button"
-                class="w-full gap-2 bg-blue-600 hover:bg-blue-700"
+                class="w-full gap-2"
                 @click="handlePublish"
             >
                 <Archive class="h-4 w-4" />
@@ -103,7 +103,8 @@ const handleDelete = () => {
             <Button
                 v-if="can.publish && status === 'published'"
                 type="button"
-                class="w-full gap-2 bg-yellow-600 hover:bg-yellow-700"
+                variant="outline"
+                class="w-full gap-2 text-warn"
                 @click="handleUnpublish"
             >
                 <Archive class="h-4 w-4" />

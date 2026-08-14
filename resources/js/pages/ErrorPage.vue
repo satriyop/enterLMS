@@ -32,7 +32,7 @@ const goBack = () => window.history.back();
 <template>
     <Head :title="`${status} - ${title}`" />
 
-    <div class="flex min-h-svh flex-col items-center justify-center bg-background px-4">
+    <div class="flex min-h-svh flex-col items-center justify-center px-4">
         <div class="flex flex-col items-center gap-6 text-center">
             <AppLogoIcon class="size-12 fill-current text-muted-foreground" />
 
@@ -51,7 +51,7 @@ const goBack = () => window.history.back();
                 </a>
                 <button
                     type="button"
-                    class="inline-flex items-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent"
+                    class="inline-flex items-center rounded-md border border-input bg-surface px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-primary-soft"
                     @click="goBack"
                 >
                     Kembali

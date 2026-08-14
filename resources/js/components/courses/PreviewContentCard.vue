@@ -128,7 +128,7 @@ const getDocumentType = (mimeType: string): string => {
             </div>
 
             <!-- Video Placeholder -->
-            <div v-else-if="contentType === 'video'" class="aspect-video w-full rounded-lg bg-muted flex items-center justify-center">
+            <div v-else-if="contentType === 'video'" class="aspect-video w-full rounded-lg bg-surface-2 flex items-center justify-center">
                 <div class="text-center text-muted-foreground">
                     <PlayCircle class="h-16 w-16 mx-auto mb-2" />
                     <p>Video belum tersedia</p>
@@ -170,7 +170,7 @@ const getDocumentType = (mimeType: string): string => {
             </div>
 
             <!-- Audio Placeholder -->
-            <div v-else-if="contentType === 'audio'" class="p-8 rounded-lg bg-muted flex items-center justify-center">
+            <div v-else-if="contentType === 'audio'" class="p-8 rounded-lg bg-surface-2 flex items-center justify-center">
                 <div class="text-center text-muted-foreground">
                     <Headphones class="h-16 w-16 mx-auto mb-2" />
                     <p>Audio belum tersedia</p>
@@ -189,7 +189,7 @@ const getDocumentType = (mimeType: string): string => {
                 </div>
 
                 <!-- Other Documents -->
-                <div v-else class="rounded-xl border bg-muted/20 p-8">
+                <div v-else class="rounded-xl border bg-surface-2/20 p-8">
                     <div class="flex flex-col items-center gap-4 text-center">
                         <div class="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                             <FileDown class="h-10 w-10" />
@@ -211,7 +211,7 @@ const getDocumentType = (mimeType: string): string => {
             </div>
 
             <!-- Document Placeholder -->
-            <div v-else-if="contentType === 'document'" class="p-8 rounded-lg bg-muted flex items-center justify-center">
+            <div v-else-if="contentType === 'document'" class="p-8 rounded-lg bg-surface-2 flex items-center justify-center">
                 <div class="text-center text-muted-foreground">
                     <FileDown class="h-16 w-16 mx-auto mb-2" />
                     <p>Dokumen belum tersedia</p>
@@ -219,7 +219,7 @@ const getDocumentType = (mimeType: string): string => {
             </div>
 
             <!-- Conference -->
-            <div v-else-if="contentType === 'conference'" class="p-8 rounded-lg bg-muted flex items-center justify-center">
+            <div v-else-if="contentType === 'conference'" class="p-8 rounded-lg bg-surface-2 flex items-center justify-center">
                 <div class="text-center text-muted-foreground">
                     <Users class="h-16 w-16 mx-auto mb-2" />
                     <p>Informasi konferensi akan ditampilkan setelah Anda terdaftar</p>
@@ -227,7 +227,7 @@ const getDocumentType = (mimeType: string): string => {
             </div>
 
             <!-- Fallback -->
-            <div v-else class="p-8 rounded-lg bg-muted flex items-center justify-center">
+            <div v-else class="p-8 rounded-lg bg-surface-2 flex items-center justify-center">
                 <div class="text-center text-muted-foreground">
                     <BookOpen class="h-16 w-16 mx-auto mb-2" />
                     <p>Konten tidak tersedia untuk preview</p>

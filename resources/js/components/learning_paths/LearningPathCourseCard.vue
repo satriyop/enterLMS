@@ -52,7 +52,7 @@ const getProgress = () => {
 </script>
 
 <template>
-    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+    <div class="border border-border rounded-lg p-4">
         <div class="flex justify-between items-start mb-3">
             <h4 class="text-lg font-medium">
                 {{ index + 1 }}. {{ course.title }}
@@ -68,9 +68,9 @@ const getProgress = () => {
         </div>
 
         <div class="mb-3">
-            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div class="w-full bg-surface-2 rounded-full h-2.5">
                 <div
-                    class="bg-blue-600 h-2.5 rounded-full"
+                    class="bg-primary h-2.5 rounded-full"
                     :style="{ width: getProgress() + '%' }"
                 ></div>
             </div>

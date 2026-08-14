@@ -113,14 +113,14 @@ const nextSlide = (total: number) => {
         <!-- Carousel Controls -->
         <button
             v-if="courses.length > 1"
-            class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-lg hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
+            class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-surface/80 p-2 shadow-lg hover:bg-surface"
             @click="prevSlide(courses.length)"
         >
             <ChevronLeft class="h-5 w-5" />
         </button>
         <button
             v-if="courses.length > 1"
-            class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-lg hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
+            class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-surface/80 p-2 shadow-lg hover:bg-surface"
             @click="nextSlide(courses.length)"
         >
             <ChevronRight class="h-5 w-5" />

@@ -164,7 +164,7 @@ onMounted(() => {
 <template>
     <aside
         v-if="visible"
-        class="w-80 border-l flex flex-col shrink-0 bg-background absolute lg:relative right-0 top-0 bottom-0 z-10 lg:z-auto shadow-lg lg:shadow-none h-full"
+        class="w-80 border-l flex flex-col shrink-0 bg-surface absolute lg:relative right-0 top-0 bottom-0 z-10 lg:z-auto shadow-lg lg:shadow-none h-full"
     >
         <!-- Header -->
         <div class="p-4 border-b flex items-center justify-between shrink-0">
@@ -191,7 +191,7 @@ onMounted(() => {
                 <button
                     type="button"
                     @click="toggleSection(section.id)"
-                    class="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-muted/50 transition-colors"
+                    class="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-surface-2/50 transition-colors"
                 >
                     <div class="flex items-center gap-2 min-w-0">
                         <ChevronDown
@@ -209,20 +209,20 @@ onMounted(() => {
                 <!-- Section Lessons -->
                 <div
                     v-if="isSectionExpanded(section.id)"
-                    class="bg-muted/30"
+                    class="bg-surface-2/30"
                 >
                     <Link
                         v-for="lesson in section.lessons"
                         :key="lesson.id"
                         :href="`/courses/${courseId}/lessons/${lesson.id}`"
-                        class="flex items-center gap-3 px-4 py-2.5 border-t hover:bg-muted/50 transition-colors"
+                        class="flex items-center gap-3 px-4 py-2.5 border-t hover:bg-surface-2/50 transition-colors"
                         :class="{ 'bg-primary/10': isCurrentLesson(lesson.id) }"
                     >
                         <component
                             :is="getLessonIcon(lesson.content_type)"
                             class="h-4 w-4 shrink-0"
                             :class="{
-                                'text-green-500': isLessonCompleted(lesson.id),
+                                'text-ok': isLessonCompleted(lesson.id),
                                 'text-primary': !isLessonCompleted(lesson.id) && isCurrentLesson(lesson.id),
                                 'text-muted-foreground/50': !isLessonCompleted(lesson.id) && !isCurrentLesson(lesson.id),
                             }"
@@ -246,7 +246,7 @@ onMounted(() => {
         </div>
 
         <!-- Progress Footer -->
-        <div v-if="enrollment" class="p-4 border-t bg-muted/30 shrink-0">
+        <div v-if="enrollment" class="p-4 border-t bg-surface-2/30 shrink-0">
             <div class="flex items-center justify-between text-sm mb-2">
                 <span class="text-muted-foreground">Progress Kursus</span>
                 <span class="font-medium">{{ progressPercentage }}%</span>

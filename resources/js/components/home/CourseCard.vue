@@ -78,9 +78,9 @@ const courseHref = computed(() => {
 <template>
     <Link
         :href="courseHref"
-        class="group flex flex-col overflow-hidden rounded-lg border bg-card transition-all hover:shadow-lg dark:border-border"
+        class="group flex flex-col overflow-hidden rounded-lg border bg-surface transition-all hover:shadow-lg"
     >
-        <div class="relative aspect-video w-full overflow-hidden bg-muted">
+        <div class="relative aspect-video w-full overflow-hidden bg-surface-3">
             <img
                 v-if="thumbnailUrl"
                 :src="thumbnailUrl"
@@ -102,7 +102,7 @@ const courseHref = computed(() => {
                 </Badge>
                 <Badge
                     v-if="isNew"
-                    class="bg-emerald-500 text-white hover:bg-emerald-500"
+                    class="bg-ok text-white hover:bg-ok"
                 >
                     Baru
                 </Badge>
@@ -128,7 +128,7 @@ const courseHref = computed(() => {
             </p>
 
             <div v-if="rating > 0" class="mb-2 flex items-center gap-1">
-                <span class="text-sm font-bold text-amber-600 dark:text-amber-500">
+                <span class="text-sm font-bold text-gold">
                     {{ rating.toFixed(1) }}
                 </span>
                 <div class="flex items-center">
@@ -138,8 +138,8 @@ const courseHref = computed(() => {
                         class="h-3.5 w-3.5"
                         :class="
                             i <= Math.round(rating)
-                                ? 'fill-amber-400 text-amber-400'
-                                : 'fill-muted text-muted'
+                                ? 'fill-gold text-gold'
+                                : 'fill-surface-3 text-subtle'
                         "
                     />
                 </div>

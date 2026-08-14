@@ -49,32 +49,35 @@ const getStatusIcon = (status: CourseProgressStatus) => {
 
 const getStatusColor = (status: CourseProgressStatus) => {
     const colors: Record<CourseProgressStatus, { bg: string; border: string; icon: string }> = {
+        // Earned path-course completion is gold (ADR 007).
         completed: {
-            bg: 'bg-green-100 dark:bg-green-900',
-            border: 'border-green-500',
-            icon: 'text-green-600 dark:text-green-400',
+            bg: 'bg-gold-soft',
+            border: 'border-gold',
+            icon: 'text-gold',
         },
+        // Live / not finished → info.
         in_progress: {
-            bg: 'bg-yellow-100 dark:bg-yellow-900',
-            border: 'border-yellow-500',
-            icon: 'text-yellow-600 dark:text-yellow-400',
+            bg: 'bg-info-soft',
+            border: 'border-info',
+            icon: 'text-info',
         },
         available: {
-            bg: 'bg-blue-100 dark:bg-blue-900',
-            border: 'border-blue-500',
-            icon: 'text-blue-600 dark:text-blue-400',
+            bg: 'bg-info-soft',
+            border: 'border-info',
+            icon: 'text-info',
         },
+        // Locked / inert → neutral.
         locked: {
-            bg: 'bg-gray-100 dark:bg-gray-800',
-            border: 'border-gray-300 dark:border-gray-600',
-            icon: 'text-gray-400 dark:text-gray-500',
+            bg: 'bg-surface-2',
+            border: 'border-border',
+            icon: 'text-muted-foreground',
         },
     };
     return colors[status];
 };
 
 const getLineColor = (status: CourseProgressStatus) => {
-    return status === 'completed' ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700';
+    return status === 'completed' ? 'bg-gold' : 'bg-surface-3';
 };
 
 const getActionLabel = (status: CourseProgressStatus) => {

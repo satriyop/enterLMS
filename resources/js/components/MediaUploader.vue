@@ -266,7 +266,7 @@ const primaryMedia = computed(() => localMedia.value[0] ?? null);
             </div>
 
             <!-- Audio Preview -->
-            <div v-else-if="primaryMedia.is_audio" class="rounded-xl bg-muted/30 p-6">
+            <div v-else-if="primaryMedia.is_audio" class="rounded-xl bg-surface-2/30 p-6">
                 <div class="flex items-center gap-4">
                     <button
                         type="button"
@@ -292,7 +292,7 @@ const primaryMedia = computed(() => localMedia.value[0] ?? null);
             </div>
 
             <!-- Document Preview -->
-            <div v-else-if="primaryMedia.is_document" class="rounded-xl border bg-muted/20 p-6">
+            <div v-else-if="primaryMedia.is_document" class="rounded-xl border bg-surface-2/20 p-6">
                 <div class="flex items-center gap-4">
                     <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
                         <FileIcon class="h-7 w-7" />
@@ -312,8 +312,8 @@ const primaryMedia = computed(() => localMedia.value[0] ?? null);
             </div>
 
             <!-- Media Info & Delete -->
-            <div class="flex items-center justify-between rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-3">
-                <div class="flex items-center gap-2 text-green-700 dark:text-green-300">
+            <div class="flex items-center justify-between rounded-lg border border-ok/20 bg-ok-soft p-3">
+                <div class="flex items-center gap-2 text-ok">
                     <CheckCircle class="h-4 w-4" />
                     <span class="text-sm">File berhasil diunggah</span>
                 </div>
@@ -336,7 +336,7 @@ const primaryMedia = computed(() => localMedia.value[0] ?? null);
             class="relative rounded-xl border-2 border-dashed p-10 text-center transition-all"
             :class="{
                 'border-primary bg-primary/5': isDragging,
-                'border-muted-foreground/25 bg-muted/20 hover:border-primary/50 hover:bg-muted/30': !isDragging && !isUploading,
+                'border-muted-foreground/25 bg-surface-2/20 hover:border-primary/50 hover:bg-surface-2/30': !isDragging && !isUploading,
                 'border-primary/50 bg-primary/5': isUploading,
             }"
             @dragover="handleDragOver"
@@ -365,7 +365,7 @@ const primaryMedia = computed(() => localMedia.value[0] ?? null);
 
             <!-- Default State -->
             <div v-else>
-                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-surface-2">
                     <component :is="iconComponent" class="h-8 w-8 text-muted-foreground" />
                 </div>
                 <h3 class="mt-5 font-semibold">

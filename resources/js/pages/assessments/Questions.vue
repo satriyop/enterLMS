@@ -221,7 +221,7 @@ const moveQuestionDown = (index: number) => {
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="sticky bottom-4 flex gap-3 rounded-xl border bg-card p-4 shadow-lg">
+                        <div class="sticky bottom-4 flex gap-3 rounded-xl border bg-surface p-4 shadow-lg">
                             <input type="hidden" name="questions" :value="JSON.stringify(questions)" />
                             <Link :href="`/courses/${course.id}/assessments/${assessment.id}`" class="flex-1">
                                 <Button type="button" variant="outline" class="w-full h-11">

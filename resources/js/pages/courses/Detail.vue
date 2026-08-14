@@ -168,10 +168,10 @@ const firstLessonId = computed(() => {
             </nav>
 
             <!-- Under Revision Alert -->
-            <Alert v-if="isUnderRevision" variant="destructive" class="mb-6 border-yellow-500 bg-yellow-50 dark:bg-yellow-950">
-                <AlertTriangle class="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
-                <AlertTitle class="text-yellow-800 dark:text-yellow-200">Kursus Sedang Dalam Revisi</AlertTitle>
-                <AlertDescription class="text-yellow-700 dark:text-yellow-300">
+            <Alert v-if="isUnderRevision" variant="destructive" class="mb-6 border-warn bg-warn-soft">
+                <AlertTriangle class="h-5 w-5 text-warn" />
+                <AlertTitle class="text-warn">Kursus Sedang Dalam Revisi</AlertTitle>
+                <AlertDescription class="text-warn">
                     Kursus ini sedang dalam proses revisi oleh admin. Anda mungkin tidak dapat mengakses konten baru sampai revisi selesai dan kursus dipublikasikan kembali.
                     Progress pembelajaran Anda tetap tersimpan.
                 </AlertDescription>
@@ -195,7 +195,7 @@ const firstLessonId = computed(() => {
                     </div>
 
                     <!-- Thumbnail -->
-                    <div class="mb-6 aspect-video rounded-lg bg-muted overflow-hidden">
+                    <div class="mb-6 aspect-video rounded-lg bg-surface-2 overflow-hidden">
                         <img
                             v-if="course.thumbnail_path"
                             :src="`/storage/${course.thumbnail_path}`"

@@ -47,7 +47,7 @@ defineProps<Props>();
                 <CheckCircle class="h-5 w-5 text-muted-foreground" />
                 <div>
                     <p class="text-sm text-muted-foreground">Status</p>
-                    <p class="font-medium" :class="passed ? 'text-green-600' : 'text-red-600'">
+                    <p class="font-medium" :class="passed ? 'text-ok' : 'text-danger'">
                         {{ passed ? 'Lulus' : 'Tidak Lulus' }}
                     </p>
                 </div>

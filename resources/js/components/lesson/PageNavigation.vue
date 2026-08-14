@@ -90,7 +90,7 @@ const emit = defineEmits<{
                 <span>Progress halaman</span>
                 <span>{{ progressPercentage }}%</span>
             </div>
-            <div class="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+            <div class="h-1.5 w-full rounded-full bg-surface-2 overflow-hidden">
                 <div
                     class="h-full bg-primary rounded-full transition-all duration-300"
                     :style="{ width: `${progressPercentage}%` }"
@@ -101,11 +101,11 @@ const emit = defineEmits<{
         <!-- Keyboard shortcuts hint (desktop only) -->
         <div class="hidden sm:flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span class="flex items-center gap-1">
-                <kbd class="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">←</kbd>
+                <kbd class="px-1.5 py-0.5 bg-surface-2 rounded text-[10px] font-mono">←</kbd>
                 <span>Sebelumnya</span>
             </span>
             <span class="flex items-center gap-1">
-                <kbd class="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">→</kbd>
+                <kbd class="px-1.5 py-0.5 bg-surface-2 rounded text-[10px] font-mono">→</kbd>
                 <span>Selanjutnya</span>
             </span>
         </div>

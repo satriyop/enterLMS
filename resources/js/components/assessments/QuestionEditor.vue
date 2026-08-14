@@ -154,7 +154,7 @@ const hasOptions = props.question.question_type === 'multiple_choice' ||
                     :value="question.question_text"
                     @input="updateField('question_text', ($event.target as HTMLTextAreaElement).value)"
                     rows="3"
-                    class="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+                    class="flex w-full rounded-lg border border-input bg-surface px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
                 />
             </div>
 
@@ -175,7 +175,7 @@ const hasOptions = props.question.question_type === 'multiple_choice' ||
                     :value="question.feedback || ''"
                     @input="updateField('feedback', ($event.target as HTMLTextAreaElement).value || null)"
                     rows="2"
-                    class="flex w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+                    class="flex w-full rounded-lg border border-input bg-surface px-4 py-3 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="Umpan balik untuk pertanyaan ini"
                 />
             </div>

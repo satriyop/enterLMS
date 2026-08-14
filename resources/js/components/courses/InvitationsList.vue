@@ -51,7 +51,7 @@ const statusConfig = (status: Invitation['status']) => {
             return {
                 label: 'Diterima',
                 variant: 'default' as const,
-                class: 'bg-emerald-500 hover:bg-emerald-500',
+                class: 'bg-ok hover:bg-ok',
                 icon: CheckCircle,
             };
         case 'declined':
@@ -149,7 +149,7 @@ const sortedInvitations = computed(() => {
             <div
                 v-for="invitation in sortedInvitations"
                 :key="invitation.id"
-                class="rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50"
+                class="rounded-lg border border-border bg-surface p-4 transition-colors hover:bg-surface-2/50"
             >
                 <div class="flex items-start gap-4">
                     <Avatar class="h-10 w-10">
@@ -207,7 +207,7 @@ const sortedInvitations = computed(() => {
                                 <Calendar class="h-3.5 w-3.5" />
                                 <span
                                     :class="{
-                                        'text-amber-600 dark:text-amber-400':
+                                        'text-warn':
                                             isExpiringSoon(invitation.expires_at) &&
                                             !isExpired(invitation.expires_at),
                                         'text-destructive': isExpired(invitation.expires_at),
@@ -230,7 +230,7 @@ const sortedInvitations = computed(() => {
 
                         <div
                             v-if="isExpiringSoon(invitation.expires_at) && invitation.status === 'pending'"
-                            class="mt-3 flex items-start gap-2 rounded-md bg-amber-50 p-2 text-xs text-amber-800 dark:bg-amber-950/30 dark:text-amber-200"
+                            class="mt-3 flex items-start gap-2 rounded-md bg-warn-soft p-2 text-xs text-warn"
                         >
                             <AlertTriangle class="mt-0.5 h-3.5 w-3.5 shrink-0" />
                             <span>Undangan ini akan segera kedaluwarsa</span>
@@ -238,7 +238,7 @@ const sortedInvitations = computed(() => {
 
                         <div
                             v-if="invitation.message"
-                            class="mt-3 rounded-md bg-muted/50 p-3 text-sm"
+                            class="mt-3 rounded-md bg-surface-2/50 p-3 text-sm"
                         >
                             <p class="whitespace-pre-wrap text-muted-foreground">
                                 {{ invitation.message }}

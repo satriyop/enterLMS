@@ -68,7 +68,7 @@ const applyFilter = (status: string) => {
 <template>
     <Head title="Learning Path Saya" />
 
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen">
         <Navbar :app-name="appName" />
 
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -157,7 +157,7 @@ const applyFilter = (status: string) => {
                     <Link
                         v-if="link.url"
                         :href="link.url"
-                        class="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-muted"
+                        class="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-surface-2"
                         :class="{ 'bg-primary text-primary-foreground hover:bg-primary/90': link.active }"
                         v-html="link.label"
                         preserve-scroll

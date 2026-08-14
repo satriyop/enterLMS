@@ -43,7 +43,7 @@ const handleThumbnailChange = (event: Event) => {
     <FormSection title="Thumbnail">
         <div class="space-y-4">
             <div
-                class="relative aspect-video w-full overflow-hidden rounded-lg border-2 border-dashed bg-muted/30 transition-colors hover:border-primary/50"
+                class="relative aspect-video w-full overflow-hidden rounded-lg border-2 border-dashed bg-surface-2/30 transition-colors hover:border-primary/50"
             >
                 <img
                     v-if="thumbnailPreview"

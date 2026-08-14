@@ -66,7 +66,7 @@ const canRetry = computed(() => !props.passed && props.attemptNumber < props.max
                 <CheckCircle class="h-5 w-5 text-muted-foreground" />
                 <div>
                     <p class="text-sm text-muted-foreground">Status</p>
-                    <p class="font-medium" :class="passed ? 'text-green-600' : 'text-red-600'">
+                    <p class="font-medium" :class="passed ? 'text-ok' : 'text-danger'">
                         {{ passed ? 'Lulus' : 'Tidak Lulus' }}
                     </p>
                 </div>
@@ -97,7 +97,7 @@ const canRetry = computed(() => !props.passed && props.attemptNumber < props.max
             </Link>
 
             <Link v-if="canRetry" :href="`/courses/${courseId}/assessments/${assessmentId}/start`" class="w-full">
-                <Button class="w-full gap-2 bg-blue-600 hover:bg-blue-700">
+                <Button class="w-full gap-2">
                     <PlayCircle class="h-4 w-4" />
                     Coba Lagi
                 </Button>

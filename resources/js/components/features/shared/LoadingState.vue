@@ -86,7 +86,7 @@ const skeletonWidths = ['w-full', 'w-5/6', 'w-4/5', 'w-3/4', 'w-2/3'];
             v-for="i in lines"
             :key="i"
             :class="[
-                'h-4 rounded bg-muted',
+                'h-4 rounded bg-surface-2',
                 skeletonWidths[(i - 1) % skeletonWidths.length],
             ]"
         />

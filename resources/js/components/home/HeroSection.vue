@@ -27,7 +27,7 @@ const handleSearch = () => {
 
 <template>
     <section
-        class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+        class="relative overflow-hidden bg-primary"
     >
         <div
             class="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-10"
@@ -42,11 +42,11 @@ const handleSearch = () => {
         <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
             <div class="mx-auto max-w-3xl text-center">
                 <h1
-                    class="mb-6 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl"
+                    class="mb-6 text-4xl font-bold tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl"
                 >
                     {{ title }}
                 </h1>
-                <p class="mb-10 text-lg text-white/80 sm:text-xl">
+                <p class="mb-10 text-lg text-primary-foreground/80 sm:text-xl">
                     {{ subtitle }}
                 </p>
 
@@ -62,7 +62,7 @@ const handleSearch = () => {
                             v-model="searchQuery"
                             type="text"
                             placeholder="Cari kursus yang Anda inginkan..."
-                            class="h-12 bg-white pl-12 text-base shadow-lg dark:bg-slate-800"
+                            class="h-12 bg-surface pl-12 text-base shadow-lg"
                         />
                     </div>
                     <Button
@@ -74,28 +74,28 @@ const handleSearch = () => {
                     </Button>
                 </form>
 
-                <div class="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-white/70">
+                <div class="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-primary-foreground/70">
                     <span>Populer:</span>
                     <button
                         type="button"
-                        class="rounded-full border border-white/30 px-3 py-1 transition-colors hover:border-white hover:text-white"
-                        @click="searchQuery = 'Web Development'; handleSearch()"
+                        class="rounded-full border border-primary-foreground/30 px-3 py-1 transition-colors hover:border-primary-foreground hover:text-primary-foreground"
+                        @click="searchQuery = 'Agen AI'; handleSearch()"
                     >
-                        Web Development
+                        Agen AI
                     </button>
                     <button
                         type="button"
-                        class="rounded-full border border-white/30 px-3 py-1 transition-colors hover:border-white hover:text-white"
-                        @click="searchQuery = 'Data Science'; handleSearch()"
+                        class="rounded-full border border-primary-foreground/30 px-3 py-1 transition-colors hover:border-primary-foreground hover:text-primary-foreground"
+                        @click="searchQuery = 'OpenClaw'; handleSearch()"
                     >
-                        Data Science
+                        OpenClaw
                     </button>
                     <button
                         type="button"
-                        class="rounded-full border border-white/30 px-3 py-1 transition-colors hover:border-white hover:text-white"
-                        @click="searchQuery = 'Design'; handleSearch()"
+                        class="rounded-full border border-primary-foreground/30 px-3 py-1 transition-colors hover:border-primary-foreground hover:text-primary-foreground"
+                        @click="searchQuery = 'Enteraksi'; handleSearch()"
                     >
-                        Design
+                        Enteraksi
                     </button>
                 </div>
             </div>

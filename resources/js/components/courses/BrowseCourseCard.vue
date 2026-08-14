@@ -86,7 +86,7 @@ const ctaVariant = computed(() => {
 <template>
     <Card class="group overflow-hidden">
         <Link :href="`/courses/${course.id}`">
-            <div class="relative aspect-video bg-muted">
+            <div class="relative aspect-video bg-surface-2">
                 <img
                     v-if="course.thumbnail_path"
                     :src="`/storage/${course.thumbnail_path}`"
@@ -106,21 +106,21 @@ const ctaVariant = computed(() => {
                 <!-- Enrollment Status Badge -->
                 <Badge
                     v-if="isCompleted"
-                    class="absolute right-2 top-2 bg-amber-500 text-white"
+                    class="absolute right-2 top-2 bg-gold text-white"
                 >
                     <CheckCircle class="mr-1 h-3 w-3" />
                     Selesai
                 </Badge>
                 <Badge
                     v-else-if="isActive"
-                    class="absolute right-2 top-2 bg-green-500 text-white"
+                    class="absolute right-2 top-2 bg-info text-white"
                 >
                     <PlayCircle class="mr-1 h-3 w-3" />
                     Sedang Belajar
                 </Badge>
                 <Badge
                     v-else-if="isDropped"
-                    class="absolute right-2 top-2 bg-orange-500 text-white"
+                    class="absolute right-2 top-2 bg-danger text-white"
                 >
                     <RotateCcw class="mr-1 h-3 w-3" />
                     Dibatalkan

@@ -43,7 +43,7 @@ const getEstimatedDuration = () => {
 <template>
     <Card class="group overflow-hidden">
         <Link :href="`/learner/learning-paths/${learningPath.id}`">
-            <div class="relative aspect-video bg-muted">
+            <div class="relative aspect-video bg-surface-2">
                 <img
                     v-if="learningPath.thumbnail_url"
                     :src="learningPath.thumbnail_url"
@@ -61,7 +61,7 @@ const getEstimatedDuration = () => {
                 </Badge>
                 <Badge
                     v-if="isEnrolled"
-                    class="absolute right-2 top-2 bg-green-600 text-white hover:bg-green-600"
+                    class="absolute right-2 top-2 bg-info-soft text-info hover:bg-info-soft"
                 >
                     <CheckCircle class="mr-1 h-3 w-3" />
                     Sudah Terdaftar

@@ -17,7 +17,7 @@ const appName = computed(() => page.props.name || 'E-Learning');
 </script>
 
 <template>
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen">
         <Navbar :app-name="appName" :can-register="canRegister" />
 
         <slot />

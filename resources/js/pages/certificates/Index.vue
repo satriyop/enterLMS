@@ -82,21 +82,21 @@ const getStatusBadge = (status: string) => {
 <template>
     <Head title="Sertifikat Saya" />
 
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="min-h-screen bg-surface-2">
         <Navbar />
 
         <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Page Header -->
             <div class="mb-8">
                 <div class="flex items-center gap-3">
-                    <div class="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
-                        <Award class="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                    <div class="rounded-lg bg-gold-soft p-2">
+                        <Award class="h-6 w-6 text-gold" />
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        <h1 class="text-2xl font-bold text-foreground">
                             Sertifikat Saya
                         </h1>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                        <p class="text-sm text-muted-foreground">
                             Koleksi sertifikat yang telah Anda peroleh
                         </p>
                     </div>
@@ -125,7 +125,7 @@ const getStatusBadge = (status: string) => {
                     class="overflow-hidden transition-shadow hover:shadow-lg"
                 >
                     <!-- Certificate Header with gradient -->
-                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3">
+                    <div class="bg-gradient-to-r from-gold to-warn px-4 py-3">
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-2">
                                 <GraduationCap class="h-5 w-5 text-white" />
@@ -141,12 +141,12 @@ const getStatusBadge = (status: string) => {
 
                     <CardContent class="p-4">
                         <!-- Certificate Title -->
-                        <h3 class="mb-2 line-clamp-2 text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 class="mb-2 line-clamp-2 text-lg font-semibold text-foreground">
                             {{ certificate.certificable_title }}
                         </h3>
 
                         <!-- Certificate Details -->
-                        <div class="mb-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <div class="mb-4 space-y-2 text-sm text-muted-foreground">
                             <div class="flex items-center gap-2">
                                 <Calendar class="h-4 w-4" />
                                 <span>Diterbitkan: {{ formatDate(certificate.issued_at) }}</span>
@@ -189,10 +189,10 @@ const getStatusBadge = (status: string) => {
                         </div>
 
                         <!-- Verification Link -->
-                        <div class="mt-3 border-t pt-3 dark:border-gray-700">
+                        <div class="mt-3 border-t pt-3">
                             <Link
                                 :href="verify.url(certificate.verification_code)"
-                                class="flex items-center gap-1 text-xs text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400"
+                                class="flex items-center gap-1 text-xs text-muted-foreground hover:text-gold"
                             >
                                 <ExternalLink class="h-3 w-3" />
                                 Verifikasi sertifikat ini

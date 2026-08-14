@@ -42,7 +42,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <header class="h-14 border-b flex items-center px-4 shrink-0 bg-background">
+    <header class="h-14 border-b flex items-center px-4 shrink-0 bg-surface">
         <Link
             :href="`/courses/${courseId}`"
             class="flex items-center gap-2 text-foreground hover:text-primary transition-colors"

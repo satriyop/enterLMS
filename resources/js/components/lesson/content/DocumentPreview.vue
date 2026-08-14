@@ -27,7 +27,7 @@ const getDocumentType = (mimeType: string): string => {
 
 <template>
     <div class="min-h-[50vh] flex items-center justify-center">
-        <div class="rounded-xl border bg-muted/20 p-8 max-w-md">
+        <div class="rounded-xl border bg-surface-2/20 p-8 max-w-md">
             <div class="flex flex-col items-center gap-4 text-center">
                 <div class="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <FileDown class="h-10 w-10" />

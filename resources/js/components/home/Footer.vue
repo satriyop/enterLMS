@@ -21,7 +21,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
     appName: 'E-Learning',
-    description: 'Platform pembelajaran online terbaik untuk mengembangkan keterampilan Anda.',
+    description: 'Academy untuk menjalankan dan membangun keluarga produk AI. Bukan control plane.',
     sections: () => [
         {
             title: 'Platform',
@@ -56,7 +56,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <footer class="border-t bg-muted/30">
+    <footer class="border-t bg-surface-2">
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
                 <div class="lg:col-span-2">
@@ -65,7 +65,7 @@ withDefaults(defineProps<Props>(), {
                             class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary"
                         >
                             <AppLogoIcon
-                                class="h-5 w-5 fill-current text-white dark:text-black"
+                                class="h-5 w-5 fill-current text-primary-foreground"
                             />
                         </div>
                         <span class="text-xl font-bold text-foreground">

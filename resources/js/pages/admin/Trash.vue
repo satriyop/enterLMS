@@ -148,11 +148,11 @@ const deleteItem = async (group: TrashedGroup, item: TrashedItem) => {
                         <Badge variant="secondary" class="text-xs">{{ group.items.length }}</Badge>
                     </div>
 
-                    <div class="rounded-xl border bg-card">
+                    <div class="rounded-xl border bg-surface">
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead>
-                                    <tr class="border-b bg-muted/50">
+                                    <tr class="border-b bg-surface-2/50">
                                         <th class="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
                                             Nama
                                         </th>
@@ -171,7 +171,7 @@ const deleteItem = async (group: TrashedGroup, item: TrashedItem) => {
                                     <tr
                                         v-for="item in group.items"
                                         :key="item.id"
-                                        class="transition-colors hover:bg-muted/50"
+                                        class="transition-colors hover:bg-surface-2/50"
                                     >
                                         <td class="px-6 py-4">
                                             <div class="font-medium text-foreground">{{ item.title }}</div>

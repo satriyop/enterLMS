@@ -289,7 +289,7 @@ const recalculateDuration = () => {
             </div>
 
             <!-- Add Section Form -->
-            <div v-if="showAddSection" class="mb-4 rounded-lg border bg-muted/30 p-4">
+            <div v-if="showAddSection" class="mb-4 rounded-lg border border-border bg-surface-2/30 p-4">
                 <h4 class="mb-3 font-medium">Bagian Baru</h4>
                 <form @submit.prevent="submitNewSection" class="space-y-3">
                     <div>
@@ -342,7 +342,7 @@ const recalculateDuration = () => {
                 class="space-y-3"
             >
                 <template #item="{ element: section }">
-                    <div class="rounded-lg border bg-card">
+                    <div class="rounded-lg border border-border bg-surface">
                         <!-- Section Header -->
                         <div class="flex items-center gap-2 p-3">
                             <button
@@ -420,7 +420,7 @@ const recalculateDuration = () => {
                         <!-- Lessons List -->
                         <div
                             v-if="expandedSections.includes(section.id)"
-                            class="border-t bg-muted/20"
+                            class="border-t bg-surface-2/20"
                         >
                             <draggable
                                 v-model="section.lessons"
@@ -431,7 +431,7 @@ const recalculateDuration = () => {
                                 class="divide-y"
                             >
                                 <template #item="{ element: lesson }">
-                                    <div class="flex items-center gap-2 px-3 py-2 hover:bg-muted/50">
+                                    <div class="flex items-center gap-2 px-3 py-2 hover:bg-surface-2/50">
                                         <button
                                             v-if="editable"
                                             class="lesson-handle cursor-grab p-1 text-muted-foreground hover:text-foreground"

@@ -50,8 +50,8 @@ const contentTypes: ContentTypeOption[] = [
         <label
             v-for="type in contentTypes"
             :key="type.value"
-            class="group relative flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 p-5 transition-all hover:border-primary/50 hover:bg-muted/30"
-            :class="modelValue === type.value ? 'border-primary bg-primary/5 shadow-sm' : 'border-transparent bg-muted/20'"
+            class="group relative flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 p-5 transition-all hover:border-primary/50 hover:bg-surface-2/30"
+            :class="modelValue === type.value ? 'border-primary bg-primary/5 shadow-sm' : 'border-transparent bg-surface-2/20'"
         >
             <input
                 type="radio"
@@ -63,7 +63,7 @@ const contentTypes: ContentTypeOption[] = [
                 class="flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
                 :class="modelValue === type.value
                     ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'"
+                    : 'bg-surface-2 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'"
             >
                 <component :is="type.icon" class="h-6 w-6" />
             </div>

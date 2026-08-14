@@ -158,12 +158,7 @@ const filterByStatus = (status: string | null) => {
                         :key="filter.key || 'all'"
                         type="button"
                         @click="filterByStatus(filter.key)"
-                        :class="[
-                            'flex items-center gap-2 whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium transition-colors',
-                            currentStatus === filter.key
-                                ? 'border-primary text-primary'
-                                : 'border-transparent text-muted-foreground hover:border-muted-foreground hover:text-foreground',
-                        ]"
+                        :class="[ 'flex items-center gap-2 whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium transition-colors', currentStatus === filter.key ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:border-muted-foreground hover:text-foreground', ]"
                     >
                         {{ filter.label }}
                         <Badge
@@ -206,14 +201,7 @@ const filterByStatus = (status: string | null) => {
                         v-for="(link, index) in enrollments.links"
                         :key="index"
                         :href="link.url || '#'"
-                        :class="[
-                            'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
-                            link.active
-                                ? 'bg-primary text-primary-foreground'
-                                : link.url
-                                  ? 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                                  : 'cursor-not-allowed opacity-50',
-                        ]"
+                        :class="[ 'rounded-lg px-4 py-2 text-sm font-medium transition-colors', link.active ? 'bg-primary text-primary-foreground' : link.url ? 'bg-surface-2 text-muted-foreground hover:bg-surface-2/80 hover:text-foreground' : 'cursor-not-allowed opacity-50', ]"
                         :preserve-state="true"
                         :preserve-scroll="true"
                         v-html="link.label"

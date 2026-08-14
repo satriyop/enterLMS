@@ -25,7 +25,7 @@ describe('FlashMessages.vue', () => {
         const wrapper = mount(FlashMessages);
 
         expect(wrapper.text()).toContain('Operation successful!');
-        expect(wrapper.find('.bg-green-50').exists()).toBe(true);
+        expect(wrapper.find('.bg-ok-soft').exists()).toBe(true);
     });
 
     it('renders error message when present in flash props', () => {
@@ -40,7 +40,7 @@ describe('FlashMessages.vue', () => {
         const wrapper = mount(FlashMessages);
 
         expect(wrapper.text()).toContain('Something went wrong.');
-        expect(wrapper.find('.bg-red-50').exists()).toBe(true);
+        expect(wrapper.find('.bg-danger-soft').exists()).toBe(true);
     });
 
     it('renders both messages when both are present', () => {

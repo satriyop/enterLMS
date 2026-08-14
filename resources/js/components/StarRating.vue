@@ -70,15 +70,15 @@ function selectRating(value: number) {
                 :class="[
                     sizeClasses,
                     i <= currentRating
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'fill-muted text-muted',
-                    !readonly && 'hover:fill-amber-300 hover:text-amber-300',
+                        ? 'fill-gold text-gold'
+                        : 'fill-surface-3 text-subtle',
+                    !readonly && 'hover:fill-gold/80 hover:text-gold/80',
                 ]"
             />
         </button>
         <span
             v-if="showValue && currentRating > 0"
-            :class="['ml-1 font-semibold text-amber-600 dark:text-amber-500', textSizeClass]"
+            :class="['ml-1 font-semibold text-gold', textSizeClass]"
         >
             {{ currentRating.toFixed(1) }}
         </span>

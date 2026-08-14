@@ -112,10 +112,10 @@ const getCourseStatusIcon = (status: CourseProgressStatus | null) => {
 
 const getCourseStatusColor = (status: CourseProgressStatus | null) => {
     const colors: Record<CourseProgressStatus, string> = {
-        locked: 'text-gray-400',
-        available: 'text-blue-500',
-        in_progress: 'text-yellow-500',
-        completed: 'text-green-500',
+        locked: 'text-subtle',
+        available: 'text-info',
+        in_progress: 'text-warn',
+        completed: 'text-gold',
     };
     return status ? colors[status] : 'text-muted-foreground';
 };
@@ -139,15 +139,15 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
 <template>
     <Head :title="learningPath.title" />
 
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen">
         <Navbar :app-name="appName" />
 
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <FlashMessages />
 
             <!-- Enrollment error -->
-            <div v-if="enrollError" class="mb-4 rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-                <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ enrollError }}</p>
+            <div v-if="enrollError" class="mb-4 rounded-md bg-danger-soft p-4">
+                <p class="text-sm font-medium text-danger">{{ enrollError }}</p>
             </div>
 
             <!-- Breadcrumb -->
@@ -176,11 +176,11 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                             <Badge :class="getDifficultyColor(learningPath.difficulty_level)">
                                 {{ difficultyLabel(learningPath.difficulty_level) }}
                             </Badge>
-                            <Badge v-if="isCompleted" class="bg-green-600 text-white">
+                            <Badge v-if="isCompleted" class="bg-gold text-white">
                                 <CheckCircle class="mr-1 h-3 w-3" />
                                 Selesai
                             </Badge>
-                            <Badge v-else-if="isEnrolled" class="bg-blue-600 text-white">
+                            <Badge v-else-if="isEnrolled" class="bg-info text-white">
                                 Terdaftar
                             </Badge>
                         </div>
@@ -195,14 +195,14 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                     </div>
 
                     <!-- Thumbnail -->
-                    <div v-if="learningPath.thumbnail_url" class="aspect-video rounded-lg overflow-hidden bg-muted">
+                    <div v-if="learningPath.thumbnail_url" class="aspect-video rounded-lg overflow-hidden bg-surface-2">
                         <img
                             :src="learningPath.thumbnail_url"
                             :alt="learningPath.title"
                             class="w-full h-full object-cover"
                         />
                     </div>
-                    <div v-else class="aspect-video rounded-lg bg-muted flex items-center justify-center">
+                    <div v-else class="aspect-video rounded-lg bg-surface-2 flex items-center justify-center">
                         <Route class="h-24 w-24 text-muted-foreground" />
                     </div>
 
@@ -221,7 +221,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                     :key="index"
                                     class="flex items-start gap-2"
                                 >
-                                    <CheckCircle class="h-4 w-4 mt-1 text-green-500 shrink-0" />
+                                    <CheckCircle class="h-4 w-4 mt-1 text-ok shrink-0" />
                                     <span>{{ objective }}</span>
                                 </li>
                             </ul>
@@ -241,20 +241,17 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                                 <div
                                     v-for="(course, index) in learningPath.courses"
                                     :key="course.id"
-                                    class="flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors"
+                                    class="flex items-center gap-4 p-4 hover:bg-surface-2/50 transition-colors"
                                 >
                                     <!-- Course Number -->
-                                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-sm font-medium shrink-0">
+                                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-surface-2 text-sm font-medium shrink-0">
                                         {{ index + 1 }}
                                     </div>
 
                                     <!-- Course Status Icon -->
                                     <component
                                         :is="getCourseStatusIcon(getCourseStatus(course.course_id)?.status ?? null)"
-                                        :class="[
-                                            'h-5 w-5 shrink-0',
-                                            getCourseStatusColor(getCourseStatus(course.course_id)?.status ?? null)
-                                        ]"
+                                        :class="[ 'h-5 w-5 shrink-0', getCourseStatusColor(getCourseStatus(course.course_id)?.status ?? null) ]"
                                     />
 
                                     <!-- Course Info -->

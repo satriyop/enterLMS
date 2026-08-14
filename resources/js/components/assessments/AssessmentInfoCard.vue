@@ -59,7 +59,7 @@ defineProps<Props>();
 
             <div v-if="instructions" class="space-y-2">
                 <p class="text-sm text-muted-foreground">Instruksi</p>
-                <div class="rounded-lg border p-3 bg-muted/50">
+                <div class="rounded-lg border p-3 bg-surface-2">
                     <p class="whitespace-pre-wrap">{{ instructions }}</p>
                 </div>
             </div>

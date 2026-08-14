@@ -54,7 +54,7 @@ const props = defineProps<Props>();
 const statusConfig = computed(() => {
     switch (props.status) {
         case 'published':
-            return { label: 'Terbit', class: 'bg-emerald-500 hover:bg-emerald-500' };
+            return { label: 'Terbit', class: 'bg-ok hover:bg-ok' };
         case 'draft':
             return { label: 'Draft', class: '' };
         case 'archived':

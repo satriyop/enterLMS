@@ -215,12 +215,12 @@ const formatDate = (dateStr: string) => {
                 <Card>
                     <CardContent class="pt-6">
                         <div class="flex items-center gap-3">
-                            <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
-                                <Activity class="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                            <div class="rounded-lg bg-info-soft p-2">
+                                <Activity class="h-5 w-5 text-info" />
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Total Aktivitas</p>
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p class="text-sm text-muted-foreground">Total Aktivitas</p>
+                                <p class="text-2xl font-bold text-foreground">
                                     {{ summary.total_events.toLocaleString('id-ID') }}
                                 </p>
                             </div>
@@ -232,12 +232,12 @@ const formatDate = (dateStr: string) => {
                 <Card>
                     <CardContent class="pt-6">
                         <div class="flex items-center gap-3">
-                            <div class="rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
-                                <Users class="h-5 w-5 text-green-600 dark:text-green-400" />
+                            <div class="rounded-lg bg-ok-soft p-2">
+                                <Users class="h-5 w-5 text-ok" />
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Pengguna Aktif</p>
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p class="text-sm text-muted-foreground">Pengguna Aktif</p>
+                                <p class="text-2xl font-bold text-foreground">
                                     {{ summary.unique_users.toLocaleString('id-ID') }}
                                 </p>
                             </div>
@@ -250,26 +250,16 @@ const formatDate = (dateStr: string) => {
                     <CardContent class="pt-6">
                         <div class="flex items-center gap-3">
                             <div
-                                :class="[
-                                    'rounded-lg p-2',
-                                    enrollmentTrend >= 0
-                                        ? 'bg-emerald-100 dark:bg-emerald-900/30'
-                                        : 'bg-red-100 dark:bg-red-900/30',
-                                ]"
+                                :class="[ 'rounded-lg p-2', enrollmentTrend >= 0 ? 'bg-ok-soft' : 'bg-danger-soft', ]"
                             >
                                 <component
                                     :is="enrollmentTrend >= 0 ? TrendingUp : TrendingDown"
-                                    :class="[
-                                        'h-5 w-5',
-                                        enrollmentTrend >= 0
-                                            ? 'text-emerald-600 dark:text-emerald-400'
-                                            : 'text-red-600 dark:text-red-400',
-                                    ]"
+                                    :class="[ 'h-5 w-5', enrollmentTrend >= 0 ? 'text-ok' : 'text-danger', ]"
                                 />
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Tren Pendaftaran</p>
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p class="text-sm text-muted-foreground">Tren Pendaftaran</p>
+                                <p class="text-2xl font-bold text-foreground">
                                     {{ enrollmentTrend >= 0 ? '+' : '' }}{{ enrollmentTrend }}%
                                 </p>
                             </div>
@@ -281,12 +271,12 @@ const formatDate = (dateStr: string) => {
                 <Card>
                     <CardContent class="pt-6">
                         <div class="flex items-center gap-3">
-                            <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
-                                <Calendar class="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                            <div class="rounded-lg bg-primary-soft p-2">
+                                <Calendar class="h-5 w-5 text-primary" />
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Periode</p>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                <p class="text-sm text-muted-foreground">Periode</p>
+                                <p class="text-sm font-medium text-foreground">
                                     {{ formatDate(summary.date_range.start) }}
                                     <ArrowRight class="mx-1 inline h-3 w-3" />
                                     {{ formatDate(summary.date_range.end) }}
@@ -308,19 +298,19 @@ const formatDate = (dateStr: string) => {
                         <div
                             v-for="(count, category) in summary.events_by_category"
                             :key="category"
-                            class="flex items-center gap-3 rounded-lg border p-4 dark:border-gray-700"
+                            class="flex items-center gap-3 rounded-lg border p-4"
                         >
-                            <div class="rounded-lg bg-gray-100 p-2 dark:bg-gray-800">
+                            <div class="rounded-lg bg-surface-2 p-2">
                                 <component
                                     :is="categoryIcons[category] || Activity"
-                                    class="h-5 w-5 text-gray-600 dark:text-gray-400"
+                                    class="h-5 w-5 text-muted-foreground"
                                 />
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                <p class="text-sm text-muted-foreground">
                                     {{ categoryLabels[category] || category }}
                                 </p>
-                                <p class="text-xl font-semibold text-gray-900 dark:text-white">
+                                <p class="text-xl font-semibold text-foreground">
                                     {{ count.toLocaleString('id-ID') }}
                                 </p>
                             </div>
@@ -344,7 +334,7 @@ const formatDate = (dateStr: string) => {
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead>
-                                    <tr class="border-b bg-muted/50">
+                                    <tr class="border-b bg-surface-2/50">
                                         <th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Tanggal</th>
                                         <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Daftar</th>
                                         <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Selesai</th>
@@ -358,15 +348,15 @@ const formatDate = (dateStr: string) => {
                                             <Badge variant="secondary">{{ activity.enrollments }}</Badge>
                                         </td>
                                         <td class="px-4 py-3 text-right">
-                                            <Badge variant="default" class="bg-green-500">{{ activity.completions }}</Badge>
+                                            <Badge variant="default" class="bg-ok">{{ activity.completions }}</Badge>
                                         </td>
                                         <td class="px-4 py-3 text-right">
                                             <Badge v-if="activity.drops > 0" variant="destructive">{{ activity.drops }}</Badge>
-                                            <span v-else class="text-gray-400">-</span>
+                                            <span v-else class="text-muted-foreground">-</span>
                                         </td>
                                     </tr>
                                     <tr v-if="sortedEnrollmentActivity.length === 0">
-                                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                                        <td colspan="4" class="px-4 py-8 text-center text-muted-foreground">
                                             Tidak ada aktivitas pada periode ini
                                         </td>
                                     </tr>
@@ -389,7 +379,7 @@ const formatDate = (dateStr: string) => {
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead>
-                                    <tr class="border-b bg-muted/50">
+                                    <tr class="border-b bg-surface-2/50">
                                         <th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Tanggal</th>
                                         <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Mulai</th>
                                         <th class="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Kumpul</th>
@@ -410,7 +400,7 @@ const formatDate = (dateStr: string) => {
                                         </td>
                                     </tr>
                                     <tr v-if="sortedAssessmentActivity.length === 0">
-                                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                                        <td colspan="4" class="px-4 py-8 text-center text-muted-foreground">
                                             Tidak ada aktivitas pada periode ini
                                         </td>
                                     </tr>

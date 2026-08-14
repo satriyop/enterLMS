@@ -32,7 +32,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <section class="bg-muted/30 py-16">
+    <section class="bg-surface-2/30 py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="mb-8 text-center">
                 <h2 class="text-2xl font-bold text-foreground sm:text-3xl">
@@ -44,7 +44,7 @@ withDefaults(defineProps<Props>(), {
             </div>
 
             <div v-if="loading" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                <div v-for="i in 6" :key="i" class="space-y-3 rounded-xl border bg-card p-6">
+                <div v-for="i in 6" :key="i" class="space-y-3 rounded-xl border bg-surface p-6">
                     <Skeleton class="mx-auto h-14 w-14 rounded-full" />
                     <Skeleton class="mx-auto h-5 w-24" />
                     <Skeleton class="mx-auto h-4 w-16" />

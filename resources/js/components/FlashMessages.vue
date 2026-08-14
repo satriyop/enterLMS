@@ -18,28 +18,28 @@ const flash = computed(() => page.props.flash as { success?: string; error?: str
 
 <template>
     <div v-if="flash?.success || flash?.error || flash?.warning" class="space-y-2">
-        <div v-if="flash?.success" class="rounded-md bg-green-50 dark:bg-green-900/20 p-4">
+        <div v-if="flash?.success" class="rounded-md bg-ok-soft p-4">
             <div class="flex">
                 <div class="ml-3">
-                    <p class="text-sm font-medium text-green-800 dark:text-green-300">
+                    <p class="text-sm font-medium text-ok">
                         {{ flash.success }}
                     </p>
                 </div>
             </div>
         </div>
-        <div v-if="flash?.error" class="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+        <div v-if="flash?.error" class="rounded-md bg-danger-soft p-4">
             <div class="flex">
                 <div class="ml-3">
-                    <p class="text-sm font-medium text-red-800 dark:text-red-300">
+                    <p class="text-sm font-medium text-danger">
                         {{ flash.error }}
                     </p>
                 </div>
             </div>
         </div>
-        <div v-if="flash?.warning" class="rounded-md bg-yellow-50 dark:bg-yellow-900/20 p-4">
+        <div v-if="flash?.warning" class="rounded-md bg-warn-soft p-4">
             <div class="flex">
                 <div class="ml-3">
-                    <p class="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                    <p class="text-sm font-medium text-warn">
                         {{ flash.warning }}
                     </p>
                 </div>

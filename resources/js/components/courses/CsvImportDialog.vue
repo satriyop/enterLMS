@@ -216,24 +216,24 @@ const minDate = computed(() => new Date().toISOString().split('T')[0]);
                     class="rounded-lg border p-4"
                     :class="
                         importResults.failed === 0
-                            ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/30'
-                            : 'border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30'
+                            ? 'border-border bg-ok-soft'
+                            : 'border-border bg-warn-soft'
                     "
                 >
                     <div class="flex items-start gap-3">
                         <CheckCircle
                             v-if="importResults.failed === 0"
-                            class="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400"
+                            class="h-5 w-5 shrink-0 text-ok"
                         />
                         <AlertCircle
                             v-else
-                            class="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400"
+                            class="h-5 w-5 shrink-0 text-warn"
                         />
                         <div class="flex-1">
-                            <p class="font-medium" :class="importResults.failed === 0 ? 'text-emerald-900 dark:text-emerald-100' : 'text-amber-900 dark:text-amber-100'">
+                            <p class="font-medium" :class="importResults.failed === 0 ? 'text-ok' : 'text-warn'">
                                 Hasil Import
                             </p>
-                            <div class="mt-2 space-y-1 text-sm" :class="importResults.failed === 0 ? 'text-emerald-700 dark:text-emerald-300' : 'text-amber-700 dark:text-amber-300'">
+                            <div class="mt-2 space-y-1 text-sm" :class="importResults.failed === 0 ? 'text-ok' : 'text-warn'">
                                 <p>Berhasil: {{ importResults.success }}</p>
                                 <p v-if="importResults.failed > 0">
                                     Gagal: {{ importResults.failed }}
@@ -241,7 +241,7 @@ const minDate = computed(() => new Date().toISOString().split('T')[0]);
                             </div>
                             <div
                                 v-if="importResults.errors && importResults.errors.length > 0"
-                                class="mt-3 max-h-32 overflow-auto rounded bg-white/50 p-2 text-xs dark:bg-black/20"
+                                class="mt-3 max-h-32 overflow-auto rounded bg-surface/50 p-2 text-xs"
                             >
                                 <p class="mb-1 font-medium">Error:</p>
                                 <ul class="list-inside list-disc space-y-0.5">
