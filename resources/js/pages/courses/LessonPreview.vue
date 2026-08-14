@@ -4,13 +4,12 @@
 // Public preview for unenrolled users to view free preview lessons
 // =============================================================================
 
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { Badge } from '@/components/ui/badge';
 import PreviewBanner from '@/components/courses/PreviewBanner.vue';
 import PreviewContentCard from '@/components/courses/PreviewContentCard.vue';
 import PreviewLessonsSidebar from '@/components/courses/PreviewLessonsSidebar.vue';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import {
     ChevronLeft,
     ChevronRight,
@@ -24,7 +23,7 @@ import {
     ArrowLeft,
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
-import type { Category, ContentType, Media, UserSummary } from '@/types';
+import type { BreadcrumbItem, Category, ContentType, Media, UserSummary } from '@/types';
 
 // =============================================================================
 // Page-Specific Types
@@ -85,8 +84,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const page = usePage();
-const appName = computed(() => page.props.name || 'E-Learning');
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    { title: 'Katalog kursus', href: '/courses' },
+    { title: props.course.title, href: `/courses/${props.course.id}` },
+    { title: 'Pratinjau', href: '' },
+]);
 
 // =============================================================================
 // State
@@ -173,9 +175,7 @@ const lessonTypeLabel = (type: string) => {
 <template>
     <Head :title="`Preview: ${lesson.title}`" />
 
-    <div class="min-h-screen">
-        <Navbar :app-name="appName" />
-
+    <AppLayout :breadcrumbs="breadcrumbs">
         <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Back Link -->
             <div class="mb-6">
@@ -210,8 +210,8 @@ const lessonTypeLabel = (type: string) => {
                                 Preview
                             </Badge>
                         </div>
-                        <h1 class="text-2xl font-bold mb-2">{{ lesson.title }}</h1>
-                        <p v-if="lesson.description" class="text-muted-foreground">{{ lesson.description }}</p>
+                        <h1 class="text-editorial-h1 mb-2">{{ lesson.title }}</h1>
+                        <p v-if="lesson.description" class="text-lead">{{ lesson.description }}</p>
                     </div>
 
                     <!-- Content Area -->
@@ -264,6 +264,5 @@ const lessonTypeLabel = (type: string) => {
             </div>
         </main>
 
-        <Footer :app-name="appName" />
-    </div>
+    </AppLayout>
 </template>

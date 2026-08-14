@@ -4,14 +4,13 @@
 // View all user notifications with read/unread state
 // =============================================================================
 
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import FlashMessages from '@/components/FlashMessages.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import {
     Bell,
     BellOff,
@@ -22,7 +21,7 @@ import {
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { index as coursesIndex } from '@/actions/App/Http/Controllers/CourseController';
-import type { PaginationLink } from '@/types';
+import type { BreadcrumbItem, PaginationLink } from '@/types';
 
 // =============================================================================
 // Page-Specific Types
@@ -59,8 +58,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const page = usePage();
-const appName = computed(() => page.props.name || 'E-Learning');
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Notifikasi', href: '/notifications' }];
 
 // =============================================================================
 // Notification Helpers
@@ -131,20 +129,16 @@ const hasUnreadNotifications = computed(() => {
 <template>
     <Head title="Notifikasi" />
 
-    <div class="min-h-screen">
-        <Navbar :app-name="appName" />
-
+    <AppLayout :breadcrumbs="breadcrumbs">
         <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
             <FlashMessages />
 
             <!-- Header -->
-            <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold flex items-center gap-2">
-                        <Bell class="h-8 w-8" />
-                        Notifikasi
-                    </h1>
-                    <p class="mt-2 text-muted-foreground">
+            <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div class="space-y-3">
+                    <p class="text-eyebrow">Akun</p>
+                    <h1 class="text-editorial-h1">Notifikasi</h1>
+                    <p class="text-lead">
                         {{ notifications.total }} notifikasi
                     </p>
                 </div>
@@ -247,6 +241,5 @@ const hasUnreadNotifications = computed(() => {
             </div>
         </main>
 
-        <Footer :app-name="appName" />
-    </div>
+    </AppLayout>
 </template>

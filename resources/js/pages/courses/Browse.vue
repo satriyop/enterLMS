@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PublicLayout from '@/layouts/PublicLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import BrowseCourseCard from '@/components/courses/BrowseCourseCard.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { BookOpen, Search, Filter, X } from 'lucide-vue-next';
 import { ref, computed, watch } from 'vue';
-import type { Category, DifficultyLevel, PaginationLink, UserSummary } from '@/types';
+import type { BreadcrumbItem, Category, DifficultyLevel, PaginationLink, UserSummary } from '@/types';
 
 // =============================================================================
 // Page-Specific Types
@@ -63,6 +63,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Katalog kursus', href: '/courses' }];
+
 const searchQuery = ref(props.filters.search || '');
 const selectedCategory = ref(props.filters.category_id || '');
 const selectedDifficulty = ref(props.filters.difficulty_level || '');
@@ -102,12 +104,13 @@ watch(searchQuery, () => {
 <template>
     <Head title="Jelajahi Kursus" />
 
-    <PublicLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Header -->
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold">Jelajahi Kursus</h1>
-                <p class="mt-2 text-muted-foreground">
+            <div class="mb-8 space-y-3">
+                <p class="text-eyebrow">Katalog</p>
+                <h1 class="text-editorial-h1">Jelajahi Kursus</h1>
+                <p class="text-lead max-w-2xl">
                     Temukan kursus yang sesuai dengan minat dan kebutuhan Anda
                 </p>
             </div>
@@ -229,5 +232,5 @@ watch(searchQuery, () => {
                 </template>
             </div>
         </main>
-    </PublicLayout>
+    </AppLayout>
 </template>

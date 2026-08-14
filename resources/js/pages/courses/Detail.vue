@@ -4,7 +4,7 @@
 // Uses CourseContentOutline, CourseRatingsSection, CourseEnrollmentCard, CourseMetaCard
 // =============================================================================
 
-import PublicLayout from '@/layouts/PublicLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -23,6 +23,7 @@ import type {
     DifficultyLevel,
     UserSummary,
 } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 
 // =============================================================================
 // Page-Specific Types
@@ -115,6 +116,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    { title: 'Katalog kursus', href: '/courses' },
+    { title: props.course.title, href: `/courses/${props.course.id}` },
+]);
+
 // =============================================================================
 // Computed
 // =============================================================================
@@ -150,7 +156,7 @@ const firstLessonId = computed(() => {
 <template>
     <Head :title="course.title" />
 
-    <PublicLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Breadcrumb -->
             <nav class="mb-6 text-sm">
@@ -190,8 +196,8 @@ const firstLessonId = computed(() => {
                                 {{ course.category.name }}
                             </Badge>
                         </div>
-                        <h1 class="text-3xl font-bold mb-3">{{ course.title }}</h1>
-                        <p class="text-lg text-muted-foreground">{{ course.short_description }}</p>
+                        <h1 class="text-editorial-h1 mb-3">{{ course.title }}</h1>
+                        <p class="text-lead">{{ course.short_description }}</p>
                     </div>
 
                     <!-- Thumbnail -->
@@ -210,16 +216,16 @@ const firstLessonId = computed(() => {
                     <!-- Course Stats (Mobile) -->
                     <div class="mb-6 grid grid-cols-3 gap-4 lg:hidden">
                         <div class="text-center">
-                            <div class="text-2xl font-bold">{{ totalLessons }}</div>
-                            <div class="text-sm text-muted-foreground">Materi</div>
+                            <div class="text-stat">{{ totalLessons }}</div>
+                            <div class="text-tiny">Materi</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold">{{ totalDuration }}</div>
-                            <div class="text-sm text-muted-foreground">Durasi</div>
+                            <div class="text-stat">{{ totalDuration }}</div>
+                            <div class="text-tiny">Durasi</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold">{{ course.enrollments_count }}</div>
-                            <div class="text-sm text-muted-foreground">Peserta</div>
+                            <div class="text-stat">{{ course.enrollments_count }}</div>
+                            <div class="text-tiny">Peserta</div>
                         </div>
                     </div>
 
@@ -292,5 +298,5 @@ const firstLessonId = computed(() => {
                 </div>
             </div>
         </main>
-    </PublicLayout>
+    </AppLayout>
 </template>

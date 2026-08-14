@@ -4,14 +4,13 @@
 // View learning path details with enrollment/progress
 // =============================================================================
 
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import FlashMessages from '@/components/FlashMessages.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import {
     Route,
     Clock,
@@ -37,6 +36,7 @@ import type {
     CourseProgressItem,
     CourseProgressStatus,
 } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 
 // =============================================================================
 // Types
@@ -51,8 +51,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const page = usePage();
-const appName = computed(() => page.props.name || 'E-Learning');
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    { title: 'Jalur pembelajaran', href: '/learner/learning-paths/browse' },
+    { title: props.learningPath.title, href: `/learner/learning-paths/${props.learningPath.id}` },
+]);
+
 
 const isEnrolling = ref(false);
 const enrollError = ref<string | null>(null);
@@ -139,9 +142,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
 <template>
     <Head :title="learningPath.title" />
 
-    <div class="min-h-screen">
-        <Navbar :app-name="appName" />
-
+    <AppLayout :breadcrumbs="breadcrumbs">
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <FlashMessages />
 
@@ -186,10 +187,10 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                         </div>
 
                         <!-- Title -->
-                        <h1 class="text-3xl font-bold mb-4">{{ learningPath.title }}</h1>
+                        <h1 class="text-editorial-h1 mb-4">{{ learningPath.title }}</h1>
 
                         <!-- Description -->
-                        <p v-if="learningPath.description" class="text-muted-foreground text-lg">
+                        <p v-if="learningPath.description" class="text-lead">
                             {{ learningPath.description }}
                         </p>
                     </div>
@@ -320,7 +321,7 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
                             <div v-if="isEnrolled && progress" class="mb-6">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-sm font-medium">Progres Anda</span>
-                                    <span class="text-2xl font-bold">{{ progressPercentage }}%</span>
+                                    <span class="text-stat">{{ progressPercentage }}%</span>
                                 </div>
                                 <Progress :model-value="progressPercentage" class="h-3 mb-2" />
                                 <p class="text-sm text-muted-foreground">
@@ -422,6 +423,5 @@ const getCourseActionLabel = (status: CourseProgressStatus | null) => {
             </div>
         </main>
 
-        <Footer :app-name="appName" />
-    </div>
+    </AppLayout>
 </template>

@@ -4,8 +4,7 @@
 // Displays list of earned certificates with download/view options
 // =============================================================================
 
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,7 @@ import { computed } from 'vue';
 import { formatDate } from '@/lib/date';
 import { stream, download, verify } from '@/actions/App/Http/Controllers/CertificateController';
 import { index as coursesIndex } from '@/actions/App/Http/Controllers/CourseController';
+import type { BreadcrumbItem } from '@/types';
 
 // =============================================================================
 // Types
@@ -46,6 +46,8 @@ const props = defineProps<Props>();
 // =============================================================================
 
 const hasCertificates = computed(() => props.certificates.length > 0);
+
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Sertifikat', href: '/certificates' }];
 
 // =============================================================================
 // Helpers
@@ -82,25 +84,17 @@ const getStatusBadge = (status: string) => {
 <template>
     <Head title="Sertifikat Saya" />
 
-    <div class="min-h-screen bg-surface-2">
-        <Navbar />
-
-        <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col px-4 py-8 md:px-8 md:py-10">
             <!-- Page Header -->
-            <div class="mb-8">
-                <div class="flex items-center gap-3">
-                    <div class="rounded-lg bg-gold-soft p-2">
-                        <Award class="h-6 w-6 text-gold" />
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-foreground">
-                            Sertifikat Saya
-                        </h1>
-                        <p class="text-sm text-muted-foreground">
-                            Koleksi sertifikat yang telah Anda peroleh
-                        </p>
-                    </div>
-                </div>
+            <div class="mb-8 space-y-3">
+                <p class="text-eyebrow">Pencapaian</p>
+                <h1 class="text-editorial-h1 text-foreground">
+                    Sertifikat Saya
+                </h1>
+                <p class="text-lead max-w-2xl">
+                    Koleksi sertifikat yang telah Anda peroleh
+                </p>
             </div>
 
             <!-- Empty State -->
@@ -201,8 +195,6 @@ const getStatusBadge = (status: string) => {
                     </CardContent>
                 </Card>
             </div>
-        </main>
-
-        <Footer />
-    </div>
+        </div>
+    </AppLayout>
 </template>

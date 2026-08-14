@@ -4,8 +4,7 @@
 // Detailed progress view for enrolled learning path
 // =============================================================================
 
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import FlashMessages from '@/components/FlashMessages.vue';
 import CourseProgressTimeline from '@/components/learning_paths/CourseProgressTimeline.vue';
 import { Button } from '@/components/ui/button';
@@ -21,9 +20,8 @@ import {
     DialogTrigger,
     DialogClose,
 } from '@/components/ui/dialog';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import {
-    Route,
     Clock,
     BookOpen,
     CheckCircle,
@@ -40,6 +38,7 @@ import type {
     LearningPathEnrollment,
     PathProgressData,
 } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 
 // =============================================================================
 // Types
@@ -53,8 +52,12 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const page = usePage();
-const appName = computed(() => page.props.name || 'E-Learning');
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    { title: 'Jalur pembelajaran', href: '/learner/learning-paths/browse' },
+    { title: props.learningPath.title, href: `/learner/learning-paths/${props.learningPath.id}` },
+    { title: 'Progres', href: `/learner/learning-paths/${props.learningPath.id}/progress` },
+]);
+
 
 const isDropping = ref(false);
 const showDropDialog = ref(false);
@@ -90,9 +93,7 @@ const dropEnrollment = () => {
 <template>
     <Head :title="`Progres - ${learningPath.title}`" />
 
-    <div class="min-h-screen">
-        <Navbar :app-name="appName" />
-
+    <AppLayout :breadcrumbs="breadcrumbs">
         <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
             <FlashMessages />
 
@@ -124,8 +125,8 @@ const dropEnrollment = () => {
 
             <!-- Page Header -->
             <div class="mb-8">
-                <h1 class="text-2xl font-bold flex items-center gap-2">
-                    <Route class="h-7 w-7" />
+                <p class="text-eyebrow mb-2">Jalur pembelajaran</p>
+                <h1 class="text-editorial-h1">
                     {{ learningPath.title }}
                 </h1>
             </div>
@@ -158,7 +159,7 @@ const dropEnrollment = () => {
                         <div class="text-center sm:text-left">
                             <p class="text-sm text-muted-foreground mb-1">Progres Keseluruhan</p>
                             <div class="flex items-center gap-3">
-                                <span class="text-4xl font-bold">{{ progress.overall_percentage }}%</span>
+                                <span class="text-stat">{{ progress.overall_percentage }}%</span>
                             </div>
                             <Progress :model-value="progress.overall_percentage" class="h-2 mt-2" />
                         </div>
@@ -168,7 +169,7 @@ const dropEnrollment = () => {
                             <p class="text-sm text-muted-foreground mb-1">Kursus Selesai</p>
                             <div class="flex items-center gap-2">
                                 <CheckCircle class="h-5 w-5 text-gold" />
-                                <span class="text-2xl font-bold">
+                                <span class="text-stat">
                                     {{ progress.completed_courses }}/{{ progress.total_courses }}
                                 </span>
                             </div>
@@ -179,7 +180,7 @@ const dropEnrollment = () => {
                             <p class="text-sm text-muted-foreground mb-1">Sedang Dikerjakan</p>
                             <div class="flex items-center gap-2">
                                 <Play class="h-5 w-5 text-warn" />
-                                <span class="text-2xl font-bold">{{ progress.in_progress_courses }}</span>
+                                <span class="text-stat">{{ progress.in_progress_courses }}</span>
                             </div>
                         </div>
 
@@ -188,7 +189,7 @@ const dropEnrollment = () => {
                             <p class="text-sm text-muted-foreground mb-1">Waktu Belajar</p>
                             <div class="flex items-center gap-2">
                                 <Clock class="h-5 w-5 text-info" />
-                                <span class="text-2xl font-bold">
+                                <span class="text-stat">
                                     {{ formatDuration(progress.total_time_spent_minutes, 'short') }}
                                 </span>
                             </div>
@@ -253,6 +254,5 @@ const dropEnrollment = () => {
             </div>
         </main>
 
-        <Footer :app-name="appName" />
-    </div>
+    </AppLayout>
 </template>

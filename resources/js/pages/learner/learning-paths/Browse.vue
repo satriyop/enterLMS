@@ -4,19 +4,19 @@
 // Discover and explore published learning paths
 // =============================================================================
 
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import LearningPathBrowseCard from '@/components/learning_paths/LearningPathBrowseCard.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { Route, Search, Filter, X } from 'lucide-vue-next';
 import { ref, computed, watch } from 'vue';
 import { browse } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
 import type { DifficultyLevel, PaginationLink } from '@/types';
 import type { LearningPathItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 
 // =============================================================================
 // Page-Specific Types
@@ -44,8 +44,10 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const page = usePage();
-const appName = computed(() => page.props.name || 'E-Learning');
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Jalur pembelajaran', href: '/learner/learning-paths/browse' },
+];
+
 
 const searchQuery = ref(props.filters.search || '');
 const selectedDifficulty = ref(props.filters.difficulty || '');
@@ -87,14 +89,13 @@ watch(searchQuery, () => {
 <template>
     <Head title="Jelajahi Learning Path" />
 
-    <div class="min-h-screen">
-        <Navbar :app-name="appName" />
-
+    <AppLayout :breadcrumbs="breadcrumbs">
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Header -->
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold">Jelajahi Learning Path</h1>
-                <p class="mt-2 text-muted-foreground">
+            <div class="mb-8 space-y-3">
+                <p class="text-eyebrow">Katalog</p>
+                <h1 class="text-editorial-h1">Jelajahi Learning Path</h1>
+                <p class="text-lead max-w-2xl">
                     Temukan jalur belajar terstruktur yang sesuai dengan tujuan pembelajaran Anda
                 </p>
             </div>
@@ -203,6 +204,5 @@ watch(searchQuery, () => {
             </div>
         </main>
 
-        <Footer :app-name="appName" />
-    </div>
+    </AppLayout>
 </template>

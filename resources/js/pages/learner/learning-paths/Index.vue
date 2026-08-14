@@ -4,17 +4,17 @@
 // View enrolled learning paths and progress
 // =============================================================================
 
-import Navbar from '@/components/home/Navbar.vue';
-import Footer from '@/components/home/Footer.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import LearningPathEnrollmentCard from '@/components/learning_paths/LearningPathEnrollmentCard.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import { Button } from '@/components/ui/button';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { Route, Search } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import { index, browse } from '@/actions/App/Http/Controllers/LearningPathEnrollmentController';
 import type { PaginationLink } from '@/types';
 import type { LearningPathEnrollmentItem, LearningPathEnrollmentState } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 
 // =============================================================================
 // Page-Specific Types
@@ -40,8 +40,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const page = usePage();
-const appName = computed(() => page.props.name || 'E-Learning');
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Jalur pembelajaran', href: '/learner/learning-paths/browse' },
+    { title: 'Jalur saya', href: '/learner/learning-paths' },
+];
+
 
 const selectedStatus = ref(props.filters.status || '');
 
@@ -68,18 +71,14 @@ const applyFilter = (status: string) => {
 <template>
     <Head title="Learning Path Saya" />
 
-    <div class="min-h-screen">
-        <Navbar :app-name="appName" />
-
+    <AppLayout :breadcrumbs="breadcrumbs">
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Header -->
-            <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold flex items-center gap-2">
-                        <Route class="h-8 w-8" />
-                        Learning Path Saya
-                    </h1>
-                    <p class="mt-2 text-muted-foreground">
+            <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div class="space-y-3">
+                    <p class="text-eyebrow">Belajar</p>
+                    <h1 class="text-editorial-h1">Learning Path Saya</h1>
+                    <p class="text-lead max-w-2xl">
                         Kelola dan pantau progres belajar Anda
                     </p>
                 </div>
@@ -171,6 +170,5 @@ const applyFilter = (status: string) => {
             </div>
         </main>
 
-        <Footer :app-name="appName" />
-    </div>
+    </AppLayout>
 </template>
