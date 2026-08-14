@@ -198,7 +198,7 @@ app/
 │   ├── Assessment/       # Grading strategies, DTOs, exceptions
 │   ├── Course/           # State machine (draft/published/archived)
 │   ├── Enrollment/       # Service, states, events, notifications
-│   ├── Progress/         # Tracking service, calculator strategies
+│   ├── Progress/         # Tracking service, single calculator (ADR 008)
 │   └── Shared/           # Base contracts, value objects, exceptions
 ├── Http/Controllers/     # Request handlers (22 controllers)
 ├── Models/               # Eloquent models (17 models)
@@ -410,7 +410,7 @@ Quality
 |------|-------|-------------|
 | Domain Layer | Phase 1-8 | Full DDD implementation with services, strategies, events |
 | State Machines | Phase 5 | Course, Enrollment, AssessmentAttempt lifecycle |
-| Progress Strategies | Phase 3 | Lesson-based, Assessment-inclusive, Weighted calculators |
+| Progress calculation | Phase 3 / ADR 008 | One class: AssessmentInclusiveProgressCalculator (not swappable) |
 | Grading Strategies | Phase 4 | Auto-grading for MC/TF, manual for essays |
 | Domain Events | Phase 6 | Event-driven architecture for notifications |
 | Cleanup | Phase 9 | Removed deprecated methods, backward compatibility code |
