@@ -32,8 +32,7 @@ EnterLMS is a Learning Management System (LMS) designed for:
 | Role | Expectations |
 |------|--------------|
 | Learners | Easy access to courses, track progress, mobile support |
-| Trainers | Create courses, monitor learner progress |
-| Admins | Manage users, publish content, generate reports |
+| LMS Admin | Author and publish content, grant enrollment, grade, report |
 | Developers | Clear architecture, good documentation |
 | IT Operations | Easy deployment, monitoring, backups |
 
@@ -97,9 +96,9 @@ EnterLMS is a Learning Management System (LMS) designed for:
         ▼            ▼            ▼                 ▼
 ┌───────┴────────────┴────────────┴─────────────────┴──────────────┐
 │                           Users                                   │
-│  ┌─────────┐  ┌───────────────┐  ┌─────────┐  ┌───────────┐     │
-│  │Learners │  │Content Managers│  │Trainers │  │LMS Admins │     │
-│  └─────────┘  └───────────────┘  └─────────┘  └───────────┘     │
+│  ┌─────────┐  ┌───────────┐                                     │
+│  │Learners │  │LMS Admin  │                                      │
+│  └─────────┘  └───────────┘                                      │
 └──────────────────────────────────────────────────────────────────┘
 ```
 

@@ -513,7 +513,7 @@ const otherLearning = computed(() => {
                 v-if="isPlatformEmpty"
                 :icon="BookOpen"
                 title="Katalog kursus masih kosong"
-                description="Belum ada kursus yang dipublikasikan di platform. Hubungi content manager atau admin agar modul wajib unit Anda dapat ditugaskan."
+                description="Belum ada kursus yang dipublikasikan. Hubungi LMS Admin agar kursus dapat ditugaskan kepada Anda."
             />
         </div>
     </AppLayout>

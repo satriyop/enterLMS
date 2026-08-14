@@ -15,7 +15,7 @@ class CategoryPolicy
     }
 
     /**
-     * Only admins and content managers can create categories.
+     * Only LMS Admin can create categories.
      */
     public function create(User $user): bool
     {

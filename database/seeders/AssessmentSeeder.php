@@ -64,7 +64,6 @@ class AssessmentSeeder extends Seeder
     public function run(): void
     {
         $publishedCourses = Course::where('status', 'published')->get();
-        $contentManager = User::where('role', 'lms_admin')->first();
         $lmsAdmin = User::where('role', 'lms_admin')->first();
 
         if ($publishedCourses->isEmpty()) {
@@ -73,8 +72,8 @@ class AssessmentSeeder extends Seeder
             return;
         }
 
-        if (! $contentManager || ! $lmsAdmin) {
-            $this->command->warn('Content manager or LMS admin not found. Run DatabaseSeeder first.');
+        if (! $lmsAdmin) {
+            $this->command->warn('LMS Admin not found. Run DatabaseSeeder first.');
 
             return;
         }
@@ -93,7 +92,7 @@ class AssessmentSeeder extends Seeder
             for ($i = 0; $i < $numAssessments; $i++) {
                 $isPublished = rand(1, 100) <= 70; // 70% chance of being published
 
-                $assessment = $this->createAssessment($course, $contentManager, $lmsAdmin, $isPublished, $i + 1);
+                $assessment = $this->createAssessment($course, $lmsAdmin, $lmsAdmin, $isPublished, $i + 1);
                 $this->createQuestions($assessment);
 
                 $this->command->info("  Created assessment ({$assessment->status}): {$assessment->title}");

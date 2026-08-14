@@ -25,11 +25,10 @@ class AgentAcademyCourseSeeder extends Seeder
 
     public function run(): void
     {
-        $contentManager = User::query()->where('role', 'lms_admin')->first();
         $lmsAdmin = User::query()->where('role', 'lms_admin')->first();
 
-        if (! $contentManager || ! $lmsAdmin) {
-            $this->command?->warn('Content manager or LMS admin not found. Skipping agent academy seeding.');
+        if (! $lmsAdmin) {
+            $this->command?->warn('LMS Admin not found. Skipping agent academy seeding.');
 
             return;
         }
@@ -41,12 +40,12 @@ class AgentAcademyCourseSeeder extends Seeder
             return;
         }
 
-        $openClaw = $this->seedOpenClawCourse($contentManager, $lmsAdmin);
-        $path = $this->seedOperatorPath($contentManager, $intro, $openClaw);
+        $openClaw = $this->seedOpenClawCourse($lmsAdmin, $lmsAdmin);
+        $path = $this->seedOperatorPath($lmsAdmin, $intro, $openClaw);
         $this->seedOperatorEnrollment($lmsAdmin, $path);
     }
 
-    private function seedOpenClawCourse(User $contentManager, User $admin): Course
+    private function seedOpenClawCourse(User $lmsAdmin, User $admin): Course
     {
         $existing = Course::query()->where('title', self::RESTRICTED_COURSE_TITLE)->first();
         if ($existing) {
@@ -71,7 +70,7 @@ class AgentAcademyCourseSeeder extends Seeder
         );
 
         $course = Course::query()->create([
-            'user_id' => $contentManager->id,
+            'user_id' => $lmsAdmin->id,
             'title' => self::RESTRICTED_COURSE_TITLE,
             'slug' => Str::slug(self::RESTRICTED_COURSE_TITLE).'-ops',
             'short_description' => 'Operasi harian OpenClaw untuk Operator Enteraksi: deploy, log, kill switch, konektor, isolasi tenant.',
@@ -174,7 +173,7 @@ class AgentAcademyCourseSeeder extends Seeder
         return $course->load('sections.lessons');
     }
 
-    private function seedOperatorPath(User $contentManager, Course $intro, Course $openClaw): LearningPath
+    private function seedOperatorPath(User $lmsAdmin, Course $intro, Course $openClaw): LearningPath
     {
         $existing = LearningPath::query()->where('title', self::OPERATOR_PATH_TITLE)->first();
         if ($existing) {
@@ -197,8 +196,8 @@ class AgentAcademyCourseSeeder extends Seeder
                 'Menyelesaikan pengenalan agen sebelum menyentuh operasi runtime',
                 'Menjalankan operasi harian OpenClaw dengan batas wewenang yang jelas',
             ],
-            'created_by' => $contentManager->id,
-            'updated_by' => $contentManager->id,
+            'created_by' => $lmsAdmin->id,
+            'updated_by' => $lmsAdmin->id,
             'is_published' => true,
             'visibility' => 'restricted',
             'published_at' => now(),

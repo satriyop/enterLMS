@@ -101,7 +101,7 @@ const activeTab = ref<'info' | 'outline'>('outline');
 
 /**
  * Course is now always editable if user has permission to access this page.
- * Content managers can edit their own published courses.
+ * LMS Admin can edit any course, draft or published.
  */
 const isEditable = computed(() => true);
 
@@ -154,7 +154,7 @@ const readinessGaps = computed(() => {
                     </Link>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="text-2xl font-bold">Edit Kursus</h1>
+                            <h1 class="text-editorial-h1">Edit Kursus</h1>
                             <Badge :variant="course.status === 'published' ? 'default' : 'secondary'">
                                 {{ statusLabel }}
                             </Badge>

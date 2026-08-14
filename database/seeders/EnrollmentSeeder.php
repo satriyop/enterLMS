@@ -53,7 +53,7 @@ class EnrollmentSeeder extends Seeder
 
         $this->command->info('Creating enrollments for learners...');
 
-        $trainerUser = User::where('role', 'lms_admin')->first();
+        $lmsAdmin = User::where('role', 'lms_admin')->first();
 
         foreach ($learners as $learner) {
             // Skip courses where this learner already has an enrollment
@@ -72,12 +72,12 @@ class EnrollmentSeeder extends Seeder
                 $enrollmentType = $this->randomEnrollmentType();
 
                 match ($enrollmentType) {
-                    'active_no_progress' => $this->createActiveEnrollment($learner, $course, 0, $trainerUser),
-                    'active_25' => $this->createActiveEnrollment($learner, $course, 25, $trainerUser),
-                    'active_50' => $this->createActiveEnrollment($learner, $course, 50, $trainerUser),
-                    'active_75' => $this->createActiveEnrollment($learner, $course, 75, $trainerUser),
-                    'completed' => $this->createCompletedEnrollment($learner, $course, $trainerUser),
-                    'dropped' => $this->createDroppedEnrollment($learner, $course, $trainerUser),
+                    'active_no_progress' => $this->createActiveEnrollment($learner, $course, 0, $lmsAdmin),
+                    'active_25' => $this->createActiveEnrollment($learner, $course, 25, $lmsAdmin),
+                    'active_50' => $this->createActiveEnrollment($learner, $course, 50, $lmsAdmin),
+                    'active_75' => $this->createActiveEnrollment($learner, $course, 75, $lmsAdmin),
+                    'completed' => $this->createCompletedEnrollment($learner, $course, $lmsAdmin),
+                    'dropped' => $this->createDroppedEnrollment($learner, $course, $lmsAdmin),
                 };
             }
         }

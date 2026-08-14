@@ -43,16 +43,6 @@ class FreeFlowDemoSeeder extends Seeder
             'role' => 'learner',
         ],
         [
-            'name' => 'Siti Rahayu',
-            'email' => 'content@enterlms.test',
-            'role' => 'lms_admin',
-        ],
-        [
-            'name' => 'Andi Wijaya',
-            'email' => 'trainer@enterlms.test',
-            'role' => 'lms_admin',
-        ],
-        [
             'name' => 'Dewi Lestari',
             'email' => 'admin@enterlms.test',
             'role' => 'lms_admin',
@@ -70,7 +60,7 @@ class FreeFlowDemoSeeder extends Seeder
     }
 
     /**
-     * @return array{learner: User, content_manager: User, trainer: User, lms_admin: User}
+     * @return array{learner: User, lms_admin: User}
      */
     private function seedUsers(): array
     {
@@ -93,8 +83,6 @@ class FreeFlowDemoSeeder extends Seeder
         return [
             'learner' => $map['learner'],
             'lms_admin' => $map['lms_admin'],
-            'lms_admin' => $map['lms_admin'],
-            'lms_admin' => $map['lms_admin'],
         ];
     }
 
@@ -109,7 +97,7 @@ class FreeFlowDemoSeeder extends Seeder
         );
     }
 
-    private function seedFreeDemoCourse(User $contentManager, User $admin, Category $category): Course
+    private function seedFreeDemoCourse(User $author, User $admin, Category $category): Course
     {
         $course = Course::query()->where('title', self::FREE_COURSE_TITLE)->first();
 
@@ -126,7 +114,7 @@ class FreeFlowDemoSeeder extends Seeder
         );
 
         $course = Course::query()->create([
-            'user_id' => $contentManager->id,
+            'user_id' => $author->id,
             'title' => self::FREE_COURSE_TITLE,
             'slug' => Str::slug(self::FREE_COURSE_TITLE).'-demo',
             'short_description' => 'Kursus gratis untuk memahami apa itu agen AI, apa yang dilakukan Enteraksi, dan apa yang tidak kamu operasikan di academy ini.',
@@ -243,7 +231,7 @@ class FreeFlowDemoSeeder extends Seeder
         return $course->load('sections.lessons');
     }
 
-    private function seedOptionalQuiz(Course $course, User $contentManager): void
+    private function seedOptionalQuiz(Course $course, User $author): void
     {
         if ($course->assessments()->exists()) {
             return;
@@ -251,7 +239,7 @@ class FreeFlowDemoSeeder extends Seeder
 
         $assessment = Assessment::query()->create([
             'course_id' => $course->id,
-            'user_id' => $contentManager->id,
+            'user_id' => $author->id,
             'title' => 'Kuis Singkat Pengenalan Agen AI',
             'slug' => 'kuis-pengenalan-agen-ai-'.Str::lower(Str::random(6)),
             'description' => 'Kuis opsional untuk menguji pemahaman materi pengenalan.',
@@ -309,7 +297,7 @@ class FreeFlowDemoSeeder extends Seeder
     }
 
     /**
-     * @param  array{learner: User, content_manager: User, trainer: User, lms_admin: User}  $users
+     * @param  array{learner: User, lms_admin: User}  $users
      */
     private function printSummary(array $users, Course $course): void
     {
@@ -327,8 +315,6 @@ class FreeFlowDemoSeeder extends Seeder
             ['Role', 'Name', 'Email'],
             [
                 ['learner', $users['learner']->name, $users['learner']->email],
-                ['lms_admin', $users['lms_admin']->name, $users['lms_admin']->email],
-                ['lms_admin', $users['lms_admin']->name, $users['lms_admin']->email],
                 ['lms_admin', $users['lms_admin']->name, $users['lms_admin']->email],
             ]
         );

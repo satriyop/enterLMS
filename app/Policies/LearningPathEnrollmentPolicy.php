@@ -21,9 +21,9 @@ class LearningPathEnrollmentPolicy
     public function view(User $user, LearningPathEnrollment $enrollment): bool
     {
         // Users can view their own enrollments
-        // LMS admins and trainers can view any enrollment
+        // LMS Admin can view any enrollment
         return $user->id === $enrollment->user_id
-            || $user->hasRole(['lms_admin', 'lms_admin']);
+            || $user->isLmsAdmin();
     }
 
     /**

@@ -22,9 +22,6 @@ A classification for courses. Examples: "Teknologi Informasi", "Bisnis & Manajem
 **Completion**
 The state when a learner has finished all required content in a course or lesson. Tracked via progress percentage.
 
-**Content Manager**
-A user role that can create and edit their own courses but cannot publish them.
-
 **Course**
 A collection of learning content organized into sections and lessons. The primary unit of learning.
 
@@ -39,7 +36,10 @@ The initial status of a course before publication. Draft courses are only visibl
 ### E
 
 **Enrollment**
-The record of a learner's registration in a course. Tracks status, progress, and completion.
+The record of a Learner being registered in a Course. Logging in does not create it. Open Courses allow self-enrollment; Restricted Courses and restricted Paths are granted by LMS Admin.
+
+**Open Course**
+A Course listed in the public catalog. A Learner may create their own Enrollment. v1: Pengenalan Agen AI (free).
 
 ### F
 
@@ -54,10 +54,10 @@ The process of evaluating assessment answers. Can be automatic (multiple choice)
 ### L
 
 **Learner**
-The default user role. Can enroll in courses, view content, and take assessments.
+A person who has an Enrollment in at least one Course. Anyone who registers may become a Learner of an Open Course. Operator / Tenant Admin / Tenant Owner may be Learners; those roles do not define Learner.
 
 **Learning Path**
-An ordered sequence of courses that form a curriculum. Courses can have prerequisites and completion requirements.
+An ordered sequence of Courses for the same Learner. A Path may be public (self-enroll) or restricted (LMS Admin grants Enrollment). v1: Jalur Operator OpenClaw is restricted.
 
 **Lesson**
 A single unit of content within a course section. Can be text, video, audio, document, YouTube, or conference.
@@ -72,8 +72,8 @@ Uploaded files attached to courses or lessons. Includes videos, audio, documents
 
 ### O
 
-**OJK**
-Otoritas Jasa Keuangan (Financial Services Authority of Indonesia). The regulatory body for banking compliance training.
+**Operator**
+A staff role in Enteraksi who runs managed agent deployments. Not a role in this academy. An Operator may be a Learner here.
 
 ### P
 
@@ -96,24 +96,18 @@ A possible answer for a multiple choice or true/false question. One or more can 
 **Rating**
 A 1-5 star evaluation of a course by an enrolled learner. Can include a text review.
 
-**Restricted**
-A course visibility setting where only invited learners can enroll.
+**Restricted Course**
+A Course hidden from the public catalog. LMS Admin grants Enrollment. Completing an Open Course does not grant it. v1: Administrasi Agen OpenClaw.
 
 ### S
 
 **Section**
 A group of related lessons within a course. Used to organize content into chapters or modules.
 
-**SCORM**
-Sharable Content Object Reference Model. An e-learning standard for content packaging. (Planned support)
-
 ### T
 
 **Tag**
 A keyword label for courses. Used for search and filtering.
-
-**Trainer**
-A user role that can create courses and invite learners. Cannot publish courses.
 
 **Two-Factor Authentication (2FA)**
 An additional security layer requiring a TOTP code from an authenticator app.
@@ -208,7 +202,6 @@ Laravel package that generates TypeScript types for routes. Provides type-safe r
 
 | Abbreviation | Full Form |
 |--------------|-----------|
-| AML | Anti-Money Laundering |
 | API | Application Programming Interface |
 | CRUD | Create, Read, Update, Delete |
 | CSS | Cascading Style Sheets |
@@ -217,7 +210,6 @@ Laravel package that generates TypeScript types for routes. Provides type-safe r
 | HTTP | HyperText Transfer Protocol |
 | JSON | JavaScript Object Notation |
 | LMS | Learning Management System |
-| LTI | Learning Tools Interoperability |
 | ORM | Object-Relational Mapping |
 | PDF | Portable Document Format |
 | PHP | PHP: Hypertext Preprocessor |

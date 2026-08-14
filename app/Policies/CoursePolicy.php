@@ -10,7 +10,7 @@ class CoursePolicy
 {
     /**
      * Determine whether the user can view any models.
-     * Content managers see their own + all, learners see published public courses.
+     * Everyone may list Courses; the query decides what each role actually sees.
      */
     public function viewAny(User $user): bool
     {
@@ -64,9 +64,11 @@ class CoursePolicy
     /**
      * Determine whether the user can update the model.
      *
-     * Content managers can only edit their own DRAFT courses.
-     * Published courses are "frozen" for content managers - they must ask an admin
-     * to unpublish first or have the admin make the changes.
+     * LMS Admin may edit any Course, draft or published.
+     *
+     * The ownership branch below is unreachable while LMS Admin is the only role
+     * that can manage Courses. ADR 007 accepted that; it is kept as the seam where
+     * a second authoring role would regain the draft-only restriction.
      */
     public function update(User $user, Course $course): bool
     {
@@ -75,7 +77,7 @@ class CoursePolicy
             return true;
         }
 
-        // Content manager can only edit their own draft courses
+        // Seam for a future authoring role: own drafts only. Unreachable today.
         if ($course->user_id === $user->id && $user->canManageCourses()) {
             return $course->isDraft();
         }
@@ -187,7 +189,7 @@ class CoursePolicy
     /**
      * Determine whether the user can bulk enroll learners into the course.
      *
-     * Only trainers and LMS admins can bulk enroll users.
+     * Only LMS Admin can bulk enroll users.
      */
     public function bulkEnroll(User $user, Course $course): bool
     {

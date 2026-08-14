@@ -28,7 +28,7 @@ class LearningPathPolicy
             return true;
         }
 
-        // Content managers can view learning paths they created
+        // LMS Admin can view Learning Paths they created
         if ($user->isLmsAdmin()) {
             return $user->id === $learningPath->created_by;
         }
@@ -64,7 +64,7 @@ class LearningPathPolicy
             return true;
         }
 
-        // Content managers can update learning paths they created
+        // LMS Admin can update Learning Paths they created
         if ($user->isLmsAdmin()) {
             return $user->id === $learningPath->created_by;
         }
@@ -82,7 +82,7 @@ class LearningPathPolicy
             return true;
         }
 
-        // Content managers can delete learning paths they created
+        // LMS Admin can delete Learning Paths they created
         if ($user->isLmsAdmin()) {
             return $user->id === $learningPath->created_by;
         }
@@ -100,7 +100,7 @@ class LearningPathPolicy
             return true;
         }
 
-        // Content managers can publish learning paths they created
+        // LMS Admin can publish Learning Paths they created
         if ($user->isLmsAdmin()) {
             return $user->id === $learningPath->created_by;
         }

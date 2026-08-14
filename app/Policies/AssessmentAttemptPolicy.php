@@ -12,7 +12,7 @@ class AssessmentAttemptPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * Only admins and content managers should be able to list all attempts
+     * Only LMS Admin should be able to list all attempts
      * for grading and reporting purposes. Learners can only see their own
      * attempts (enforced via query scoping, not this policy).
      */
@@ -31,7 +31,7 @@ class AssessmentAttemptPolicy
             return true;
         }
 
-        // Content managers can view attempts for their own assessments
+        // LMS Admin can view attempts for assessments they authored
         if ($user->isLmsAdmin() && $attempt->assessment->user_id === $user->id) {
             return true;
         }
@@ -108,7 +108,7 @@ class AssessmentAttemptPolicy
             return true;
         }
 
-        // Content managers can view attempts for their own assessments
+        // LMS Admin can view attempts for assessments they authored
         if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
@@ -170,7 +170,7 @@ class AssessmentAttemptPolicy
             return true;
         }
 
-        // Content managers can grade attempts for their own assessments
+        // LMS Admin can grade attempts for assessments they authored
         if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }

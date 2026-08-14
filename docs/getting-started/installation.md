@@ -109,7 +109,7 @@ php artisan db:seed
 ```
 
 This creates:
-- 4 test users (learner, content_manager, trainer, lms_admin)
+- Test users (learner, lms_admin)
 - 6 course categories
 - 37 tags
 - 5 sample courses with sections, lessons, and media
@@ -154,10 +154,8 @@ After seeding, use these accounts:
 
 | Role | Email | Password | Can Do |
 |------|-------|----------|--------|
-| Learner | test@example.com | password | Enroll, learn, take assessments |
-| Content Manager | content@example.com | password | Create/edit own courses |
-| Trainer | trainer@example.com | password | Create courses, invite learners |
-| LMS Admin | admin@example.com | password | Full access, publish courses |
+| Learner | learner@enterlms.test | password | Enroll, learn, take assessments |
+| LMS Admin | admin@enterlms.test | password | Author, publish, grant enrollment, grade |
 
 ---
 

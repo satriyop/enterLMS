@@ -15,7 +15,7 @@ class TagPolicy
     }
 
     /**
-     * Only admins and content managers can create tags.
+     * Only LMS Admin can create tags.
      */
     public function create(User $user): bool
     {

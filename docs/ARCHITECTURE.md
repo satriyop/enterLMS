@@ -38,9 +38,9 @@ See `CONTEXT.md` for the domain language and ADR 004 for the positioning decisio
 | Learning Paths | Built | Multi-course sequences with prerequisites |
 | Enrollment & Invitations | Built | Self-enrollment, invitations, CSV bulk import |
 | Ratings & Reviews | Built | 5-star ratings with reviews |
-| Certificate Management | Planned | Completion certificates |
-| Communication | Planned | Forums, messaging, announcements |
-| Reporting & Analytics | Planned | Dashboards, reports |
+| Certificate Management | Built | PDF certificates with public verification |
+| Communication | Partial | In-app notifications; forums and messaging not built |
+| Reporting & Analytics | Built | Audit log, activity reports, CSV export |
 
 ---
 
@@ -469,17 +469,21 @@ Controller                           Page Component
 | Role | Code | Capabilities |
 |------|------|--------------|
 | Learner | `learner` | Enroll, view content, take assessments, rate courses |
-| Content Manager | `content_manager` | Create/manage own courses, cannot publish |
-| Trainer | `trainer` | Same as content_manager + invite learners |
-| LMS Admin | `lms_admin` | Full access, publish/archive, grade all |
+| LMS Admin | `lms_admin` | Full access: author, publish/archive, grant enrollment, grade |
+
+ADR 007 collapsed the earlier seven roles to these two. Tenant Admin, Tenant Owner
+and Operator are Enteraksi roles; ADR 005 phases them in.
 
 **Helper Methods** (User model):
 ```php
 $user->isLearner();
-$user->isContentManager();
-$user->isTrainer();
 $user->isLmsAdmin();
-$user->canManageCourses(); // content_manager, trainer, lms_admin
+
+// Capability methods are the seam where a future role regains a grant.
+// All of them currently resolve to isLmsAdmin().
+$user->canManageCourses();
+$user->canManageLearningPaths();
+$user->canGradeAssessments();
 ```
 
 ### Authorization Policies
@@ -491,7 +495,7 @@ $user->canManageCourses(); // content_manager, trainer, lms_admin
 | `LessonPolicy` | Lesson | Active enrollment required for learners |
 | `AssessmentPolicy` | Assessment | Published assessments cannot be modified; Enrollment for attempts |
 | `CourseRatingPolicy` | CourseRating | Ownership-based; Must be enrolled to rate |
-| `CourseInvitationPolicy` | CourseInvitation | Course owner, LMS Admin, or Trainer can invite |
+| `CourseInvitationPolicy` | CourseInvitation | Course owner or LMS Admin can invite |
 | `LearningPathPolicy` | LearningPath | Creator or LMS Admin can modify |
 
 ---
@@ -602,10 +606,10 @@ php artisan wayfinder:generate  # Regenerate route types
 
 | Role | Email | Password |
 |------|-------|----------|
-| Learner | `test@example.com` | `password` |
-| Content Manager | `content@example.com` | `password` |
-| Trainer | `trainer@example.com` | `password` |
-| LMS Admin | `admin@example.com` | `password` |
+| Learner | `learner@enterlms.test` | `password` |
+| LMS Admin | `admin@enterlms.test` | `password` |
+
+See `FreeFlowDemoSeeder` for the authoritative list.
 
 ---
 

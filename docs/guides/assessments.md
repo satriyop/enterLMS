@@ -5,7 +5,7 @@ How to create quizzes, tests, and assessments in EnterLMS.
 ## Prerequisites
 
 - A published or draft course
-- User role: Content Manager, Trainer, or LMS Admin
+- User role: LMS Admin
 
 ---
 

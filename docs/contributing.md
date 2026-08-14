@@ -207,7 +207,7 @@ class CourseTest extends TestCase
 
     public function test_user_can_create_course(): void
     {
-        $user = User::factory()->create(['role' => 'content_manager']);
+        $user = User::factory()->create(['role' => 'lms_admin']);
 
         $response = $this->actingAs($user)
             ->post('/courses', [

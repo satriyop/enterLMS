@@ -4,7 +4,7 @@ How to create, edit, and manage courses in EnterLMS.
 
 ## Prerequisites
 
-- User role: Content Manager, Trainer, or LMS Admin
+- User role: LMS Admin
 - Logged in to the system
 
 ---
@@ -13,7 +13,7 @@ How to create, edit, and manage courses in EnterLMS.
 
 ### Step 1: Navigate to Courses
 
-1. Log in with a Content Manager, Trainer, or Admin account
+1. Log in with an LMS Admin account
 2. Click **"Courses"** in the sidebar
 3. Click the **"Create Course"** button
 

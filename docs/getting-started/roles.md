@@ -1,264 +1,82 @@
 # Understanding User Roles
 
-EnterLMS uses role-based access control (RBAC) with four distinct roles. Each role has specific permissions and capabilities.
+EnterLMS models **two** roles: `learner` and `lms_admin`.
 
-## Role Hierarchy
+ADR 007 collapsed the earlier seven (content manager, trainer, teaching assistant,
+compliance officer, auditor, …) into these two. Tenant Admin, Tenant Owner and
+Operator are **Enteraksi** roles — `CONTEXT.md` names them so we can talk about the
+people, but they are not roles in this academy. ADR 005 phases them in.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        LMS Admin                             │
-│  Full system access, publish courses, manage all users       │
-├─────────────────────────────────────────────────────────────┤
-│                         Trainer                              │
-│  Create courses, invite learners, grade assessments          │
-├─────────────────────────────────────────────────────────────┤
-│                     Content Manager                          │
-│  Create and manage own courses                               │
-├─────────────────────────────────────────────────────────────┤
-│                         Learner                              │
-│  Enroll in courses, take assessments, track progress         │
-└─────────────────────────────────────────────────────────────┘
-```
+## The two roles
 
-## Role Comparison
+| Role | Code | What they do |
+|------|------|--------------|
+| Learner | `learner` | Enroll, view lessons, take assessments, rate Courses, earn Certificates |
+| LMS Admin | `lms_admin` | Everything a Learner does, plus: author and publish Courses and Learning Paths, grant Enrollment to Restricted Courses, grade, and report |
 
-| Capability | Learner | Content Manager | Trainer | LMS Admin |
-|------------|---------|-----------------|---------|-----------|
-| Enroll in courses | Yes | Yes | Yes | Yes |
-| View lessons | Yes | Yes | Yes | Yes |
-| Take assessments | Yes | Yes | Yes | Yes |
-| Rate courses | Yes | Yes | Yes | Yes |
-| Create courses | No | Yes | Yes | Yes |
-| Edit own courses | No | Yes | Yes | Yes |
-| Edit any course | No | No | No | Yes |
-| Publish courses | No | No | No | Yes |
-| Archive courses | No | No | No | Yes |
-| Invite learners | No | No | Yes | Yes |
-| Grade assessments | No | Own courses | Own courses | Any |
-| Manage users | No | No | No | Yes |
+An LMS Admin may also be a Learner — the roles are not exclusive in practice, since
+the founder takes their own Courses.
 
-## Detailed Role Descriptions
+In this phase **LMS Admin is only the founder**. There is no second staff member to
+be isolated from, which is why the policies below are broader than they would be in
+a multi-tenant product.
 
-### Learner (Default Role)
-
-The default role assigned to new users upon registration.
-
-**Can do:**
-- Browse published public courses
-- Enroll in public courses
-- Accept course invitations for restricted courses
-- View lessons in enrolled courses
-- Track progress through courses
-- Take assessments and quizzes
-- View assessment results
-- Rate and review enrolled courses
-
-**Cannot do:**
-- Create or edit courses
-- Invite other users
-- Access admin dashboard
-- Publish or archive content
-
-**Best for:** Students, employees taking training, anyone consuming learning content.
-
----
-
-### Content Manager
-
-For users who create learning content but don't need full administrative access.
-
-**Can do:**
-- Everything a Learner can do
-- Create new courses
-- Edit their own courses (draft and archived only)
-- Add sections and lessons to own courses
-- Upload media (videos, documents, audio)
-- Create assessments for own courses
-- View assessment attempts on own courses
-- Grade assessments on own courses
-
-**Cannot do:**
-- Publish courses (requires LMS Admin)
-- Edit published courses
-- Invite learners directly
-- Access other users' courses
-- Archive courses
-
-**Best for:** Subject matter experts, content creators, instructional designers.
-
----
-
-### Trainer
-
-Extended permissions for managing learner enrollment and engagement.
-
-**Can do:**
-- Everything a Content Manager can do
-- Invite learners to courses (single and bulk)
-- View all course invitations
-- Cancel pending invitations
-- Grade assessments on any course they have access to
-
-**Cannot do:**
-- Publish or archive courses
-- Edit other users' courses
-- Administrative functions
-
-**Best for:** Instructors, facilitators, team leads managing training.
-
----
-
-### LMS Admin
-
-Full system administrator with unrestricted access.
-
-**Can do:**
-- Everything all other roles can do
-- Publish courses (make available to learners)
-- Unpublish courses (remove from catalog)
-- Archive courses (soft-remove)
-- Edit any course (including published)
-- Delete any course
-- Grade any assessment
-- Manage all invitations
-- Access all system functions
-
-**Best for:** System administrators, training managers, platform owners.
-
----
-
-## Role Assignment
-
-### During Registration
-
-New users are automatically assigned the `learner` role:
+## Checking a role
 
 ```php
-// app/Actions/Fortify/CreateNewUser.php
-User::create([
-    'name' => $input['name'],
-    'email' => $input['email'],
-    'password' => Hash::make($input['password']),
-    'role' => 'learner',  // Default role
-]);
+$user->isLearner();
+$user->isLmsAdmin();
 ```
 
-### Changing Roles
-
-Currently, roles can only be changed directly in the database or via Tinker:
-
-```bash
-php artisan tinker
-```
+Prefer the **capability** methods over the role check in authorization code:
 
 ```php
-$user = User::where('email', 'user@example.com')->first();
-$user->role = 'trainer';
-$user->save();
+$user->canManageCourses();
+$user->canManageLearningPaths();
+$user->canGradeAssessments();
 ```
 
-> **Note**: A user management UI for role assignment is planned for future development.
+All three currently return `$this->isLmsAdmin()`. They exist as the seam where a
+future role regains a grant without every policy having to be rewritten — see ADR 007.
 
----
+In Vue, the role arrives on the shared Inertia props:
 
-## Role Checks in Code
+```ts
+const page = usePage();
+const isLmsAdmin = computed(() => page.props.auth.user?.role === 'lms_admin');
+```
 
-### In Controllers
+Use this to decide what to *show*. Never use it to decide what is *allowed* —
+authorization belongs in a policy, and hiding a button is not access control.
+
+## What the collapse cost
+
+ADR 007 recorded two authorization boundaries that were given up deliberately:
+
+- **Draft-only editing is gone.** `CoursePolicy::update()` returns `true` for any
+  LMS Admin before the ownership branch is reached, so published Courses are no
+  longer frozen to their author. The ownership branch is kept as the seam, but it
+  is unreachable today.
+- **Rating moderation is self-moderation.** The founder is both author and
+  moderator, so they can delete ratings on their own Courses.
+
+Neither is defensible in a multi-tenant product. Both are correct while the academy
+has one operator. Do not "fix" them without an ADR that also phases in the second
+role.
+
+## Changing a user's role
 
 ```php
-// Check if user can manage courses
-if ($user->canManageCourses()) {
-    // Content Manager, Trainer, or Admin
-}
-
-// Check specific role
-if ($user->isLmsAdmin()) {
-    // Admin only
-}
+$user->update(['role' => 'lms_admin']);
 ```
 
-### In Policies
+Only `learner` and `lms_admin` are valid. The migration
+`2026_08_13_165251_collapse_roles_to_learner_and_lms_admin` mapped every retired
+role onto one of these; reintroducing an old string will fail the enum constraint.
 
-```php
-// CoursePolicy.php
-public function publish(User $user, Course $course): bool
-{
-    return $user->isLmsAdmin();
-}
+## Related
 
-public function update(User $user, Course $course): bool
-{
-    if ($user->isLmsAdmin()) {
-        return true;
-    }
-
-    return $user->canManageCourses()
-        && $course->user_id === $user->id
-        && $course->status !== 'published';
-}
-```
-
-### In Blade/Vue Templates
-
-```vue
-<template>
-  <!-- Show only to admins -->
-  <button v-if="$page.props.auth.user.role === 'lms_admin'">
-    Publish Course
-  </button>
-
-  <!-- Show to anyone who can manage courses -->
-  <button v-if="canManageCourses">
-    Edit Course
-  </button>
-</template>
-
-<script setup>
-const canManageCourses = computed(() => {
-  const role = usePage().props.auth.user?.role;
-  return ['content_manager', 'trainer', 'lms_admin'].includes(role);
-});
-</script>
-```
-
----
-
-## Helper Methods Reference
-
-Available on the `User` model:
-
-| Method | Returns `true` for |
-|--------|-------------------|
-| `isLearner()` | learner |
-| `isContentManager()` | content_manager |
-| `isTrainer()` | trainer |
-| `isLmsAdmin()` | lms_admin |
-| `canManageCourses()` | content_manager, trainer, lms_admin |
-
----
-
-## Common Scenarios
-
-### "User can't see their created course"
-- Check if user has `content_manager`, `trainer`, or `lms_admin` role
-- Learners cannot create courses
-
-### "User can't publish their course"
-- Only `lms_admin` can publish
-- Content Managers and Trainers must request publication from an admin
-
-### "User can't edit published course"
-- Published courses are locked to prevent accidental changes
-- Only `lms_admin` can edit published courses
-
-### "User can't invite learners"
-- Only `trainer` and `lms_admin` can send invitations
-- Content Managers cannot invite directly
-
----
-
-## Next Steps
-
-- [Your First Course](./first-course.md) - Create content as Content Manager
-- [Course Management Guide](../guides/course-management.md) - Detailed course operations
-- [Security Architecture](../architecture/security.md) - How authorization works
+- `CONTEXT.md` — the vocabulary, including which roles belong to Enteraksi rather than here
+- [ADR 004](../adr/004-academy-for-ai-product-family.md) — the repositioning
+- [ADR 005](../adr/005-identity-phasing.md) — how Tenant Admin and Operator phase in
+- [ADR 007](../adr/007-tenang-conformance.md) — the role collapse and what it cost

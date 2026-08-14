@@ -9,7 +9,7 @@ class EnrollmentPolicy
 {
     /**
      * Determine whether the user can view any enrollments.
-     * Admins and trainers see all; learners see only their own (handled by query scoping).
+     * LMS Admin sees all; learners see only their own (handled by query scoping).
      */
     public function viewAny(User $user): bool
     {

@@ -1,53 +1,36 @@
 # General Requirement
 
-## Scope authority
+## Read CONTEXT.md first
 
-`CONTEXT.md` at the repo root owns the domain language; `docs/adr/` owns the decisions.
-This file carries only build requirements that cut across every feature.
+`CONTEXT.md` at the repo root is the authority on what this product is, who uses
+it, and what is out of scope. `docs/adr/` holds the decisions and the reasoning
+behind them.
 
-Where this file and `CONTEXT.md` disagree, `CONTEXT.md` wins and this file is the bug.
+Read `CONTEXT.md` before any implementation decision.
 
-## Overview of the application
+**Do not restate its contents here.** This file is composed into `CLAUDE.md` and
+loaded into every session automatically, so a domain fact copied into it keeps
+being asserted long after the decision that changed it — and it outranks the
+correct file, because only the copy is loaded. That is not hypothetical: the
+banking/OJK positioning ADR 004 retired went on being stated here until it was
+caught by a reader, not by a test.
 
-- EnterLMS is an academy for the people who run and build Satriyo's AI product family
-  (Enteraksi first). It is not a generic AI school and not a control plane for live
-  agents (ADR 004).
-- Two roles are modelled: **Learner** and **LMS Admin**. Tenant Admin, Tenant Owner and
-  Operator are Enteraksi roles, named so we can talk about the people; ADR 005 phases
-  them in.
-- The public catalog lists **Open Courses** only — a Learner may self-enroll.
-  **Restricted Courses** and **Learning Paths** are granted by LMS Admin.
-- Agent runtimes (OpenClaw, Hermes) are Course subjects, never systems operated from
-  inside this academy.
+This file carries only requirements that hold regardless of what the domain is.
+Anything that would need editing if the product were repositioned again belongs
+in `CONTEXT.md` or an ADR, not here.
+
+Scope is enforced, not merely documented — see `tests/Feature/Docs/`.
 
 ## Build requirements
 
-- Primary language is Bahasa Indonesia. Seed data uses Indonesian names and context.
-- Responsive UI is mandatory.
+- Primary language is Bahasa Indonesia, including validation messages. Seed data
+  uses Indonesian names and context.
+- Responsive UI is mandatory; every page must work on mobile.
 - Every feature ships with tests. See the test enforcement rules in `CLAUDE.md`.
-- Input validated and sanitised. Authorization is enforced by policy, never by hiding UI.
-- The design conforms to the Tenang hybrid: semantic tokens and editorial type, no stock
-  Tailwind hues (ADR 007). The gate is `tests/Feature/Design/TenangConformanceTest.php`.
-- Lesson forms are text, video, audio, document, YouTube, and conference.
-
-## Out of scope
-
-Frozen or deleted. Do not build against these, and do not restore them without an ADR:
-
-- **Banking / OJK / APU-PPT** compliance domain — frozen (ADR 004)
-- **Payment, SCORM, Question Bank** — deleted with the frozen scope, not deprecated
-  (ADR 007). A priced Course has no self-serve path; LMS Admin grants Enrollment.
-- **LTI, xAPI, HRIS/ERP integration, MOOC import** — never built, not in this phase
-- **Unified Enteraksi login** — later. Public Learners register here.
-- **Tenant-facing Restricted Courses** — handover for Tenant Admins is not in this phase.
-
-## Key modules
-
-1. User Management
-2. Course Management
-3. Content Delivery
-4. Assessment & Grading
-5. Progress Tracking & Reporting
-6. Certificate Management
-7. Enrollment
-8. Communication (notifications; forums and messaging are aspirational)
+- All input is validated and sanitised. Authorization is enforced by policy,
+  never by hiding UI.
+- The UI conforms to the Tenang design system: semantic tokens and editorial
+  type, no stock Tailwind hues (ADR 007). Gate:
+  `tests/Feature/Design/TenangConformanceTest.php`.
+- Prefer deleting code over adding abstraction. See the anti-over-engineering
+  rules at the top of `CLAUDE.md`.

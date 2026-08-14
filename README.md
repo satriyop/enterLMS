@@ -1,6 +1,6 @@
 # EnterLMS
 
-A Learning Management System built for Indonesian banking and financial compliance training.
+An academy for people who run and build Satriyo's AI product family. Not a generic AI school, and not a live-agent control plane.
 
 [![PHP Version](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel)](https://laravel.com)
@@ -10,10 +10,10 @@ A Learning Management System built for Indonesian banking and financial complian
 
 ## Overview
 
-EnterLMS is an enterprise LMS designed for:
-- **Banking/Financial Compliance Training** - OJK regulation compliance, AML, cyber security
-- **Indonesian Context** - Bahasa Indonesia UI, local date formats, Indonesian content
-- **Industry Standards** - SCORM, xAPI, LTI compatible architecture
+EnterLMS is an academy for:
+- **Open Courses** — public, free intro such as Pengenalan Agen AI
+- **Restricted Courses** — Operator work such as Administrasi Agen OpenClaw (LMS Admin grants Enrollment)
+- **Indonesian Context** — Bahasa Indonesia UI, local date formats, Indonesian content
 
 ## Quick Start
 
@@ -73,11 +73,10 @@ After seeding (`php artisan migrate:fresh --seed`), password for all demo accoun
 | Role | Email |
 |------|-------|
 | Learner | learner@enterlms.test |
-| Content Manager | content@enterlms.test |
-| Trainer | trainer@enterlms.test |
 | LMS Admin | admin@enterlms.test |
+| Operator (Learner on the restricted path) | operator@enterlms.test |
 
-Free orientation course: **Orientasi Kepatuhan Perbankan (Demo Gratis)**.
+Open Course: **Pengenalan Agen AI**. Restricted path (not in the public catalog): **Jalur Operator OpenClaw**.
 
 ```bash
 # Free-flow demo only (users + one free course)

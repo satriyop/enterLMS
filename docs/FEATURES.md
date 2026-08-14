@@ -99,7 +99,7 @@
 
 ## Course Management
 
-### Create Course (Content Manager/Trainer/Admin)
+### Create Course (LMS Admin)
 
 **Route:** `POST /courses`
 **Controller:** `CourseController@store`
@@ -490,7 +490,7 @@ Enrollment is handled by `EnrollmentService` which manages the enrollment lifecy
 
 **Flow:**
 ```
-1. Course owner/trainer/admin opens Invitations tab
+1. Course owner or LMS Admin opens Invitations tab
 2. Search for learner by email/name
 3. Select learner, add optional message and expiry
 4. Submit

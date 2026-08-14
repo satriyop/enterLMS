@@ -143,7 +143,7 @@ class Enrollment extends Model
      * Reactivate a dropped enrollment.
      *
      * @param  bool  $preserveProgress  Whether to keep previous progress (default: true)
-     * @param  int|null  $invitedBy  Optional new inviter (e.g., re-invited by different trainer)
+     * @param  int|null  $invitedBy  Optional new inviter
      *
      * @throws InvalidStateTransitionException if not currently dropped
      */

@@ -13,7 +13,7 @@ class CourseInvitationPolicy
      */
     public function viewAny(User $user, Course $course): bool
     {
-        // Course owner, lms_admin, or trainer can view invitations
+        // Course owner or LMS Admin can view invitations
         return $user->id === $course->user_id
             || in_array($user->role, ['lms_admin', 'lms_admin']);
     }
@@ -28,7 +28,7 @@ class CourseInvitationPolicy
             return true;
         }
 
-        // Course owner, lms_admin, or trainer can view
+        // Course owner or LMS Admin can view
         return $user->id === $invitation->course->user_id
             || in_array($user->role, ['lms_admin', 'lms_admin']);
     }
@@ -38,7 +38,7 @@ class CourseInvitationPolicy
      */
     public function create(User $user, Course $course): bool
     {
-        // Course owner, lms_admin, or trainer can invite
+        // Course owner or LMS Admin can invite
         return $user->id === $course->user_id
             || in_array($user->role, ['lms_admin', 'lms_admin']);
     }

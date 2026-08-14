@@ -19,7 +19,7 @@
 ```
                                     ┌─────────────────┐
                                     │      User       │
-                                    │   (4 roles)     │
+                                    │   (2 roles)     │
                                     └────────┬────────┘
                                              │
               ┌──────────────────────────────┼──────────────────────────────┐
@@ -118,7 +118,7 @@
 | email | string | Unique email |
 | email_verified_at | timestamp | Verification timestamp |
 | password | string | Hashed password |
-| role | enum | `learner`, `content_manager`, `trainer`, `lms_admin` |
+| role | enum | `learner`, `lms_admin` (ADR 007 collapsed the earlier seven) |
 | two_factor_secret | text | 2FA TOTP secret |
 | two_factor_recovery_codes | text | 2FA recovery codes |
 | two_factor_confirmed_at | timestamp | 2FA confirmation |
@@ -137,10 +137,12 @@ courseRatings()     → HasMany(CourseRating)
 #### Role Helper Methods
 ```php
 isLearner(): bool
-isContentManager(): bool
-isTrainer(): bool
 isLmsAdmin(): bool
-canManageCourses(): bool  // content_manager, trainer, or lms_admin
+
+// Capability seams; all currently resolve to isLmsAdmin()
+canManageCourses(): bool
+canManageLearningPaths(): bool
+canGradeAssessments(): bool
 ```
 
 ---
@@ -978,7 +980,7 @@ ordered()     // ORDER BY position
 
 | Seeder | Purpose | Data Created |
 |--------|---------|--------------|
-| `DatabaseSeeder` | Main orchestrator | 4 test users (learner, content_manager, trainer, lms_admin) |
+| `DatabaseSeeder` | Main orchestrator | Learner accounts with Indonesian names |
 | `CategorySeeder` | Course categories | 6 Indonesian categories (IT, Business, Language, Design, Finance, Soft Skills) |
 | `TagSeeder` | Content tags | 37 tags covering tech, business, design |
 | `CourseSeeder` | Full course structure | 5 courses with sections, lessons, media |
@@ -990,10 +992,8 @@ ordered()     // ORDER BY position
 
 | Role | Email | Name |
 |------|-------|------|
-| learner | `test@example.com` | Test User |
-| content_manager | `content@example.com` | Content Manager |
-| trainer | `trainer@example.com` | Trainer |
-| lms_admin | `admin@example.com` | LMS Admin |
+| learner | `learner@enterlms.test` | Budi Santoso |
+| lms_admin | `admin@enterlms.test` | Dewi Lestari |
 
 **Default Password:** `password`
 
