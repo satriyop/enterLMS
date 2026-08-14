@@ -2,6 +2,8 @@
 
 use App\Domain\LearningPath\Services\PathEnrollmentService;
 use App\Domain\LearningPath\States\LockedCourseState;
+use App\Domain\Progress\Events\LessonDeleted;
+use App\Domain\Progress\Listeners\RecalculateProgressOnLessonDeletion;
 use App\Domain\Progress\Services\ProgressTrackingService;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -48,10 +50,13 @@ describe('empty Course completion', function () {
         expect($enrollment->isCompleted())->toBeTrue();
 
         foreach ($lessons as $lesson) {
+            $lessonId = $lesson->id;
+            $title = $lesson->title;
             $lesson->delete();
+            app(RecalculateProgressOnLessonDeletion::class)
+                ->handle(new LessonDeleted($lessonId, $course->fresh(), $title));
         }
 
-        $progressService->recalculateCourseProgress($enrollment->fresh());
         $enrollment->refresh();
 
         expect((float) $enrollment->progress_percentage)->toBe(0.0);
