@@ -61,7 +61,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Should NOT be complete because required assessment not passed
-            expect($this->calculator->isComplete($enrollment))->toBeFalse();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeFalse();
         });
 
         it('blocks completion when required assessment attempted but failed', function () {
@@ -104,7 +104,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Should NOT be complete because required assessment failed
-            expect($this->calculator->isComplete($enrollment))->toBeFalse();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeFalse();
         });
 
         it('allows completion when required assessment passed', function () {
@@ -147,7 +147,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Should be complete
-            expect($this->calculator->isComplete($enrollment))->toBeTrue();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeTrue();
         });
 
     });
@@ -184,7 +184,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Should be complete - optional assessment doesn't block
-            expect($this->calculator->isComplete($enrollment))->toBeTrue();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeTrue();
         });
 
         it('does not block completion when optional assessment failed', function () {
@@ -222,7 +222,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Should still be complete - optional assessment failure doesn't block
-            expect($this->calculator->isComplete($enrollment))->toBeTrue();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeTrue();
         });
 
     });
@@ -274,7 +274,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Not complete yet - second required assessment not passed
-            expect($this->calculator->isComplete($enrollment))->toBeFalse();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeFalse();
 
             // Now pass second assessment
             AssessmentAttempt::factory()->graded()->create([
@@ -284,7 +284,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Now complete
-            expect($this->calculator->isComplete($enrollment))->toBeTrue();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeTrue();
         });
 
         it('mixed required and optional assessments only require required ones', function () {
@@ -332,7 +332,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Should be complete - only required assessment needs to be passed
-            expect($this->calculator->isComplete($enrollment))->toBeTrue();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeTrue();
         });
 
     });
@@ -369,7 +369,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Should be complete - draft assessments are ignored
-            expect($this->calculator->isComplete($enrollment))->toBeTrue();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeTrue();
         });
 
     });
@@ -405,7 +405,7 @@ describe('Required Assessment Blocking Completion', function () {
 
             // No assessment passed yet (0% assessment progress)
             // Expected: 70% (lesson weight) + 0% (assessment weight) = 70%
-            $progress = $this->calculator->calculate($enrollment);
+            $progress = $this->calculator->calculateCourseProgress($enrollment);
             expect($progress)->toBe(70.0);
 
             // Now pass assessment
@@ -416,7 +416,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Expected: 70% (lesson) + 30% (assessment) = 100%
-            $progress = $this->calculator->calculate($enrollment);
+            $progress = $this->calculator->calculateCourseProgress($enrollment);
             expect($progress)->toBe(100.0);
         });
 
@@ -460,7 +460,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Should NOT be complete - lessons not all done
-            expect($this->calculator->isComplete($enrollment))->toBeFalse();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeFalse();
         });
 
     });
@@ -503,7 +503,7 @@ describe('Required Assessment Blocking Completion', function () {
                 'passed' => false,
             ]);
 
-            expect($this->calculator->isComplete($enrollment))->toBeFalse();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeFalse();
 
             // Second attempt - passed
             AssessmentAttempt::factory()->graded()->create([
@@ -514,7 +514,7 @@ describe('Required Assessment Blocking Completion', function () {
             ]);
 
             // Should be complete now
-            expect($this->calculator->isComplete($enrollment))->toBeTrue();
+            expect($this->calculator->isCourseComplete($enrollment))->toBeTrue();
         });
 
     });

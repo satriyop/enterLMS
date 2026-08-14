@@ -53,7 +53,7 @@ describe('AssessmentInclusiveProgressCalculator with is_required column', functi
         $calculator = new AssessmentInclusiveProgressCalculator;
 
         // Should be complete - optional assessment not required
-        expect($calculator->isComplete($enrollment))->toBeTrue();
+        expect($calculator->isCourseComplete($enrollment))->toBeTrue();
     });
 
     it('does not complete when required assessment not passed', function () {
@@ -84,7 +84,7 @@ describe('AssessmentInclusiveProgressCalculator with is_required column', functi
 
         $calculator = new AssessmentInclusiveProgressCalculator;
 
-        expect($calculator->isComplete($enrollment))->toBeFalse();
+        expect($calculator->isCourseComplete($enrollment))->toBeFalse();
     });
 
     it('completes when no required assessments exist', function () {
@@ -115,7 +115,7 @@ describe('AssessmentInclusiveProgressCalculator with is_required column', functi
         $calculator = new AssessmentInclusiveProgressCalculator;
 
         // No required assessments = complete if lessons done
-        expect($calculator->isComplete($enrollment))->toBeTrue();
+        expect($calculator->isCourseComplete($enrollment))->toBeTrue();
     });
 
     it('completes when no assessments at all and lessons done', function () {
@@ -141,7 +141,7 @@ describe('AssessmentInclusiveProgressCalculator with is_required column', functi
         $calculator = new AssessmentInclusiveProgressCalculator;
 
         // No assessments = complete if lessons done
-        expect($calculator->isComplete($enrollment))->toBeTrue();
+        expect($calculator->isCourseComplete($enrollment))->toBeTrue();
     });
 
     it('does not complete when lessons not done even with assessments passed', function () {
@@ -172,6 +172,6 @@ describe('AssessmentInclusiveProgressCalculator with is_required column', functi
         $calculator = new AssessmentInclusiveProgressCalculator;
 
         // Lessons not done = not complete
-        expect($calculator->isComplete($enrollment))->toBeFalse();
+        expect($calculator->isCourseComplete($enrollment))->toBeFalse();
     });
 });

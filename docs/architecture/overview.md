@@ -163,7 +163,7 @@ EnterLMS is a Learning Management System (LMS) designed for:
 | Monolithic architecture | Simpler deployment, sufficient for scale |
 | Domain-Driven Design layer | Complex business logic isolation, testability |
 | State machine pattern | Clear lifecycle management for Course/Enrollment |
-| Strategy pattern | Swappable progress calculators and grading strategies |
+| Strategy pattern | Swappable grading strategies and prerequisite evaluators (not progress — see ADR 008) |
 | Service layer | Business logic separate from controllers/models |
 | Policy-based authorization | Fine-grained access control |
 | Polymorphic media | Flexible attachment to any model |

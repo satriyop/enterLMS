@@ -21,7 +21,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
         $course = Course::factory()->create();
         $enrollment = Enrollment::factory()->create(['course_id' => $course->id]);
 
-        $progress = $this->calculator->calculate($enrollment);
+        $progress = $this->calculator->calculateCourseProgress($enrollment);
 
         // No lessons = 100% lesson progress, no assessments = 100% assessment progress
         // (100 * 0.7) + (100 * 0.3) = 100
@@ -45,7 +45,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
             'lesson_id' => $lessons[1]->id,
         ]);
 
-        $progress = $this->calculator->calculate($enrollment);
+        $progress = $this->calculator->calculateCourseProgress($enrollment);
 
         // (50 * 0.7) + (100 * 0.3) = 35 + 30 = 65
         expect($progress)->toBe(65.0);
@@ -65,7 +65,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
             'user_id' => $enrollment->user_id,
         ]);
 
-        $progress = $this->calculator->calculate($enrollment);
+        $progress = $this->calculator->calculateCourseProgress($enrollment);
 
         // No lessons = 100% lesson progress
         // (100 * 0.7) + (50 * 0.3) = 70 + 15 = 85
@@ -97,7 +97,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
             'user_id' => $enrollment->user_id,
         ]);
 
-        $progress = $this->calculator->calculate($enrollment);
+        $progress = $this->calculator->calculateCourseProgress($enrollment);
 
         // (100 * 0.7) + (50 * 0.3) = 70 + 15 = 85
         expect($progress)->toBe(85.0);
@@ -132,7 +132,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
             'user_id' => $enrollment->user_id,
         ]);
 
-        $progress = $this->calculator->calculate($enrollment);
+        $progress = $this->calculator->calculateCourseProgress($enrollment);
 
         expect($progress)->toBe(100.0);
     });
@@ -144,7 +144,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
         // Create draft assessment (should be ignored)
         Assessment::factory()->draft()->create(['course_id' => $course->id]);
 
-        $progress = $this->calculator->calculate($enrollment);
+        $progress = $this->calculator->calculateCourseProgress($enrollment);
 
         // No lessons = 100%, draft assessment ignored = 100%
         expect($progress)->toBe(100.0);
@@ -164,7 +164,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
             ]);
         }
 
-        $isComplete = $this->calculator->isComplete($enrollment);
+        $isComplete = $this->calculator->isCourseComplete($enrollment);
 
         expect($isComplete)->toBeTrue();
     });
@@ -176,7 +176,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
 
         $enrollment = Enrollment::factory()->create(['course_id' => $course->id]);
 
-        $isComplete = $this->calculator->isComplete($enrollment);
+        $isComplete = $this->calculator->isCourseComplete($enrollment);
 
         expect($isComplete)->toBeFalse();
     });
@@ -206,7 +206,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
             'user_id' => $enrollment->user_id,
         ]);
 
-        $isComplete = $this->calculator->isComplete($enrollment);
+        $isComplete = $this->calculator->isCourseComplete($enrollment);
 
         // Course is complete because all lessons are done and assessment is optional
         expect($isComplete)->toBeTrue();
@@ -236,7 +236,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
             'user_id' => $enrollment->user_id,
         ]);
 
-        $isComplete = $this->calculator->isComplete($enrollment);
+        $isComplete = $this->calculator->isCourseComplete($enrollment);
 
         expect($isComplete)->toBeTrue();
     });
@@ -249,7 +249,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
             // Create required assessment but no attempts
             Assessment::factory()->published()->required()->create(['course_id' => $course->id]);
 
-            $progress = $this->calculator->calculate($enrollment);
+            $progress = $this->calculator->calculateCourseProgress($enrollment);
 
             // No lessons = 100%, no passed assessments = 0%
             // (100 * 0.7) + (0 * 0.3) = 70 + 0 = 70
@@ -268,7 +268,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
                 'user_id' => $enrollment->user_id,
             ]);
 
-            $progress = $this->calculator->calculate($enrollment);
+            $progress = $this->calculator->calculateCourseProgress($enrollment);
 
             // (100 * 0.7) + (0 * 0.3) = 70
             expect($progress)->toBe(70.0);
@@ -290,7 +290,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
                 'user_id' => $enrollment->user_id,
             ]);
 
-            $progress = $this->calculator->calculate($enrollment);
+            $progress = $this->calculator->calculateCourseProgress($enrollment);
 
             // (100 * 0.7) + (100 * 0.3) = 100
             expect($progress)->toBe(100.0);
@@ -310,7 +310,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
                 'user_id' => $enrollment->user_id,
             ]);
 
-            $progress = $this->calculator->calculate($enrollment);
+            $progress = $this->calculator->calculateCourseProgress($enrollment);
 
             // Only required assessments count: 1/1 passed = 100%
             // (100 * 0.7) + (100 * 0.3) = 100
@@ -329,7 +329,7 @@ describe('AssessmentInclusiveProgressCalculator', function () {
                 'user_id' => $enrollment->user_id,
             ]);
 
-            $isComplete = $this->calculator->isComplete($enrollment);
+            $isComplete = $this->calculator->isCourseComplete($enrollment);
 
             expect($isComplete)->toBeFalse();
         });

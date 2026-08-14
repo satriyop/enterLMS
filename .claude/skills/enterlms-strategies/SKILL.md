@@ -1,6 +1,6 @@
 ---
 name: enterlms-strategies
-description: Strategy pattern implementations for EnterLMS. Use when creating pluggable algorithms like grading strategies, progress calculators, or prerequisite evaluators.
+description: Strategy pattern implementations for EnterLMS. Use when creating pluggable algorithms like grading strategies or prerequisite evaluators. Progress calculation is NOT a strategy (ADR 008).
 triggers:
   - strategy pattern
   - create strategy
@@ -21,10 +21,11 @@ triggers:
 > factory, and the `LessonBased` and `Weighted` calculators were deleted;
 > `AssessmentInclusiveProgressCalculator` is a plain class.
 >
-> Every `ProgressCalculator*` snippet in this file is retained as *shape only*.
-> They are also the cautionary tale: the factory selected on a per-Course column
-> that was never migrated, so it always returned the config default and two of
-> its three strategies were unreachable for the life of the codebase.
+> The examples in this file were rewritten onto grading and prerequisite
+> evaluation, which are live. Progress remains here only as the cautionary tale:
+> its factory selected on a per-Course column that was never migrated, so it
+> always returned the config default and two of its three strategies were
+> unreachable for the life of the codebase.
 >
 > **A strategy needs a selector that exists** — a migrated column, or config
 > something actually sets. Not just a `match` arm. Grading passes that test
@@ -233,128 +234,77 @@ class GradingStrategyResolver implements GradingStrategyResolverContract
 ### 4. Strategy Factory (Config-Driven)
 
 ```php
-// Deleted — illustrative only. See app/Domain/LearningPath/Services/PrerequisiteEvaluatorFactory.php
-// for a factory that is actually in use.
-namespace App\Domain\Progress\Services;
+// app/Domain/LearningPath/Services/PrerequisiteEvaluatorFactory.php
+namespace App\Domain\LearningPath\Services;
 
-use App\Domain\Progress\Contracts\ProgressCalculatorContract;
-use App\Domain\Progress\Strategies\LessonBasedProgressCalculator;
-use App\Domain\Progress\Strategies\WeightedProgressCalculator;
-use App\Domain\Progress\Strategies\AssessmentInclusiveProgressCalculator;
-use App\Models\Course;
-use Illuminate\Contracts\Container\Container;
+use App\Domain\LearningPath\Contracts\PrerequisiteEvaluatorContract;
+use App\Domain\LearningPath\Strategies\ImmediatePreviousPrerequisiteEvaluator;
+use App\Domain\LearningPath\Strategies\NoPrerequisiteEvaluator;
+use App\Domain\LearningPath\Strategies\SequentialPrerequisiteEvaluator;
+use App\Models\LearningPath;
+use InvalidArgumentException;
 
-class ProgressCalculatorFactory
+class PrerequisiteEvaluatorFactory
 {
-    public function __construct(protected Container $container) {}
+    /** @var array<string, class-string<PrerequisiteEvaluatorContract>> */
+    private array $evaluators = [
+        'sequential' => SequentialPrerequisiteEvaluator::class,
+        'immediate_previous' => ImmediatePreviousPrerequisiteEvaluator::class,
+        'none' => NoPrerequisiteEvaluator::class,
+    ];
 
     /**
-     * Get calculator for a specific course (can override default).
+     * The selector is `learning_paths.prerequisite_mode` — a real, migrated
+     * column. That is what makes this a factory rather than dead ceremony.
      */
-    public function forCourse(Course $course): ProgressCalculatorContract
+    public function make(LearningPath $path): PrerequisiteEvaluatorContract
     {
-        $calculatorType = $course->progress_calculator_type
-            ?? config('lms.progress_calculator', 'lesson_based');
+        $type = $path->prerequisite_mode
+            ?? config('lms.learning_path.default_prerequisite_mode', 'sequential');
 
-        return $this->resolve($calculatorType);
+        return $this->resolve($type);
     }
 
-    /**
-     * Resolve calculator by type name using match expression.
-     */
-    public function resolve(string $type): ProgressCalculatorContract
+    public function resolve(string $type): PrerequisiteEvaluatorContract
     {
-        return match ($type) {
-            'weighted' => $this->container->make(WeightedProgressCalculator::class),
-            'assessment_inclusive' => $this->container->make(AssessmentInclusiveProgressCalculator::class),
-            default => $this->container->make(LessonBasedProgressCalculator::class),
-        };
-    }
+        if (! isset($this->evaluators[$type])) {
+            throw new InvalidArgumentException("Unknown prerequisite evaluator type: {$type}");
+        }
 
-    public function getAvailableTypes(): array
-    {
-        return [
-            'lesson_based' => 'Berbasis Pelajaran',
-            'weighted' => 'Berbasis Durasi (Tertimbang)',
-            'assessment_inclusive' => 'Termasuk Penilaian',
-        ];
+        return app($this->evaluators[$type]);
     }
 }
 ```
 
-### 5. Progress Calculator Strategy
+> **Unknown type throws.** The deleted `ProgressCalculatorFactory` used
+> `match` with a `default =>` arm, so a typo silently produced a working
+> calculator of the wrong kind. Prefer an explicit failure.
+
+### 5. Contract + Implementation (Prerequisite Evaluator)
 
 ```php
-// app/Domain/Progress/Contracts/ProgressCalculatorContract.php
-namespace App\Domain\Progress\Contracts;
+// app/Domain/LearningPath/Contracts/PrerequisiteEvaluatorContract.php
+namespace App\Domain\LearningPath\Contracts;
 
-use App\Models\Enrollment;
+use App\Models\Course;
+use App\Models\LearningPathEnrollment;
 
-interface ProgressCalculatorContract
+interface PrerequisiteEvaluatorContract
 {
-    /**
-     * Calculate progress for an enrollment.
-     * @return float Progress percentage (0-100)
-     */
-    public function calculate(Enrollment $enrollment): float;
+    /** Whether the learner may start this Course yet. */
+    public function isUnlocked(LearningPathEnrollment $enrollment, Course $course): bool;
 
-    /**
-     * Determine if the enrollment is complete.
-     */
-    public function isComplete(Enrollment $enrollment): bool;
-
-    /**
-     * Get the name of this calculator strategy.
-     */
+    /** Snake_case identifier matching the `prerequisite_mode` column. */
     public function getName(): string;
 }
 ```
 
-```php
-// app/Domain/Progress/Strategies/LessonBasedProgressCalculator.php
-namespace App\Domain\Progress\Strategies;
+Each implementation answers the same question a different way — `sequential`
+requires every earlier Course, `immediate_previous` only the one before, `none`
+unlocks everything. A Path picks between them through `prerequisite_mode`.
 
-use App\Domain\Progress\Contracts\ProgressCalculatorContract;
-use App\Models\Enrollment;
-
-class LessonBasedProgressCalculator implements ProgressCalculatorContract
-{
-    public function calculate(Enrollment $enrollment): float
-    {
-        $totalLessons = $enrollment->course->lessons()->count();
-
-        if ($totalLessons === 0) {
-            return 0;
-        }
-
-        $completedLessons = $enrollment->lessonProgress()
-            ->where('is_completed', true)
-            ->count();
-
-        return round(($completedLessons / $totalLessons) * 100, 1);
-    }
-
-    public function isComplete(Enrollment $enrollment): bool
-    {
-        $totalLessons = $enrollment->course->lessons()->count();
-
-        if ($totalLessons === 0) {
-            return false;
-        }
-
-        $completedLessons = $enrollment->lessonProgress()
-            ->where('is_completed', true)
-            ->count();
-
-        return $completedLessons >= $totalLessons;
-    }
-
-    public function getName(): string
-    {
-        return 'lesson_based';
-    }
-}
-```
+> A `getName()` on a strategy only earns its place when something maps names to
+> classes. The deleted progress calculators had one with nothing reading it.
 
 ### 6. Result DTOs with Factory Methods
 
@@ -434,37 +384,30 @@ protected function registerGradingStrategies(): void
     });
 }
 
-protected function registerProgressCalculators(): void
+protected function registerPrerequisiteEvaluators(): void
 {
-    // Tag all calculators
+    // Tag all evaluators
     $this->app->tag([
-        LessonBasedProgressCalculator::class,
-        WeightedProgressCalculator::class,
-        AssessmentInclusiveProgressCalculator::class,
-    ], 'progress.calculators');
+        SequentialPrerequisiteEvaluator::class,
+        ImmediatePreviousPrerequisiteEvaluator::class,
+        NoPrerequisiteEvaluator::class,
+    ], 'learning_path.prerequisite_evaluators');
 
-    // Default calculator based on config
-    $this->app->bind(ProgressCalculatorContract::class, function ($app) {
-        $calculatorType = config('lms.progress_calculator', 'lesson_based');
-
-        return match ($calculatorType) {
-            'weighted' => $app->make(WeightedProgressCalculator::class),
-            'assessment_inclusive' => $app->make(AssessmentInclusiveProgressCalculator::class),
-            default => $app->make(LessonBasedProgressCalculator::class),
-        };
-    });
-
-    // Factory as singleton
-    $this->app->singleton(ProgressCalculatorFactory::class);
+    // Factory as singleton — it resolves per-Path, so there is no default binding
+    $this->app->singleton(PrerequisiteEvaluatorFactory::class);
 }
 ```
+
+> Progress calculation has **no** registration block. `ProgressTrackingService`
+> type-hints `AssessmentInclusiveProgressCalculator` directly and the container
+> autowires it — no tag, no bind, no factory (ADR 008).
 
 ## Resolver vs Factory Pattern
 
 | Pattern | Use When | Example |
 |---------|----------|---------|
 | **Resolver** | Multiple strategies, one selected at runtime based on input | GradingStrategyResolver - picks strategy by question type |
-| **Factory** | Config-driven selection, may cache/reuse strategies | ProgressCalculatorFactory - picks by config or course setting |
+| **Factory** | Selection driven by stored data or config | PrerequisiteEvaluatorFactory - picks by `learning_paths.prerequisite_mode` |
 
 ## Gotchas & Best Practices
 

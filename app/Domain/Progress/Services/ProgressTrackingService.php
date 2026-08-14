@@ -139,7 +139,7 @@ class ProgressTrackingService
 
     public function recalculateCourseProgress(Enrollment $enrollment): float
     {
-        $percentage = $this->calculator->calculate($enrollment);
+        $percentage = $this->calculator->calculateCourseProgress($enrollment);
 
         $enrollment->update([
             'progress_percentage' => $percentage,
@@ -155,7 +155,7 @@ class ProgressTrackingService
 
     public function isEnrollmentComplete(Enrollment $enrollment): bool
     {
-        return $this->calculator->isComplete($enrollment);
+        return $this->calculator->isCourseComplete($enrollment);
     }
 
     /**

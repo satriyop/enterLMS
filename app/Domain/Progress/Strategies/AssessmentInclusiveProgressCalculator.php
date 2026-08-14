@@ -252,15 +252,4 @@ class AssessmentInclusiveProgressCalculator
 
         return true;
     }
-
-    // Legacy methods for backward compatibility
-    public function calculate(Enrollment $enrollment): float
-    {
-        return $this->calculateCourseProgress($enrollment);
-    }
-
-    public function isComplete(Enrollment $enrollment): bool
-    {
-        return $this->isCourseComplete($enrollment);
-    }
 }
