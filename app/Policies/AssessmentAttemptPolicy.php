@@ -31,11 +31,6 @@ class AssessmentAttemptPolicy
             return true;
         }
 
-        // LMS Admin can view attempts for assessments they authored
-        if ($user->isLmsAdmin() && $attempt->assessment->user_id === $user->id) {
-            return true;
-        }
-
         // Users can view their own attempts
         return $attempt->user_id === $user->id;
     }
@@ -108,11 +103,6 @@ class AssessmentAttemptPolicy
             return true;
         }
 
-        // LMS Admin can view attempts for assessments they authored
-        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
-            return true;
-        }
-
         // Learners can view their own attempts
         if ($user->isLearner() && $attempt->user_id === $user->id) {
             return true;
@@ -167,11 +157,6 @@ class AssessmentAttemptPolicy
 
         // LMS Admin can grade any attempt
         if ($user->isLmsAdmin()) {
-            return true;
-        }
-
-        // LMS Admin can grade attempts for assessments they authored
-        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
 

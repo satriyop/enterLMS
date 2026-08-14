@@ -22,11 +22,6 @@ class AssessmentPolicy
             return true;
         }
 
-        // LMS Admin can view assessments for Courses they authored
-        if ($user->isLmsAdmin() && $course->user_id === $user->id) {
-            return true;
-        }
-
         // Learners can view published assessments for courses they're enrolled in
         if ($user->isLearner() && $context !== null) {
             return $context->hasAnyEnrollment;
@@ -52,11 +47,6 @@ class AssessmentPolicy
             return true;
         }
 
-        // LMS Admin can view assessments they authored
-        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
-            return true;
-        }
-
         // Learners can view published assessments they can attempt
         if ($user->isLearner() && $assessment->status === 'published' && $context !== null) {
             return $context->hasAnyEnrollment;
@@ -72,11 +62,6 @@ class AssessmentPolicy
     {
         // LMS Admin can create assessments for any course
         if ($user->isLmsAdmin()) {
-            return true;
-        }
-
-        // LMS Admin can create assessments for Courses they authored
-        if ($user->isLmsAdmin() && $course->user_id === $user->id) {
             return true;
         }
 
@@ -124,11 +109,6 @@ class AssessmentPolicy
 
         // LMS Admin can delete any assessment
         if ($user->isLmsAdmin()) {
-            return true;
-        }
-
-        // LMS Admin can delete assessments they authored
-        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
 
@@ -183,11 +163,6 @@ class AssessmentPolicy
             return true;
         }
 
-        // LMS Admin can view attempts for assessments they authored
-        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
-            return true;
-        }
-
         // Learners can view their own attempts
         if ($user->isLearner() && $attempt->user_id === $user->id) {
             return true;
@@ -237,11 +212,6 @@ class AssessmentPolicy
 
         // LMS Admin can grade any attempt
         if ($user->isLmsAdmin()) {
-            return true;
-        }
-
-        // LMS Admin can grade attempts for assessments they authored
-        if ($user->isLmsAdmin() && $assessment->user_id === $user->id) {
             return true;
         }
 

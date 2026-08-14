@@ -55,6 +55,44 @@ it('posts signed payload when enrollment completes', function () {
         ->toBe(1);
 });
 
+it('posts signed payload when a learner enrolls', function () {
+    Http::fake([
+        'https://hooks.example.test/*' => Http::response(['ok' => true], 200),
+    ]);
+
+    $endpoint = AgentWebhookEndpoint::query()->create([
+        'name' => 'openclaw',
+        'url' => 'https://hooks.example.test/enrolled',
+        'secret' => 'enrol-secret',
+        'events' => ['enrollment.created'],
+        'is_active' => true,
+        'max_attempts' => 2,
+    ]);
+
+    $user = User::factory()->learner()->create();
+    $course = Course::factory()->published()->create();
+    $enrollment = Enrollment::factory()->active()->create([
+        'user_id' => $user->id,
+        'course_id' => $course->id,
+    ]);
+    $enrollment->load(['user', 'course']);
+
+    UserEnrolled::dispatch($enrollment);
+
+    Http::assertSent(function ($request) use ($endpoint) {
+        $signature = $request->header('X-EnterLMS-Signature')[0] ?? '';
+
+        return $request->url() === $endpoint->url
+            && ($request->header('X-EnterLMS-Event')[0] ?? '') === 'enrollment.created'
+            && app(AgentWebhookDispatcher::class)->verify($request->body(), $endpoint->secret, $signature);
+    });
+
+    expect(AgentWebhookDelivery::query()
+        ->where('event_name', 'enrollment.created')
+        ->where('status', AgentWebhookDelivery::STATUS_SUCCESS)
+        ->count())->toBe(1);
+});
+
 it('rejects invalid signature verification', function () {
     $dispatcher = app(AgentWebhookDispatcher::class);
     $body = '{"event":"enrollment.completed"}';

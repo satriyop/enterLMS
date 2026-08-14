@@ -39,11 +39,16 @@ use App\Domain\Xapi\Listeners\RecordXapiOnCourseStarted;
 use App\Domain\Xapi\Listeners\RecordXapiOnEnrollmentCompleted;
 use App\Domain\Xapi\Listeners\RecordXapiOnLessonCompleted;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
     /**
      * The event listener mappings for the application.
+     *
+     * Array-callable listeners cannot live here — the parent declares this
+     * property as class-string listeners only. DispatchAgentWebhooks handles
+     * several events from one class, so it is registered in boot() instead.
      *
      * @var array<class-string, array<int, class-string>>
      */
@@ -77,7 +82,6 @@ class EventServiceProvider extends ServiceProvider
         // Enrollment Events
         UserEnrolled::class => [
             LogDomainEvent::class,
-            [DispatchAgentWebhooks::class, 'handleUserEnrolled'],
             SendWelcomeNotification::class,
         ],
         CourseStarted::class => [
@@ -90,11 +94,9 @@ class EventServiceProvider extends ServiceProvider
             IssueCertificateOnCompletion::class,
             UpdatePathProgressOnCourseCompletion::class,
             RecordXapiOnEnrollmentCompleted::class,
-            [DispatchAgentWebhooks::class, 'handleEnrollmentCompleted'],
         ],
         CertificateIssued::class => [
             LogDomainEvent::class,
-            [DispatchAgentWebhooks::class, 'handleCertificateIssued'],
         ],
         UserDropped::class => [
             LogDomainEvent::class,
@@ -143,6 +145,12 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        // One class, several events: registered here because $listen is typed
+        // for class-string listeners only.
+        Event::listen(UserEnrolled::class, [DispatchAgentWebhooks::class, 'handleUserEnrolled']);
+        Event::listen(EnrollmentCompleted::class, [DispatchAgentWebhooks::class, 'handleEnrollmentCompleted']);
+        Event::listen(CertificateIssued::class, [DispatchAgentWebhooks::class, 'handleCertificateIssued']);
     }
 
     /**

@@ -23,14 +23,9 @@ class LearningPathPolicy
      */
     public function view(User $user, LearningPath $learningPath): bool
     {
-        // Admins can view any learning path
+        // LMS Admin can view any Learning Path
         if ($user->isLmsAdmin()) {
             return true;
-        }
-
-        // LMS Admin can view Learning Paths they created
-        if ($user->isLmsAdmin()) {
-            return $user->id === $learningPath->created_by;
         }
 
         if ($learningPath->isOpenForSelfEnrollment()) {
@@ -59,14 +54,9 @@ class LearningPathPolicy
      */
     public function update(User $user, LearningPath $learningPath): bool
     {
-        // Admins can update any learning path
+        // LMS Admin can update any Learning Path
         if ($user->isLmsAdmin()) {
             return true;
-        }
-
-        // LMS Admin can update Learning Paths they created
-        if ($user->isLmsAdmin()) {
-            return $user->id === $learningPath->created_by;
         }
 
         return false;
@@ -77,14 +67,9 @@ class LearningPathPolicy
      */
     public function delete(User $user, LearningPath $learningPath): bool
     {
-        // Admins can delete any learning path
+        // LMS Admin can delete any Learning Path
         if ($user->isLmsAdmin()) {
             return true;
-        }
-
-        // LMS Admin can delete Learning Paths they created
-        if ($user->isLmsAdmin()) {
-            return $user->id === $learningPath->created_by;
         }
 
         return false;
@@ -95,14 +80,9 @@ class LearningPathPolicy
      */
     public function publish(User $user, LearningPath $learningPath): bool
     {
-        // Admins can publish any learning path
+        // LMS Admin can publish any Learning Path
         if ($user->isLmsAdmin()) {
             return true;
-        }
-
-        // LMS Admin can publish Learning Paths they created
-        if ($user->isLmsAdmin()) {
-            return $user->id === $learningPath->created_by;
         }
 
         return false;
