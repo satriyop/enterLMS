@@ -5,7 +5,6 @@ triggers:
   - strategy pattern
   - create strategy
   - grading strategy
-  - progress calculator
   - calculation strategy
   - strategy resolver
   - strategy factory
@@ -15,6 +14,23 @@ triggers:
 ---
 
 # EnterLMS Strategy Patterns
+
+> ### Read this before copying any progress-calculator example below
+>
+> **Progress calculation is no longer a strategy** (ADR 008). The contract, the
+> factory, and the `LessonBased` and `Weighted` calculators were deleted;
+> `AssessmentInclusiveProgressCalculator` is a plain class.
+>
+> Every `ProgressCalculator*` snippet in this file is retained as *shape only*.
+> They are also the cautionary tale: the factory selected on a per-Course column
+> that was never migrated, so it always returned the config default and two of
+> its three strategies were unreachable for the life of the codebase.
+>
+> **A strategy needs a selector that exists** — a migrated column, or config
+> something actually sets. Not just a `match` arm. Grading passes that test
+> (a Question's type is real data); prerequisite evaluation passes it.
+>
+> For a factory that is genuinely in use, read `PrerequisiteEvaluatorFactory`.
 
 ## ⚠️ YAGNI Warning: When NOT to Use Strategy Pattern
 
@@ -53,12 +69,19 @@ class FullAuditStrategy implements AuditStrategyContract { }
 class NoAuditStrategy implements AuditStrategyContract { }
 // Just use: if ($shouldAudit) { audit(); }
 
-// ✅ GOOD: Multiple real algorithms, user-selectable
-interface ProgressCalculatorContract { }
-class LessonBasedProgressCalculator implements ProgressCalculatorContract { }
-class WeightedProgressCalculator implements ProgressCalculatorContract { }
-class AssessmentInclusiveProgressCalculator implements ProgressCalculatorContract { }
+// ✅ GOOD: Multiple real algorithms, selected by data the domain already has
+interface GradingStrategyContract { }
+class MultipleChoiceGradingStrategy implements GradingStrategyContract { }
+class TrueFalseGradingStrategy implements GradingStrategyContract { }
+class ShortAnswerGradingStrategy implements GradingStrategyContract { }
+// A Question's type picks the strategy — the selector is real.
 ```
+
+> **Progress calculation used to be the example here, and it was wrong.**
+> Three calculators existed, but the thing meant to choose between them —
+> a per-Course column — was never migrated, so only one ever ran. Before
+> adding a strategy, check that the selector actually exists in the
+> database or the config, not just in the resolver. See ADR 008.
 
 ---
 
@@ -75,8 +98,10 @@ class AssessmentInclusiveProgressCalculator implements ProgressCalculatorContrac
 | System | Purpose | Strategies |
 |--------|---------|------------|
 | Grading | Grade assessment answers | MultipleChoice, TrueFalse, ShortAnswer, Manual |
-| Progress | Calculate enrollment progress | LessonBased, Weighted, AssessmentInclusive |
 | Prerequisites | Evaluate learning path unlock | Sequential, ImmediatePrevious, NoPrerequisite |
+
+Progress calculation is **not** a strategy system. `AssessmentInclusiveProgressCalculator`
+is a plain class — see ADR 008.
 
 ## Key Patterns
 
@@ -208,7 +233,8 @@ class GradingStrategyResolver implements GradingStrategyResolverContract
 ### 4. Strategy Factory (Config-Driven)
 
 ```php
-// app/Domain/Progress/Services/ProgressCalculatorFactory.php
+// Deleted — illustrative only. See app/Domain/LearningPath/Services/PrerequisiteEvaluatorFactory.php
+// for a factory that is actually in use.
 namespace App\Domain\Progress\Services;
 
 use App\Domain\Progress\Contracts\ProgressCalculatorContract;
@@ -491,9 +517,8 @@ $this->app->tag([
 app/Domain/Assessment/Contracts/GradingStrategyContract.php
 app/Domain/Assessment/Services/GradingStrategyResolver.php
 app/Domain/Assessment/Strategies/MultipleChoiceGradingStrategy.php
-app/Domain/Progress/Contracts/ProgressCalculatorContract.php
-app/Domain/Progress/Services/ProgressCalculatorFactory.php
-app/Domain/Progress/Strategies/LessonBasedProgressCalculator.php
+app/Domain/LearningPath/Services/PrerequisiteEvaluatorFactory.php
+app/Domain/LearningPath/Strategies/SequentialPrerequisiteEvaluator.php
 app/Providers/DomainServiceProvider.php
 ```
 

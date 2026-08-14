@@ -429,13 +429,9 @@ Progress tracking is handled by `ProgressTrackingService` which provides a clean
 
 **Service:** `ProgressTrackingService::calculateProgress()`
 
-Progress calculation uses swappable **strategy patterns**:
-
-| Strategy | Algorithm | Use Case |
-|----------|-----------|----------|
-| `LessonBasedProgressCalculator` | `(completed lessons / total lessons) * 100` | Simple courses |
-| `AssessmentInclusiveProgressCalculator` | `(lessons * 0.7) + (assessments * 0.3)` | Courses with required assessments |
-| `WeightedProgressCalculator` | Custom weights per section | Complex curricula |
+Progress is calculated by a single class, `AssessmentInclusiveProgressCalculator`:
+`(lessons * 0.7) + (required assessments * 0.3)`. The swappable-strategy layer that
+once wrapped it was removed in ADR 008 — only this one ever ran.
 
 **Assessment-Inclusive Calculation:**
 ```php

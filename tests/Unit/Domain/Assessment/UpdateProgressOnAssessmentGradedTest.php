@@ -2,9 +2,7 @@
 
 use App\Domain\Assessment\Events\AssessmentGraded;
 use App\Domain\Assessment\Listeners\UpdateProgressOnAssessmentGraded;
-use App\Domain\Progress\Contracts\ProgressCalculatorContract;
 use App\Domain\Progress\Services\ProgressTrackingService;
-use App\Domain\Progress\Strategies\AssessmentInclusiveProgressCalculator;
 use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
 use App\Models\Course;
@@ -12,13 +10,6 @@ use App\Models\Enrollment;
 use App\Models\User;
 
 beforeEach(function () {
-    // Bind assessment-inclusive calculator for these tests
-    // (default is lesson-based which ignores assessments)
-    $this->app->bind(
-        ProgressCalculatorContract::class,
-        AssessmentInclusiveProgressCalculator::class
-    );
-
     $this->learner = User::factory()->create(['role' => 'learner']);
     $this->course = Course::factory()->published()->create();
     $this->enrollment = Enrollment::factory()->create([

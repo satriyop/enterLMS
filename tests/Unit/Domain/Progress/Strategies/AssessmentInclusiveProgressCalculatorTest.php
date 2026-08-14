@@ -241,10 +241,6 @@ describe('AssessmentInclusiveProgressCalculator', function () {
         expect($isComplete)->toBeTrue();
     });
 
-    it('returns correct name', function () {
-        expect($this->calculator->getName())->toBe('assessment_inclusive');
-    });
-
     describe('edge cases', function () {
         it('returns 0% assessment progress when no attempts exist', function () {
             $course = Course::factory()->create();

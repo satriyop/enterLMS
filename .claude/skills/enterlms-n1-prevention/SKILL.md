@@ -610,7 +610,6 @@ public function calculateEstimatedDuration(): int
 
 ```
 app/Domain/Progress/Strategies/AssessmentInclusiveProgressCalculator.php  # Fixed N+1 example
-app/Domain/Progress/Strategies/LessonBasedProgressCalculator.php          # Progress calculation
 app/Models/Course.php                                                      # SQL join aggregation pattern
 app/Models/CourseSection.php                                               # Simple DB aggregation pattern
 app/Models/Assessment.php                                                  # Accessor with pre-load pattern

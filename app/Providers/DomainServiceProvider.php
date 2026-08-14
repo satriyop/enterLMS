@@ -11,11 +11,6 @@ use App\Domain\LearningPath\Services\PrerequisiteEvaluatorFactory;
 use App\Domain\LearningPath\Strategies\ImmediatePreviousPrerequisiteEvaluator;
 use App\Domain\LearningPath\Strategies\NoPrerequisiteEvaluator;
 use App\Domain\LearningPath\Strategies\SequentialPrerequisiteEvaluator;
-use App\Domain\Progress\Contracts\ProgressCalculatorContract;
-use App\Domain\Progress\Services\ProgressCalculatorFactory;
-use App\Domain\Progress\Strategies\AssessmentInclusiveProgressCalculator;
-use App\Domain\Progress\Strategies\LessonBasedProgressCalculator;
-use App\Domain\Progress\Strategies\WeightedProgressCalculator;
 // Observability Services
 use App\Domain\Shared\Services\DomainLogger;
 use App\Domain\Shared\Services\HealthCheckService;
@@ -32,7 +27,6 @@ class DomainServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->registerGradingStrategies();
-        $this->registerProgressCalculators();
         $this->registerPrerequisiteEvaluators();
         $this->registerObservabilityServices();
     }
@@ -64,33 +58,6 @@ class DomainServiceProvider extends ServiceProvider
                 $app->tagged('grading.strategies')
             );
         });
-    }
-
-    /**
-     * Register progress calculator strategies.
-     */
-    protected function registerProgressCalculators(): void
-    {
-        // Tag all calculators
-        $this->app->tag([
-            LessonBasedProgressCalculator::class,
-            WeightedProgressCalculator::class,
-            AssessmentInclusiveProgressCalculator::class,
-        ], 'progress.calculators');
-
-        // Default calculator binding based on configuration
-        $this->app->bind(ProgressCalculatorContract::class, function ($app) {
-            $calculatorType = config('lms.progress_calculator', 'assessment_inclusive');
-
-            return match ($calculatorType) {
-                'weighted' => $app->make(WeightedProgressCalculator::class),
-                'assessment_inclusive' => $app->make(AssessmentInclusiveProgressCalculator::class),
-                default => $app->make(LessonBasedProgressCalculator::class),
-            };
-        });
-
-        // Register the factory as singleton
-        $this->app->singleton(ProgressCalculatorFactory::class);
     }
 
     /**

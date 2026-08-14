@@ -24,20 +24,6 @@ final readonly class AssessmentStats
     ) {}
 
     /**
-     * Create an empty stats object for courses without assessments.
-     */
-    public static function empty(): self
-    {
-        return new self(
-            total: 0,
-            passed: 0,
-            pending: 0,
-            requiredTotal: 0,
-            requiredPassed: 0,
-        );
-    }
-
-    /**
      * Create from the calculator's stats array.
      *
      * @param  array{total: int, passed: int, pending: int, required_total: int, required_passed: int}  $stats

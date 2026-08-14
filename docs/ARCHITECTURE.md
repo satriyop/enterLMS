@@ -245,13 +245,12 @@ app/Domain/
 │   │                           # LockedCourseState, AvailableCourseState, InProgressCourseState, CompletedCourseState
 │   └── Strategies/             # Sequential, ImmediatePrevious, NoPrerequisite, PricingAware
 ├── Progress/
-│   ├── Contracts/              # ProgressCalculatorContract (strategy interface)
 │   ├── DTOs/                   # ProgressResult, ProgressUpdateDTO
 │   ├── Events/                 # LessonCompleted, ProgressUpdated
 │   ├── Listeners/              # RecalculateCourseProgress
-│   ├── Services/               # ProgressTrackingService (concrete), ProgressCalculatorFactory
-│   ├── Strategies/             # LessonBased, AssessmentInclusive, Weighted calculators
-│   └── ValueObjects/           # Percentage
+│   ├── Services/               # ProgressTrackingService (concrete)
+│   ├── Strategies/             # AssessmentInclusiveProgressCalculator (single, not a strategy)
+│   └── ValueObjects/           # AssessmentStats
 └── Shared/
     ├── Contracts/              # DomainEvent, StrategyContract
     ├── Exceptions/             # DomainException, InvalidStateTransitionException
@@ -260,7 +259,7 @@ app/Domain/
     └── ValueObjects/           # Duration, Percentage
 ```
 
-> **Important:** Only strategy interfaces use contracts (GradingStrategyContract, ProgressCalculatorContract, PrerequisiteEvaluatorContract). Service classes like EnrollmentService and ProgressTrackingService are injected as concrete classes directly—no service contracts.
+> **Important:** Only strategy interfaces use contracts (GradingStrategyContract, PrerequisiteEvaluatorContract). Service classes like EnrollmentService and ProgressTrackingService are injected as concrete classes directly—no service contracts. Progress calculation had a contract until ADR 008 collapsed it to its one real implementation.
 
 ### Key Design Patterns
 
@@ -303,13 +302,8 @@ $enrollment->canAccessContent();   // Delegates to state class
 
 #### Strategy Pattern (Progress Calculation, Grading)
 
-Progress calculators are swappable strategies:
-
-| Strategy | Description | Use Case |
-|----------|-------------|----------|
-| `LessonBasedProgressCalculator` | % of completed lessons | Simple courses |
-| `AssessmentInclusiveProgressCalculator` | 70% lessons + 30% assessments | Courses with required assessments |
-| `WeightedProgressCalculator` | Custom section weights | Complex curricula |
+Progress calculation is **not** swappable. `AssessmentInclusiveProgressCalculator`
+(70% lessons + 30% required assessments) is the only implementation — see ADR 008.
 
 Grading strategies handle different question types:
 
@@ -515,7 +509,6 @@ Services are concrete classes—no service contracts. Only strategy interfaces u
 | `CourseInvitationService` | Course | Invitation creation, bulk import |
 | `InvitationAcceptanceService` | Course | Accept/decline invitations |
 | `GradingStrategyResolver` | Assessment | Resolve grading strategy by question type |
-| `ProgressCalculatorFactory` | Progress | Create progress calculator by strategy name |
 
 **Usage Example:**
 ```php

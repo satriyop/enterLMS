@@ -1,9 +1,18 @@
 # ADR-003: Lesson Progress Tracking Approach
 
-**Status:** Accepted (Updated)
+**Status:** Partially superseded by [ADR 008](./008-one-progress-calculator.md)
 **Date:** 2025-11-27
 **Updated:** 2026-01-20
 **Deciders:** Development Team
+
+> **The strategy layer described below no longer exists.** It was built to let a
+> Course choose its calculator, but the column that would have carried that choice
+> was never migrated, so `AssessmentInclusiveProgressCalculator` is the only one
+> that ever ran. The contract, the factory, and the `LessonBased` and `Weighted`
+> calculators were removed; the surviving calculator is a plain class.
+>
+> Everything else here — the lesson-progress model, the completion thresholds,
+> and the 70/30 weighting — still holds.
 
 ## Context
 

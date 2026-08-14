@@ -3,7 +3,6 @@
 namespace App\Domain\Progress\Services;
 
 use App\Domain\Enrollment\Events\CourseStarted;
-use App\Domain\Progress\Contracts\ProgressCalculatorContract;
 use App\Domain\Progress\DTOs\ProgressResult;
 use App\Domain\Progress\DTOs\ProgressUpdateDTO;
 use App\Domain\Progress\Events\LessonCompleted;
@@ -25,7 +24,7 @@ use Illuminate\Support\Facades\DB;
 class ProgressTrackingService
 {
     public function __construct(
-        protected ProgressCalculatorContract $calculator,
+        protected AssessmentInclusiveProgressCalculator $calculator,
     ) {}
 
     public function updateProgress(ProgressUpdateDTO $dto): ProgressResult
@@ -167,15 +166,9 @@ class ProgressTrackingService
      */
     public function getAssessmentStats(Enrollment $enrollment): AssessmentStats
     {
-        // Only the AssessmentInclusiveProgressCalculator has this method
-        if ($this->calculator instanceof AssessmentInclusiveProgressCalculator) {
-            return AssessmentStats::fromArray(
-                $this->calculator->getAssessmentStats($enrollment)
-            );
-        }
-
-        // For other calculators, return empty stats
-        return AssessmentStats::empty();
+        return AssessmentStats::fromArray(
+            $this->calculator->getAssessmentStats($enrollment)
+        );
     }
 
     protected function updateMediaProgress(LessonProgress $progress, ProgressUpdateDTO $dto): void

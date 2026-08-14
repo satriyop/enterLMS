@@ -317,10 +317,6 @@ it('treats paid courses as free while payments are disabled', function () {
     expect($enrollment->isActive())->toBeTrue();
 });
 
-it('uses assessment_inclusive as default progress calculator config', function () {
-    expect(config('lms.progress_calculator'))->toBe('assessment_inclusive');
-});
-
 it('denies media progress update when learner is not enrolled', function () {
     $learner = User::factory()->learner()->create();
     $course = Course::factory()->published()->create();

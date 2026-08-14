@@ -61,7 +61,7 @@ app/
 | Course | Course content, invitations | CourseInvitationService, InvitationAcceptanceService |
 | Enrollment | User enrollments, lifecycle | EnrollmentService |
 | LearningPath | Paths, prerequisites | PathEnrollmentService, PathProgressService, PrerequisiteEvaluatorFactory |
-| Progress | Lesson progress, completion | ProgressCalculatorFactory, ProgressTrackingService |
+| Progress | Lesson progress, completion | ProgressTrackingService, AssessmentInclusiveProgressCalculator |
 | Shared | Cross-cutting: logging, metrics, events | DomainLogger, MetricsService, HealthCheckService |
 
 ## Key Patterns
@@ -276,7 +276,6 @@ class DomainServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->registerGradingStrategies();      // Tag + GradingStrategyResolver singleton
-        $this->registerProgressCalculators();     // Tag + ProgressCalculatorFactory singleton
         $this->registerPrerequisiteEvaluators();  // Tag + PrerequisiteEvaluatorFactory singleton
         $this->registerObservabilityServices();   // DomainLogger, MetricsService, etc.
     }
@@ -290,7 +289,6 @@ Contracts exist **only** where multiple implementations are swapped:
 | Contract | Implementations |
 |----------|----------------|
 | `GradingStrategyContract` | MultipleChoice, TrueFalse, ShortAnswer, Manual |
-| `ProgressCalculatorContract` | LessonBased, Weighted, AssessmentInclusive |
 | `PrerequisiteEvaluatorContract` | Sequential, ImmediatePrevious, NoPrerequisite, PricingAware |
 
 **Do NOT create contracts for single-implementation services.**
@@ -318,7 +316,7 @@ Contracts exist **only** where multiple implementations are swapped:
 | JsonResource | `{Context}{Entity}Resource` | `DashboardEnrollmentResource` |
 | Strategy Contract | `{Name}Contract` | `GradingStrategyContract` |
 | Strategy Resolver | `{Name}Resolver` | `GradingStrategyResolver` |
-| Strategy Factory | `{Name}Factory` | `ProgressCalculatorFactory` |
+| Strategy Factory | `{Name}Factory` | `PrerequisiteEvaluatorFactory` |
 | Model Behavior | verb method | `drop()`, `complete()`, `reactivate()` |
 
 ## Anti-Patterns (DON'T)

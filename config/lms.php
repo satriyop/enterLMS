@@ -4,20 +4,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Progress Calculator
-    |--------------------------------------------------------------------------
-    |
-    | The default progress calculator strategy to use for enrollment progress.
-    |
-    | Options: 'lesson_based', 'weighted', 'assessment_inclusive'
-    |
-    */
-
-    // Banking/compliance default: lessons + required assessments gate completion.
-    'progress_calculator' => env('LMS_PROGRESS_CALCULATOR', 'assessment_inclusive'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Eager loading strictness (RequiresEagerLoading trait)
     |--------------------------------------------------------------------------
     |

@@ -2,7 +2,6 @@
 
 namespace App\Domain\Progress\Strategies;
 
-use App\Domain\Progress\Contracts\ProgressCalculatorContract;
 use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
 use App\Models\Enrollment;
@@ -31,7 +30,7 @@ use Illuminate\Support\Collection;
  *
  * @see \Tests\Unit\Domain\Progress\Strategies\AssessmentInclusiveProgressCalculatorTest
  */
-class AssessmentInclusiveProgressCalculator implements ProgressCalculatorContract
+class AssessmentInclusiveProgressCalculator
 {
     protected float $lessonWeight = 0.7;
 
@@ -82,11 +81,6 @@ class AssessmentInclusiveProgressCalculator implements ProgressCalculatorContrac
 
         // All required assessments must have at least one passed attempt
         return $requiredAssessmentIds->diff($passedAssessmentIds)->isEmpty();
-    }
-
-    public function getName(): string
-    {
-        return 'assessment_inclusive';
     }
 
     /**
