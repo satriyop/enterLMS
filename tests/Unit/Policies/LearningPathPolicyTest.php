@@ -46,11 +46,11 @@ class LearningPathPolicyTest extends TestCase
 
     // ========== viewAny ==========
 
-    public function test_any_authenticated_user_can_view_any_learning_paths(): void
+    public function test_only_path_managers_can_view_the_authoring_index(): void
     {
         $this->assertTrue($this->policy->viewAny($this->lmsAdmin));
         $this->assertTrue($this->policy->viewAny($this->contentManager));
-        $this->assertTrue($this->policy->viewAny($this->learner));
+        $this->assertFalse($this->policy->viewAny($this->learner));
     }
 
     // ========== view ==========

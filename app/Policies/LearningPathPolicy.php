@@ -11,14 +11,11 @@ class LearningPathPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view any learning paths.
-     *
-     * Returns true for all authenticated users - filtering is done in controller
-     * based on role (learners see published, content managers see own, admins see all).
+     * Authoring list. Learners browse via the learner routes, not this resource.
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->canManageLearningPaths();
     }
 
     /**

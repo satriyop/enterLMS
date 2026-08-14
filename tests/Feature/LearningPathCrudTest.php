@@ -129,7 +129,7 @@ class LearningPathCrudTest extends TestCase
         $response = $this->actingAs($this->learner)
             ->get(route('learning-paths.show', $learningPath));
 
-        $response->assertOk();
+        $response->assertRedirect(route('learner.learning-paths.show', $learningPath));
     }
 
     public function test_learner_cannot_view_unpublished_learning_path()
@@ -139,7 +139,7 @@ class LearningPathCrudTest extends TestCase
         $response = $this->actingAs($this->learner)
             ->get(route('learning-paths.show', $learningPath));
 
-        $response->assertForbidden();
+        $response->assertRedirect(route('learner.learning-paths.show', $learningPath));
     }
 
     public function test_admin_can_update_learning_path()
@@ -260,26 +260,17 @@ class LearningPathCrudTest extends TestCase
             ->get(route('learning-paths.index'));
         $response->assertOk();
 
-        // Learner should only see published
         $response = $this->actingAs($this->learner)
             ->get(route('learning-paths.index'));
-        $response->assertOk();
+        $response->assertRedirect(route('learner.learning-paths.browse'));
     }
 
-    public function test_learner_index_only_returns_published_learning_paths()
+    public function test_learner_is_sent_to_browse_instead_of_authoring_index()
     {
-        $publishedPath = LearningPath::factory()->create(['is_published' => true, 'created_by' => $this->admin->id]);
-        $draftPath = LearningPath::factory()->create(['is_published' => false, 'created_by' => $this->admin->id]);
-
         $response = $this->actingAs($this->learner)
             ->get(route('learning-paths.index'));
 
-        $response->assertOk();
-        $learningPaths = $response->original->getData()['page']['props']['learningPaths'];
-        $ids = collect($learningPaths['data'])->pluck('id')->all();
-
-        $this->assertContains($publishedPath->id, $ids);
-        $this->assertNotContains($draftPath->id, $ids);
+        $response->assertRedirect(route('learner.learning-paths.browse'));
     }
 
     public function test_learner_cannot_access_create_page()

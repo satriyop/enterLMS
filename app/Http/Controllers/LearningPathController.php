@@ -23,8 +23,12 @@ use Inertia\Response;
 
 class LearningPathController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): Response|RedirectResponse
     {
+        if ($request->user()->isLearner()) {
+            return redirect()->route('learner.learning-paths.browse');
+        }
+
         Gate::authorize('viewAny', LearningPath::class);
 
         $user = $request->user();
@@ -92,8 +96,12 @@ class LearningPathController extends Controller
             ->with('success', 'Jalur belajar berhasil dibuat.');
     }
 
-    public function show(LearningPath $learning_path): Response
+    public function show(LearningPath $learning_path): Response|RedirectResponse
     {
+        if (Auth::user()->isLearner()) {
+            return redirect()->route('learner.learning-paths.show', $learning_path);
+        }
+
         Gate::authorize('view', $learning_path);
 
         $learning_path->load(['creator', 'courses' => function ($query) {
