@@ -1,5 +1,7 @@
 <?php
 
+use App\Domain\Course\Exceptions\InvitationExpiredException;
+use App\Domain\Course\Exceptions\InvitationNotPendingException;
 use App\Domain\Course\Services\InvitationAcceptanceService;
 use App\Domain\Enrollment\Events\UserEnrolled;
 use App\Domain\Enrollment\Exceptions\AlreadyEnrolledException;
@@ -56,7 +58,7 @@ describe('InvitationAcceptanceService', function () {
             ]);
 
             $this->service->acceptWithLocking($user, $invitation);
-        })->throws(RuntimeException::class, 'invitation_not_pending');
+        })->throws(InvitationNotPendingException::class);
 
         it('marks expired invitation and throws exception', function () {
             $user = User::factory()->create();
@@ -68,17 +70,10 @@ describe('InvitationAcceptanceService', function () {
 
             expect($invitation->is_expired)->toBeTrue();
 
-            try {
-                $this->service->acceptWithLocking($user, $invitation);
-                throw new Exception('Expected RuntimeException was not thrown');
-            } catch (RuntimeException $e) {
-                expect($e->getMessage())->toBe('invitation_expired');
-            }
+            expect(fn () => $this->service->acceptWithLocking($user, $invitation))
+                ->toThrow(InvitationExpiredException::class);
 
-            // The status update happens in a transaction that rolls back,
-            // but we can verify the exception was thrown with correct message
             $invitation->refresh();
-            // Since transaction rolled back, status should still be pending
             expect($invitation->status)->toBe('pending');
         });
 

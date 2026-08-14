@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Domain\Course\Exceptions\InvitationExpiredException;
+use App\Domain\Course\Exceptions\InvitationNotPendingException;
 use App\Domain\Course\Services\InvitationAcceptanceService;
 use App\Domain\Enrollment\Events\UserEnrolled;
 use App\Domain\Enrollment\Exceptions\AlreadyEnrolledException;
@@ -84,7 +86,7 @@ describe('InvitationAcceptanceService', function () {
         ]);
 
         expect(fn () => $this->service->acceptWithLocking($user, $invitation))
-            ->toThrow(RuntimeException::class, 'invitation_not_pending');
+            ->toThrow(InvitationNotPendingException::class);
     });
 
     it('throws when invitation is expired', function () {
@@ -99,7 +101,7 @@ describe('InvitationAcceptanceService', function () {
         ]);
 
         expect(fn () => $this->service->acceptWithLocking($user, $invitation))
-            ->toThrow(RuntimeException::class, 'invitation_expired');
+            ->toThrow(InvitationExpiredException::class);
 
         // Note: In the service, the status update to 'expired' happens inside the transaction
         // before throwing. Since the exception causes a rollback, the status remains 'pending'.
