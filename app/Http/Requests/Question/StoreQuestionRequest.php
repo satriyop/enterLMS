@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests\Question;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -12,8 +13,9 @@ class StoreQuestionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $course     = $this->route('course');
+        $course = $this->route('course');
         $assessment = $this->route('assessment');
+
         return Gate::allows('update', [$assessment, $course]);
     }
 
@@ -25,16 +27,16 @@ class StoreQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'question_text'        => ['required', 'string'],
-            'question_type'        => ['required', Rule::in(['multiple_choice', 'true_false', 'matching', 'short_answer', 'essay', 'file_upload'])],
-            'points'               => ['required', 'integer', 'min:1'],
-            'feedback'             => ['nullable', 'string'],
-            'order'                => ['nullable', 'integer', 'min:0'],
-            'options'              => ['required_if:question_type,multiple_choice,true_false', 'array'],
-            'options.*.text'       => ['required', 'string'],
+            'question_text' => ['required', 'string'],
+            'question_type' => ['required', Rule::in(['multiple_choice', 'true_false', 'matching', 'short_answer', 'essay', 'file_upload'])],
+            'points' => ['required', 'integer', 'min:1'],
+            'feedback' => ['nullable', 'string'],
+            'order' => ['nullable', 'integer', 'min:0'],
+            'options' => ['required_if:question_type,multiple_choice,true_false', 'array'],
+            'options.*.text' => ['required', 'string'],
             'options.*.is_correct' => ['required', 'boolean'],
-            'options.*.feedback'   => ['nullable', 'string'],
-            'options.*.order'      => ['nullable', 'integer', 'min:0'],
+            'options.*.feedback' => ['nullable', 'string'],
+            'options.*.order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
@@ -46,13 +48,13 @@ class StoreQuestionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'question_text.required'        => 'Teks pertanyaan wajib diisi.',
-            'question_type.required'        => 'Tipe pertanyaan wajib dipilih.',
-            'question_type.in'              => 'Tipe pertanyaan tidak valid.',
-            'points.required'               => 'Poin wajib diisi.',
-            'points.min'                    => 'Poin minimal 1.',
-            'options.required_if'           => 'Opsi wajib diisi untuk tipe pertanyaan ini.',
-            'options.*.text.required'       => 'Teks opsi wajib diisi.',
+            'question_text.required' => 'Teks pertanyaan wajib diisi.',
+            'question_type.required' => 'Tipe pertanyaan wajib dipilih.',
+            'question_type.in' => 'Tipe pertanyaan tidak valid.',
+            'points.required' => 'Poin wajib diisi.',
+            'points.min' => 'Poin minimal 1.',
+            'options.required_if' => 'Opsi wajib diisi untuk tipe pertanyaan ini.',
+            'options.*.text.required' => 'Teks opsi wajib diisi.',
             'options.*.is_correct.required' => 'Status kebeneran opsi wajib diisi.',
         ];
     }

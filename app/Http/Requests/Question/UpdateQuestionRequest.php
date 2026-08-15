@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests\Question;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -12,8 +13,9 @@ class UpdateQuestionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $course     = $this->route('course');
+        $course = $this->route('course');
         $assessment = $this->route('assessment');
+
         return Gate::allows('update', [$assessment, $course]);
     }
 
@@ -25,16 +27,16 @@ class UpdateQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'question_text'        => ['sometimes', 'string'],
-            'question_type'        => ['sometimes', Rule::in(['multiple_choice', 'true_false', 'matching', 'short_answer', 'essay', 'file_upload'])],
-            'points'               => ['sometimes', 'integer', 'min:1'],
-            'feedback'             => ['nullable', 'string'],
-            'order'                => ['sometimes', 'integer', 'min:0'],
-            'options'              => ['sometimes', 'array'],
-            'options.*.text'       => ['required', 'string'],
+            'question_text' => ['sometimes', 'string'],
+            'question_type' => ['sometimes', Rule::in(['multiple_choice', 'true_false', 'matching', 'short_answer', 'essay', 'file_upload'])],
+            'points' => ['sometimes', 'integer', 'min:1'],
+            'feedback' => ['nullable', 'string'],
+            'order' => ['sometimes', 'integer', 'min:0'],
+            'options' => ['sometimes', 'array'],
+            'options.*.text' => ['required', 'string'],
             'options.*.is_correct' => ['required', 'boolean'],
-            'options.*.feedback'   => ['nullable', 'string'],
-            'options.*.order'      => ['nullable', 'integer', 'min:0'],
+            'options.*.feedback' => ['nullable', 'string'],
+            'options.*.order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
@@ -46,10 +48,10 @@ class UpdateQuestionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'question_text.string'          => 'Teks pertanyaan harus berupa teks.',
-            'question_type.in'              => 'Tipe pertanyaan tidak valid.',
-            'points.min'                    => 'Poin minimal 1.',
-            'options.*.text.required'       => 'Teks opsi wajib diisi.',
+            'question_text.string' => 'Teks pertanyaan harus berupa teks.',
+            'question_type.in' => 'Tipe pertanyaan tidak valid.',
+            'points.min' => 'Poin minimal 1.',
+            'options.*.text.required' => 'Teks opsi wajib diisi.',
             'options.*.is_correct.required' => 'Status kebeneran opsi wajib diisi.',
         ];
     }

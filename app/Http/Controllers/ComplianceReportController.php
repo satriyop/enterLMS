@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Domain\Compliance\DTOs\AuditReportFilter;
 use App\Domain\Compliance\Services\AuditReportService;
 use App\Http\Requests\Compliance\AuditReportRequest;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

@@ -3,8 +3,8 @@
 namespace App\Domain\LearningPath\Listeners;
 
 use App\Domain\Enrollment\Events\UserDropped;
-use App\Domain\LearningPath\Services\PathProgressService;
 use App\Domain\LearningPath\Events\PathProgressUpdated;
+use App\Domain\LearningPath\Services\PathProgressService;
 use App\Domain\LearningPath\States\ActivePathState;
 use App\Domain\LearningPath\States\AvailableCourseState;
 use App\Domain\LearningPath\States\CompletedCourseState;

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +26,7 @@ class AttemptAnswer extends Model
     protected function casts(): array
     {
         return [
-            'graded_at'  => 'datetime',
+            'graded_at' => 'datetime',
             'is_correct' => 'boolean',
         ];
     }
@@ -61,6 +62,6 @@ class AttemptAnswer extends Model
             return null;
         }
 
-        return asset('storage/' . $this->file_path);
+        return asset('storage/'.$this->file_path);
     }
 }
