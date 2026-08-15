@@ -79,7 +79,7 @@ const nextSlide = (total: number) => {
                             <Badge class="mb-2 w-fit" variant="secondary">
                                 {{ course.category || 'Umum' }}
                             </Badge>
-                            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
+                            <h2 class="text-editorial-h1 mb-2 text-white">
                                 {{ course.title }}
                             </h2>
                             <p class="text-sm md:text-base opacity-90 line-clamp-2 mb-4 max-w-2xl">

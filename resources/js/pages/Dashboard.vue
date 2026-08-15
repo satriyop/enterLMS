@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import PageHeader from '@/components/crud/PageHeader.vue';
 import {
     Card,
     CardContent,
@@ -45,8 +46,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6"
         >
+            <PageHeader
+                eyebrow="Ringkasan"
+                title="Dashboard"
+                description="Angka di bawah merangkum program, kursus, dan peserta yang ada di academy."
+            />
+
             <div class="grid gap-4 md:grid-cols-3">
                 <!-- Programs Widget -->
                 <Link :href="learningPathsIndex().url" class="block transition-transform hover:scale-[1.02]">
@@ -58,7 +65,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <GraduationCap class="h-5 w-5 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div class="text-3xl font-bold">
+                            <div class="text-stat">
                                 {{ props.stats.programs }}
                             </div>
                             <CardDescription class="mt-1">
@@ -78,7 +85,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <BookOpen class="h-5 w-5 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div class="text-3xl font-bold">
+                            <div class="text-stat">
                                 {{ props.stats.courses }}
                             </div>
                             <CardDescription class="mt-1">
@@ -98,7 +105,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <Users class="h-5 w-5 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div class="text-3xl font-bold">
+                            <div class="text-stat">
                                 {{ props.stats.learners }}
                             </div>
                             <CardDescription class="mt-1">

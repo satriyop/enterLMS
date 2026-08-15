@@ -67,10 +67,10 @@ const getInitials = (name: string) => {
     <section class="py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="mb-12 text-center">
-                <h2 class="text-2xl font-bold text-foreground sm:text-3xl">
+                <h2 class="text-editorial-h1 text-foreground">
                     {{ title }}
                 </h2>
-                <p class="mt-2 text-muted-foreground">
+                <p class="text-lead mx-auto mt-3 max-w-[52ch]">
                     {{ subtitle }}
                 </p>
             </div>

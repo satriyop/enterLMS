@@ -42,10 +42,10 @@ const iconMap = {
                     >
                         <component :is="iconMap[stat.icon]" class="h-6 w-6" />
                     </div>
-                    <div class="text-2xl font-bold text-foreground md:text-3xl">
+                    <div class="text-stat text-foreground">
                         {{ stat.value }}
                     </div>
-                    <div class="text-sm text-muted-foreground">
+                    <div class="text-tiny mt-2">
                         {{ stat.label }}
                     </div>
                 </div>

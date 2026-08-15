@@ -36,10 +36,10 @@ const goBack = () => window.history.back();
         <div class="flex flex-col items-center gap-6 text-center">
             <AppLogoIcon class="size-12 fill-current text-muted-foreground" />
 
-            <div class="space-y-2">
-                <p class="text-7xl font-bold tracking-tight text-foreground">{{ status }}</p>
-                <h1 class="text-2xl font-semibold text-foreground">{{ title }}</h1>
-                <p class="max-w-md text-muted-foreground">{{ description }}</p>
+            <div class="space-y-3">
+                <p class="text-stat text-foreground">{{ status }}</p>
+                <h1 class="text-editorial-h1 text-foreground">{{ title }}</h1>
+                <p class="text-lead max-w-md">{{ description }}</p>
             </div>
 
             <div class="flex gap-3">

@@ -2,8 +2,9 @@
 import CategoryCard from './CategoryCard.vue';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { ArrowRight } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 interface Category {
     id: number;
@@ -27,18 +28,21 @@ withDefaults(defineProps<Props>(), {
     subtitle: 'Temukan kursus berdasarkan kategori yang Anda minati',
     categories: () => [],
     loading: false,
-    viewAllHref: '/categories',
+    viewAllHref: '/courses',
 });
+
+const page = usePage();
+const canOpenCatalog = computed(() => Boolean(page.props.auth?.user));
 </script>
 
 <template>
     <section class="bg-surface-2/30 py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="mb-8 text-center">
-                <h2 class="text-2xl font-bold text-foreground sm:text-3xl">
+                <h2 class="text-editorial-h1 text-foreground">
                     {{ title }}
                 </h2>
-                <p class="mt-2 text-muted-foreground">
+                <p class="text-lead mx-auto mt-3 max-w-[52ch]">
                     {{ subtitle }}
                 </p>
             </div>
@@ -76,10 +80,10 @@ withDefaults(defineProps<Props>(), {
                 </p>
             </div>
 
-            <div v-if="categories.length > 0" class="mt-8 text-center">
+            <div v-if="canOpenCatalog && categories.length > 0" class="mt-8 text-center">
                 <Link :href="viewAllHref">
                     <Button variant="outline" class="gap-1">
-                        Lihat Semua Kategori
+                        Lihat katalog
                         <ArrowRight class="h-4 w-4" />
                     </Button>
                 </Link>

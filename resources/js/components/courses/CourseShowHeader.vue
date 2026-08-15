@@ -121,7 +121,7 @@ const archiveCourse = () => {
                     </div>
 
                     <!-- Title & Description -->
-                    <h1 class="mb-3 text-3xl font-bold text-white sm:text-4xl">
+                    <h1 class="text-editorial-h1 mb-3 text-white">
                         {{ title }}
                     </h1>
                     <p class="mb-4 text-lg text-white/80">

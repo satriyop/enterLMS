@@ -26,33 +26,20 @@ const handleSearch = () => {
 </script>
 
 <template>
-    <section
-        class="relative overflow-hidden bg-primary"
-    >
-        <div
-            class="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-10"
-        />
-        <div
-            class="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-primary/20 blur-3xl"
-        />
-        <div
-            class="absolute -bottom-20 -left-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl"
-        />
-
-        <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <section class="relative overflow-hidden border-b bg-surface">
+        <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
             <div class="mx-auto max-w-3xl text-center">
-                <h1
-                    class="mb-6 text-4xl font-bold tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl"
-                >
+                <p class="text-eyebrow mb-4">Academy</p>
+                <h1 class="text-display text-foreground">
                     {{ title }}
                 </h1>
-                <p class="mb-10 text-lg text-primary-foreground/80 sm:text-xl">
+                <p class="text-lead mx-auto mt-5 max-w-[52ch]">
                     {{ subtitle }}
                 </p>
 
                 <form
                     @submit.prevent="handleSearch"
-                    class="mx-auto flex max-w-xl gap-2"
+                    class="mx-auto mt-10 flex max-w-xl gap-2"
                 >
                     <div class="relative flex-1">
                         <Search
@@ -62,7 +49,7 @@ const handleSearch = () => {
                             v-model="searchQuery"
                             type="text"
                             placeholder="Cari kursus yang Anda inginkan..."
-                            class="h-12 bg-surface pl-12 text-base shadow-lg"
+                            class="h-12 bg-surface pl-12 text-base shadow-sm-editorial"
                         />
                     </div>
                     <Button
@@ -74,25 +61,25 @@ const handleSearch = () => {
                     </Button>
                 </form>
 
-                <div class="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-primary-foreground/70">
+                <div class="mt-8 flex flex-wrap items-center justify-center gap-3 text-tiny">
                     <span>Populer:</span>
                     <button
                         type="button"
-                        class="rounded-full border border-primary-foreground/30 px-3 py-1 transition-colors hover:border-primary-foreground hover:text-primary-foreground"
+                        class="rounded-full border border-border px-3 py-1 text-foreground transition-colors hover:border-primary hover:text-primary"
                         @click="searchQuery = 'Agen AI'; handleSearch()"
                     >
                         Agen AI
                     </button>
                     <button
                         type="button"
-                        class="rounded-full border border-primary-foreground/30 px-3 py-1 transition-colors hover:border-primary-foreground hover:text-primary-foreground"
+                        class="rounded-full border border-border px-3 py-1 text-foreground transition-colors hover:border-primary hover:text-primary"
                         @click="searchQuery = 'OpenClaw'; handleSearch()"
                     >
                         OpenClaw
                     </button>
                     <button
                         type="button"
-                        class="rounded-full border border-primary-foreground/30 px-3 py-1 transition-colors hover:border-primary-foreground hover:text-primary-foreground"
+                        class="rounded-full border border-border px-3 py-1 text-foreground transition-colors hover:border-primary hover:text-primary"
                         @click="searchQuery = 'Enteraksi'; handleSearch()"
                     >
                         Enteraksi

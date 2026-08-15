@@ -2,7 +2,7 @@
 import CourseCard from './CourseCard.vue';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 
@@ -66,6 +66,8 @@ const scroll = (direction: 'left' | 'right') => {
 };
 
 const showNavigation = computed(() => props.courses.length > 4);
+const page = usePage();
+const canOpenCatalog = computed(() => Boolean(page.props.auth?.user));
 </script>
 
 <template>
@@ -73,10 +75,10 @@ const showNavigation = computed(() => props.courses.length > 4);
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="mb-8 flex items-end justify-between">
                 <div>
-                    <h2 class="text-2xl font-bold text-foreground sm:text-3xl">
+                    <h2 class="text-editorial-h1 text-foreground">
                         {{ title }}
                     </h2>
-                    <p class="mt-2 text-muted-foreground">
+                    <p class="text-lead mt-2 max-w-[52ch]">
                         {{ subtitle }}
                     </p>
                 </div>
@@ -99,7 +101,7 @@ const showNavigation = computed(() => props.courses.length > 4);
                             <ChevronRight class="h-4 w-4" />
                         </Button>
                     </template>
-                    <Link :href="viewAllHref">
+                    <Link v-if="canOpenCatalog" :href="viewAllHref">
                         <Button variant="ghost" class="gap-1">
                             Lihat Semua
                             <ArrowRight class="h-4 w-4" />
@@ -156,7 +158,7 @@ const showNavigation = computed(() => props.courses.length > 4);
                 </p>
             </div>
 
-            <div class="mt-6 text-center sm:hidden">
+            <div v-if="canOpenCatalog" class="mt-6 text-center sm:hidden">
                 <Link :href="viewAllHref">
                     <Button variant="outline" class="w-full gap-1">
                         Lihat Semua Kursus

@@ -85,7 +85,7 @@ const StatusIcon = computed(() => statusConfig.value.icon);
                     />
                 </div>
 
-                <CardTitle class="text-2xl">
+                <CardTitle class="text-editorial-h1">
                     {{ valid ? 'Sertifikat Valid' : 'Sertifikat Tidak Valid' }}
                 </CardTitle>
                 <CardDescription :class="statusConfig.textColor">

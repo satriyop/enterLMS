@@ -71,13 +71,13 @@ const formatDateTime = (date: string | null): string => {
             <div class="grid gap-4 md:grid-cols-2">
                 <div>
                     <p class="text-sm text-muted-foreground mb-1">Nilai</p>
-                    <p class="text-2xl font-bold">
+                    <p class="text-stat">
                         {{ attempt.score !== null ? attempt.score : '-' }} / {{ attempt.max_score }}
                     </p>
                 </div>
                 <div>
                     <p class="text-sm text-muted-foreground mb-1">Persentase</p>
-                    <p class="text-2xl font-bold">
+                    <p class="text-stat">
                         {{ attempt.percentage !== null ? `${attempt.percentage}%` : '-' }}
                     </p>
                 </div>

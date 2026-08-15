@@ -237,7 +237,7 @@ const openReenrollDialog = () => {
             <!-- Not Enrolled -->
             <div v-else class="space-y-4">
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-primary mb-1">Gratis</div>
+                    <div class="text-stat text-primary mb-1">Gratis</div>
                     <p class="text-sm text-muted-foreground">Akses penuh ke semua materi</p>
                 </div>
                 <Button

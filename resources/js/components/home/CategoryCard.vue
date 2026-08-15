@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
     Code,
     Palette,
@@ -45,15 +45,19 @@ const IconComponent = computed(() => {
     return Briefcase;
 });
 
+const page = usePage();
+const canOpenCatalog = computed(() => Boolean(page.props.auth?.user));
 const categoryHref = computed(() => {
-    return props.href ?? `/categories/${props.slug}`;
+    return props.href ?? `/courses?category_id=${props.id}`;
 });
 </script>
 
 <template>
-    <Link
-        :href="categoryHref"
-        class="group flex flex-col items-center rounded-xl border bg-surface p-6 text-center transition-all hover:border-primary hover:shadow-md"
+    <component
+        :is="canOpenCatalog ? Link : 'div'"
+        :href="canOpenCatalog ? categoryHref : undefined"
+        class="group flex flex-col items-center rounded-xl border bg-surface p-6 text-center transition-all"
+        :class="canOpenCatalog ? 'hover:border-primary hover:shadow-md' : ''"
     >
         <div
             class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
@@ -66,5 +70,5 @@ const categoryHref = computed(() => {
         <p v-if="coursesCount > 0" class="text-sm text-muted-foreground">
             {{ coursesCount }} kursus
         </p>
-    </Link>
+    </component>
 </template>

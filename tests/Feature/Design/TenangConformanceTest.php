@@ -43,6 +43,12 @@ const ALIAS_PATTERN = '/\b(?:bg-card|bg-background|bg-muted|bg-accent|bg-seconda
 const HEX_PATTERN = '/(?<!&)#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/';
 
 /**
+ * Raw Tailwind display scale used as a page or section title. Tenang already
+ * has the editorial tokens (`text-display`, `text-editorial-h1`, `text-stat`).
+ */
+const RAW_TYPE_PATTERN = '/\btext-(?:2xl|3xl|4xl|5xl|6xl|7xl)\s+font-(?:bold|semibold)\b/';
+
+/**
  * @return list<string> repo-relative paths, sorted
  */
 function conformanceFiles(): array
@@ -174,6 +180,18 @@ describe('Tenang design conformance', function () {
 
     it('has no literal hex colours outside <style> blocks', function () {
         expect(conformanceViolations()['hex'])->toBe([], 'Colour belongs in a token in resources/css/app.css.');
+    });
+
+    it('does not use raw Tailwind display scale for titles or stats', function () {
+        $found = [];
+
+        foreach (conformanceFiles() as $path) {
+            if (preg_match(RAW_TYPE_PATTERN, conformanceSource($path)) === 1) {
+                $found[] = $path;
+            }
+        }
+
+        expect($found)->toBe([], 'Use text-editorial-h1 / text-editorial-h2 / text-stat / text-display instead of text-3xl font-bold.');
     });
 
     it('has a baseline with no stale entries', function () {

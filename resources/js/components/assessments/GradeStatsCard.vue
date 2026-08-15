@@ -45,7 +45,7 @@ const ungradedCount = computed(() => props.answers.filter(a => a.is_correct === 
                 <Check class="h-5 w-5 text-ok" />
                 <div>
                     <p class="text-sm text-muted-foreground">Jawaban Benar</p>
-                    <p class="text-xl font-bold text-ok">{{ correctCount }}</p>
+                    <p class="text-stat text-ok">{{ correctCount }}</p>
                 </div>
             </div>
 
@@ -53,7 +53,7 @@ const ungradedCount = computed(() => props.answers.filter(a => a.is_correct === 
                 <X class="h-5 w-5 text-danger" />
                 <div>
                     <p class="text-sm text-muted-foreground">Jawaban Salah</p>
-                    <p class="text-xl font-bold text-danger">{{ wrongCount }}</p>
+                    <p class="text-stat text-danger">{{ wrongCount }}</p>
                 </div>
             </div>
 
@@ -61,7 +61,7 @@ const ungradedCount = computed(() => props.answers.filter(a => a.is_correct === 
                 <AlertTriangle class="h-5 w-5 text-warn" />
                 <div>
                     <p class="text-sm text-muted-foreground">Belum Dinilai</p>
-                    <p class="text-xl font-bold text-warn">{{ ungradedCount }}</p>
+                    <p class="text-stat text-warn">{{ ungradedCount }}</p>
                 </div>
             </div>
         </CardContent>

@@ -89,7 +89,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
                     </Link>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="text-2xl font-bold">{{ learningPath.title }}</h1>
+                            <h1 class="text-editorial-h1">{{ learningPath.title }}</h1>
                             <Badge v-if="learningPath.is_published" variant="default">
                                 Terbit
                             </Badge>

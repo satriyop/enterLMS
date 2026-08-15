@@ -46,10 +46,10 @@ withDefaults(defineProps<Props>(), {
         <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid items-center gap-12 lg:grid-cols-2">
                 <div>
-                    <h2 class="text-3xl font-bold text-primary-foreground sm:text-4xl">
+                    <h2 class="text-editorial-h1 text-primary-foreground">
                         {{ title }}
                     </h2>
-                    <p class="mt-4 text-lg text-primary-foreground/80">
+                    <p class="mt-4 text-lg leading-relaxed text-primary-foreground/80">
                         {{ subtitle }}
                     </p>
 

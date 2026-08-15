@@ -37,7 +37,7 @@ defineProps<Props>();
                 <Award class="h-5 w-5 text-muted-foreground" />
                 <div>
                     <p class="text-sm text-muted-foreground">Nilai Saat Ini</p>
-                    <p class="text-xl font-bold">
+                    <p class="text-stat">
                         {{ totalScore }} / {{ maxScore }} ({{ percentage }}%)
                     </p>
                 </div>

@@ -112,7 +112,7 @@ const formattedStats = computed(() => {
                 title="Jelajahi Kategori"
                 subtitle="Temukan kursus berdasarkan kategori yang Anda minati"
                 :categories="categories"
-                view-all-href="/categories"
+                view-all-href="/courses"
             />
 
             <FeaturedCourses

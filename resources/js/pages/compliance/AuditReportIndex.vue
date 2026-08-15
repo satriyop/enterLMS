@@ -220,7 +220,7 @@ const formatDate = (dateStr: string) => {
                             </div>
                             <div>
                                 <p class="text-sm text-muted-foreground">Total Aktivitas</p>
-                                <p class="text-2xl font-bold text-foreground">
+                                <p class="text-stat text-foreground">
                                     {{ summary.total_events.toLocaleString('id-ID') }}
                                 </p>
                             </div>
@@ -237,7 +237,7 @@ const formatDate = (dateStr: string) => {
                             </div>
                             <div>
                                 <p class="text-sm text-muted-foreground">Pengguna Aktif</p>
-                                <p class="text-2xl font-bold text-foreground">
+                                <p class="text-stat text-foreground">
                                     {{ summary.unique_users.toLocaleString('id-ID') }}
                                 </p>
                             </div>
@@ -259,7 +259,7 @@ const formatDate = (dateStr: string) => {
                             </div>
                             <div>
                                 <p class="text-sm text-muted-foreground">Tren Pendaftaran</p>
-                                <p class="text-2xl font-bold text-foreground">
+                                <p class="text-stat text-foreground">
                                     {{ enrollmentTrend >= 0 ? '+' : '' }}{{ enrollmentTrend }}%
                                 </p>
                             </div>
@@ -310,7 +310,7 @@ const formatDate = (dateStr: string) => {
                                 <p class="text-sm text-muted-foreground">
                                     {{ categoryLabels[category] || category }}
                                 </p>
-                                <p class="text-xl font-semibold text-foreground">
+                                <p class="text-stat text-foreground">
                                     {{ count.toLocaleString('id-ID') }}
                                 </p>
                             </div>

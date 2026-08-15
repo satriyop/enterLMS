@@ -60,7 +60,7 @@ const formatDateTime = (date: string): string => {
                     <AlertTriangle v-else class="h-12 w-12 text-danger" />
                 </div>
 
-                <h2 class="text-2xl font-bold" :class="passed ? 'text-ok' : 'text-danger'">
+                <h2 class="text-editorial-h1" :class="passed ? 'text-ok' : 'text-danger'">
                     {{ passed ? 'Selamat! Anda Lulus!' : 'Anda Belum Lulus' }}
                 </h2>
 
@@ -73,11 +73,11 @@ const formatDateTime = (date: string): string => {
             <div class="grid gap-6 md:grid-cols-2">
                 <div class="text-center">
                     <p class="text-sm text-muted-foreground mb-1">Nilai Anda</p>
-                    <p class="text-3xl font-bold">{{ score }} / {{ maxScore }}</p>
+                    <p class="text-stat">{{ score }} / {{ maxScore }}</p>
                 </div>
                 <div class="text-center">
                     <p class="text-sm text-muted-foreground mb-1">Persentase</p>
-                    <p class="text-3xl font-bold">{{ percentage }}%</p>
+                    <p class="text-stat">{{ percentage }}%</p>
                 </div>
             </div>
 
@@ -85,11 +85,11 @@ const formatDateTime = (date: string): string => {
             <div class="grid gap-6 md:grid-cols-2">
                 <div class="text-center">
                     <p class="text-sm text-muted-foreground mb-1">Jawaban Benar</p>
-                    <p class="text-2xl font-bold text-ok">{{ correctAnswers }} / {{ totalQuestions }}</p>
+                    <p class="text-stat text-ok">{{ correctAnswers }} / {{ totalQuestions }}</p>
                 </div>
                 <div class="text-center">
                     <p class="text-sm text-muted-foreground mb-1">Nilai Kelulusan</p>
-                    <p class="text-2xl font-bold">{{ passingScore }}%</p>
+                    <p class="text-stat">{{ passingScore }}%</p>
                 </div>
             </div>
 

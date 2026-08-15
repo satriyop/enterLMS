@@ -199,7 +199,7 @@ const formattedDate = computed(() => {
                                 <BookOpen class="h-5 w-5 text-primary" />
                             </div>
                             <div>
-                                <p class="text-2xl font-bold">{{ user.courses_count ?? 0 }}</p>
+                                <p class="text-stat">{{ user.courses_count ?? 0 }}</p>
                                 <p class="text-sm text-muted-foreground">Kursus Dibuat</p>
                             </div>
                         </div>
@@ -209,7 +209,7 @@ const formattedDate = computed(() => {
                                 <GraduationCap class="h-5 w-5 text-ok" />
                             </div>
                             <div>
-                                <p class="text-2xl font-bold">{{ user.enrollments_count ?? 0 }}</p>
+                                <p class="text-stat">{{ user.enrollments_count ?? 0 }}</p>
                                 <p class="text-sm text-muted-foreground">Kursus Diikuti</p>
                             </div>
                         </div>

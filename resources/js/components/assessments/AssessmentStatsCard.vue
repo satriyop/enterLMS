@@ -33,7 +33,7 @@ defineProps<Props>();
                 <Users class="h-5 w-5 text-muted-foreground" />
                 <div>
                     <p class="text-sm text-muted-foreground">Total Percobaan</p>
-                    <p class="text-xl font-bold">{{ attemptsCount }}</p>
+                    <p class="text-stat">{{ attemptsCount }}</p>
                 </div>
             </div>
 
@@ -41,7 +41,7 @@ defineProps<Props>();
                 <FileText class="h-5 w-5 text-muted-foreground" />
                 <div>
                     <p class="text-sm text-muted-foreground">Total Pertanyaan</p>
-                    <p class="text-xl font-bold">{{ questionsCount }}</p>
+                    <p class="text-stat">{{ questionsCount }}</p>
                 </div>
             </div>
 
@@ -49,7 +49,7 @@ defineProps<Props>();
                 <AlertTriangle class="h-5 w-5 text-muted-foreground" />
                 <div>
                     <p class="text-sm text-muted-foreground">Tingkat Kesulitan</p>
-                    <p class="text-xl font-bold">Menengah</p>
+                    <p class="font-display text-xl font-normal tracking-tight">Menengah</p>
                 </div>
             </div>
         </CardContent>

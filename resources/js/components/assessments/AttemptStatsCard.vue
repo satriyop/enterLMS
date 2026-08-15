@@ -46,7 +46,7 @@ const totalCount = computed(() => props.answers.length);
                 <Check class="h-5 w-5 text-ok" />
                 <div>
                     <p class="text-sm text-muted-foreground">Jawaban Benar</p>
-                    <p class="text-xl font-bold text-ok">{{ correctCount }} / {{ totalCount }}</p>
+                    <p class="text-stat text-ok">{{ correctCount }} / {{ totalCount }}</p>
                 </div>
             </div>
 
@@ -54,7 +54,7 @@ const totalCount = computed(() => props.answers.length);
                 <X class="h-5 w-5 text-danger" />
                 <div>
                     <p class="text-sm text-muted-foreground">Jawaban Salah</p>
-                    <p class="text-xl font-bold text-danger">{{ wrongCount }}</p>
+                    <p class="text-stat text-danger">{{ wrongCount }}</p>
                 </div>
             </div>
 
@@ -62,7 +62,7 @@ const totalCount = computed(() => props.answers.length);
                 <AlertTriangle class="h-5 w-5 text-warn" />
                 <div>
                     <p class="text-sm text-muted-foreground">Menunggu Penilaian</p>
-                    <p class="text-xl font-bold text-warn">{{ pendingCount }}</p>
+                    <p class="text-stat text-warn">{{ pendingCount }}</p>
                 </div>
             </div>
         </CardContent>

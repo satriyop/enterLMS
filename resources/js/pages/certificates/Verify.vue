@@ -44,7 +44,7 @@ const handleVerify = () => {
                 <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gold-soft">
                     <Shield class="h-8 w-8 text-gold" />
                 </div>
-                <CardTitle class="text-2xl">Verifikasi Sertifikat</CardTitle>
+                <CardTitle class="text-editorial-h1">Verifikasi Sertifikat</CardTitle>
                 <CardDescription>
                     Masukkan kode verifikasi untuk memastikan keaslian sertifikat
                 </CardDescription>
