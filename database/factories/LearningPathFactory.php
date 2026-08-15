@@ -56,6 +56,7 @@ class LearningPathFactory extends Factory
             'created_by' => User::factory(),
             'updated_by' => User::factory(),
             'is_published' => false,
+            'visibility' => 'public',
             'published_at' => null,
             'estimated_duration' => fake()->numberBetween(120, 600),
             'difficulty_level' => fake()->randomElement(['beginner', 'intermediate', 'advanced', 'expert']),
@@ -83,6 +84,20 @@ class LearningPathFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'is_published' => false,
             'published_at' => null,
+        ]);
+    }
+
+    public function public(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'visibility' => 'public',
+        ]);
+    }
+
+    public function restricted(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'visibility' => 'restricted',
         ]);
     }
 

@@ -5,6 +5,7 @@ namespace App\Domain\LearningPath\Services;
 use App\Domain\Enrollment\Services\EnrollmentService;
 use App\Domain\LearningPath\Events\PathEnrollmentCreated;
 use App\Domain\LearningPath\Exceptions\AlreadyEnrolledInPathException;
+use App\Domain\LearningPath\Exceptions\PathNotOpenForSelfEnrollmentException;
 use App\Domain\LearningPath\Exceptions\PathNotPublishedException;
 use App\Domain\LearningPath\States\ActivePathState;
 use App\Domain\LearningPath\States\AvailableCourseState;
@@ -29,9 +30,9 @@ class PathEnrollmentService
         protected EnrollmentService $enrollmentService
     ) {}
 
-    public function enroll(User $user, LearningPath $path, bool $preserveProgress = true): LearningPathEnrollment
+    public function enroll(User $user, LearningPath $path, bool $preserveProgress = true, bool $grantedByAdmin = false): LearningPathEnrollment
     {
-        $this->validateEnrollment($user, $path);
+        $this->validateEnrollment($user, $path, requireOpenForSelfEnrollment: ! $grantedByAdmin);
 
         // Check for existing dropped enrollment (re-enrollment case)
         $droppedEnrollment = $this->getDroppedEnrollment($user, $path);
@@ -181,18 +182,20 @@ class PathEnrollmentService
 
     public function canEnroll(User $user, LearningPath $path): bool
     {
-        // Cannot enroll if already actively enrolled or completed
         if ($this->getActiveEnrollment($user, $path)) {
             return false;
         }
 
-        // Must be published
-        if (! $path->is_published) {
-            return false;
+        return $path->isOpenForSelfEnrollment();
+    }
+
+    public function enrollByAdmin(User $admin, User $learner, LearningPath $path, bool $preserveProgress = true): LearningPathEnrollment
+    {
+        if (! $admin->isLmsAdmin()) {
+            throw new PathNotOpenForSelfEnrollmentException($path->id);
         }
 
-        // Allow re-enrollment for dropped enrollments
-        return true;
+        return $this->enroll($learner, $path, $preserveProgress, grantedByAdmin: true);
     }
 
     public function getActiveEnrollment(User $user, LearningPath $path): ?LearningPathEnrollment
@@ -255,7 +258,7 @@ class PathEnrollmentService
             ->get();
     }
 
-    protected function validateEnrollment(User $user, LearningPath $path): void
+    protected function validateEnrollment(User $user, LearningPath $path, bool $requireOpenForSelfEnrollment = true): void
     {
         $existingEnrollment = $this->getActiveEnrollment($user, $path);
         if ($existingEnrollment) {
@@ -264,6 +267,10 @@ class PathEnrollmentService
 
         if (! $path->is_published) {
             throw new PathNotPublishedException($path->id);
+        }
+
+        if ($requireOpenForSelfEnrollment && $path->isRestricted()) {
+            throw new PathNotOpenForSelfEnrollmentException($path->id);
         }
     }
 

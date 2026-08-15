@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $created_by
  * @property int|null $updated_by
  * @property bool $is_published
+ * @property string $visibility
  * @property Carbon|null $published_at
  * @property int|null $estimated_duration
  * @property string|null $difficulty_level
@@ -47,6 +48,7 @@ class LearningPath extends Model
         'created_by',
         'updated_by',
         'is_published',
+        'visibility',
         'published_at',
         'estimated_duration',
         'difficulty_level',
@@ -100,9 +102,24 @@ class LearningPath extends Model
         return $this->is_published;
     }
 
+    public function isOpenForSelfEnrollment(): bool
+    {
+        return $this->is_published && $this->visibility === 'public';
+    }
+
+    public function isRestricted(): bool
+    {
+        return $this->visibility === 'restricted';
+    }
+
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
+    }
+
+    public function scopeOpenForSelfEnrollment($query)
+    {
+        return $query->where('is_published', true)->where('visibility', 'public');
     }
 
     protected static function boot()

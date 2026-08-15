@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\LearningPath\Exceptions\AlreadyEnrolledInPathException;
+use App\Domain\LearningPath\Exceptions\PathNotOpenForSelfEnrollmentException;
 use App\Domain\LearningPath\Exceptions\PathNotPublishedException;
 use App\Domain\LearningPath\Services\PathEnrollmentService;
 use App\Domain\LearningPath\Services\PathProgressService;
@@ -68,7 +69,7 @@ class LearningPathEnrollmentController extends Controller
         $user = Auth::user();
 
         $learningPathsQuery = LearningPath::query()
-            ->published()
+            ->openForSelfEnrollment()
             ->with(['courses', 'creator'])
             ->withCount(['courses', 'learnerEnrollments as enrollments_count'])
             ->when($request->search, function ($query, $search) {
@@ -147,7 +148,7 @@ class LearningPathEnrollmentController extends Controller
             return redirect()
                 ->route('learner.learning-paths.show', $learningPath)
                 ->with('warning', 'Anda sudah terdaftar di learning path ini.');
-        } catch (PathNotPublishedException) {
+        } catch (PathNotPublishedException|PathNotOpenForSelfEnrollmentException) {
             return redirect()
                 ->route('learner.learning-paths.browse')
                 ->with('error', 'Learning path ini tidak tersedia untuk pendaftaran.');
