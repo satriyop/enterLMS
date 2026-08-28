@@ -20,12 +20,12 @@ import VideoContent from './content/VideoContent.vue';
 import AudioContent from './content/AudioContent.vue';
 import DocumentPreview from './content/DocumentPreview.vue';
 import ContentPlaceholder from './content/ContentPlaceholder.vue';
+import ConferenceContent from './content/ConferenceContent.vue';
 import {
     PlayCircle,
     FileText,
     Headphones,
     FileDown,
-    Video as VideoCall,
     BookOpen,
 } from 'lucide-vue-next';
 
@@ -48,6 +48,10 @@ interface Props {
     media?: Media[];
     /** Existing lesson progress */
     lessonProgress?: LessonProgress | null;
+    /** Conference join URL */
+    conferenceUrl?: string | null;
+    /** Conference platform */
+    conferenceType?: 'zoom' | 'google_meet' | 'other' | null;
 }
 
 // =============================================================================
@@ -191,9 +195,9 @@ const handleMediaPause = () => {
 
         <!-- Conference -->
         <div v-else-if="contentType === 'conference'" class="w-full p-8 max-w-2xl mx-auto">
-            <ContentPlaceholder
-                :icon="VideoCall"
-                message="Informasi konferensi akan segera tersedia"
+            <ConferenceContent
+                :conference-url="conferenceUrl"
+                :conference-type="conferenceType"
             />
         </div>
 

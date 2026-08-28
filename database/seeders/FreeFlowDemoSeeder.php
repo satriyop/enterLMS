@@ -5,13 +5,10 @@ namespace Database\Seeders;
 use App\Models\Assessment;
 use App\Models\Category;
 use App\Models\Course;
-use App\Models\CourseSection;
-use App\Models\Lesson;
-use App\Models\Question;
-use App\Models\QuestionOption;
 use App\Models\Tag;
 use App\Models\User;
 use App\Services\SeederThumbnailGenerator;
+use Database\Seeders\Concerns\BuildsAcademyLessonContent;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -20,7 +17,7 @@ use Illuminate\Support\Str;
  * Seeds a realistic free-flow demo for local/manual testing.
  *
  * Covers the core LMS path without payment:
- * users → free published course with content → optional assessment.
+ * users → free published course with every Lesson form → required assessment.
  *
  * Run alone:
  *   php artisan db:seed --class=FreeFlowDemoSeeder
@@ -29,9 +26,32 @@ use Illuminate\Support\Str;
  */
 class FreeFlowDemoSeeder extends Seeder
 {
+    use BuildsAcademyLessonContent;
+
     public const DEMO_PASSWORD = 'password';
 
     public const FREE_COURSE_TITLE = 'Pengenalan Agen AI';
+
+    public const INTRO_QUIZ_TITLE = 'Kuis Wajib Pengenalan Agen AI';
+
+    public const YOUTUBE_AGENTS_EXPLAINED = 'https://www.youtube.com/watch?v=d0wUM8hIaxE';
+
+    public const OFFICE_HOURS_URL = 'https://meet.google.com/ent-rlms-hrs';
+
+    /**
+     * @var list<string>
+     */
+    public const LESSON_TITLES = [
+        'Selamat Datang di EnterLMS',
+        'Cara Menyelesaikan Pelajaran',
+        'Agen yang bekerja untuk manusia',
+        'Melihat agen bekerja',
+        'Ulangan singkat: agen versus chatbot',
+        'Tools, memori, dan batas',
+        'Lembar glosarium agen',
+        'Academy ini bukan control plane',
+        'Office hours pengenalan',
+    ];
 
     /**
      * @var array<int, array{name: string, email: string, role: string}>
@@ -54,7 +74,7 @@ class FreeFlowDemoSeeder extends Seeder
         $users = $this->seedUsers();
         $category = $this->ensureCategory();
         $course = $this->seedFreeDemoCourse($users['lms_admin'], $users['lms_admin'], $category);
-        $this->seedOptionalQuiz($course, $users['lms_admin']);
+        $this->seedRequiredQuiz($course, $users['lms_admin']);
 
         $this->printSummary($users, $course);
     }
@@ -99,45 +119,40 @@ class FreeFlowDemoSeeder extends Seeder
 
     private function seedFreeDemoCourse(User $author, User $admin, Category $category): Course
     {
-        $course = Course::query()->where('title', self::FREE_COURSE_TITLE)->first();
-
-        if ($course) {
-            $this->command?->info('Free demo course already exists: '.self::FREE_COURSE_TITLE);
-
-            return $course->load('sections.lessons');
-        }
-
         $thumbnailPath = app(SeederThumbnailGenerator::class)->generate(
             self::FREE_COURSE_TITLE,
             'courses/thumbnails',
             'free-flow-demo-orientation.jpg'
         );
 
-        $course = Course::query()->create([
-            'user_id' => $author->id,
-            'title' => self::FREE_COURSE_TITLE,
-            'slug' => Str::slug(self::FREE_COURSE_TITLE).'-demo',
-            'short_description' => 'Kursus gratis untuk memahami apa itu agen AI, dan apa yang tidak kamu operasikan di academy ini.',
-            'long_description' => 'Pengenalan terbuka untuk siapa pun. Tidak ada asumsi kamu menjalankan agen di produksi. Kamu akan mengenal agen AI dan batas academy ini — EnterLMS bukan control plane.',
-            'objectives' => [
-                'Memahami apa itu agen AI dalam bahasa sehari-hari',
-                'Membedakan belajar di academy dengan mengoperasikan agen hidup',
-                'Mengetahui apa yang tidak dioperasikan di EnterLMS',
-            ],
-            'prerequisites' => [
-                'Tidak ada prasyarat — terbuka untuk peserta baru',
-            ],
-            'category_id' => $category->id,
-            'thumbnail_path' => $thumbnailPath,
-            'status' => 'published',
-            'visibility' => 'public',
-            'difficulty_level' => 'beginner',
-            'estimated_duration_minutes' => 45,
-            'is_paid' => false,
-            'price' => null,
-            'published_at' => now(),
-            'published_by' => $admin->id,
-        ]);
+        $course = Course::query()->updateOrCreate(
+            ['title' => self::FREE_COURSE_TITLE],
+            [
+                'user_id' => $author->id,
+                'slug' => Str::slug(self::FREE_COURSE_TITLE).'-demo',
+                'short_description' => 'Kursus gratis untuk memahami apa itu agen AI, dan apa yang tidak kamu operasikan di academy ini.',
+                'long_description' => 'Pengenalan terbuka untuk siapa pun. Tidak ada asumsi kamu menjalankan agen di produksi. Kamu akan mengenal agen AI — tujuan, alat, dan loop — lalu batas academy ini: EnterLMS bukan control plane, dan Lesson bukan konsol agen hidup.',
+                'objectives' => [
+                    'Memahami apa itu agen AI dalam bahasa sehari-hari',
+                    'Membedakan agen, chatbot, dan loop alat',
+                    'Membedakan belajar di academy dengan mengoperasikan agen hidup',
+                    'Mengetahui apa yang tidak dioperasikan di EnterLMS',
+                ],
+                'prerequisites' => [
+                    'Tidak ada prasyarat — terbuka untuk peserta baru',
+                ],
+                'category_id' => $category->id,
+                'thumbnail_path' => $thumbnailPath,
+                'status' => 'published',
+                'visibility' => 'public',
+                'difficulty_level' => 'beginner',
+                'estimated_duration_minutes' => 120,
+                'is_paid' => false,
+                'price' => null,
+                'published_at' => now(),
+                'published_by' => $admin->id,
+            ]
+        );
 
         $agentTag = Tag::query()->firstOrCreate(
             ['slug' => 'agen-ai'],
@@ -145,155 +160,261 @@ class FreeFlowDemoSeeder extends Seeder
         );
         $course->tags()->syncWithoutDetaching([$agentTag->id]);
 
-        $sections = [
+        if ($this->catalogMatches($course, self::LESSON_TITLES)) {
+            $this->command?->info('Open course catalog already current: '.self::FREE_COURSE_TITLE);
+
+            return $course->load('sections.lessons');
+        }
+
+        $this->replaceCourseLessons($course, $this->introSections());
+
+        return $course->load('sections.lessons');
+    }
+
+    /**
+     * @return list<array{title: string, description: string, lessons: list<array<string, mixed>>}>
+     */
+    private function introSections(): array
+    {
+        return [
             [
                 'title' => 'Memulai di EnterLMS',
                 'description' => 'Orientasi academy dan cara menyelesaikan kursus',
                 'lessons' => [
                     [
                         'title' => 'Selamat Datang di EnterLMS',
+                        'description' => 'Apa academy ini, siapa yang belajar di sini, dan apa yang bukan pekerjaan academy.',
                         'content_type' => 'text',
-                        'duration' => 5,
+                        'duration' => 8,
                         'is_free_preview' => true,
-                        'rich_content' => $this->richContent(
-                            'Selamat Datang di EnterLMS',
-                            'EnterLMS adalah academy untuk orang yang menjalankan dan membangun keluarga produk AI. Ini bukan sekolah AI generik dan bukan tempat men-deploy agen. Selesaikan setiap pelajaran untuk menandai progres, lalu selesaikan kursus.'
-                        ),
+                        'rich_content' => $this->doc([
+                            $this->heading('Selamat Datang di EnterLMS', 1),
+                            $this->paragraph('EnterLMS adalah academy untuk orang yang menjalankan dan membangun keluarga produk AI. Ini bukan sekolah AI generik. Ini bukan tempat men-deploy agen.'),
+                            $this->paragraph('Kamu masuk sebagai Learner. LMS Admin — di fase ini hanya pendiri academy — yang menerbitkan Course, memberikan Enrollment ke Course terbatas, dan mengunci nilai.'),
+                            $this->heading('Apa yang akan kamu lakukan'),
+                            $this->bullets([
+                                'Membaca, menonton, dan mendengarkan Lesson — teks, video, audio, dokumen, YouTube, dan konferensi.',
+                                'Bertanya pada Tutor tentang Lesson yang sedang kamu buka. Tutor tidak menyelesaikan Lesson untukmu.',
+                                'Menyelesaikan kuis wajib. Jawaban singkat dinilai LMS Admin, bukan langsung lulus.',
+                            ]),
+                            $this->quote('Selesaikan setiap Lesson untuk menandai progres. Sertifikat menunggu penyelesaian yang nyata, termasuk kuis wajib.'),
+                        ]),
                     ],
                     [
                         'title' => 'Cara Menyelesaikan Pelajaran',
+                        'description' => 'Progres, Enrollment, Tutor, dan sertifikat.',
                         'content_type' => 'text',
-                        'duration' => 5,
-                        'rich_content' => $this->richContent(
-                            'Cara Menyelesaikan Pelajaran',
-                            'Buka setiap pelajaran secara berurutan. Progres tersimpan otomatis. Setelah semua pelajaran selesai, enrollment menjadi completed dan sertifikat diterbitkan otomatis.'
-                        ),
+                        'duration' => 8,
+                        'rich_content' => $this->doc([
+                            $this->heading('Cara Menyelesaikan Pelajaran', 1),
+                            $this->paragraph('Buka setiap Lesson secara berurutan. Progres tersimpan otomatis ketika kamu membaca halaman, memutar media, atau menandai selesai.'),
+                            $this->heading('Tutor'),
+                            $this->paragraph('Pada Lesson yang terikat Enrollment, kamu bisa bertanya pada Tutor. Percakapan tersimpan. Bicara tidak menyelesaikan Lesson dan tidak menerbitkan Course.'),
+                            $this->heading('Penilaian'),
+                            $this->bullets([
+                                'Pilihan ganda dan benar/salah dinilai otomatis.',
+                                'Jawaban singkat tanpa kunci pasti menjadi Grade Proposal — LMS Admin yang menerima atau menolak.',
+                                'Kuis pengenalan ini wajib. Tanpa lulus, sertifikat tidak terbit.',
+                            ]),
+                            $this->paragraph('Preview Lesson bisa dibuka tanpa Enrollment. Tutor tidak hadir di preview.'),
+                        ]),
                     ],
                 ],
             ],
             [
                 'title' => 'Apa itu Agen AI',
-                'description' => 'Pengenalan tanpa asumsi kamu punya tenant',
+                'description' => 'Pengenalan tanpa asumsi kamu punya runtime',
                 'lessons' => [
                     [
                         'title' => 'Agen yang bekerja untuk manusia',
+                        'description' => 'Tujuan, alat, dan loop — bukan chatbot.',
                         'content_type' => 'text',
-                        'duration' => 10,
-                        'rich_content' => $this->richContent(
-                            'Agen yang bekerja untuk manusia',
-                            'Agen AI adalah program yang menerima tujuan, memakai alat, dan bertindak berulang. Di keluarga produk ini, agen itu dijalankan sebagai layanan terkelola — bukan chatbot yang kamu install sendiri.'
-                        ),
+                        'duration' => 15,
+                        'rich_content' => $this->doc([
+                            $this->heading('Agen yang bekerja untuk manusia', 1),
+                            $this->paragraph('Agen AI adalah program yang menerima tujuan, memakai alat, dan bertindak berulang sampai tugas selesai atau dibatasi. Manusia memberi tujuan dan batas. Agen yang memilih langkah.'),
+                            $this->heading('Bukan chatbot'),
+                            $this->paragraph('Chatbot menjawab dalam percakapan. Agen merencanakan, memanggil alat, melihat hasil, lalu memutuskan langkah berikutnya. Satu jawaban bukan pekerjaan agen.'),
+                            $this->heading('Tiga bagian yang selalu ada'),
+                            $this->bullets([
+                                'Model — menalar tujuan dan memilih langkah.',
+                                'Alat — tangan agen: API, berkas, pencarian, konektor.',
+                                'Loop — amati, bertindak, amati lagi, sampai berhenti.',
+                            ]),
+                            $this->quote('Di keluarga produk ini, agen dijalankan sebagai layanan terkelola. Kamu tidak menginstall chatbot di laptop agar “jadi agen”.'),
+                            $this->paragraph('Kursus ini tidak meminta kamu menjalankan apa pun. Cukup pahami bentuknya, lalu pahami batas academy.'),
+                        ]),
                     ],
+                    [
+                        'title' => 'Melihat agen bekerja',
+                        'description' => 'Video singkat Google Cloud: agen versus chatbot.',
+                        'content_type' => 'youtube',
+                        'duration' => 10,
+                        'youtube_url' => self::YOUTUBE_AGENTS_EXPLAINED,
+                        'rich_content' => $this->doc([
+                            $this->heading('Melihat agen bekerja', 1),
+                            $this->paragraph('Tonton penjelasan singkat Google Cloud. Bandingkan dengan Lesson sebelumnya: model, alat, dan koordinasi untuk mencapai tujuan — bukan hanya membalas chat.'),
+                            $this->paragraph('Video ini bukan lab. Setelah selesai, kamu tetap di academy. Tidak ada konsol yang terbuka.'),
+                        ]),
+                    ],
+                    [
+                        'title' => 'Ulangan singkat: agen versus chatbot',
+                        'description' => 'Audio recap untuk mengunci perbedaan agen dan chatbot.',
+                        'content_type' => 'audio',
+                        'duration' => 8,
+                        'rich_content' => $this->doc([
+                            $this->heading('Ulangan singkat', 1),
+                            $this->paragraph('Putar rekaman ini sekali. Kalau kamu hanya ingat satu kalimat: agen menerima tujuan, memakai alat, dan bekerja dalam loop. Chatbot hanya menjawab.'),
+                        ]),
+                        'fixture' => [
+                            'collection' => 'audio',
+                            'filename' => 'audio-recap-agen.mp3',
+                            'mime' => 'audio/mpeg',
+                            'duration' => 19,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'title' => 'Anatomi, tanpa runtime',
+                'description' => 'Tools, memori, dan batas wewenang — masih di atas kertas',
+                'lessons' => [
+                    [
+                        'title' => 'Tools, memori, dan batas',
+                        'description' => 'Apa yang agen boleh sentuh, dan siapa yang memutuskan batas itu.',
+                        'content_type' => 'text',
+                        'duration' => 15,
+                        'rich_content' => $this->doc([
+                            $this->heading('Tools, memori, dan batas', 1),
+                            $this->paragraph('Alat membuat agen berguna dan berbahaya. Tanpa alat, ia hanya berbicara. Dengan alat, ia bisa membaca berkas, memanggil API, atau mengirim pesan.'),
+                            $this->heading('Memori'),
+                            $this->paragraph('Memori kerja adalah percakapan dan hasil alat di satu tugas. Memori jangka panjang adalah catatan yang sengaja disimpan. Keduanya milik tenant, bukan milik academy.'),
+                            $this->heading('Batas yang manusia tulis'),
+                            $this->bullets([
+                                'Tujuan — apa yang boleh dikejar.',
+                                'Alat — mana yang diizinkan.',
+                                'Stop — kapan loop harus berhenti, termasuk kill switch di sisi operasi.',
+                            ]),
+                            $this->paragraph('Menulis batas itu pekerjaan Operator dan pengelola tenant di produk runtime. Bukan pekerjaan Lesson. Academy ini mengajarkan kosakatanya.'),
+                        ]),
+                    ],
+                    [
+                        'title' => 'Lembar glosarium agen',
+                        'description' => 'Satu halaman istilah yang dipakai academy ini.',
+                        'content_type' => 'document',
+                        'duration' => 10,
+                        'rich_content' => $this->doc([
+                            $this->heading('Lembar glosarium agen', 1),
+                            $this->paragraph('Unduh atau baca PDF ini. Istilah di dalamnya adalah bahasa academy: Learner, Tutor, Enrollment, Open Course, Restricted Course. Bukan bahasa control plane.'),
+                        ]),
+                        'pdf' => [
+                            'filename' => 'glosarium-agen-ai.pdf',
+                            'title' => 'Glosarium Pengenalan Agen AI',
+                            'paragraphs' => [
+                                'Agen AI: program yang menerima tujuan, memakai alat, dan bertindak berulang. Bukan chatbot yang hanya menjawab.',
+                                'Alat (tool): API, berkas, pencarian, atau konektor yang dipanggil agen di dalam loop.',
+                                'Loop: amati, bertindak, amati lagi, sampai tujuan tercapai atau batas menghentikannya.',
+                                'EnterLMS: academy. Tempat belajar. Bukan control plane dan bukan konsol runtime.',
+                                'Tutor: guru di Lesson pada Enrollment. Tidak men-deploy agen, tidak menyelesaikan Lesson, tidak mengunci nilai.',
+                                'LMS Agent: klien di luar academy yang memanggil MCP. Pekerjaan berbeda dari Tutor, token berbeda.',
+                                'OpenClaw: runtime agen. Di academy ini ia adalah subjek Course terbatas, bukan tombol yang kamu tekan di Lesson.',
+                                'Open Course: katalog publik. Learner boleh membuat Enrollment sendiri. v1: Pengenalan Agen AI.',
+                                'Restricted Course: tersembunyi dari katalog publik. LMS Admin yang memberikan Enrollment. v1: Administrasi Agen OpenClaw.',
+                                'Lesson: satu unit konten. Bentuknya teks, video, audio, dokumen, YouTube, atau konferensi. Bukan lab.',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'title' => 'Batas academy',
+                'description' => 'Apa yang tidak kamu operasikan di sini',
+                'lessons' => [
                     [
                         'title' => 'Academy ini bukan control plane',
+                        'description' => 'Selesai kursus terbuka tidak membuka produksi.',
                         'content_type' => 'text',
-                        'duration' => 10,
-                        'rich_content' => $this->richContent(
-                            'Academy ini bukan control plane',
-                            'EnterLMS mengajarkan. Ia tidak men-deploy agen dan tidak membuka konsol runtime di dalam Lesson. Mengoperasikan agen hidup bukan pekerjaan academy ini.'
-                        ),
+                        'duration' => 12,
+                        'rich_content' => $this->doc([
+                            $this->heading('Academy ini bukan control plane', 1),
+                            $this->paragraph('EnterLMS mengajarkan. Ia tidak men-deploy agen. Ia tidak membuka konsol runtime di dalam Lesson. Mengoperasikan agen hidup bukan pekerjaan academy ini.'),
+                            $this->heading('Dua Course, dua pintu'),
+                            $this->bullets([
+                                'Pengenalan Agen AI — Open Course, gratis, siapa pun boleh enroll.',
+                                'Administrasi Agen OpenClaw — Restricted Course. LMS Admin yang memberikan Enrollment lewat Learning Path.',
+                            ]),
+                            $this->paragraph('Menyelesaikan kursus ini tidak membuka Course terbatas. Tidak ada “lulus lalu dapat akses produksi”.'),
+                            $this->quote('Kalau kamu butuh menjalankan OpenClaw, itu di luar academy. Tutor di sini akan bilang begitu, bukan membuka desktop agen.'),
+                        ]),
                     ],
                     [
-                        'title' => 'Apa yang tidak kamu operasikan di sini',
-                        'content_type' => 'text',
-                        'duration' => 5,
-                        'rich_content' => $this->richContent(
-                            'Apa yang tidak kamu operasikan di sini',
-                            'Tidak ada konsol agen hidup di academy ini. Menyelesaikan kursus ini tidak membuka Course terbatas. LMS Admin yang memberikan Enrollment ke Administrasi Agen OpenClaw.'
-                        ),
+                        'title' => 'Office hours pengenalan',
+                        'description' => 'Sesi tanya jawab manusia. Bukan konsol agen.',
+                        'content_type' => 'conference',
+                        'duration' => 20,
+                        'conference_url' => self::OFFICE_HOURS_URL,
+                        'conference_type' => 'google_meet',
+                        'rich_content' => $this->doc([
+                            $this->heading('Office hours pengenalan', 1),
+                            $this->paragraph('Ini pertemuan live dengan LMS Admin. Bawa pertanyaan tentang Lesson. Jangan harap sesi ini menjadi lab runtime.'),
+                            $this->paragraph('Tautan di kartu adalah Google Meet demo. Kalau meeting belum dimulai, kartu tetap menjelaskan bentuk Lesson konferensi.'),
+                        ]),
                     ],
                 ],
             ],
         ];
-
-        foreach ($sections as $sectionOrder => $sectionData) {
-            $section = CourseSection::query()->create([
-                'course_id' => $course->id,
-                'title' => $sectionData['title'],
-                'description' => $sectionData['description'],
-                'order' => $sectionOrder + 1,
-            ]);
-
-            foreach ($sectionData['lessons'] as $lessonOrder => $lessonData) {
-                Lesson::query()->create([
-                    'course_section_id' => $section->id,
-                    'title' => $lessonData['title'],
-                    'description' => null,
-                    'order' => $lessonOrder + 1,
-                    'content_type' => $lessonData['content_type'],
-                    'rich_content' => $lessonData['rich_content'],
-                    'estimated_duration_minutes' => $lessonData['duration'],
-                    'is_free_preview' => $lessonData['is_free_preview'] ?? false,
-                ]);
-            }
-        }
-
-        return $course->load('sections.lessons');
     }
 
-    private function seedOptionalQuiz(Course $course, User $author): void
+    private function seedRequiredQuiz(Course $course, User $author): void
     {
-        if ($course->assessments()->exists()) {
+        if ($course->assessments()->where('title', self::INTRO_QUIZ_TITLE)->exists()) {
             return;
         }
 
         $assessment = Assessment::query()->create([
             'course_id' => $course->id,
             'user_id' => $author->id,
-            'title' => 'Kuis Singkat Pengenalan Agen AI',
-            'slug' => 'kuis-pengenalan-agen-ai-'.Str::lower(Str::random(6)),
-            'description' => 'Kuis opsional untuk menguji pemahaman materi pengenalan.',
+            'title' => self::INTRO_QUIZ_TITLE,
+            'slug' => 'kuis-wajib-pengenalan-agen-ai',
+            'description' => 'Kuis wajib. Lulus ini bersama seluruh Lesson sebelum sertifikat terbit.',
+            'instructions' => "Baca setiap soal. Pilihan ganda dan benar/salah dinilai otomatis. Jawaban singkat menunggu LMS Admin.\n\nIni bukan ujian operasi runtime.",
             'status' => 'published',
-            'passing_score' => 60,
+            'passing_score' => 70,
             'max_attempts' => 3,
-            'is_required' => false,
-            'time_limit_minutes' => null,
+            'is_required' => true,
+            'time_limit_minutes' => 20,
+            'allow_review' => true,
+            'show_correct_answers' => true,
             'published_at' => now(),
+            'published_by' => $author->id,
         ]);
 
-        $question = Question::query()->create([
-            'assessment_id' => $assessment->id,
-            'question_text' => 'EnterLMS adalah control plane untuk men-deploy agen OpenClaw.',
-            'question_type' => 'true_false',
-            'points' => 10,
-            'order' => 1,
-            'correct_answer' => 'false',
-        ]);
+        $this->createMultipleChoice($assessment, 'Apa yang membedakan agen AI dari chatbot?', [
+            ['option_text' => 'Agen menerima tujuan, memakai alat, dan bekerja dalam loop', 'is_correct' => true],
+            ['option_text' => 'Agen hanya menjawab lebih panjang daripada chatbot', 'is_correct' => false],
+            ['option_text' => 'Agen adalah merek chatbot yang dipasang di laptop', 'is_correct' => false],
+            ['option_text' => 'Agen adalah Tutor di academy ini', 'is_correct' => false],
+        ], 1);
 
-        QuestionOption::query()->create([
-            'question_id' => $question->id,
-            'option_text' => 'Benar',
-            'is_correct' => false,
-            'order' => 1,
-        ]);
+        $this->createTrueFalse(
+            $assessment,
+            'EnterLMS adalah control plane untuk men-deploy agen OpenClaw.',
+            false,
+            2,
+        );
 
-        QuestionOption::query()->create([
-            'question_id' => $question->id,
-            'option_text' => 'Salah',
-            'is_correct' => true,
-            'order' => 2,
-        ]);
-    }
+        $this->createMultipleChoice($assessment, 'Apa yang terjadi jika Learner publik menyelesaikan Pengenalan Agen AI?', [
+            ['option_text' => 'Tidak otomatis membuka Course terbatas; LMS Admin yang memberi Enrollment', 'is_correct' => true],
+            ['option_text' => 'Akses produksi OpenClaw terbuka otomatis', 'is_correct' => false],
+            ['option_text' => 'Tutor men-deploy agen atas nama Learner', 'is_correct' => false],
+            ['option_text' => 'Lesson berubah menjadi konsol runtime', 'is_correct' => false],
+        ], 3);
 
-    /**
-     * @return array{type: string, content: array<int, array<string, mixed>>}
-     */
-    private function richContent(string $heading, string $paragraph): array
-    {
-        return [
-            'type' => 'doc',
-            'content' => [
-                [
-                    'type' => 'heading',
-                    'attrs' => ['level' => 1],
-                    'content' => [['type' => 'text', 'text' => $heading]],
-                ],
-                [
-                    'type' => 'paragraph',
-                    'content' => [['type' => 'text', 'text' => $paragraph]],
-                ],
-            ],
-        ];
+        $this->createManualShortAnswer(
+            $assessment,
+            'Sebutkan satu hal yang tidak kamu operasikan di EnterLMS.',
+            4,
+        );
     }
 
     /**
@@ -309,7 +430,7 @@ class FreeFlowDemoSeeder extends Seeder
 
         $this->command->newLine();
         $this->command->info('=== Free Flow Demo Ready ===');
-        $this->command->info("Course: {$course->title} (id={$course->id}, lessons={$lessonCount}, free)");
+        $this->command->info("Course: {$course->title} (id={$course->id}, lessons={$lessonCount}, free, all lesson forms)");
         $this->command->info('Password for all demo users: '.self::DEMO_PASSWORD);
         $this->command->table(
             ['Role', 'Name', 'Email'],
@@ -321,8 +442,9 @@ class FreeFlowDemoSeeder extends Seeder
         $this->command->info('Suggested manual flow:');
         $this->command->line('  1. Login as learner@enterlms.test');
         $this->command->line('  2. Buka kursus demo → Enroll');
-        $this->command->line('  3. Selesaikan semua pelajaran');
-        $this->command->line('  4. Buka /certificates untuk unduh sertifikat');
+        $this->command->line('  3. Selesaikan semua pelajaran (teks, YouTube, audio, PDF, konferensi)');
+        $this->command->line('  4. Kerjakan kuis wajib — jawaban singkat menunggu LMS Admin');
+        $this->command->line('  5. Buka /certificates untuk unduh sertifikat setelah lulus');
         $this->command->newLine();
     }
 }

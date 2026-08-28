@@ -79,6 +79,7 @@ class AssessmentSeeder extends Seeder
         }
 
         $this->command->info('Creating assessments for courses without assessments...');
+        $this->command->info('Authored academy quizzes (Pengenalan / OpenClaw) are skipped.');
 
         foreach ($publishedCourses as $course) {
             // Keep FreeFlow / manual assessments; only seed empty courses

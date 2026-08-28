@@ -36,6 +36,8 @@ interface ViewableLesson {
     rich_content_html: string | null;
     youtube_url: string | null;
     youtube_video_id: string | null;
+    conference_url: string | null;
+    conference_type: 'zoom' | 'google_meet' | 'other' | null;
     estimated_duration_minutes: number | null;
     is_free_preview: boolean;
     media: Media[];
@@ -191,6 +193,8 @@ onMounted(() => {
                         :lesson-id="lesson.id"
                         :rich-content-html="lesson.rich_content_html"
                         :youtube-video-id="lesson.youtube_video_id"
+                        :conference-url="lesson.conference_url"
+                        :conference-type="lesson.conference_type"
                         :media="lesson.media"
                         :lesson-progress="lessonProgress"
                         @page-change="handlePageChange"

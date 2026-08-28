@@ -7,3 +7,4 @@ export { default as ContentPlaceholder } from './ContentPlaceholder.vue';
 export { default as VideoContent } from './VideoContent.vue';
 export { default as AudioContent } from './AudioContent.vue';
 export { default as DocumentPreview } from './DocumentPreview.vue';
+export { default as ConferenceContent } from './ConferenceContent.vue';

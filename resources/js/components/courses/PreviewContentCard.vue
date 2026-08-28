@@ -11,13 +11,13 @@ import {
     Headphones,
     FileDown,
     BookOpen,
-    Users,
     Download,
     Play,
     Pause,
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import type { ContentType, Media } from '@/types';
+import ConferenceContent from '@/components/lesson/content/ConferenceContent.vue';
 
 // =============================================================================
 // Types
@@ -29,6 +29,8 @@ interface Props {
     richContentHtml?: string | null;
     youtubeVideoId: string | null;
     media: Media[];
+    conferenceUrl?: string | null;
+    conferenceType?: 'zoom' | 'google_meet' | 'other' | null;
 }
 
 // =============================================================================
@@ -219,11 +221,11 @@ const getDocumentType = (mimeType: string): string => {
             </div>
 
             <!-- Conference -->
-            <div v-else-if="contentType === 'conference'" class="p-8 rounded-lg bg-surface-2 flex items-center justify-center">
-                <div class="text-center text-muted-foreground">
-                    <Users class="h-16 w-16 mx-auto mb-2" />
-                    <p>Informasi konferensi akan ditampilkan setelah Anda terdaftar</p>
-                </div>
+            <div v-else-if="contentType === 'conference'" class="flex justify-center p-8">
+                <ConferenceContent
+                    :conference-url="conferenceUrl"
+                    :conference-type="conferenceType"
+                />
             </div>
 
             <!-- Fallback -->
