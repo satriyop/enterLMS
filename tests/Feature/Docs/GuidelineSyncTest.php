@@ -10,8 +10,8 @@
  *
  * Only the generated copy is loaded into an agent's context automatically. So when
  * the two drift, the stale copy wins over the corrected source and nothing says a
- * word. That is how the banking/OJK positioning survived ADR 004: the source was
- * never fixed, and there was nothing that could have noticed if it had been.
+ * word. That is how a retired positioning survived: the source was never fixed,
+ * and there was nothing that could have noticed if it had been.
  *
  * Regenerate after editing a guideline:
  *   php artisan boost:install
@@ -71,9 +71,10 @@ describe('agent guidelines', function () {
         // CONTEXT.md owns the domain. A guideline that names a Course, a role or a
         // frozen concept is a fact with a second home, and second homes go stale.
         $domainTerms = [
-            'banking', 'perbankan', 'OJK', 'APU-PPT',
+            'banking', 'perbankan', 'OJK', 'APU-PPT', 'Enteraksi',
             'Open Course', 'Restricted Course', 'Learning Path',
-            'LMS Admin', 'Tenant Admin', 'Tenant Owner', 'OpenClaw', 'Hermes',
+            'LMS Admin', 'OpenClaw', 'Hermes',
+            'Tutor', 'LMS Agent', 'Grade Proposal', 'Conversation',
         ];
 
         $found = [];
@@ -81,7 +82,6 @@ describe('agent guidelines', function () {
         foreach (guidelineSources() as $name => $source) {
             // The prohibition itself has to be allowed to name what it prohibits.
             $prose = (string) preg_replace('/^.*Do not restate.*$/mi', '', $source);
-            $prose = (string) preg_replace('/^.*positioning ADR 004 retired.*$/mi', '', $prose);
 
             foreach ($domainTerms as $term) {
                 if (Str::contains($prose, $term, ignoreCase: true)) {

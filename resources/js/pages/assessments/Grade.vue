@@ -5,6 +5,7 @@
 // =============================================================================
 
 import { grade, submitGrade } from '@/actions/App/Http/Controllers/AssessmentAttemptController';
+import { accept as acceptProposal, reject as rejectProposal, repropose } from '@/actions/App/Http/Controllers/GradeProposalController';
 import PageHeader from '@/components/crud/PageHeader.vue';
 import GradeParticipantCard from '@/components/assessments/GradeParticipantCard.vue';
 import GradeAnswerCard from '@/components/assessments/GradeAnswerCard.vue';
@@ -17,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import InputError from '@/components/InputError.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type QuestionType, type AttemptStatus } from '@/types';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, router } from '@inertiajs/vue3';
 import { CheckCircle } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 
@@ -47,6 +48,9 @@ interface GradeAnswer {
     is_correct: boolean | null;
     score: number | null;
     feedback: string | null;
+    proposal_score?: number | null;
+    proposal_feedback?: string | null;
+    proposal_status?: string | null;
     question: GradeQuestion;
 }
 
@@ -173,17 +177,59 @@ const recalculateScores = () => {
                         class="space-y-6"
                         #default="{ errors, processing }"
                     >
-                        <GradeAnswerCard
+                        <div
                             v-for="(answer, index) in attempt.answers"
                             :key="answer.id"
-                            :answer="answer"
-                            :index="index"
-                            :errors="errors"
-                            v-model:score="form.answers[index].score"
-                            v-model:is-correct="form.answers[index].is_correct"
-                            v-model:feedback="form.answers[index].feedback"
-                            @score-updated="recalculateScores"
-                        />
+                            class="space-y-2"
+                        >
+                            <div
+                                v-if="answer.proposal_status === 'pending' || answer.proposal_status === 'rejected'"
+                                class="rounded-md border border-border p-3 text-sm"
+                            >
+                                <p class="font-medium">Usulan penilaian</p>
+                                <p v-if="answer.proposal_status === 'pending'">
+                                    Skor: {{ answer.proposal_score }} — {{ answer.proposal_feedback }}
+                                </p>
+                                <p v-else class="text-muted-foreground">Usulan ditolak. Masih menunggu penilaian.</p>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    <Button
+                                        v-if="answer.proposal_status === 'pending'"
+                                        type="button"
+                                        size="sm"
+                                        @click="router.post(acceptProposal.url({ course: course.id, assessment: assessment.id, attempt: attempt.id, answer: answer.id }))"
+                                    >
+                                        Terima
+                                    </Button>
+                                    <Button
+                                        v-if="answer.proposal_status === 'pending'"
+                                        type="button"
+                                        size="sm"
+                                        variant="outline"
+                                        @click="router.post(rejectProposal.url({ course: course.id, assessment: assessment.id, attempt: attempt.id, answer: answer.id }))"
+                                    >
+                                        Tolak
+                                    </Button>
+                                    <Button
+                                        v-if="answer.proposal_status === 'rejected'"
+                                        type="button"
+                                        size="sm"
+                                        variant="outline"
+                                        @click="router.post(repropose.url({ course: course.id, assessment: assessment.id, attempt: attempt.id, answer: answer.id }))"
+                                    >
+                                        Minta usulan baru
+                                    </Button>
+                                </div>
+                            </div>
+                            <GradeAnswerCard
+                                :answer="answer"
+                                :index="index"
+                                :errors="errors"
+                                v-model:score="form.answers[index].score"
+                                v-model:is-correct="form.answers[index].is_correct"
+                                v-model:feedback="form.answers[index].feedback"
+                                @score-updated="recalculateScores"
+                            />
+                        </div>
 
                         <Card>
                             <CardHeader>

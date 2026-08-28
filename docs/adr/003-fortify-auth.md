@@ -1,4 +1,4 @@
-# ADR-002: Use Laravel Fortify for Authentication
+# ADR-003: Use Laravel Fortify for Authentication
 
 **Status:** Accepted
 **Date:** 2025-11-26

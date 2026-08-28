@@ -1,6 +1,6 @@
 # EnterLMS
 
-An academy for people who run and build Satriyo's AI product family. Not a generic AI school, and not a live-agent control plane.
+An AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent may operate the academy from outside. Not a generic AI school, and not a live-agent control plane.
 
 [![PHP Version](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel)](https://laravel.com)

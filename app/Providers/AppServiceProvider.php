@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Certificate;
+use App\Models\Conversation;
 use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\LearningPath;
@@ -12,6 +13,7 @@ use App\Models\Media;
 use App\Models\Question;
 use App\Models\User;
 use App\Policies\CertificatePolicy;
+use App\Policies\ConversationPolicy;
 use App\Policies\CoursePolicy;
 use App\Policies\CourseSectionPolicy;
 use App\Policies\LearningPathPolicy;
@@ -49,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::policy(Certificate::class, CertificatePolicy::class);
+        Gate::policy(Conversation::class, ConversationPolicy::class);
         Gate::policy(Course::class, CoursePolicy::class);
         Gate::policy(CourseSection::class, CourseSectionPolicy::class);
         Gate::policy(Lesson::class, LessonPolicy::class);

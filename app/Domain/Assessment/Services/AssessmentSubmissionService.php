@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Log;
 class AssessmentSubmissionService
 {
     public function __construct(
-        protected GradingStrategyResolver $gradingResolver
+        protected GradingStrategyResolver $gradingResolver,
+        protected GradeProposer $gradeProposer,
     ) {}
 
     public function submitAttempt(AssessmentAttempt $attempt, array $answers, Assessment $assessment): array
@@ -45,20 +46,31 @@ class AssessmentSubmissionService
                 'file_path' => $filePath,
             ]);
 
-            if (! $question->requiresManualGrading()) {
-                $answerValue = $question->extractAnswerValue($answerData);
-                $result = $this->gradeQuestion($question, $answerValue);
-
-                $answer->update([
-                    'is_correct' => $result->isCorrect,
-                    'score' => $result->score,
-                    'feedback' => $result->feedback,
-                ]);
-
-                $totalScore += $result->score;
-            } else {
+            if ($question->requiresManualGrading()) {
                 $hasManualGrading = true;
+                $this->gradeProposer->propose($answer);
+
+                continue;
             }
+
+            $answerValue = $question->extractAnswerValue($answerData);
+            $result = $this->gradeQuestion($question, $answerValue);
+
+            if (($result->metadata['requires_manual_grading'] ?? false) === true) {
+                $hasManualGrading = true;
+                $this->gradeProposer->propose($answer);
+
+                continue;
+            }
+
+            $answer->update([
+                'is_correct' => $result->isCorrect,
+                'score' => $result->score,
+                'feedback' => $result->feedback,
+                'proposal_status' => null,
+            ]);
+
+            $totalScore += $result->score;
         }
 
         $percentage = $maxScore > 0 ? round(($totalScore / $maxScore) * 100, 2) : 0;
@@ -112,27 +124,42 @@ class AssessmentSubmissionService
                     'feedback' => $gradeData['feedback'] ?? null,
                     'graded_by' => auth()->id(),
                     'graded_at' => now(),
+                    'proposal_status' => $answer->proposal_status ? 'accepted' : $answer->proposal_status,
                 ]);
             }
         }
 
-        // Recalculate total from ALL answers (auto-graded + manually-graded)
-        // to avoid losing auto-graded scores when only manual grades are submitted
-        $totalScore = (int) $attempt->answers()->sum('score');
+        return $this->recalculateAttemptTotals($attempt, $assessment, markGraded: true);
+    }
 
+    /**
+     * @return array{totalScore: float|int, maxScore: float|int, percentage: float, passed: bool}
+     */
+    public function recalculateAttemptTotals(AssessmentAttempt $attempt, Assessment $assessment, bool $markGraded = false): array
+    {
+        $totalScore = (float) $attempt->answers()->sum('score');
         $maxScore = $assessment->total_points;
         $percentage = $maxScore > 0 ? round(($totalScore / $maxScore) * 100, 2) : 0;
         $passed = $percentage >= $assessment->passing_score;
 
-        $attempt->update([
-            'status' => 'graded',
+        $waitingOnProposal = $attempt->answers()
+            ->whereIn('proposal_status', ['pending', 'rejected'])
+            ->exists();
+
+        $payload = [
             'score' => $totalScore,
             'max_score' => $maxScore,
             'percentage' => $percentage,
             'passed' => $passed,
-            'graded_at' => now(),
-            'graded_by' => auth()->id(),
-        ]);
+        ];
+
+        if ($markGraded && ! $waitingOnProposal) {
+            $payload['status'] = 'graded';
+            $payload['graded_at'] = now();
+            $payload['graded_by'] = auth()->id();
+        }
+
+        $attempt->update($payload);
 
         return [
             'totalScore' => $totalScore,

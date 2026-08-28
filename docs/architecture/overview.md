@@ -10,9 +10,9 @@ EnterLMS is a Learning Management System (LMS) designed for:
 
 | Requirement | Description |
 |-------------|-------------|
-| AI product family academy | Training for people who run and build Enteraksi (ADR 004) |
+| AI-first LMS | Learner takes a Course with a Tutor; Laravel owns Conversation; locked-down runtime; LMS Agent is a different token (ADR 001) |
 | Multi-content Support | Text, video, audio, documents, live sessions |
-| Assessment & Grading | Quizzes with auto and manual grading |
+| Assessment & Grading | Quizzes with auto and manual grading; a Grade Proposal is not a grade until LMS Admin accepts it |
 | Progress Tracking | Detailed learner progress and completion |
 | Role-based Access | Learner and LMS Admin (ADR 007) |
 | Mobile Responsive | Full functionality on mobile devices |
@@ -54,7 +54,7 @@ EnterLMS is a Learning Management System (LMS) designed for:
 | Constraint | Background |
 |------------|------------|
 | Indonesian language | Primary user base |
-| Single operator | LMS Admin in this phase is only the founder (ADR 004) |
+| Single operator | LMS Admin in this phase is only the founder (ADR 001) |
 | Data residency | Data must remain in Indonesia |
 
 ### 2.3 Conventions
@@ -343,11 +343,14 @@ Key decisions are documented in [Architecture Decision Records](../adr/):
 
 | ADR | Decision |
 |-----|----------|
-| [ADR-001](../adr/001-inertia-vue.md) | Use Inertia.js with Vue 3 |
-| [ADR-002](../adr/002-fortify-auth.md) | Use Laravel Fortify for authentication |
-| [ADR-003](../adr/003-progress-tracking.md) | Progress tracking approach |
-| [ADR-004](../adr/004-media-storage.md) | Media storage strategy |
-| [ADR-005](../adr/005-assessment-types.md) | Assessment question types |
+| [ADR-001](../adr/001-ai-first-class-lms.md) | AI-first LMS (product) |
+| [ADR-002](../adr/002-inertia-vue.md) | Use Inertia.js with Vue 3 |
+| [ADR-003](../adr/003-fortify-auth.md) | Use Laravel Fortify for authentication |
+| [ADR-004](../adr/004-progress-tracking.md) | Progress tracking approach |
+| [ADR-005](../adr/005-identity-phasing.md) | Local registration |
+| [ADR-006](../adr/006-operator-path-reuses-open-course.md) | Restricted OpenClaw Course reuses the public intro |
+| [ADR-007](../adr/007-tenang-conformance.md) | Tenang conformance and role collapse |
+| [ADR-008](../adr/008-one-progress-calculator.md) | One progress calculator |
 
 ---
 
@@ -418,7 +421,7 @@ Quality
 
 ## 12. Glossary
 
-See [Glossary](../glossary.md) for domain terminology.
+See [`CONTEXT.md`](../../CONTEXT.md) for domain language.
 
 ---
 

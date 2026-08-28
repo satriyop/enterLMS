@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Course\Services\LessonViewPresenter;
+use App\Domain\Tutor\Services\ConversationService;
 use App\Http\Requests\Lesson\StoreLessonRequest;
 use App\Http\Requests\Lesson\UpdateLessonRequest;
+use App\Http\Resources\ConversationResource;
 use App\Http\Resources\Course\CourseShowResource;
 use App\Http\Resources\Course\EnrollmentSummaryResource;
 use App\Http\Resources\LessonResource;
@@ -21,7 +23,8 @@ use Inertia\Response;
 class LessonController extends Controller
 {
     public function __construct(
-        protected LessonViewPresenter $presenter
+        protected LessonViewPresenter $presenter,
+        protected ConversationService $conversations,
     ) {}
 
     /**
@@ -48,10 +51,23 @@ class LessonController extends Controller
 
         $navigationData = $this->presenter->getLessonViewData($course, $lesson, $enrollment);
 
+        $conversation = null;
+        if ($enrollment) {
+            $record = $this->conversations->forEnrollmentAndLesson($enrollment, $lesson);
+            $conversation = $record
+                ? (new ConversationResource($record))->resolve($request)
+                : [
+                    'id' => null,
+                    'can_post' => $enrollment->isActive() || $enrollment->isCompleted(),
+                    'turns' => [],
+                ];
+        }
+
         return Inertia::render('lessons/Show', [
             'course' => new CourseShowResource($course),
             'lesson' => new LessonResource($lesson),
             'enrollment' => $enrollment ? new EnrollmentSummaryResource($enrollment) : null,
+            'conversation' => $conversation,
             ...$navigationData,
         ]);
     }

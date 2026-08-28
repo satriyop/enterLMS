@@ -34,6 +34,8 @@ use App\Domain\Progress\Events\LessonDeleted;
 use App\Domain\Progress\Events\ProgressUpdated;
 use App\Domain\Progress\Listeners\RecalculateProgressOnLessonDeletion;
 use App\Domain\Shared\Listeners\LogDomainEvent;
+use App\Domain\Tutor\Listeners\DeleteConversationsOnLessonDeleted;
+use App\Domain\Tutor\Listeners\ResetConversationsOnFreshReenroll;
 use App\Domain\Xapi\Listeners\RecordXapiOnAssessmentGraded;
 use App\Domain\Xapi\Listeners\RecordXapiOnCourseStarted;
 use App\Domain\Xapi\Listeners\RecordXapiOnEnrollmentCompleted;
@@ -104,6 +106,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         UserReenrolled::class => [
             LogDomainEvent::class,
+            ResetConversationsOnFreshReenroll::class,
         ],
 
         // Progress Events
@@ -114,6 +117,7 @@ class EventServiceProvider extends ServiceProvider
         LessonDeleted::class => [
             LogDomainEvent::class,
             RecalculateProgressOnLessonDeletion::class,
+            DeleteConversationsOnLessonDeleted::class,
         ],
         ProgressUpdated::class => [
             // LogDomainEvent::class, // Too noisy - uncomment if needed

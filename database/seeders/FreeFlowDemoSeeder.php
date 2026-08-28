@@ -117,11 +117,11 @@ class FreeFlowDemoSeeder extends Seeder
             'user_id' => $author->id,
             'title' => self::FREE_COURSE_TITLE,
             'slug' => Str::slug(self::FREE_COURSE_TITLE).'-demo',
-            'short_description' => 'Kursus gratis untuk memahami apa itu agen AI, apa yang dilakukan Enteraksi, dan apa yang tidak kamu operasikan di academy ini.',
-            'long_description' => 'Pengenalan terbuka untuk siapa pun. Tidak ada asumsi kamu punya tenant. Kamu akan mengenal agen AI, peran Tenant Admin versus Operator, dan batas academy ini — EnterLMS bukan control plane.',
+            'short_description' => 'Kursus gratis untuk memahami apa itu agen AI, dan apa yang tidak kamu operasikan di academy ini.',
+            'long_description' => 'Pengenalan terbuka untuk siapa pun. Tidak ada asumsi kamu menjalankan agen di produksi. Kamu akan mengenal agen AI dan batas academy ini — EnterLMS bukan control plane.',
             'objectives' => [
                 'Memahami apa itu agen AI dalam bahasa sehari-hari',
-                'Membedakan peran Tenant Admin, Tenant Owner, dan Operator',
+                'Membedakan belajar di academy dengan mengoperasikan agen hidup',
                 'Mengetahui apa yang tidak dioperasikan di EnterLMS',
             ],
             'prerequisites' => [
@@ -185,12 +185,12 @@ class FreeFlowDemoSeeder extends Seeder
                         ),
                     ],
                     [
-                        'title' => 'Enteraksi, Operator, dan Tenant',
+                        'title' => 'Academy ini bukan control plane',
                         'content_type' => 'text',
                         'duration' => 10,
                         'rich_content' => $this->richContent(
-                            'Enteraksi, Operator, dan Tenant',
-                            'Enteraksi adalah control plane: Tenant Owner dan Tenant Admin mengatur anggota, knowledge, dan kebijakan tenant mereka. Operator Enteraksi menjalankan Deployment. EnterLMS hanya mengajarkan itu, tidak menjalankan runtime.'
+                            'Academy ini bukan control plane',
+                            'EnterLMS mengajarkan. Ia tidak men-deploy agen dan tidak membuka konsol runtime di dalam Lesson. Mengoperasikan agen hidup bukan pekerjaan academy ini.'
                         ),
                     ],
                     [
@@ -199,7 +199,7 @@ class FreeFlowDemoSeeder extends Seeder
                         'duration' => 5,
                         'rich_content' => $this->richContent(
                             'Apa yang tidak kamu operasikan di sini',
-                            'Tidak ada konsol agen hidup di academy ini. Menyelesaikan kursus ini tidak membuka akses produksi. Jika kamu Operator, LMS Admin akan memasukkanmu ke jalur Administrasi OpenClaw setelah kursus ini selesai.'
+                            'Tidak ada konsol agen hidup di academy ini. Menyelesaikan kursus ini tidak membuka Course terbatas. LMS Admin yang memberikan Enrollment ke Administrasi Agen OpenClaw.'
                         ),
                     ],
                 ],

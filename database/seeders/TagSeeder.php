@@ -13,9 +13,6 @@ class TagSeeder extends Seeder
         $tags = [
             'Agen AI',
             'OpenClaw',
-            'Enteraksi',
-            'Operator',
-            'Tenant',
             'Onboarding',
         ];
 

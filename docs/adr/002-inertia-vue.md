@@ -1,4 +1,4 @@
-# ADR-001: Use Inertia.js with Vue 3
+# ADR-002: Use Inertia.js with Vue 3
 
 **Status:** Accepted
 **Date:** 2025-11-26

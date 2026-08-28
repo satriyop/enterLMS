@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConversationTurnController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseInvitationController;
 use App\Http\Controllers\CoursePublishController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\CourseRatingController;
 use App\Http\Controllers\CourseReorderController;
 use App\Http\Controllers\CourseSectionController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\GradeProposalController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\LessonPreviewController;
 use App\Http\Controllers\LessonProgressController;
@@ -29,6 +31,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('courses.lessons.progress.media');
     Route::post('courses/{course}/lessons/{lesson}/complete', [LessonProgressController::class, 'complete'])
         ->name('courses.lessons.progress.complete');
+
+    Route::get('courses/{course}/lessons/{lesson}/conversation', [ConversationTurnController::class, 'show'])
+        ->name('courses.lessons.conversation.show');
+    Route::post('courses/{course}/lessons/{lesson}/conversation/turns', [ConversationTurnController::class, 'store'])
+        ->name('courses.lessons.conversation.turns.store');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -149,6 +156,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('{assessment}/attempts/{attempt}/complete', [\App\Http\Controllers\AssessmentAttemptController::class, 'complete'])->name('assessments.attempt.complete');
         Route::get('{assessment}/attempts/{attempt}/grade', [\App\Http\Controllers\AssessmentAttemptController::class, 'grade'])->name('assessments.grade');
         Route::post('{assessment}/attempts/{attempt}/grade', [\App\Http\Controllers\AssessmentAttemptController::class, 'submitGrade'])->name('assessments.grade.submit');
+        Route::post('{assessment}/attempts/{attempt}/answers/{answer}/proposal/accept', [GradeProposalController::class, 'accept'])->name('assessments.grade.proposal.accept');
+        Route::post('{assessment}/attempts/{attempt}/answers/{answer}/proposal/reject', [GradeProposalController::class, 'reject'])->name('assessments.grade.proposal.reject');
+        Route::post('{assessment}/attempts/{attempt}/answers/{answer}/proposal/repropose', [GradeProposalController::class, 'repropose'])->name('assessments.grade.proposal.repropose');
 
         // Questions
         Route::get('{assessment}/questions', [\App\Http\Controllers\QuestionController::class, 'index'])->name('assessments.questions.index');

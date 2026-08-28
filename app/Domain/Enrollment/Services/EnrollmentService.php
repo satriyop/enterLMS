@@ -183,8 +183,7 @@ class EnrollmentService
             throw new EnrollmentCapacityExceededException($course->id, $course->max_enrollments);
         }
 
-        // Payment processing was removed with the frozen banking scope (ADR 004).
-        // A priced Course therefore has no self-serve path: LMS Admin grants it.
+        // A priced Course has no self-serve path: LMS Admin grants Enrollment.
         if ($course->isPaid()) {
             throw new PaymentRequiredException($course->id, $course->price);
         }

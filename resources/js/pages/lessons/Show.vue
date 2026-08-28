@@ -4,8 +4,11 @@
 // Displays lesson content with progress tracking and course navigation
 // =============================================================================
 
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue';
+import { store as storeTurn } from '@/actions/App/Http/Controllers/ConversationTurnController';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import LessonHeader from '@/components/lesson/LessonHeader.vue';
 import LessonNavigationBar from '@/components/lesson/LessonNavigationBar.vue';
 import LessonContentRouter from '@/components/lesson/LessonContentRouter.vue';
@@ -72,6 +75,19 @@ interface LessonEnrollment {
     progress_percentage: number;
 }
 
+interface ConversationTurn {
+    id: number;
+    role: 'learner' | 'tutor';
+    body: string;
+    created_at: string | null;
+}
+
+interface LessonConversation {
+    id: number | null;
+    can_post: boolean;
+    turns: ConversationTurn[];
+}
+
 interface NavigationLesson {
     id: number;
     title: string;
@@ -83,6 +99,7 @@ interface Props {
     course: LessonCourse;
     lesson: ViewableLesson;
     enrollment: LessonEnrollment | null;
+    conversation: LessonConversation | null;
     lessonProgress: LessonProgress | null;
     prevLesson: NavigationLesson | null;
     nextLesson: NavigationLesson | null;
@@ -116,12 +133,29 @@ const {
 // =============================================================================
 
 const sidebarOpen = ref(true);
-const activeTab = ref<'overview' | 'notes'>('overview');
+const activeTab = ref<'overview' | 'notes' | 'tutor'>('overview');
 
-const tabs = [
-    { id: 'overview' as const, label: 'Ikhtisar' },
-    { id: 'notes' as const, label: 'Catatan' },
-];
+const tabs = computed(() => {
+    const items: { id: 'overview' | 'notes' | 'tutor'; label: string }[] = [
+        { id: 'overview', label: 'Ikhtisar' },
+        { id: 'notes', label: 'Catatan' },
+    ];
+    if (props.conversation) {
+        items.push({ id: 'tutor', label: 'Tutor' });
+    }
+    return items;
+});
+
+const tutorForm = useForm({
+    message: '',
+});
+
+const submitTutorTurn = () => {
+    tutorForm.post(storeTurn.url({ course: props.course.id, lesson: props.lesson.id }), {
+        preserveScroll: true,
+        onSuccess: () => tutorForm.reset('message'),
+    });
+};
 
 // =============================================================================
 // Computed Properties
@@ -203,6 +237,40 @@ onMounted(() => {
 
                         <div v-if="activeTab === 'notes'" class="py-8 text-center">
                             <p class="text-muted-foreground">Fitur catatan akan segera hadir.</p>
+                        </div>
+
+                        <div v-if="activeTab === 'tutor' && conversation" class="space-y-4">
+                            <div
+                                v-for="turn in conversation.turns"
+                                :key="turn.id"
+                                class="rounded-md border border-border p-3"
+                            >
+                                <p class="text-xs font-medium text-muted-foreground">
+                                    {{ turn.role === 'learner' ? 'Anda' : 'Tutor' }}
+                                </p>
+                                <p class="mt-1 text-sm text-foreground">{{ turn.body }}</p>
+                            </div>
+                            <form
+                                v-if="conversation.can_post"
+                                class="space-y-2"
+                                @submit.prevent="submitTutorTurn"
+                            >
+                                <Textarea
+                                    v-model="tutorForm.message"
+                                    name="message"
+                                    rows="3"
+                                    placeholder="Tanyakan tentang Lesson ini…"
+                                />
+                                <p v-if="tutorForm.errors.message" class="text-sm text-destructive">
+                                    {{ tutorForm.errors.message }}
+                                </p>
+                                <Button type="submit" :disabled="tutorForm.processing">
+                                    Kirim
+                                </Button>
+                            </form>
+                            <p v-else class="text-sm text-muted-foreground">
+                                Percakapan ini tidak dapat ditambah.
+                            </p>
                         </div>
                     </div>
                 </div>

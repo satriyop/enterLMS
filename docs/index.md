@@ -47,7 +47,7 @@ Discussion and clarification of concepts.
 | Look up a model | [Model Reference](./reference/models.md) |
 | Understand a decision | [Architecture Decision Records](./adr/) |
 | Debug an issue | [Troubleshooting](./troubleshooting.md) |
-| Learn the terminology | [Glossary](./glossary.md) |
+| Learn the terminology | [CONTEXT.md](../CONTEXT.md) |
 
 ---
 
@@ -102,16 +102,19 @@ Discussion and clarification of concepts.
 ### Architecture Decision Records
 | ADR | Title | Status |
 |-----|-------|--------|
-| [ADR-001](./adr/001-inertia-vue.md) | Use Inertia.js with Vue 3 | Accepted |
-| [ADR-002](./adr/002-fortify-auth.md) | Use Laravel Fortify for auth | Accepted |
-| [ADR-003](./adr/003-progress-tracking.md) | Progress tracking approach | Accepted |
-| [ADR-004](./adr/004-media-storage.md) | Media storage strategy | Accepted |
-| [ADR-005](./adr/005-assessment-types.md) | Assessment question types | Accepted |
+| [ADR-001](./adr/001-ai-first-class-lms.md) | AI-first LMS (product) | Accepted |
+| [ADR-002](./adr/002-inertia-vue.md) | Use Inertia.js with Vue 3 | Accepted |
+| [ADR-003](./adr/003-fortify-auth.md) | Use Laravel Fortify for auth | Accepted |
+| [ADR-004](./adr/004-progress-tracking.md) | Progress tracking approach | Accepted |
+| [ADR-005](./adr/005-identity-phasing.md) | Local registration | Accepted |
+| [ADR-006](./adr/006-operator-path-reuses-open-course.md) | Restricted OpenClaw Course reuses the public intro | Accepted |
+| [ADR-007](./adr/007-tenang-conformance.md) | Tenang conformance and role collapse | Accepted |
+| [ADR-008](./adr/008-one-progress-calculator.md) | One progress calculator | Accepted |
 
 ### Other
 | Document | Description |
 |----------|-------------|
-| [Glossary](./glossary.md) | Domain terminology |
+| [CONTEXT.md](../CONTEXT.md) | Domain language (the glossary) |
 | [Troubleshooting](./troubleshooting.md) | Common issues |
 | [Contributing](./contributing.md) | Contribution guidelines |
 
@@ -125,10 +128,7 @@ Discussion and clarification of concepts.
 - Bash commands use `bash`
 
 ### Terminology
-- **Course** - A learning unit containing sections and lessons
-- **Lesson** - A single learning item (text, video, document, etc.)
-- **Enrollment** - A user's registration in a course
-- See [Glossary](./glossary.md) for complete terminology
+Domain language is [`CONTEXT.md`](../CONTEXT.md). Do not keep a second glossary here.
 
 ### File Paths
 - Paths starting with `/` are from project root

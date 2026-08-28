@@ -1,4 +1,4 @@
-# ADR-003: Lesson Progress Tracking Approach
+# ADR-004: Lesson Progress Tracking Approach
 
 **Status:** Partially superseded by [ADR 008](./008-one-progress-calculator.md)
 **Date:** 2025-11-27

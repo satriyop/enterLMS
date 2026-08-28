@@ -42,6 +42,10 @@ class AttemptAnswerResource extends JsonResource
             'is_correct' => $this->when($showSensitiveFields, $this->is_correct),
             'score' => $this->when($showSensitiveFields, $this->score),
             'feedback' => $this->when($showSensitiveFields, $this->feedback),
+            'waiting_for_grade' => $this->proposal_status === 'pending' || $this->proposal_status === 'rejected',
+            'proposal_score' => $this->when($request->user()?->canManageCourses(), $this->proposal_score),
+            'proposal_feedback' => $this->when($request->user()?->canManageCourses(), $this->proposal_feedback),
+            'proposal_status' => $this->when($request->user()?->canManageCourses(), $this->proposal_status),
             'question' => new QuestionResource($this->whenLoaded('question')),
         ];
     }

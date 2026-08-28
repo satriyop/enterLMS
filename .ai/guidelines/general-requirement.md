@@ -6,14 +6,13 @@
 it, and what is out of scope. `docs/adr/` holds the decisions and the reasoning
 behind them.
 
-Read `CONTEXT.md` before any implementation decision.
+Read `CONTEXT.md` before any implementation decision. The product decision is
+`docs/adr/001-ai-first-class-lms.md`.
 
 **Do not restate its contents here.** This file is composed into `CLAUDE.md` and
 loaded into every session automatically, so a domain fact copied into it keeps
 being asserted long after the decision that changed it — and it outranks the
-correct file, because only the copy is loaded. That is not hypothetical: the
-banking/OJK positioning ADR 004 retired went on being stated here until it was
-caught by a reader, not by a test.
+correct file, because only the copy is loaded.
 
 This file carries only requirements that hold regardless of what the domain is.
 Anything that would need editing if the product were repositioned again belongs

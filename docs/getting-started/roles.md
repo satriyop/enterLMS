@@ -3,9 +3,8 @@
 EnterLMS models **two** roles: `learner` and `lms_admin`.
 
 ADR 007 collapsed the earlier seven (content manager, trainer, teaching assistant,
-compliance officer, auditor, …) into these two. Tenant Admin, Tenant Owner and
-Operator are **Enteraksi** roles — `CONTEXT.md` names them so we can talk about the
-people, but they are not roles in this academy. ADR 005 phases them in.
+compliance officer, auditor, …) into these two. They are the only roles this
+academy models.
 
 ## The two roles
 
@@ -76,7 +75,7 @@ role onto one of these; reintroducing an old string will fail the enum constrain
 
 ## Related
 
-- `CONTEXT.md` — the vocabulary, including which roles belong to Enteraksi rather than here
-- [ADR 004](../adr/004-academy-for-ai-product-family.md) — the repositioning
-- [ADR 005](../adr/005-identity-phasing.md) — how Tenant Admin and Operator phase in
+- `CONTEXT.md` — the vocabulary
+- [ADR 001](../adr/001-ai-first-class-lms.md) — the product (AI-first LMS)
+- [ADR 005](../adr/005-identity-phasing.md) — local registration
 - [ADR 007](../adr/007-tenang-conformance.md) — the role collapse and what it cost

@@ -19,6 +19,9 @@ class AttemptAnswer extends Model
         'is_correct',
         'score',
         'feedback',
+        'proposal_score',
+        'proposal_feedback',
+        'proposal_status',
         'graded_by',
         'graded_at',
     ];

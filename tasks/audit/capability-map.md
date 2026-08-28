@@ -1,9 +1,18 @@
 # Capability Map — EnterLMS
 
-> **Generated:** 2026-08-11 · **Updated:** 2026-08-12 (agent depth B + stabilize + payment-off)  
+> **Generated:** 2026-08-11 · **Updated:** 2026-08-28 (ADR 001 — Tutor / Grade Proposal are the vision gap)  
 > **Stack:** Laravel 13 · Inertia 3 · Vue 3 · Pest · laravel/mcp · Sanctum  
 > **Basis:** domain code, routes, pages, tests, seeders  
+> **Product:** `CONTEXT.md` + [ADR 001](../../docs/adr/001-ai-first-class-lms.md)  
 > **Code stability / debt (before new features):** see [tech-debt-architecture-2026-08-12.md](./tech-debt-architecture-2026-08-12.md)
+
+## Vision (ADR 001)
+
+| Capability | Status | Bukti / gap |
+|------------|--------|-------------|
+| Tutor on a Lesson | ❌ missing | No Conversation / TutorRuntime; [B-016](../backlog/B-016-tutor-conversation.md) — target is locked-down runtime, ADR 001 |
+| Grade Proposal | ❌ missing | Short-answer still manual-only; [B-017](../backlog/B-017-grade-proposal.md) |
+| LMS Agent (MCP client) | ✅ ready | D-012–D-015; not a Tutor |
 
 ## Legend
 
@@ -129,7 +138,7 @@
 | Domain event log | ✅ ready | Shared listeners |
 | Audit report UI + CSV export | ✅ ready | Compliance domain + pages |
 | Learner/admin dashboards | 🟡 partial | Basic stats, not full analytics BI |
-| OJK-grade regulatory pack | 🟡 partial | Audit foundation; not full compliance suite |
+| Regulatory pack | 🟡 partial | Audit foundation; not a full compliance suite |
 
 ---
 

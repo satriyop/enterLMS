@@ -33,6 +33,7 @@ interface CompletedAnswer {
     is_correct: boolean | null;
     score: number | null;
     feedback: string | null;
+    waiting_for_grade?: boolean;
     question: CompletedQuestion;
 }
 

@@ -6,9 +6,10 @@ Sistem kerja **baru** untuk development. Ganti pola lama di `.ai/investigation/`
 
 | Path | Isi | Di-track git? |
 |------|-----|----------------|
-| `tasks/roadmap/` | Arah besar, fase, prioritas | Ya |
+| `tasks/roadmap/` | Urutan kerja ke ADR 001 | Ya |
 | `tasks/audit/` | Mapping kesiapan (ready / partial / missing) | Ya |
-| `tasks/backlog/` | Item kerja yang belum dikerjakan | Ya |
+| `tasks/backlog/` | Antrian visi (Tutor, Grade Proposal) | Ya |
+| `tasks/parked/` | Item lama; bukan path ke ADR 001 | Ya |
 | `tasks/done/` | Item selesai + ringkasan arsip | Ya |
 | `tasks/artifact/` | Catatan kerja sementara, draft, dump | **Tidak** (gitignore) |
 
@@ -24,11 +25,12 @@ Sistem kerja **baru** untuk development. Ganti pola lama di `.ai/investigation/`
 ## Alur kerja
 
 ```text
-1. Baca tasks/audit/capability-map.md     → apa yang siap / gap
-2. Baca tasks/roadmap/                     → fase mana yang dikerjakan
-3. Ambil 1 item dari tasks/backlog/        → implement + test
-4. Selesai → pindahkan ke tasks/done/      → update capability-map
-5. Catatan sementara hanya di artifact/    → jangan commit
+1. Baca CONTEXT.md + docs/adr/001-ai-first-class-lms.md  → produk
+2. Baca tasks/roadmap/                   → urutan kerja ke visi itu
+3. Baca tasks/audit/capability-map.md    → apa yang siap / gap
+4. Ambil 1 item dari tasks/backlog/      → implement + test
+5. Selesai → pindahkan ke tasks/done/    → update capability-map
+6. Catatan sementara hanya di artifact/  → jangan commit
 ```
 
 ## Aturan file backlog

@@ -114,7 +114,6 @@ return [
     | - 'internal': All courses are free
     | - 'commercial': Courses can carry a price
     |
-    | Payment *processing* was removed with the frozen banking scope (ADR 004).
     | A priced Course has no self-serve path; LMS Admin grants Enrollment.
     |
     */

@@ -80,9 +80,9 @@ const handleSearch = () => {
                     <button
                         type="button"
                         class="rounded-full border border-border px-3 py-1 text-foreground transition-colors hover:border-primary hover:text-primary"
-                        @click="searchQuery = 'Enteraksi'; handleSearch()"
+                        @click="searchQuery = 'Agen AI'; handleSearch()"
                     >
-                        Enteraksi
+                        Agen AI
                     </button>
                 </div>
             </div>

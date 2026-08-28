@@ -38,6 +38,7 @@ use Spatie\ModelStates\HasStates;
  * @property-read User|null $inviter
  * @property-read Lesson|null $lastLesson
  * @property-read Collection<int, LessonProgress> $lessonProgress
+ * @property-read Collection<int, Conversation> $conversations
  *
  * @method static Builder|Enrollment active()
  * @method static Builder|Enrollment completed()
@@ -235,6 +236,11 @@ class Enrollment extends Model
     public function lessonProgress(): HasMany
     {
         return $this->hasMany(LessonProgress::class);
+    }
+
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
     }
 
     public function getProgressForLesson(Lesson $lesson): ?LessonProgress

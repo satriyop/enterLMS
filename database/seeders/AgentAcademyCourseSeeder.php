@@ -73,12 +73,12 @@ class AgentAcademyCourseSeeder extends Seeder
             'user_id' => $lmsAdmin->id,
             'title' => self::RESTRICTED_COURSE_TITLE,
             'slug' => Str::slug(self::RESTRICTED_COURSE_TITLE).'-ops',
-            'short_description' => 'Operasi harian OpenClaw untuk Operator Enteraksi: deploy, log, kill switch, konektor, isolasi tenant.',
-            'long_description' => 'Course terbatas. Enrollment diberikan LMS Admin lewat Jalur Operator OpenClaw setelah Pengenalan Agen AI selesai. Bukan Lab dan bukan control plane.',
+            'short_description' => 'Operasi harian OpenClaw: deploy, log, kill switch, konektor. Bukan lab di academy ini.',
+            'long_description' => 'Course terbatas. Enrollment diberikan LMS Admin lewat Learning Path setelah Pengenalan Agen AI selesai. Bukan lab dan bukan control plane.',
             'objectives' => [
                 'Menjalankan operasi harian Deployment OpenClaw',
-                'Memakai kill switch dan membaca log tanpa menyentuh keputusan bisnis tenant',
-                'Menjaga isolasi tenant dan batas wewenang Operator',
+                'Memakai kill switch dan membaca log',
+                'Mengetahui batas academy ini: tidak ada konsol agen hidup di Lesson',
             ],
             'prerequisites' => [
                 'Wajib lulus Pengenalan Agen AI',

@@ -13,7 +13,7 @@
 |----------|--------|
 | Is free-flow LMS **stable enough** to build on? | **YES — go**, with listed known debt accepted or tracked |
 | Is agent/MCP product-ready? | **Partial** — foundation only (`agent-ping`); core tools = [B-013](../backlog/B-013-agent-mcp-core-tools.md) |
-| Is commercial payment ready? | **NO** — intentionally disabled; do not enable without [B-001](../backlog/B-001-payment-gateway.md) |
+| Is commercial payment ready? | **NO** — intentionally disabled; parked as [B-001](../parked/B-001-payment-gateway.md) (not the path to ADR 001) |
 | Should we rewrite architecture first? | **NO** — domain boundaries are sound; fix residual P1 when touching those paths |
 
 **Go / no-go for new features**
@@ -232,10 +232,10 @@ Use this as a gate; not all must be code-complete.
 | Artifact | Role |
 |----------|------|
 | [capability-map.md](./capability-map.md) | Product capability ready/partial/missing |
-| [../roadmap/2026-lms-roadmap.md](../roadmap/2026-lms-roadmap.md) | Phase order (incl. Fase F agent) |
+| [../roadmap/README.md](../roadmap/README.md) | Work toward ADR 001 |
 | [../done/D-012-agent-mcp-foundation.md](../done/D-012-agent-mcp-foundation.md) | MCP foundation done |
 | [../backlog/B-013-agent-mcp-core-tools.md](../backlog/B-013-agent-mcp-core-tools.md) | Next agent work |
-| [../backlog/B-001-payment-gateway.md](../backlog/B-001-payment-gateway.md) | Payment when needed |
+| [../parked/B-001-payment-gateway.md](../parked/B-001-payment-gateway.md) | Payment — parked, not ADR 001 |
 | `tests/Feature/Stabilize/StabilizeDebtFixesTest.php` | Regression net for stabilize fixes |
 
 ---

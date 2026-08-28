@@ -15,13 +15,7 @@ Folder `investigation/` di-ignore di git agar tidak rancu dengan sistem baru.
 ## ⚠️ Ini arsip, bukan requirement
 
 `requirement/`, `user story/`, `features/`, `implementation/`, dan `investigation/`
-adalah **catatan sejarah**. Isinya ditulis untuk positioning perbankan/OJK yang
-sudah dibekukan ADR 004, dan untuk model tujuh peran yang sudah diciutkan ADR 007.
-
-Di dalamnya Anda masih akan menemukan Content Manager, Trainer, SCORM, LTI, modul
-Payment, dan Question Bank. Semua itu **tidak lagi berlaku**. Isinya sengaja tidak
-diperbarui — menulis ulang arsip berarti memalsukan catatan tentang apa yang dulu
-kita putuskan dan mengapa.
+adalah **catatan sejarah**. Jangan mengambil requirement dari situ.
 
 Otoritas yang berlaku sekarang:
 

@@ -46,9 +46,8 @@ class User extends Authenticatable
      * - lms_admin: runs the academy -- creates and publishes Courses and
      *   Learning Paths, and grants Enrollment to Restricted ones
      *
-     * Tenant Admin, Tenant Owner and Operator are Enteraksi roles and are not
-     * modelled here yet; ADR 005 phases them in with unified Enteraksi login.
-     * See CONTEXT.md for the canonical definitions.
+     * See CONTEXT.md for the canonical definitions. Only these two roles
+     * are modelled.
      */
     public const ROLES = [
         'learner',

@@ -30,21 +30,21 @@ class AssessmentSeeder extends Seeder
      */
     private array $questionTemplates = [
         'intro' => [
-            'Apa perbedaan EnterLMS dan control plane Enteraksi?',
+            'Apa perbedaan belajar di academy dan mengoperasikan agen hidup?',
             'Siapa yang boleh mengambil Course terbuka Pengenalan Agen AI?',
             'Mengapa menyelesaikan Course terbuka tidak membuka akses produksi?',
             'Apa yang dimaksud dengan agen AI di academy ini?',
         ],
         'operator' => [
-            'Apa pekerjaan harian Operator pada Deployment OpenClaw?',
+            'Apa pekerjaan harian pada Deployment OpenClaw?',
             'Kapan kill switch boleh dipakai?',
-            'Apa yang tidak boleh disentuh Operator pada keputusan bisnis tenant?',
-            'Mengapa isolasi tenant wajib dijaga?',
+            'Apa yang tidak boleh dilakukan dari dalam academy ini terhadap runtime hidup?',
+            'Mengapa Lesson bukan konsol agen hidup?',
         ],
         'roles' => [
-            'Apa perbedaan Tenant Admin dan Operator?',
-            'Apa wewenang Tenant Owner?',
-            'Mengapa Operator bukan peran di EnterLMS?',
+            'Apa yang boleh dilakukan Learner?',
+            'Apa wewenang LMS Admin?',
+            'Mengapa academy ini hanya memodelkan dua peran?',
             'Siapa yang memberikan Enrollment ke Course terbatas?',
         ],
         'runtime' => [

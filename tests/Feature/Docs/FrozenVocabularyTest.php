@@ -3,12 +3,10 @@
 /**
  * Frozen domain vocabulary must not reappear in live code or live docs.
  *
- * ADR 004 froze the banking/OJK positioning and ADR 007 collapsed seven roles to
- * two. Both landed in code quickly -- migrations ran, policies changed, seeders were
- * rewritten -- and then stopped. What survived was everything no test could see:
- * a placeholder reading "Contoh: OJK Regulation", twenty-one policy comments about
- * Content Managers, a seeder that printed the same LMS Admin three times, and the
- * requirement file composed into CLAUDE.md that still opened with "banking centric".
+ * Retired vocabulary must not reappear in live code or live docs. ADR 007
+ * collapsed seven roles to two. What survived last time was everything no test
+ * could see: placeholders, policy comments, seeders, and a requirement file
+ * composed into CLAUDE.md.
  *
  * Nothing failed, because nothing was watching. This is what watches.
  *
@@ -21,15 +19,16 @@
 use Illuminate\Support\Str;
 
 /**
- * Vocabulary retired by ADR 004 (positioning) and ADR 007 (role collapse).
+ * Vocabulary that must not reappear in live code or live docs.
  *
  * @var array<string, string>
  */
 const FROZEN_TERMS = [
-    'OJK' => 'ADR 004 froze the banking/OJK domain',
-    'APU-PPT' => 'ADR 004 froze the banking/OJK domain',
-    'perbankan' => 'ADR 004 froze the banking/OJK domain',
-    'banking' => 'ADR 004 froze the banking/OJK domain',
+    'OJK' => 'retired; do not reintroduce',
+    'APU-PPT' => 'retired; do not reintroduce',
+    'perbankan' => 'retired; do not reintroduce',
+    'banking' => 'retired; do not reintroduce',
+    'enteraksi' => 'this academy is not that product; do not reintroduce',
     'content_manager' => 'ADR 007 collapsed roles to learner and lms_admin',
     'content manager' => 'ADR 007 collapsed roles to learner and lms_admin',
     'trainer' => 'ADR 007 collapsed roles to learner and lms_admin',
@@ -119,7 +118,7 @@ describe('frozen vocabulary', function () {
                         continue;
                     }
 
-                    if (Str::contains($line, ['frozen', 'froze', 'retired', 'deprecated', 'ADR 004', 'ADR 007'], ignoreCase: true)) {
+                    if (Str::contains($line, ['frozen', 'froze', 'retired', 'deprecated', 'do not reintroduce', 'ADR 007'], ignoreCase: true)) {
                         continue;
                     }
 

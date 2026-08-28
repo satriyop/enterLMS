@@ -18,9 +18,11 @@
 
 ## System Overview
 
-**EnterLMS** is an academy for the people who run and build Satriyo's AI product family
-(Enteraksi first). It is not a generic AI school and not a control plane for live agents.
-See `CONTEXT.md` for the domain language and ADR 004 for the positioning decision.
+**EnterLMS** is an AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent
+may operate the academy from outside. It is not a generic AI school and not a control
+plane for live agents. See `CONTEXT.md` for the domain language and ADR 001 for the
+product decision and target architecture (Laravel owns Conversation; locked-down
+Tutor runtime; LMS Agent is a different token).
 
 - **Mobile-first responsive UI**, conforming to the Tenang design system (ADR 007)
 - **Bahasa Indonesia** as primary language
@@ -40,6 +42,7 @@ See `CONTEXT.md` for the domain language and ADR 004 for the positioning decisio
 | Ratings & Reviews | Built | 5-star ratings with reviews |
 | Certificate Management | Built | PDF certificates with public verification |
 | Communication | Partial | In-app notifications; forums and messaging not built |
+| Tutor | Missing | Conversation + locked-down runtime — ADR 001, B-016 |
 | Reporting & Analytics | Built | Audit log, activity reports, CSV export |
 
 ---
@@ -471,8 +474,7 @@ Controller                           Page Component
 | Learner | `learner` | Enroll, view content, take assessments, rate courses |
 | LMS Admin | `lms_admin` | Full access: author, publish/archive, grant enrollment, grade |
 
-ADR 007 collapsed the earlier seven roles to these two. Tenant Admin, Tenant Owner
-and Operator are Enteraksi roles; ADR 005 phases them in.
+ADR 007 collapsed the earlier seven roles to these two.
 
 **Helper Methods** (User model):
 ```php

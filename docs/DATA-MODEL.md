@@ -984,7 +984,7 @@ ordered()     // ORDER BY position
 | `CategorySeeder` | Course categories | 6 Indonesian categories (IT, Business, Language, Design, Finance, Soft Skills) |
 | `TagSeeder` | Content tags | 37 tags covering tech, business, design |
 | `CourseSeeder` | Full course structure | 5 courses with sections, lessons, media |
-| `BankingCourseSeeder` | Frozen (ADR 004) | Delegates to `AgentAcademyCourseSeeder` |
+| `BankingCourseSeeder` | Shim (retired catalog name) | Delegates to `AgentAcademyCourseSeeder` |
 | `AgentAcademyCourseSeeder` | v1 academy catalog | Pengenalan Agen AI, Administrasi Agen OpenClaw |
 | `LearningPathSeeder` | Learning paths | Multi-course sequences |
 
