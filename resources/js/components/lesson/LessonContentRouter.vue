@@ -109,7 +109,7 @@ const handleMediaPause = () => {
 
 <template>
     <div
-        class="lesson-content-router shrink-0 flex items-center justify-center"
+        class="lesson-content-router flex min-h-0 flex-1 items-start justify-center overflow-y-auto pb-24"
         :class="needsDarkBackground ? 'bg-black' : 'bg-surface-2/30'"
     >
         <!-- YouTube Content -->
