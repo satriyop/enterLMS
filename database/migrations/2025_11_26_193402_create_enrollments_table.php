@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->foreignId('invited_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->integer('last_lesson_id')->nullable();
+            $table->unsignedBigInteger('last_lesson_id')->nullable();
             $table->timestamps();
 
             $table->unique(['user_id', 'course_id']);

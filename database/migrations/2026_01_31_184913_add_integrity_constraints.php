@@ -20,7 +20,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Foreign key on enrollments.last_lesson_id
+        // Original column was integer; lessons.id is bigint unsigned.
+        if (DB::getDriverName() !== 'sqlite') {
+            Schema::table('enrollments', function (Blueprint $table) {
+                $table->unsignedBigInteger('last_lesson_id')->nullable()->change();
+            });
+        }
+
         Schema::table('enrollments', function (Blueprint $table) {
             $table->foreign('last_lesson_id')
                 ->references('id')

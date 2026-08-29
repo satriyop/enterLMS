@@ -1,0 +1,19 @@
+# Production ops (aidev)
+
+Laptop → `root@aidev` (`146.190.87.122`). Public URL: `https://lms.pamungkas.org`.
+
+Caddy terminates TLS and `php_fastcgi`s to a dedicated PHP 8.4 pool. MySQL holds the academy. Queue + scheduler run under supervisor. Vite assets are **built on the laptop** (the droplet is 2GB).
+
+```bash
+./scripts/prod.sh help
+```
+
+Aidev already runs Caddy + Sipamungkas + Enter365 + OpenClaw. `provision` is additive (new PHP pool, new MySQL DB, Caddy site import). It does not replace the existing Caddyfile.
+
+SSH on this droplet bans bursty connections. The scripts reuse the `aidev` ControlMaster. If port 22 refuses, wait a few minutes.
+
+TLS: DNS A `lms.pamungkas.org` → this host. If Cloudflare is orange-cloud and Caddy cannot mint a cert, grey-cloud the A record for two minutes, reload Caddy, then orange-cloud again. Cloudflare SSL mode: **Full (strict)**.
+
+Hermes / Tutor sidecar is **not** installed on aidev. `TUTOR_HERMES_BINARY` stays empty until you put a runtime on the host.
+
+First seed creates `admin@enterlms.test` and `learner@enterlms.test` with password `password`. Change them immediately.

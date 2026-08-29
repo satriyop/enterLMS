@@ -36,7 +36,7 @@ return new class extends Migration
             $table->timestamp('delivered_at')->nullable();
             $table->timestamps();
 
-            $table->index(['agent_webhook_endpoint_id', 'created_at']);
+            $table->index(['agent_webhook_endpoint_id', 'created_at'], 'awd_endpoint_created_index');
         });
     }
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('learning_path_course_progress', function (Blueprint $table) {
             $table->id();
             $table->foreignId('learning_path_enrollment_id')
-                ->constrained('learning_path_enrollments')
+                ->constrained('learning_path_enrollments', indexName: 'lp_progress_enrollment_fk')
                 ->cascadeOnDelete();
             $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
             $table->string('state')->default('locked')->comment('locked, available, in_progress, completed');
