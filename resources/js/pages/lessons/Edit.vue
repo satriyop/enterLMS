@@ -15,7 +15,7 @@ import LessonSettingsSidebar from '@/components/lesson/LessonSettingsSidebar.vue
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem, type ContentType, type Media } from '@/types';
+import { type BreadcrumbItem, type ContentType, type Media, type TutorBody } from '@/types';
 import { Form, Head, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { contentTypeLabel } from '@/lib/formatters';
@@ -53,13 +53,16 @@ interface Lesson {
 interface Props {
     section: Section;
     lesson: Lesson | null;
+    tutor_body?: TutorBody | null;
 }
 
 // =============================================================================
 // Component Setup
 // =============================================================================
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    tutor_body: null,
+});
 
 const isEditMode = computed(() => props.lesson !== null);
 const pageTitle = computed(() => isEditMode.value ? `Edit: ${props.lesson?.title}` : 'Tambah Materi Baru');
@@ -110,11 +113,11 @@ const formAction = computed(() => {
 // =============================================================================
 
 const handleMediaUploaded = () => {
-    router.reload({ only: ['lesson'] });
+    router.reload({ only: ['lesson', 'tutor_body'] });
 };
 
 const handleMediaDeleted = () => {
-    router.reload({ only: ['lesson'] });
+    router.reload({ only: ['lesson', 'tutor_body'] });
 };
 
 const handleMediaError = (message: string) => {
@@ -199,6 +202,7 @@ const handleMediaError = (message: string) => {
                             :existing-video-media="videoMedia"
                             :existing-audio-media="audioMedia"
                             :existing-document-media="documentMedia"
+                            :tutor-body="tutor_body"
                             :errors="errors"
                             @update:rich-content="richContent = $event"
                             @update:youtube-url="youtubeUrl = $event"

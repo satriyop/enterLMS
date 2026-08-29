@@ -11,6 +11,8 @@ use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\User;
+use App\Services\SeederLessonMedia;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 function actingWithTutorRead(User $user): void
@@ -73,6 +75,11 @@ it('lets tutor.read fetch this published Lesson body as it is now', function () 
                 ->where('data.course_id', $course->id)
                 ->where('data.lesson_id', $current->id)
                 ->where('data.title', 'Apa itu agen')
+                ->where('data.body_ready', true)
+                ->where('data.content_type', 'text')
+                ->missing('data.url')
+                ->missing('data.path')
+                ->missing('data.disk')
                 ->etc();
         });
 });
@@ -235,6 +242,99 @@ it('does not bundle tutor.read into --free-flow or --all-abilities', function ()
     ])->assertSuccessful();
 
     expect($other->tokens()->first()->can(AgentAbility::TUTOR_READ))->toBeFalse();
+});
+
+it('includes document PDF body so the Tutor can ground on a document Lesson', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->learner()->create();
+    $course = Course::factory()->published()->public()->create();
+    $section = CourseSection::factory()->create(['course_id' => $course->id]);
+    $lesson = Lesson::factory()->create([
+        'course_section_id' => $section->id,
+        'title' => 'Lembar glosarium agen',
+        'description' => 'Satu halaman istilah yang dipakai academy ini.',
+        'content_type' => 'document',
+        'rich_content' => [
+            'type' => 'doc',
+            'content' => [[
+                'type' => 'paragraph',
+                'content' => [['type' => 'text', 'text' => 'Unduh atau baca PDF ini. Learner, Tutor, Enrollment.']],
+            ]],
+        ],
+    ]);
+
+    $openClaw = 'OpenClaw: runtime agen. Di academy ini ia adalah subjek Course terbatas, bukan tombol yang kamu tekan di Lesson.';
+    $alat = 'Alat (tool): API, berkas, pencarian, atau konektor yang dipanggil agen di dalam loop.';
+
+    (new SeederLessonMedia)->attachPdf(
+        $lesson,
+        'glosarium-agen-ai.pdf',
+        'Glosarium Pengenalan Agen AI',
+        [$openClaw, $alat],
+    );
+
+    actingWithTutorRead($user);
+
+    $expectedBody = $lesson->title."\n\n".$openClaw."\n\n".$alat;
+
+    EnterLmsAgentServer::tool(GetPublishedLessonTool::class, [
+        'course_id' => $course->id,
+        'lesson_id' => $lesson->id,
+    ])
+        ->assertOk()
+        ->assertStructuredContent(function ($json) use ($course, $lesson, $expectedBody) {
+            $json->where('ok', true)
+                ->where('data.course_id', $course->id)
+                ->where('data.lesson_id', $lesson->id)
+                ->where('data.content_type', 'document')
+                ->where('data.body_ready', true)
+                ->where('data.body_text', $expectedBody)
+                ->where('data.body_html', null)
+                ->missing('data.url')
+                ->missing('data.path')
+                ->missing('data.disk')
+                ->etc();
+        })
+        ->assertDontSee('RAHASIA_LEMBAGA_KEMUDIAN');
+});
+
+it('does not scrape a document PDF on read when stored body_text is missing', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->learner()->create();
+    $course = Course::factory()->published()->public()->create();
+    $section = CourseSection::factory()->create(['course_id' => $course->id]);
+    $lesson = Lesson::factory()->create([
+        'course_section_id' => $section->id,
+        'title' => 'Lembar glosarium agen',
+        'description' => 'Satu halaman istilah yang dipakai academy ini.',
+        'content_type' => 'document',
+    ]);
+
+    $media = (new SeederLessonMedia)->attachPdf(
+        $lesson,
+        'glosarium-agen-ai.pdf',
+        'Glosarium Pengenalan Agen AI',
+        ['OpenClaw: runtime agen. Di academy ini ia adalah subjek Course terbatas.'],
+    );
+    $media->update(['custom_properties' => null]);
+
+    actingWithTutorRead($user);
+
+    EnterLmsAgentServer::tool(GetPublishedLessonTool::class, [
+        'course_id' => $course->id,
+        'lesson_id' => $lesson->id,
+    ])
+        ->assertOk()
+        ->assertStructuredContent(function ($json) use ($lesson) {
+            $json->where('ok', true)
+                ->where('data.body_ready', false)
+                ->where('data.body_text', $lesson->title)
+                ->where('data.body_html', null)
+                ->etc();
+        })
+        ->assertDontSee('OpenClaw: runtime agen');
 });
 
 it('lets tutor.read read a published restricted Course Lesson', function () {

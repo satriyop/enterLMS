@@ -11,6 +11,8 @@ class Media extends Model
 {
     use HasFactory;
 
+    public const CAPTURE_MAX_BYTES = 8 * 1024 * 1024;
+
     protected $fillable = [
         'mediable_type',
         'mediable_id',
@@ -98,6 +100,130 @@ class Media extends Model
         ];
 
         return in_array($this->mime_type, $documentTypes);
+    }
+
+    public function storedBodyText(): string
+    {
+        $properties = $this->customPropertiesArray();
+        $stored = $properties['body_text'] ?? null;
+
+        return is_string($stored) ? $stored : '';
+    }
+
+    public function captureBody(bool $force = false): void
+    {
+        if (! $force && $this->storedBodyText() !== '') {
+            $this->mergeCaptureMeta('ready');
+
+            return;
+        }
+
+        if ($this->mime_type !== 'application/pdf') {
+            $this->mergeCaptureMeta('unsupported');
+
+            return;
+        }
+
+        $text = $this->extractPdfTextAtWriteTime();
+        $this->writeBodyCapture($text, $text === '' ? 'failed' : 'ready');
+    }
+
+    public function mergeCaptureMeta(string $status): void
+    {
+        $properties = $this->customPropertiesArray();
+        $properties['body_capture'] = $status;
+        $properties['body_captured_at'] = now()->toIso8601String();
+
+        $this->forceFill(['custom_properties' => $properties])->save();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function customPropertiesArray(): array
+    {
+        $properties = $this->custom_properties ?? [];
+
+        return is_array($properties) ? $properties : [];
+    }
+
+    private function writeBodyCapture(string $text, string $status): void
+    {
+        $properties = $this->customPropertiesArray();
+        $properties['body_text'] = $text;
+        $properties['body_capture'] = $status;
+        $properties['body_captured_at'] = now()->toIso8601String();
+
+        $this->forceFill(['custom_properties' => $properties])->save();
+    }
+
+    private function extractPdfTextAtWriteTime(): string
+    {
+        if ((int) $this->size > self::CAPTURE_MAX_BYTES) {
+            return '';
+        }
+
+        if ($this->path === '' || ! Storage::disk($this->disk)->exists($this->path)) {
+            return '';
+        }
+
+        return $this->extractUncompressedTjForGeneratedPdfs(
+            (string) Storage::disk($this->disk)->get($this->path)
+        );
+    }
+
+    private function extractUncompressedTjForGeneratedPdfs(string $binary): string
+    {
+        $texts = [];
+        $offset = 0;
+        $length = strlen($binary);
+
+        while (($start = strpos($binary, '(', $offset)) !== false) {
+            $i = $start + 1;
+            $buffer = '';
+            $escaped = false;
+            $closed = false;
+
+            while ($i < $length) {
+                $char = $binary[$i];
+
+                if ($escaped) {
+                    $buffer .= $char;
+                    $escaped = false;
+                    $i++;
+
+                    continue;
+                }
+
+                if ($char === '\\') {
+                    $escaped = true;
+                    $i++;
+
+                    continue;
+                }
+
+                if ($char === ')') {
+                    $closed = true;
+                    $rest = substr($binary, $i + 1, 8);
+
+                    if (preg_match('/^\s*Tj/', $rest) === 1) {
+                        $texts[] = $buffer;
+                    }
+
+                    $offset = $i + 1;
+                    break;
+                }
+
+                $buffer .= $char;
+                $i++;
+            }
+
+            if (! $closed) {
+                break;
+            }
+        }
+
+        return trim(implode("\n", array_filter($texts, fn (string $text): bool => $text !== '')));
     }
 
     public function getDurationFormattedAttribute(): ?string

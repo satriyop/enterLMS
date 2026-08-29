@@ -41,6 +41,7 @@ class SeederLessonMedia
             $filename,
             'application/pdf',
             $this->pdf($title, $paragraphs),
+            bodyText: implode("\n\n", $paragraphs),
         );
     }
 
@@ -209,6 +210,7 @@ class SeederLessonMedia
         string $mimeType,
         string $binary,
         ?int $durationSeconds = null,
+        ?string $bodyText = null,
     ): Media {
         $path = "lessons/{$lesson->id}/{$collection}/{$filename}";
         Storage::disk('public')->put($path, $binary);
@@ -225,6 +227,13 @@ class SeederLessonMedia
             'size' => strlen($binary),
             'duration_seconds' => $durationSeconds,
             'order_column' => 0,
+            'custom_properties' => $bodyText !== null && $bodyText !== ''
+                ? [
+                    'body_text' => $bodyText,
+                    'body_capture' => 'ready',
+                    'body_captured_at' => now()->toIso8601String(),
+                ]
+                : null,
         ]);
     }
 }

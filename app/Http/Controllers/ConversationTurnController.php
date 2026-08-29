@@ -58,7 +58,9 @@ class ConversationTurnController extends Controller
                 $request->validated('message'),
             );
         } catch (RuntimeException) {
-            return back()->with('error', 'Tutor sedang tidak dapat menjawab. Silakan coba lagi.');
+            return back()->withErrors([
+                'message' => 'Tutor sedang tidak dapat menjawab. Silakan coba lagi.',
+            ]);
         }
 
         return redirect()

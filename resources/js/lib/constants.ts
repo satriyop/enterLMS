@@ -168,6 +168,7 @@ export const STORAGE_KEYS = {
     videoProgress: 'enterlms-video-progress',
     audioProgress: 'enterlms-audio-progress',
     lessonProgress: 'enterlms-lesson-progress',
+    tutorOpen: 'enterlms-tutor-open',
 } as const;
 
 // =============================================================================

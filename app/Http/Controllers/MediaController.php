@@ -9,7 +9,9 @@ use App\Models\Lesson;
 use App\Models\Media;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class MediaController extends Controller
 {
@@ -63,6 +65,19 @@ class MediaController extends Controller
             'duration_seconds' => $durationSeconds,
             'order_column' => $mediable->media()->where('collection_name', $collection)->count(),
         ]);
+
+        if ($media instanceof Media && $mimeType === 'application/pdf') {
+            try {
+                $media->captureBody();
+            } catch (Throwable $e) {
+                Log::warning('media.body_capture', [
+                    'media_id' => $media->id,
+                    'status' => 'failed',
+                    'error' => $e->getMessage(),
+                ]);
+                $media->mergeCaptureMeta('failed');
+            }
+        }
 
         // Update lesson's estimated duration if this is a video/audio for a lesson
         if ($mediable instanceof Lesson && $durationSeconds) {

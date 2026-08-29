@@ -46,6 +46,20 @@ export interface Media extends Timestamps {
 }
 
 /**
+ * Captured Lesson text shown to LMS Admin on edit (Tutor grounding).
+ * Not embedded on Learner Lesson/Media resources.
+ */
+export interface TutorBody {
+    ready: boolean;
+    text: string | null;
+    capture: Array<{
+        id: number;
+        file_name: string;
+        status: string;
+    }>;
+}
+
+/**
  * Minimal media info for display.
  */
 export interface MediaSummary {

@@ -47,14 +47,16 @@ class GetPublishedLessonTool extends Tool
             }
 
             $lesson = Lesson::query()
-                ->with('section')
+                ->with(['section', 'media'])
                 ->findOrFail($validated['lesson_id']);
 
             if ($lesson->section->course_id !== $course->id) {
                 return Response::error('Pelajaran tidak termasuk dalam Course ini.');
             }
 
-            $bodyText = $this->lessonText($lesson);
+            $bodyHtml = $lesson->content_type === 'document'
+                ? null
+                : (new TipTapRenderer)->render($lesson->rich_content);
 
             return Response::structured([
                 'ok' => true,
@@ -64,8 +66,9 @@ class GetPublishedLessonTool extends Tool
                     'title' => $lesson->title,
                     'description' => $lesson->description,
                     'content_type' => $lesson->content_type,
-                    'body_text' => $bodyText,
-                    'body_html' => (new TipTapRenderer)->render($lesson->rich_content),
+                    'body_text' => $lesson->readableBody(),
+                    'body_ready' => $lesson->isBodyReady(),
+                    'body_html' => $bodyHtml,
                 ],
             ]);
         });
@@ -80,38 +83,5 @@ class GetPublishedLessonTool extends Tool
             'course_id' => $schema->integer()->description('Course ID that must own the Lesson')->required(),
             'lesson_id' => $schema->integer()->description('Lesson ID to read')->required(),
         ];
-    }
-
-    private function lessonText(Lesson $lesson): string
-    {
-        $parts = array_filter([
-            $lesson->title,
-            $lesson->description,
-            is_array($lesson->rich_content) ? $this->flattenRichContent($lesson->rich_content) : null,
-        ]);
-
-        return trim(implode(' ', $parts));
-    }
-
-    /**
-     * @param  array<string, mixed>  $node
-     */
-    private function flattenRichContent(array $node): string
-    {
-        $text = '';
-
-        if (isset($node['text']) && is_string($node['text'])) {
-            $text .= $node['text'].' ';
-        }
-
-        if (isset($node['content']) && is_array($node['content'])) {
-            foreach ($node['content'] as $child) {
-                if (is_array($child)) {
-                    $text .= $this->flattenRichContent($child);
-                }
-            }
-        }
-
-        return $text;
     }
 }

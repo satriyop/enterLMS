@@ -8,6 +8,8 @@ use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\User;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Http;
 
 function tutorRuntimeConversation(): Conversation
 {
@@ -44,6 +46,10 @@ function tutorRuntimeConversation(): Conversation
 
     return $conversation->fresh(['turns']);
 }
+
+beforeEach(function () {
+    config()->set('tutor.runtime_url', '');
+});
 
 function writeFakeHermes(string $script): string
 {
@@ -164,6 +170,54 @@ SH);
         ->toThrow(RuntimeException::class, 'Tutor runtime failed.');
 
     @unlink($binary);
+});
+
+it('raises the PHP time limit so FPM can wait for Hermes', function () {
+    Http::fake([
+        'http://127.0.0.1:9273/complete-turn' => Http::response(['reply' => 'ok'], 200),
+    ]);
+
+    config()->set('tutor.runtime_url', 'http://127.0.0.1:9273');
+    config()->set('tutor.runtime_secret', 'secret-test');
+    config()->set('tutor.timeout_seconds', 90);
+
+    (new TutorRuntime)->completeTurn(tutorRuntimeConversation(), 'Halo');
+
+    expect((int) ini_get('max_execution_time'))->toBeGreaterThanOrEqual(90);
+
+    set_time_limit(0);
+});
+
+it('turns a sidecar timeout into a runtime failure', function () {
+    Http::fake(function () {
+        throw new ConnectionException('cURL error 28: Operation timed out');
+    });
+
+    config()->set('tutor.runtime_url', 'http://127.0.0.1:9273');
+    config()->set('tutor.runtime_secret', 'secret-test');
+
+    expect(fn () => (new TutorRuntime)->completeTurn(tutorRuntimeConversation(), 'Halo'))
+        ->toThrow(RuntimeException::class, 'Tutor runtime failed.');
+});
+
+it('posts to the sidecar when runtime_url is set', function () {
+    Http::fake([
+        'http://127.0.0.1:9273/complete-turn' => Http::response(['reply' => 'Jawaban dari sidecar.'], 200),
+    ]);
+
+    config()->set('tutor.runtime_url', 'http://127.0.0.1:9273');
+    config()->set('tutor.runtime_secret', 'secret-test');
+    config()->set('tutor.hermes_binary', '');
+
+    $conversation = tutorRuntimeConversation();
+    $reply = (new TutorRuntime)->completeTurn($conversation, 'Halo');
+
+    expect($reply)->toBe('Jawaban dari sidecar.');
+
+    Http::assertSent(fn ($request) => $request->url() === 'http://127.0.0.1:9273/complete-turn'
+        && $request->hasHeader('X-Tutor-Runtime-Secret', 'secret-test')
+        && $request['conversation_id'] === $conversation->id
+        && $request['message'] === 'Halo');
 });
 
 it('throws when the hermes binary is missing', function () {

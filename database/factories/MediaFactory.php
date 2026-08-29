@@ -73,6 +73,21 @@ class MediaFactory extends Factory
         ]);
     }
 
+    public function withBodyText(string $text): static
+    {
+        return $this->state(function (array $attributes) use ($text) {
+            $properties = $attributes['custom_properties'] ?? [];
+
+            if (! is_array($properties)) {
+                $properties = [];
+            }
+
+            $properties['body_text'] = $text;
+
+            return ['custom_properties' => $properties];
+        });
+    }
+
     /**
      * Configure the media as a thumbnail.
      */

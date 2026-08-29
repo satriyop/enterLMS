@@ -46,7 +46,11 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             if ($response->getStatusCode() === 419) {
-                return back()->with('error', 'Halaman kedaluwarsa, silakan coba lagi.');
+                return back()
+                    ->withErrors([
+                        'message' => 'Halaman kedaluwarsa, silakan coba lagi.',
+                    ])
+                    ->with('error', 'Halaman kedaluwarsa, silakan coba lagi.');
             }
 
             return $response;

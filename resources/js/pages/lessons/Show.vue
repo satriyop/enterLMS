@@ -185,7 +185,7 @@ onMounted(() => {
 
         <div class="flex min-h-0 flex-1 overflow-hidden">
             <main class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-                <div class="relative min-h-0 flex-1">
+                <div class="relative z-10 min-h-0 flex-1 overflow-visible">
                     <LessonContentRouter
                         class="h-full"
                         :content-type="lesson.content_type"

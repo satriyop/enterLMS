@@ -17,6 +17,51 @@ class TipTapRenderer
     }
 
     /**
+     * @param  array<string, mixed>|null  $json
+     */
+    public function plainText(?array $json): string
+    {
+        if ($json === null || $json === []) {
+            return '';
+        }
+
+        return trim($this->plainTextNode($json));
+    }
+
+    /**
+     * @param  array<string, mixed>  $node
+     */
+    private function plainTextNode(array $node): string
+    {
+        $type = $node['type'] ?? '';
+
+        if ($type === 'text') {
+            return (string) ($node['text'] ?? '');
+        }
+
+        if ($type === 'hardBreak') {
+            return "\n";
+        }
+
+        $inner = '';
+        $content = $node['content'] ?? [];
+
+        if (is_array($content)) {
+            foreach ($content as $child) {
+                if (is_array($child)) {
+                    $inner .= $this->plainTextNode($child);
+                }
+            }
+        }
+
+        return match ($type) {
+            'paragraph', 'heading', 'blockquote', 'codeBlock', 'listItem' => $inner."\n\n",
+            'horizontalRule' => "\n\n",
+            default => $inner,
+        };
+    }
+
+    /**
      * Render an array of TipTap nodes.
      */
     private function renderNodes(array $nodes): string

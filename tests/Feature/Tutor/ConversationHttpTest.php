@@ -307,7 +307,8 @@ describe('Tutor stays in the Lesson', function () {
             ->post(route('courses.lessons.conversation.turns.store', [$course, $lesson]), [
                 'message' => 'Apa bedanya agen dengan chatbot?',
             ])
-            ->assertRedirect(route('courses.lessons.show', [$course, $lesson]));
+            ->assertRedirect(route('courses.lessons.show', [$course, $lesson]))
+            ->assertSessionHasErrors(['message' => 'Tutor sedang tidak dapat menjawab. Silakan coba lagi.']);
 
         expect(ConversationTurn::query()->count())->toBe(0);
 

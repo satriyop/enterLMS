@@ -4,6 +4,8 @@ namespace App\Domain\Tutor\Services;
 
 use App\Models\Conversation;
 use App\Models\ConversationTurn;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
 use RuntimeException;
 
@@ -15,18 +17,32 @@ class TutorRuntime
      */
     public function completeTurn(Conversation $conversation, string $learnerMessage): string
     {
+        $conversation->loadMissing(['turns', 'enrollment']);
+
+        $runtimeUrl = (string) config('tutor.runtime_url');
+
+        if ($runtimeUrl !== '') {
+            return $this->completeTurnViaHttp($conversation, $learnerMessage, $runtimeUrl);
+        }
+
+        return $this->completeTurnViaCli($conversation, $learnerMessage);
+    }
+
+    public function completeTurnViaCli(Conversation $conversation, string $learnerMessage): string
+    {
+        $conversation->loadMissing(['turns', 'enrollment']);
+
         $binary = (string) config('tutor.hermes_binary');
 
         if ($binary === '' || ! is_file($binary)) {
             throw new RuntimeException('Tutor runtime is not configured.');
         }
 
-        $conversation->loadMissing(['turns', 'enrollment']);
-
         $session = 'enterlms-conversation-'.$conversation->id;
         $skill = (string) config('tutor.skill', 'tutor');
         $timeout = max(1, (int) config('tutor.timeout_seconds', 90));
         $maxTurns = max(1, (int) config('tutor.max_turns', 8));
+        $this->allowRuntimeWait($timeout);
 
         $result = Process::timeout($timeout)
             ->input($this->prompt($conversation, $learnerMessage))
@@ -58,6 +74,43 @@ class TutorRuntime
         }
 
         return $reply;
+    }
+
+    private function completeTurnViaHttp(Conversation $conversation, string $learnerMessage, string $runtimeUrl): string
+    {
+        $secret = (string) config('tutor.runtime_secret');
+        $timeout = max(1, (int) config('tutor.timeout_seconds', 90));
+        $this->allowRuntimeWait($timeout);
+
+        try {
+            $response = Http::timeout($timeout)
+                ->connectTimeout(5)
+                ->acceptJson()
+                ->withHeaders(['X-Tutor-Runtime-Secret' => $secret])
+                ->post(rtrim($runtimeUrl, '/').'/complete-turn', [
+                    'conversation_id' => $conversation->id,
+                    'message' => $learnerMessage,
+                ]);
+        } catch (ConnectionException $e) {
+            throw new RuntimeException('Tutor runtime failed.', previous: $e);
+        }
+
+        if (! $response->successful()) {
+            throw new RuntimeException('Tutor runtime failed.');
+        }
+
+        $reply = trim((string) $response->json('reply'));
+
+        if ($reply === '') {
+            throw new RuntimeException('Tutor runtime failed.');
+        }
+
+        return $reply;
+    }
+
+    private function allowRuntimeWait(int $timeout): void
+    {
+        set_time_limit($timeout + 15);
     }
 
     private function prompt(Conversation $conversation, string $learnerMessage): string

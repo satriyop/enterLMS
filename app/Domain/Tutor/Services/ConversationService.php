@@ -7,6 +7,7 @@ use App\Models\ConversationTurn;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Throwable;
 
@@ -37,6 +38,11 @@ class ConversationService
         try {
             $reply = $this->runtime->completeTurn($conversation, $message);
         } catch (Throwable $e) {
+            Log::warning('Tutor runtime failed.', [
+                'conversation_id' => $conversation->id,
+                'error' => $e->getMessage(),
+            ]);
+
             throw new RuntimeException('Tutor runtime failed.', previous: $e);
         }
 

@@ -91,6 +91,52 @@ class Lesson extends Model
         return $this->hasMany(LessonProgress::class);
     }
 
+    public function readableBody(): string
+    {
+        $this->loadMissing('media');
+
+        $parts = match ($this->content_type) {
+            'document' => array_filter([
+                $this->title,
+                $this->documentStoredText(),
+            ]),
+            default => array_filter([
+                $this->title,
+                $this->description,
+                is_array($this->rich_content)
+                    ? (new TipTapRenderer)->plainText($this->rich_content)
+                    : null,
+            ]),
+        };
+
+        return trim(implode("\n\n", $parts));
+    }
+
+    public function isBodyReady(): bool
+    {
+        if ($this->content_type !== 'document') {
+            return true;
+        }
+
+        $this->loadMissing('media');
+
+        return $this->documentStoredText() !== null;
+    }
+
+    private function documentStoredText(): ?string
+    {
+        $texts = $this->media
+            ->filter(fn (Media $media): bool => $media->is_document)
+            ->map(fn (Media $media): string => $media->storedBodyText())
+            ->filter(fn (string $text): bool => $text !== '');
+
+        if ($texts->isEmpty()) {
+            return null;
+        }
+
+        return $texts->implode("\n\n");
+    }
+
     public function getYoutubeVideoIdAttribute(): ?string
     {
         if (! $this->youtube_url) {

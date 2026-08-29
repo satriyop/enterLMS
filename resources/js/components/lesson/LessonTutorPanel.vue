@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { store as storeTurn } from '@/actions/App/Http/Controllers/ConversationTurnController';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { STORAGE_KEYS } from '@/lib/constants';
 import { MessageCircle, X } from 'lucide-vue-next';
 
 interface ConversationTurn {
@@ -25,20 +26,61 @@ const props = defineProps<{
     conversation: LessonConversation;
 }>();
 
+const panelStorageKey = computed(() => `${STORAGE_KEYS.tutorOpen}-${props.lessonId}`);
+
+const readOpen = (): boolean => {
+    if (typeof sessionStorage === 'undefined') {
+        return false;
+    }
+
+    return sessionStorage.getItem(panelStorageKey.value) === '1';
+};
+
+const persistOpen = (value: boolean): void => {
+    if (typeof sessionStorage === 'undefined') {
+        return;
+    }
+
+    sessionStorage.setItem(panelStorageKey.value, value ? '1' : '0');
+};
+
 const open = ref(false);
 const threadEl = ref<HTMLElement | null>(null);
+const page = usePage();
+
+onMounted(() => {
+    open.value = readOpen();
+});
+
+watch(open, (value) => {
+    persistOpen(value);
+});
+
+const flashError = computed(() => {
+    const flash = page.props.flash as { error?: string | null } | undefined;
+
+    return flash?.error ?? null;
+});
 
 const tutorForm = useForm({
     message: '',
 });
 
+const pendingMessage = computed(() => tutorForm.message.trim());
+
 const submitTutorTurn = () => {
+    open.value = true;
+    persistOpen(true);
+
     tutorForm.post(storeTurn.url({ course: props.courseId, lesson: props.lessonId }), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {
             tutorForm.reset('message');
             scrollThread();
+        },
+        onError: () => {
+            open.value = true;
         },
     });
 };
@@ -61,7 +103,7 @@ watch(
 </script>
 
 <template>
-    <div class="pointer-events-none absolute right-4 bottom-4 z-20 flex flex-col items-end gap-3">
+    <div class="pointer-events-none absolute top-4 right-4 z-40 flex flex-col items-end gap-3">
             <section
                 v-if="open"
                 class="pointer-events-auto flex max-h-[min(60vh,28rem)] w-[min(calc(100vw-2rem),22rem)] flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-lg"
@@ -86,7 +128,7 @@ watch(
                 </header>
 
                 <div ref="threadEl" class="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
-                    <p v-if="conversation.turns.length === 0" class="text-sm text-muted-foreground">
+                    <p v-if="conversation.turns.length === 0 && !tutorForm.processing" class="text-sm text-muted-foreground">
                         Belum ada percakapan. Tulis pertanyaan di bawah.
                     </p>
                     <div
@@ -99,6 +141,16 @@ watch(
                         </p>
                         <p class="mt-1 text-sm text-foreground">{{ turn.body }}</p>
                     </div>
+                    <div
+                        v-if="tutorForm.processing && pendingMessage"
+                        class="rounded-md border border-border p-3 opacity-70"
+                    >
+                        <p class="text-xs font-medium text-muted-foreground">Anda</p>
+                        <p class="mt-1 text-sm text-foreground">{{ pendingMessage }}</p>
+                    </div>
+                    <p v-if="tutorForm.processing" class="text-sm text-muted-foreground">
+                        Tutor sedang menjawab…
+                    </p>
                 </div>
 
                 <form
@@ -115,8 +167,11 @@ watch(
                     <p v-if="tutorForm.errors.message" class="text-sm text-destructive">
                         {{ tutorForm.errors.message }}
                     </p>
+                    <p v-else-if="flashError" class="text-sm text-destructive">
+                        {{ flashError }}
+                    </p>
                     <Button type="submit" class="w-full" :disabled="tutorForm.processing">
-                        Kirim
+                        {{ tutorForm.processing ? 'Tutor sedang menjawab…' : 'Kirim' }}
                     </Button>
                 </form>
                 <p v-else class="shrink-0 border-t border-border p-4 text-sm text-muted-foreground">

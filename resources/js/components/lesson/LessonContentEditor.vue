@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Youtube } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
-import type { ContentType, Media } from '@/types';
+import type { ContentType, Media, TutorBody } from '@/types';
 
 // =============================================================================
 // Types
@@ -32,6 +32,7 @@ interface Props {
     existingVideoMedia: Media[];
     existingAudioMedia: Media[];
     existingDocumentMedia: Media[];
+    tutorBody?: TutorBody | null;
     errors: Record<string, string>;
 }
 
@@ -39,7 +40,9 @@ interface Props {
 // Component Setup
 // =============================================================================
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    tutorBody: null,
+});
 
 const emit = defineEmits<{
     (e: 'update:richContent', value: Record<string, unknown> | null): void;
@@ -95,6 +98,15 @@ const isEditMode = computed(() => props.lessonId !== null);
 
 const showSaveFirstNotice = computed(() => {
     return !isEditMode.value && ['video', 'audio', 'document'].includes(props.contentType);
+});
+
+const showTutorBody = computed(() => {
+    return (
+        props.contentType === 'document' &&
+        isEditMode.value &&
+        props.tutorBody !== null &&
+        (props.tutorBody.text !== null || !props.tutorBody.ready)
+    );
 });
 
 const youtubeVideoId = computed(() => {
@@ -204,6 +216,19 @@ const youtubeEmbedUrl = computed(() => {
             @deleted="emit('mediaDeleted')"
             @error="emit('mediaError', $event)"
         />
+
+        <div v-if="showTutorBody && tutorBody?.ready" class="space-y-2">
+            <p class="text-sm font-medium text-foreground">Teks yang dibaca Tutor</p>
+            <pre class="max-h-48 overflow-auto whitespace-pre-wrap rounded-lg bg-surface-2 p-3 text-sm text-foreground">{{ tutorBody.text }}</pre>
+        </div>
+        <div
+            v-else-if="showTutorBody"
+            class="rounded-lg border border-border bg-warn-soft p-4"
+        >
+            <p class="text-sm text-warn">
+                Tutor tidak melihat isi PDF ini. Di v1, unggah ulang PDF terkompresi akan gagal lagi. Pulihkan PDF academy dengan seed ulang. Parser dan suntingan teks tidak ada di v1.
+            </p>
+        </div>
     </div>
 
     <!-- Conference -->

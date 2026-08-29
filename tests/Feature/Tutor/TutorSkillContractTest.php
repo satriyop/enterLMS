@@ -16,6 +16,8 @@ it('ships a tutor skill that preloads independently of the Telegram gateway', fu
         ->toContain('--tutor-read')
         ->toContain('enterlms-conversation-')
         ->toContain('get-published-lesson')
+        ->toContain('body_text')
+        ->toContain('body_ready')
         ->toContain('get-course-outline')
         ->toContain('course_id')
         ->toContain('Bahasa Indonesia')
@@ -31,6 +33,8 @@ it('tells the tutor skill to refuse live OpenClaw and not enroll or complete', f
         ->toContain('enroll-course')
         ->toContain('mark-lesson-complete')
         ->toContain('not a console')
+        ->toContain('PDF body, not the teaser')
+        ->toContain('ignore `body_html`')
         ->and($body)->toContain('Never')
         ->and($body)->toContain('tutor.read');
 });

@@ -14,6 +14,7 @@ use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Enrollment;
 use App\Models\Lesson;
+use App\Models\Media;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -132,6 +133,7 @@ class LessonController extends Controller
                 ],
             ],
             'lesson' => new LessonResource($lesson),
+            'tutor_body' => $this->tutorBody($lesson),
         ]);
     }
 
@@ -164,5 +166,33 @@ class LessonController extends Controller
         return redirect()
             ->route('courses.edit', $course)
             ->with('success', 'Pelajaran berhasil dihapus.');
+    }
+
+    /**
+     * @return array{
+     *     ready: bool,
+     *     text: string|null,
+     *     capture: list<array{id: int, file_name: string, status: string}>
+     * }
+     */
+    private function tutorBody(Lesson $lesson): array
+    {
+        $lesson->loadMissing('media');
+
+        return [
+            'ready' => $lesson->isBodyReady(),
+            'text' => $lesson->content_type === 'document' ? $lesson->readableBody() : null,
+            'capture' => $lesson->media
+                ->filter(fn (Media $media): bool => $media->is_document)
+                ->map(fn (Media $media): array => [
+                    'id' => $media->id,
+                    'file_name' => $media->file_name,
+                    'status' => is_array($media->custom_properties)
+                        ? (string) ($media->custom_properties['body_capture'] ?? 'missing')
+                        : 'missing',
+                ])
+                ->values()
+                ->all(),
+        ];
     }
 }

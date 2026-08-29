@@ -7,6 +7,7 @@ use App\Models\CourseSection;
 use App\Models\Lesson;
 use App\Models\Media;
 use App\Models\User;
+use App\Services\SeederLessonMedia;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -230,7 +231,44 @@ class MediaControllerTest extends TestCase
             'collection_name' => 'document',
         ]);
 
-        $response->assertStatus(201);
+        $response->assertCreated();
+
+        $media = Media::query()->find($response->json('media.id'));
+        $this->assertNotNull($media);
+        $this->assertSame('', $media->storedBodyText());
+        $this->assertSame('failed', $media->custom_properties['body_capture'] ?? null);
+    }
+
+    public function test_upload_generated_pdf_stores_captured_body_text(): void
+    {
+        $course = Course::factory()->draft()->create([
+            'user_id' => $this->lmsAdmin->id,
+        ]);
+        $section = CourseSection::factory()->create(['course_id' => $course->id]);
+        $lesson = Lesson::factory()->create([
+            'course_section_id' => $section->id,
+            'content_type' => 'document',
+        ]);
+
+        $binary = (new SeederLessonMedia)->pdf(
+            'Glosarium Pengenalan Agen AI',
+            ['OpenClaw: runtime agen. Di academy ini ia adalah subjek Course terbatas.'],
+        );
+        $file = UploadedFile::fake()->createWithContent('glosarium.pdf', $binary);
+
+        $response = $this->actingAs($this->lmsAdmin)->postJson('/media', [
+            'file' => $file,
+            'mediable_type' => 'lesson',
+            'mediable_id' => $lesson->id,
+            'collection_name' => 'document',
+        ]);
+
+        $response->assertCreated();
+
+        $media = Media::query()->find($response->json('media.id'));
+        $this->assertNotNull($media);
+        $this->assertStringContainsString('OpenClaw: runtime agen', $media->storedBodyText());
+        $this->assertSame('ready', $media->custom_properties['body_capture'] ?? null);
     }
 
     public function test_upload_thumbnail_with_correct_mime_type(): void
