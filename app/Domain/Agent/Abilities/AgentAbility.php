@@ -23,6 +23,8 @@ final class AgentAbility
 
     public const COMPLIANCE_READ = 'agent:compliance.read';
 
+    public const TUTOR_READ = 'tutor.read';
+
     /**
      * Safe default until B-013 tools ship: identity only.
      *
@@ -72,8 +74,21 @@ final class AgentAbility
         ];
     }
 
+    /**
+     * Tutor runtime door. Never bundled into free-flow or --all-abilities.
+     *
+     * @return list<string>
+     */
+    public static function tutorRead(): array
+    {
+        return [
+            self::TUTOR_READ,
+        ];
+    }
+
     public static function isValid(string $ability): bool
     {
-        return in_array($ability, self::all(), true);
+        return in_array($ability, self::all(), true)
+            || $ability === self::TUTOR_READ;
     }
 }

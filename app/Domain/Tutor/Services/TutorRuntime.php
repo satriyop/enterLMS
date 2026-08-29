@@ -3,104 +3,111 @@
 namespace App\Domain\Tutor\Services;
 
 use App\Models\Conversation;
-use App\Models\Lesson;
+use App\Models\ConversationTurn;
+use Illuminate\Support\Facades\Process;
+use RuntimeException;
 
 class TutorRuntime
 {
     /**
-     * Produce a Tutor reply for this Conversation. Grounded in the current
-     * Lesson body plus Course outline titles — not later Lesson bodies.
+     * Produce a Tutor reply for this Conversation by invoking local Hermes.
+     * Grounding lives in the tutor skill + tutor.read MCP — not PHP regex.
      */
     public function completeTurn(Conversation $conversation, string $learnerMessage): string
     {
-        $conversation->loadMissing(['lesson.section.course.sections.lessons']);
+        $binary = (string) config('tutor.hermes_binary');
 
-        $lesson = $conversation->lesson;
-        $lessonText = $this->lessonText($lesson);
-
-        if ($this->asksToOperateLiveRuntime($learnerMessage)) {
-            return 'Praktik mengoperasikan agen hidup bukan di academy ini. Lesson ini bukan konsol runtime.';
+        if ($binary === '' || ! is_file($binary)) {
+            throw new RuntimeException('Tutor runtime is not configured.');
         }
 
-        $replyLanguage = $this->prefersEnglish($learnerMessage) ? 'en' : 'id';
+        $conversation->loadMissing(['turns', 'enrollment']);
 
-        if (! $this->messageIsAboutThisLesson($learnerMessage, $lessonText)) {
-            return $replyLanguage === 'en'
-                ? 'That is covered in a later Lesson in this Course.'
-                : 'Itu di pelajaran berikutnya dalam Course ini.';
+        $session = 'enterlms-conversation-'.$conversation->id;
+        $skill = (string) config('tutor.skill', 'tutor');
+        $timeout = max(1, (int) config('tutor.timeout_seconds', 90));
+        $maxTurns = max(1, (int) config('tutor.max_turns', 8));
+
+        $result = Process::timeout($timeout)
+            ->input($this->prompt($conversation, $learnerMessage))
+            ->run([
+                $binary,
+                'chat',
+                '-Q',
+                '--query-file',
+                '-',
+                '--skills',
+                $skill,
+                '--continue',
+                $session,
+                '--create-if-missing',
+                '--source',
+                'enterlms-tutor',
+                '--max-turns',
+                (string) $maxTurns,
+            ]);
+
+        if (! $result->successful()) {
+            throw new RuntimeException('Tutor runtime failed.');
         }
 
-        if ($replyLanguage === 'en') {
-            return 'Based on this Lesson: '.$this->excerpt($lessonText);
+        $reply = $this->sanitize($result->output());
+
+        if ($reply === '') {
+            throw new RuntimeException('Tutor runtime failed.');
         }
 
-        return 'Berdasarkan Lesson ini: '.$this->excerpt($lessonText);
+        return $reply;
     }
 
-    private function lessonText(Lesson $lesson): string
+    private function prompt(Conversation $conversation, string $learnerMessage): string
     {
-        $parts = array_filter([
-            $lesson->title,
-            $lesson->description,
-            is_array($lesson->rich_content) ? $this->flattenRichContent($lesson->rich_content) : null,
-        ]);
+        $courseId = $conversation->enrollment->course_id;
 
-        return trim(implode(' ', $parts));
-    }
+        $lines = [
+            'Conversation id: '.$conversation->id,
+            'Course id: '.(string) $courseId,
+            'Lesson id: '.$conversation->lesson_id,
+            'Enrollment id: '.$conversation->enrollment_id,
+            '',
+            'Call get-published-lesson and get-course-outline with this course_id.',
+            '',
+            'History:',
+        ];
 
-    /**
-     * @param  array<string, mixed>  $node
-     */
-    private function flattenRichContent(array $node): string
-    {
-        $text = '';
-
-        if (isset($node['text']) && is_string($node['text'])) {
-            $text .= $node['text'].' ';
+        foreach ($conversation->turns as $turn) {
+            $role = $turn->role === ConversationTurn::ROLE_TUTOR ? 'Tutor' : 'Learner';
+            $lines[] = $role.': '.$turn->body;
         }
 
-        if (isset($node['content']) && is_array($node['content'])) {
-            foreach ($node['content'] as $child) {
-                if (is_array($child)) {
-                    $text .= $this->flattenRichContent($child);
-                }
+        $lines[] = '';
+        $lines[] = 'Learner: '.$learnerMessage;
+
+        return implode("\n", $lines);
+    }
+
+    private function sanitize(string $output): string
+    {
+        $clean = trim(preg_replace('/\e\[[0-9;]*m/', '', $output) ?? $output);
+
+        $lines = preg_split("/\r\n|\n|\r/", $clean) ?: [];
+        $kept = [];
+        foreach ($lines as $line) {
+            if (preg_match('/^session_id:/i', $line) === 1 || preg_match('/^Session .+ found/i', $line) === 1) {
+                break;
             }
+            $kept[] = $line;
+        }
+        $clean = trim(implode("\n", $kept));
+
+        if ($clean === '') {
+            return '';
         }
 
-        return $text;
-    }
-
-    private function asksToOperateLiveRuntime(string $message): bool
-    {
-        return (bool) preg_match('/openclaw|konsol|console|deploy|pairing|kill switch|operasikan.*runtime|live runtime/i', $message);
-    }
-
-    private function prefersEnglish(string $message): bool
-    {
-        $indonesianHints = preg_match('/\b(apa|yang|dengan|bukan|itu|di|saya|bagaimana|kenapa|mengapa)\b/iu', $message);
-
-        return ! $indonesianHints && (bool) preg_match('/[A-Za-z]{4,}/', $message);
-    }
-
-    private function messageIsAboutThisLesson(string $message, string $lessonText): bool
-    {
-        if ($lessonText === '') {
-            return false;
+        if (str_contains(mb_strtolower($clean), 'traceback')) {
+            throw new RuntimeException('Tutor runtime failed.');
         }
 
-        $words = preg_split('/\W+/u', mb_strtolower($lessonText), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        $messageWords = preg_split('/\W+/u', mb_strtolower($message), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-
-        $contentWords = array_filter($words, fn (string $w) => mb_strlen($w) > 3);
-        $overlap = array_intersect($contentWords, $messageWords);
-
-        return count($overlap) > 0 || str_contains(mb_strtolower($lessonText), mb_strtolower($message));
-    }
-
-    private function excerpt(string $lessonText): string
-    {
-        $clean = trim(preg_replace('/\s+/', ' ', $lessonText) ?? $lessonText);
-
-        return mb_substr($clean, 0, 280);
+        return $clean;
     }
 }

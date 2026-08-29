@@ -252,6 +252,8 @@ describe('Conversation follows Enrollment', function () {
 
 describe('Tutor stays in the Lesson', function () {
     it('does not dump a later Lesson body', function () {
+        fakeTutorReply('Itu di pelajaran berikutnya dalam Course ini.');
+
         ['course' => $course, 'section' => $section, 'lesson' => $lesson] = tutorLesson('Apa itu agen', 'Agen berbeda dari chatbot.');
         $later = Lesson::factory()->text()->create([
             'course_section_id' => $section->id,
@@ -278,6 +280,8 @@ describe('Tutor stays in the Lesson', function () {
     });
 
     it('refuses operating a live OpenClaw and does not open a console', function () {
+        fakeTutorReply('Praktik mengoperasikan agen hidup bukan di academy ini. Lesson ini bukan konsol runtime.');
+
         ['course' => $course, 'lesson' => $lesson] = tutorLesson();
         ['user' => $user] = createEnrolledLearner($course);
 
@@ -313,6 +317,8 @@ describe('Tutor stays in the Lesson', function () {
     });
 
     it('uses current Lesson text for new turns after an edit', function () {
+        fakeTutorReply('Berdasarkan Lesson ini: KATAUNIKBARU');
+
         ['course' => $course, 'lesson' => $lesson] = tutorLesson('Apa itu agen', 'Teks lama tanpa kata unik.');
         ['user' => $user] = createEnrolledLearner($course);
 
@@ -331,6 +337,8 @@ describe('Tutor stays in the Lesson', function () {
     });
 
     it('replies in English when the Learner writes English', function () {
+        fakeTutorReply('Based on this Lesson: an agent is different from a chatbot.');
+
         ['course' => $course, 'lesson' => $lesson] = tutorLesson('Apa itu agen', 'An agent is different from a chatbot.');
         ['user' => $user] = createEnrolledLearner($course);
 

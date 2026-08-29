@@ -13,6 +13,8 @@ use App\Mcp\Tools\Agent\ListCatalogTool;
 use App\Mcp\Tools\Agent\ListCertificatesTool;
 use App\Mcp\Tools\Agent\ListMyEnrollmentsTool;
 use App\Mcp\Tools\Agent\MarkLessonCompleteTool;
+use App\Mcp\Tools\Tutor\GetCourseOutlineTool;
+use App\Mcp\Tools\Tutor\GetPublishedLessonTool;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -28,6 +30,7 @@ EnterLMS agent capability server (Depth B + free-flow + compliance read).
 - Compliance: token with `agent:compliance.read` on user role compliance_officer|auditor|lms_admin
 - Free-flow: list-catalog → get-course → enroll-course → get-progress → mark-lesson-complete.
 - Compliance: list-audit-events, get-user-training-status, list-certificates.
+- Tutor runtime: `agent:token {email} --tutor-read` then get-published-lesson / get-course-outline. Never bundled with --free-flow.
 - Paid enroll rejected when payments enabled; no admin content mutation.
 MARKDOWN)]
 class EnterLmsAgentServer extends Server
@@ -47,6 +50,8 @@ class EnterLmsAgentServer extends Server
         ListAuditEventsTool::class,
         GetUserTrainingStatusTool::class,
         ListCertificatesTool::class,
+        GetPublishedLessonTool::class,
+        GetCourseOutlineTool::class,
     ];
 
     /**
