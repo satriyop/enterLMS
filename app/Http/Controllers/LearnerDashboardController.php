@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Shared\Academy;
 use App\Http\Resources\Dashboard\DashboardCourseResource;
 use App\Http\Resources\Dashboard\DashboardEnrollmentResource;
+use App\Http\Resources\Dashboard\DashboardFacilitatedOfferingResource;
 use App\Http\Resources\Dashboard\DashboardInvitationResource;
 use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
@@ -35,10 +36,21 @@ class LearnerDashboardController extends Controller
 
         // My learning - enrolled courses with progress (including completed courses)
         $myLearning = $user->enrollments()
-            ->with(['course' => fn ($q) => $q->with(['user:id,name', 'category:id,name'])->withCount('lessons')])
+            ->with([
+                'course' => fn ($q) => $q->with(['user:id,name', 'category:id,name'])->withCount('lessons'),
+                'offering:id,name,code',
+            ])
             ->whereIn('status', ['active', 'completed'])
             ->orderByDesc('updated_at')
             ->get();
+
+        $facilitatedOfferings = Academy::enabled('offerings')
+            ? $user->facilitatedOfferings()
+                ->with('course:id,title')
+                ->withCount('enrollments')
+                ->orderBy('name')
+                ->get()
+            : collect();
 
         // Invited courses - pending invitations
         $invitedCourses = $user->pendingInvitations()
@@ -48,17 +60,18 @@ class LearnerDashboardController extends Controller
             ])
             ->get();
 
-        // Browse courses - published public courses (excluding enrolled and invited)
-        $browseCourses = Course::query()
-            ->published()
-            ->visible()
-            ->whereDoesntHave('enrollments', fn ($q) => $q->where('user_id', $user->id))
-            ->whereDoesntHave('invitations', fn ($q) => $q->where('user_id', $user->id)->where('status', 'pending'))
-            ->with(['user:id,name', 'category:id,name'])
-            ->withCount('enrollments')
-            ->orderByDesc('created_at')
-            ->limit(12)
-            ->get();
+        $browseCourses = Academy::enabled('offerings')
+            ? collect()
+            : Course::query()
+                ->published()
+                ->visible()
+                ->whereDoesntHave('enrollments', fn ($q) => $q->where('user_id', $user->id))
+                ->whereDoesntHave('invitations', fn ($q) => $q->where('user_id', $user->id)->where('status', 'pending'))
+                ->with(['user:id,name', 'category:id,name'])
+                ->withCount('enrollments')
+                ->orderByDesc('created_at')
+                ->limit(12)
+                ->get();
 
         return Inertia::render('learner/Dashboard', [
             'featuredCourses' => $featuredCourses->map(
@@ -66,6 +79,9 @@ class LearnerDashboardController extends Controller
             ),
             'myLearning' => $myLearning->map(
                 fn ($enrollment) => new DashboardEnrollmentResource($enrollment)
+            ),
+            'facilitatedOfferings' => $facilitatedOfferings->map(
+                fn ($offering) => new DashboardFacilitatedOfferingResource($offering)
             ),
             'invitedCourses' => $invitedCourses->map(
                 fn ($invitation) => new DashboardInvitationResource($invitation)

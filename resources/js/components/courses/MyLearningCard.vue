@@ -17,6 +17,7 @@ interface Props {
         duration: number;
         difficulty_level: 'beginner' | 'intermediate' | 'advanced';
         lessons_count?: number;
+        offering_name?: string | null;
     };
 }
 
@@ -99,6 +100,9 @@ const difficultyColor = (level: string) => {
                     {{ course.title }}
                 </h3>
             </Link>
+            <p v-if="course.offering_name" class="mt-1 text-sm text-muted-foreground">
+                {{ course.offering_name }}
+            </p>
             <p class="mt-1 text-sm text-muted-foreground">
                 {{ course.instructor }}
             </p>

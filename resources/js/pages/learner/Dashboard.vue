@@ -8,14 +8,16 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { Award, BookOpen, Mail, Play, ChevronRight } from 'lucide-vue-next';
+import { Award, BookOpen, Mail, Play, ChevronRight, Layers } from 'lucide-vue-next';
 import { computed } from 'vue';
 import MyLearningCard from '@/components/courses/MyLearningCard.vue';
 import FeaturedCoursesCarousel from '@/components/courses/FeaturedCoursesCarousel.vue';
 import CourseInvitationCard from '@/components/courses/CourseInvitationCard.vue';
 import BrowseCourseCard from '@/components/courses/BrowseCourseCard.vue';
 import { index as coursesIndex } from '@/actions/App/Http/Controllers/CourseController';
+import { index as offeringsIndex } from '@/actions/App/Http/Controllers/CourseOfferingController';
 import MyLearningController from '@/actions/App/Http/Controllers/MyLearningController';
+import { useAcademy } from '@/composables/useAcademy';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DifficultyLevel } from '@/types';
 
@@ -53,6 +55,16 @@ interface CourseItem {
     last_lesson_id?: number | null;
     lessons_count?: number;
     status?: string;
+    offering?: { id: number; name: string; code: string } | null;
+}
+
+interface FacilitatedOffering {
+    id: number;
+    name: string;
+    code: string;
+    is_default: boolean;
+    enrollments_count: number;
+    course: { id: number; title: string };
 }
 
 interface InvitedCourse {
@@ -76,6 +88,7 @@ interface InvitedCourse {
 interface Props {
     featuredCourses: CourseItem[];
     myLearning: CourseItem[];
+    facilitatedOfferings: FacilitatedOffering[];
     invitedCourses: InvitedCourse[];
     browseCourses: CourseItem[];
 }
@@ -84,13 +97,18 @@ interface Props {
 // Component Setup
 // =============================================================================
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    facilitatedOfferings: () => [],
+});
 
 const page = usePage();
+const { enabled, label } = useAcademy();
+const offeringsEnabled = computed(() => enabled('offerings'));
+const offeringLabel = computed(() => label('offering'));
 const userName = computed(() => page.props.auth.user?.name ?? 'Peserta');
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/learner/dashboard' },
+    { title: offeringsEnabled.value ? `${offeringLabel.value} saya` : 'Dashboard', href: '/learner/dashboard' },
 ];
 
 const greeting = computed(() => {
@@ -200,7 +218,12 @@ const hasCatalogContent = computed(
         || props.invitedCourses.length > 0,
 );
 
-const isPlatformEmpty = computed(() => props.myLearning.length === 0 && !hasCatalogContent.value);
+const isPlatformEmpty = computed(
+    () =>
+        props.myLearning.length === 0
+        && props.facilitatedOfferings.length === 0
+        && !hasCatalogContent.value,
+);
 
 /** Other in-progress courses (exclude the next-action hero course). */
 const otherLearning = computed(() => {
@@ -212,7 +235,7 @@ const otherLearning = computed(() => {
 </script>
 
 <template>
-    <Head title="Dashboard Pembelajaran" />
+    <Head :title="offeringsEnabled ? `${offeringLabel} saya` : 'Dashboard Pembelajaran'" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-10 overflow-x-auto px-4 py-8 md:px-8 md:py-10">
@@ -229,18 +252,30 @@ const otherLearning = computed(() => {
                             <span class="text-foreground">Langkah berikutnya</span>
                             di bawah.
                         </template>
+                        <template v-else-if="facilitatedOfferings.length > 0 && myLearning.length === 0">
+                            {{ offeringLabel }} yang Anda dampingi tercantum di bawah.
+                        </template>
                         <template v-else-if="myLearning.length === 0 && hasCatalogContent">
                             Pilih kursus di katalog untuk mulai belajar.
                         </template>
                         <template v-else-if="isPlatformEmpty">
-                            Katalog masih kosong — hubungi pengelola pembelajaran bila Anda membutuhkan modul wajib.
+                            {{
+                                offeringsEnabled
+                                    ? `Belum ada ${offeringLabel}. Hubungi pengelola bila Anda membutuhkan akses.`
+                                    : 'Katalog masih kosong — hubungi pengelola pembelajaran bila Anda membutuhkan modul wajib.'
+                            }}
                         </template>
                         <template v-else>
                             Halaman ini merangkum progres pembelajaran Anda.
                         </template>
                     </p>
                 </div>
-                <Button as-child variant="outline" class="shrink-0">
+                <Button
+                    v-if="!offeringsEnabled"
+                    as-child
+                    variant="outline"
+                    class="shrink-0"
+                >
                     <Link :href="coursesIndex().url">Jelajahi kursus</Link>
                 </Button>
             </div>
@@ -394,7 +429,7 @@ const otherLearning = computed(() => {
                         </Card>
                     </Link>
                     <Link
-                        v-else
+                        v-else-if="!offeringsEnabled"
                         :href="coursesIndex().url"
                     >
                         <Card class="h-full gap-0 py-0 transition-colors hover:bg-surface-2/40">
@@ -416,11 +451,51 @@ const otherLearning = computed(() => {
             <!-- Featured -->
             <FeaturedCoursesCarousel :courses="featuredCoursesFormatted" />
 
+            <!-- Facilitated offerings (Kelas saya) -->
+            <section v-if="facilitatedOfferings.length > 0">
+                <div class="section-hairline">
+                    <h2 class="text-editorial-h2">{{ offeringLabel }} saya</h2>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <Link
+                        v-for="offering in facilitatedOfferings"
+                        :key="offering.id"
+                        :href="offeringsIndex.url(offering.course.id)"
+                        class="block"
+                    >
+                        <Card class="h-full transition-colors hover:bg-surface-2/40">
+                            <CardContent class="flex items-start gap-3.5 p-5">
+                                <div class="rounded-[8px] bg-primary-soft p-2.5">
+                                    <Layers class="h-5 w-5 text-primary" />
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="font-medium text-foreground">
+                                        {{ offering.name }}
+                                    </p>
+                                    <p class="truncate text-sm text-muted-foreground">
+                                        {{ offering.course.title }}
+                                    </p>
+                                    <p class="mt-1 text-tiny text-muted-foreground">
+                                        {{ offering.enrollments_count }} pendaftaran
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
+                </div>
+            </section>
+
             <!-- My Learning -->
-            <section>
+            <section v-if="myLearning.length > 0 || !offeringsEnabled">
                 <div class="section-hairline">
                     <h2 class="text-editorial-h2">
-                        {{ nextAction ? 'Lanjutkan kursus lain' : 'Pembelajaran Saya' }}
+                        {{
+                            nextAction
+                                ? 'Lanjutkan kursus lain'
+                                : offeringsEnabled
+                                  ? `${offeringLabel} yang diikuti`
+                                  : 'Pembelajaran Saya'
+                        }}
                     </h2>
                     <Link
                         v-if="myLearning.length > 0"
@@ -449,6 +524,7 @@ const otherLearning = computed(() => {
                             duration: item.duration ?? 0,
                             difficulty_level: item.difficulty_level,
                             lessons_count: item.lessons_count,
+                            offering_name: item.offering?.name,
                         }"
                     />
                 </div>
@@ -512,8 +588,16 @@ const otherLearning = computed(() => {
             <EmptyState
                 v-if="isPlatformEmpty"
                 :icon="BookOpen"
-                title="Katalog kursus masih kosong"
-                description="Belum ada kursus yang dipublikasikan. Hubungi LMS Admin agar kursus dapat ditugaskan kepada Anda."
+                :title="
+                    offeringsEnabled
+                        ? `Belum ada ${offeringLabel}`
+                        : 'Katalog kursus masih kosong'
+                "
+                :description="
+                    offeringsEnabled
+                        ? `Anda belum didaftarkan ke ${offeringLabel} dan belum menjadi ${label('facilitator')} untuk ${offeringLabel} mana pun.`
+                        : 'Belum ada kursus yang dipublikasikan. Hubungi LMS Admin agar kursus dapat ditugaskan kepada Anda.'
+                "
             />
         </div>
     </AppLayout>

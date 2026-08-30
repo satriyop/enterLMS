@@ -43,6 +43,13 @@ class DashboardEnrollmentResource extends JsonResource
             'last_lesson_id' => $this->last_lesson_id,
             'lessons_count' => $this->course->lessons_count,
             'status' => $this->status,
+            'offering' => $this->whenLoaded('offering', fn () => $this->offering === null
+                ? null
+                : [
+                    'id' => $this->offering->id,
+                    'name' => $this->offering->name,
+                    'code' => $this->offering->code,
+                ]),
         ];
     }
 }
