@@ -49,6 +49,7 @@ function tutorRuntimeConversation(): Conversation
 
 beforeEach(function () {
     config()->set('tutor.runtime_url', '');
+    config()->set('tutor.hermes_profile', '');
 });
 
 function writeFakeHermes(string $script): string
@@ -102,6 +103,7 @@ SH);
         ->toContain('tutor')
         ->toContain('--continue')
         ->toContain('enterlms-conversation-'.$conversation->id)
+        ->not->toContain('-p')
         ->not->toContain('gateway')
         ->not->toContain('serve');
 
@@ -110,13 +112,81 @@ SH);
     expect($stdin)->toContain('Conversation id: '.$conversation->id)
         ->toContain('Course id: '.$courseId)
         ->toContain('Lesson id: '.$conversation->lesson_id)
-        ->toContain('Call get-published-lesson and get-course-outline with this course_id.')
+        ->toContain('Call get-published-lesson with this user_id, course_id, and lesson_id.')
         ->toContain('Learner: Apa bedanya agen dengan chatbot?')
         ->toContain('Pertanyaan lama');
 
     @unlink($binary);
     @unlink($argvPath);
     @unlink($stdinPath);
+});
+
+it('passes -p when a Hermes profile is configured', function () {
+    $argvPath = sys_get_temp_dir().'/enterlms-hermes-profile-argv-'.uniqid('', true).'.txt';
+
+    $binary = writeFakeHermes(<<<SH
+#!/bin/sh
+printf '%s\\n' "\$@" > {$argvPath}
+cat >/dev/null
+echo "Tutor reply from runtime."
+SH);
+
+    config()->set('tutor.hermes_binary', $binary);
+    config()->set('tutor.hermes_profile', 'enterlms-tutor');
+
+    (new TutorRuntime)->completeTurn(tutorRuntimeConversation(), 'Halo');
+
+    $argv = trim((string) file_get_contents($argvPath));
+
+    expect($argv)->toContain("-p\nenterlms-tutor\nchat")
+        ->toContain('--skills')
+        ->toContain('tutor');
+
+    @unlink($binary);
+    @unlink($argvPath);
+});
+
+it('runs Hermes from a Laravel-built prompt without loading Conversation on the runtime host', function () {
+    $argvPath = sys_get_temp_dir().'/enterlms-hermes-prompt-argv-'.uniqid('', true).'.txt';
+    $stdinPath = sys_get_temp_dir().'/enterlms-hermes-prompt-stdin-'.uniqid('', true).'.txt';
+
+    $binary = writeFakeHermes(<<<SH
+#!/bin/sh
+printf '%s\\n' "\$@" > {$argvPath}
+cat > {$stdinPath}
+echo "Tutor reply from runtime."
+SH);
+
+    config()->set('tutor.hermes_binary', $binary);
+    config()->set('tutor.hermes_profile', 'enterlms-tutor');
+
+    $reply = (new TutorRuntime)->completeTurnFromPrompt(
+        'enterlms-conversation-9',
+        "Course id: 9\nLearner: Halo",
+    );
+
+    expect($reply)->toBe('Tutor reply from runtime.')
+        ->and(trim((string) file_get_contents($argvPath)))->toContain('enterlms-conversation-9')
+        ->and((string) file_get_contents($stdinPath))->toContain('Learner: Halo');
+
+    @unlink($binary);
+    @unlink($argvPath);
+    @unlink($stdinPath);
+});
+
+it('rejects a Hermes profile name that is not a profile id', function () {
+    $binary = writeFakeHermes(<<<'SH'
+#!/bin/sh
+echo "should not run"
+SH);
+
+    config()->set('tutor.hermes_binary', $binary);
+    config()->set('tutor.hermes_profile', '-Q');
+
+    expect(fn () => (new TutorRuntime)->completeTurn(tutorRuntimeConversation(), 'Halo'))
+        ->toThrow(RuntimeException::class, 'Tutor runtime is not configured.');
+
+    @unlink($binary);
 });
 
 it('strips Hermes session chrome so the Learner never sees the runtime', function () {
@@ -174,11 +244,13 @@ SH);
 
 it('raises the PHP time limit so FPM can wait for Hermes', function () {
     Http::fake([
-        'http://127.0.0.1:9273/complete-turn' => Http::response(['reply' => 'ok'], 200),
+        'http://127.0.0.1:8642/v1/chat/completions' => Http::response([
+            'choices' => [['message' => ['content' => 'ok']]],
+        ], 200),
     ]);
 
-    config()->set('tutor.runtime_url', 'http://127.0.0.1:9273');
-    config()->set('tutor.runtime_secret', 'secret-test');
+    config()->set('tutor.runtime_url', 'http://127.0.0.1:8642');
+    config()->set('tutor.runtime_api_key', 'secret-test');
     config()->set('tutor.timeout_seconds', 90);
 
     (new TutorRuntime)->completeTurn(tutorRuntimeConversation(), 'Halo');
@@ -193,31 +265,46 @@ it('turns a sidecar timeout into a runtime failure', function () {
         throw new ConnectionException('cURL error 28: Operation timed out');
     });
 
-    config()->set('tutor.runtime_url', 'http://127.0.0.1:9273');
-    config()->set('tutor.runtime_secret', 'secret-test');
+    config()->set('tutor.runtime_url', 'http://127.0.0.1:8642');
+    config()->set('tutor.runtime_api_key', 'secret-test');
 
     expect(fn () => (new TutorRuntime)->completeTurn(tutorRuntimeConversation(), 'Halo'))
         ->toThrow(RuntimeException::class, 'Tutor runtime failed.');
 });
 
-it('posts to the sidecar when runtime_url is set', function () {
+it('posts Conversation history as chat completions messages when runtime_url is set', function () {
     Http::fake([
-        'http://127.0.0.1:9273/complete-turn' => Http::response(['reply' => 'Jawaban dari sidecar.'], 200),
+        'http://127.0.0.1:8642/v1/chat/completions' => Http::response([
+            'choices' => [['message' => ['role' => 'assistant', 'content' => 'Jawaban dari API.']]],
+        ], 200),
     ]);
 
-    config()->set('tutor.runtime_url', 'http://127.0.0.1:9273');
-    config()->set('tutor.runtime_secret', 'secret-test');
+    config()->set('tutor.runtime_url', 'http://127.0.0.1:8642');
+    config()->set('tutor.runtime_api_key', 'secret-test');
+    config()->set('tutor.model', 'hermes');
     config()->set('tutor.hermes_binary', '');
 
     $conversation = tutorRuntimeConversation();
     $reply = (new TutorRuntime)->completeTurn($conversation, 'Halo');
 
-    expect($reply)->toBe('Jawaban dari sidecar.');
+    expect($reply)->toBe('Jawaban dari API.');
 
-    Http::assertSent(fn ($request) => $request->url() === 'http://127.0.0.1:9273/complete-turn'
-        && $request->hasHeader('X-Tutor-Runtime-Secret', 'secret-test')
-        && $request['conversation_id'] === $conversation->id
-        && $request['message'] === 'Halo');
+    Http::assertSent(function ($request) use ($conversation) {
+        $messages = $request['messages'] ?? [];
+        $roles = array_column($messages, 'role');
+        $contents = array_column($messages, 'content');
+
+        return $request->url() === 'http://127.0.0.1:8642/v1/chat/completions'
+            && $request->hasHeader('Authorization', 'Bearer secret-test')
+            && $request['model'] === 'hermes'
+            && $roles === ['system', 'user', 'user']
+            && str_contains((string) $contents[0], 'Learner id: '.(string) $conversation->enrollment->user_id)
+            && str_contains((string) $contents[0], 'Call get-published-lesson with this user_id, course_id, and lesson_id.')
+            && $contents[1] === 'Pertanyaan lama'
+            && $contents[2] === 'Halo'
+            && ! array_key_exists('prompt', $request->data())
+            && ! array_key_exists('session', $request->data());
+    });
 });
 
 it('throws when the hermes binary is missing', function () {

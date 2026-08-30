@@ -32,22 +32,46 @@ class TutorRuntime
     {
         $conversation->loadMissing(['turns', 'enrollment']);
 
-        $binary = (string) config('tutor.hermes_binary');
+        return $this->completeTurnFromPrompt(
+            'enterlms-conversation-'.$conversation->id,
+            $this->prompt($conversation, $learnerMessage),
+        );
+    }
 
-        if ($binary === '' || ! is_file($binary)) {
+    /**
+     * Spawn Hermes with a prompt built by Laravel. The runtime host must not
+     * load Conversation from its own database (laptop DB ≠ production).
+     */
+    public function completeTurnFromPrompt(string $session, string $prompt): string
+    {
+        if (preg_match('/^enterlms-conversation-\d+$/', $session) !== 1) {
             throw new RuntimeException('Tutor runtime is not configured.');
         }
 
-        $session = 'enterlms-conversation-'.$conversation->id;
+        $binary = (string) config('tutor.hermes_binary');
+
+        if ($binary === '' || ! is_file($binary) || trim($prompt) === '') {
+            throw new RuntimeException('Tutor runtime is not configured.');
+        }
+
         $skill = (string) config('tutor.skill', 'tutor');
         $timeout = max(1, (int) config('tutor.timeout_seconds', 90));
         $maxTurns = max(1, (int) config('tutor.max_turns', 8));
         $this->allowRuntimeWait($timeout);
 
+        $command = [$binary];
+        $profile = trim((string) config('tutor.hermes_profile', ''));
+        if ($profile !== '') {
+            if (preg_match('/^[a-z0-9-]+$/', $profile) !== 1) {
+                throw new RuntimeException('Tutor runtime is not configured.');
+            }
+            $command[] = '-p';
+            $command[] = $profile;
+        }
+
         $result = Process::timeout($timeout)
-            ->input($this->prompt($conversation, $learnerMessage))
-            ->run([
-                $binary,
+            ->input($prompt)
+            ->run(array_merge($command, [
                 'chat',
                 '-Q',
                 '--query-file',
@@ -61,7 +85,7 @@ class TutorRuntime
                 'enterlms-tutor',
                 '--max-turns',
                 (string) $maxTurns,
-            ]);
+            ]));
 
         if (! $result->successful()) {
             throw new RuntimeException('Tutor runtime failed.');
@@ -78,19 +102,27 @@ class TutorRuntime
 
     private function completeTurnViaHttp(Conversation $conversation, string $learnerMessage, string $runtimeUrl): string
     {
-        $secret = (string) config('tutor.runtime_secret');
+        $conversation->loadMissing(['turns', 'enrollment']);
+
+        $apiKey = (string) config('tutor.runtime_api_key');
+        $model = trim((string) config('tutor.model', 'hermes')) ?: 'hermes';
         $timeout = max(1, (int) config('tutor.timeout_seconds', 90));
         $this->allowRuntimeWait($timeout);
+        $messages = $this->messages($conversation, $learnerMessage);
 
         try {
-            $response = Http::timeout($timeout)
+            $request = Http::timeout($timeout)
                 ->connectTimeout(5)
-                ->acceptJson()
-                ->withHeaders(['X-Tutor-Runtime-Secret' => $secret])
-                ->post(rtrim($runtimeUrl, '/').'/complete-turn', [
-                    'conversation_id' => $conversation->id,
-                    'message' => $learnerMessage,
-                ]);
+                ->acceptJson();
+
+            if ($apiKey !== '') {
+                $request = $request->withToken($apiKey);
+            }
+
+            $response = $request->post(rtrim($runtimeUrl, '/').'/v1/chat/completions', [
+                'model' => $model,
+                'messages' => $messages,
+            ]);
         } catch (ConnectionException $e) {
             throw new RuntimeException('Tutor runtime failed.', previous: $e);
         }
@@ -99,13 +131,47 @@ class TutorRuntime
             throw new RuntimeException('Tutor runtime failed.');
         }
 
-        $reply = trim((string) $response->json('reply'));
+        $reply = trim((string) data_get($response->json(), 'choices.0.message.content'));
 
         if ($reply === '') {
             throw new RuntimeException('Tutor runtime failed.');
         }
 
         return $reply;
+    }
+
+    /**
+     * @return list<array{role: string, content: string}>
+     */
+    public function messages(Conversation $conversation, string $learnerMessage): array
+    {
+        $conversation->loadMissing(['turns', 'enrollment']);
+
+        $messages = [[
+            'role' => 'system',
+            'content' => implode("\n", [
+                'You are the EnterLMS Tutor.',
+                'Learner id: '.(string) $conversation->enrollment->user_id,
+                'Course id: '.(string) $conversation->enrollment->course_id,
+                'Lesson id: '.$conversation->lesson_id,
+                'Conversation id: '.$conversation->id,
+                'Call get-published-lesson with this user_id, course_id, and lesson_id.',
+            ]),
+        ]];
+
+        foreach ($conversation->turns as $turn) {
+            $messages[] = [
+                'role' => $turn->role === ConversationTurn::ROLE_TUTOR ? 'assistant' : 'user',
+                'content' => $turn->body,
+            ];
+        }
+
+        $messages[] = [
+            'role' => 'user',
+            'content' => $learnerMessage,
+        ];
+
+        return $messages;
     }
 
     private function allowRuntimeWait(int $timeout): void
@@ -119,11 +185,12 @@ class TutorRuntime
 
         $lines = [
             'Conversation id: '.$conversation->id,
+            'Learner id: '.(string) $conversation->enrollment->user_id,
             'Course id: '.(string) $courseId,
             'Lesson id: '.$conversation->lesson_id,
             'Enrollment id: '.$conversation->enrollment_id,
             '',
-            'Call get-published-lesson and get-course-outline with this course_id.',
+            'Call get-published-lesson with this user_id, course_id, and lesson_id.',
             '',
             'History:',
         ];

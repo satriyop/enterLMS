@@ -14,6 +14,6 @@ SSH on this droplet bans bursty connections. The scripts reuse the `aidev` Contr
 
 TLS: DNS A `lms.pamungkas.org` → this host. If Cloudflare is orange-cloud and Caddy cannot mint a cert, grey-cloud the A record for two minutes, reload Caddy, then orange-cloud again. Cloudflare SSL mode: **Full (strict)**.
 
-Hermes / Tutor sidecar is **not** installed on aidev. `TUTOR_HERMES_BINARY` stays empty until you put a runtime on the host.
+Hermes / Tutor sidecar is **not** installed on aidev. Production points `TUTOR_RUNTIME_URL` at this Mac over Tailscale (`scripts/tutor-laptop-for-prod.sh`). Lid closed = Tutor down.
 
 First seed creates `admin@enterlms.test` and `learner@enterlms.test` with password `password`. Change them immediately.

@@ -54,6 +54,10 @@ class LessonController extends Controller
 
         $conversation = null;
         if ($enrollment) {
+            if ($enrollment->canAccessContent() && $enrollment->last_lesson_id !== $lesson->id) {
+                $enrollment->update(['last_lesson_id' => $lesson->id]);
+            }
+
             $record = $this->conversations->forEnrollmentAndLesson($enrollment, $lesson);
             $conversation = $record
                 ? (new ConversationResource($record))->resolve($request)

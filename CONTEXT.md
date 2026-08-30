@@ -1,6 +1,6 @@
 # EnterLMS
 
-An AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent may operate the academy from outside. It is not a generic AI school and not a control plane for live agents. See ADR 001.
+An AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent may operate the academy from outside. It is not a generic AI school and not a control plane for live agents. See ADR 001 and ADR 009.
 
 ## Language
 
@@ -39,12 +39,16 @@ The record of a Learner being registered in a Course. Logging in does not create
 _Avoid_: registration, subscription, automatic assignment
 
 **Tutor**:
-The teacher a Learner talks to about a Lesson on their Enrollment. It runs as a locked-down runtime invoked by this academy (Hermes tutor skill, read-only Course tools). Laravel owns the Conversation. It is not an LMS Agent and not a live console in the Lesson.
-_Avoid_: chatbot, copilot, assistant, LMS Agent, lab, Agent (unqualified)
+The teacher a Learner talks to about a Lesson on their Enrollment. The Lesson overlay, WhatsApp, and Telegram are skins of the same Tutor — not a second teacher. It may talk across that Learner’s Enrollments. It does not teach a Restricted Course they were not granted, and it does not treat a later locked Lesson as if it were current (outline only, not the body). It is not an LMS Agent and not a live console in the Lesson.
+_Avoid_: chatbot, copilot, assistant, LMS Agent, lab, Agent (unqualified), catalog oracle (teaching Courses they are not enrolled in)
 
 **Conversation**:
-The record of a Tutor and a Learner talking about one Lesson on one Enrollment. Readable by that Learner and by LMS Admin. New turns only while the Enrollment is active or completed — not dropped, not without an Enrollment, and not without that Lesson.
+The record of a Tutor and a Learner talking about one Lesson on one Enrollment. Readable by that Learner and by LMS Admin. New turns only while the Enrollment is active or completed — not dropped, not without an Enrollment, and not without that Lesson. A turn exists only after Laravel has recorded it — a reply that never persisted is not part of this record. A WhatsApp or Telegram thread is not this record; it is a channel that adds turns to it.
 _Avoid_: chat, thread, session (when you mean this record)
+
+**Focus**:
+The Lesson (on an Enrollment) that new Tutor turns on a given skin are recorded against until the Learner switches. The overlay’s Focus is the Lesson page. WhatsApp and Telegram each have their own Focus. A first WhatsApp/Telegram Focus is the Lesson last opened in the overlay if still allowed; otherwise the Learner picks from a short list. A deep link from a Lesson page sets that messaging Focus. A Learner moves a messaging Focus only by asking to switch and Laravel accepting (enrolled, unlocked). Mentioning another Lesson does not move Focus; the Tutor may offer to switch. Outline-level talk stays on the current Focus’s Conversation.
+_Avoid_: session, context, current lesson (when you mean progress)
 
 **Grade Proposal**:
 A suggested score and feedback on an Assessment answer that already requires LMS Admin. It is not a grade until they accept it, not shown to the Learner before that, and not a turn in a Conversation.
@@ -59,8 +63,8 @@ An agent runtime. In this academy it is a Course subject (Administrasi Agen Open
 _Avoid_: Agent (unqualified), using OpenClaw to mean the Tutor or the LMS Agent without saying which job
 
 **Hermes**:
-An agent runtime. It may run the Tutor (tutor skill, `tutor.read`) or an LMS Agent (free-flow token). Those are two jobs, two tokens. It is not a Lesson form.
-_Avoid_: Agent (unqualified), collapsing Tutor and LMS Agent into one Hermes with every tool
+An agent runtime. The Tutor is one job (its own identity and channels). An LMS Agent is another job (free-flow token). Those stay two jobs, two tokens. It is not a Lesson form.
+_Avoid_: Agent (unqualified), collapsing Tutor and LMS Agent into one Hermes with every tool, sharing the Tutor’s WhatsApp or Telegram with the LMS Agent job
 
 A Learner takes a Course with a Tutor even if no LMS Agent ever connects.
 

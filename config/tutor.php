@@ -12,6 +12,12 @@ return [
     */
     'hermes_binary' => env('TUTOR_HERMES_BINARY', ''),
 
+    /*
+    | Hermes profile for `hermes -p {profile} chat`. Empty uses default
+    | HERMES_HOME (wrong for Tutor — that profile has other MCP servers).
+    */
+    'hermes_profile' => env('TUTOR_HERMES_PROFILE', ''),
+
     'skill' => env('TUTOR_HERMES_SKILL', 'tutor'),
 
     /*
@@ -23,10 +29,15 @@ return [
     'max_turns' => (int) env('TUTOR_HERMES_MAX_TURNS', 8),
 
     /*
-    | When PHP-FPM cannot spawn Hermes (e.g. Valet's _www user), point
-    | completeTurn at `php artisan tutor:serve` instead of the CLI.
+    | When set, completeTurn POSTs OpenAI-compatible chat completions to this
+    | Hermes API base (e.g. http://127.0.0.1:8642). The browser never sees
+    | the API key — only Laravel holds it.
     */
     'runtime_url' => env('TUTOR_RUNTIME_URL', ''),
 
+    'runtime_api_key' => env('TUTOR_RUNTIME_API_KEY', env('TUTOR_RUNTIME_SECRET', '')),
+
     'runtime_secret' => env('TUTOR_RUNTIME_SECRET', ''),
+
+    'model' => env('TUTOR_HERMES_MODEL', 'hermes'),
 ];

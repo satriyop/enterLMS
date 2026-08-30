@@ -1,12 +1,13 @@
 <?php
 
 /**
- * Sidecar for Valet/Herd PHP-FPM: runs as the developer user so Hermes can spawn.
+ * Local adapter for Valet/Herd PHP-FPM: speaks the official chat completions
+ * shape so Laravel can POST /v1/chat/completions. Production target is the
+ * Hermes API server, not this process.
  * Start with: php artisan tutor:serve
  */
 
 use App\Domain\Tutor\Services\TutorRuntime;
-use App\Models\Conversation;
 use Illuminate\Contracts\Console\Kernel;
 
 require __DIR__.'/../vendor/autoload.php';
@@ -23,10 +24,20 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     exit;
 }
 
-$secret = (string) config('tutor.runtime_secret');
-$given = (string) ($_SERVER['HTTP_X_TUTOR_RUNTIME_SECRET'] ?? '');
+$path = parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/';
 
-if ($secret === '' || ! hash_equals($secret, $given)) {
+if ($path !== '/v1/chat/completions') {
+    http_response_code(404);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'not_found']);
+    exit;
+}
+
+$expected = (string) (config('tutor.runtime_api_key') ?: config('tutor.runtime_secret'));
+$authorization = (string) ($_SERVER['HTTP_AUTHORIZATION'] ?? '');
+$given = str_starts_with($authorization, 'Bearer ') ? substr($authorization, 7) : '';
+
+if ($expected === '' || ! hash_equals($expected, $given)) {
     http_response_code(403);
     header('Content-Type: application/json');
     echo json_encode(['error' => 'forbidden']);
@@ -34,27 +45,54 @@ if ($secret === '' || ! hash_equals($secret, $given)) {
 }
 
 $payload = json_decode((string) file_get_contents('php://input'), true);
-$conversationId = (int) ($payload['conversation_id'] ?? 0);
-$message = trim((string) ($payload['message'] ?? ''));
+$messages = is_array($payload['messages'] ?? null) ? $payload['messages'] : [];
 
-if ($conversationId < 1 || $message === '') {
+if ($messages === []) {
     http_response_code(422);
     header('Content-Type: application/json');
     echo json_encode(['error' => 'invalid']);
     exit;
 }
 
-$conversation = Conversation::query()->with(['turns', 'enrollment'])->find($conversationId);
+$session = 'enterlms-conversation-http';
+$lines = [];
 
-if ($conversation === null) {
-    http_response_code(404);
+foreach ($messages as $message) {
+    if (! is_array($message)) {
+        continue;
+    }
+
+    $role = (string) ($message['role'] ?? '');
+    $content = trim((string) ($message['content'] ?? ''));
+
+    if ($content === '') {
+        continue;
+    }
+
+    if ($role === 'system' && preg_match('/Conversation id:\s*(\d+)/', $content, $match) === 1) {
+        $session = 'enterlms-conversation-'.$match[1];
+    }
+
+    $label = match ($role) {
+        'assistant' => 'Tutor',
+        'system' => 'System',
+        default => 'Learner',
+    };
+
+    $lines[] = $label.': '.$content;
+}
+
+$prompt = trim(implode("\n", $lines));
+
+if ($prompt === '') {
+    http_response_code(422);
     header('Content-Type: application/json');
-    echo json_encode(['error' => 'not_found']);
+    echo json_encode(['error' => 'invalid']);
     exit;
 }
 
 try {
-    $reply = $app->make(TutorRuntime::class)->completeTurnViaCli($conversation, $message);
+    $reply = $app->make(TutorRuntime::class)->completeTurnFromPrompt($session, $prompt);
 } catch (Throwable $e) {
     http_response_code(502);
     header('Content-Type: application/json');
@@ -63,4 +101,15 @@ try {
 }
 
 header('Content-Type: application/json');
-echo json_encode(['reply' => $reply]);
+echo json_encode([
+    'id' => 'chatcmpl-enterlms',
+    'object' => 'chat.completion',
+    'choices' => [[
+        'index' => 0,
+        'message' => [
+            'role' => 'assistant',
+            'content' => $reply,
+        ],
+        'finish_reason' => 'stop',
+    ]],
+]);

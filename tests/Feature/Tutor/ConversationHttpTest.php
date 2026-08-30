@@ -41,6 +41,32 @@ function fakeTutorReply(string $reply = 'Agen berbeda dari chatbot.'): void
     });
 }
 
+it('does not send the Hermes API key to the browser', function () {
+    config()->set('tutor.runtime_api_key', 'secret-hermes-key-do-not-leak');
+    config()->set('tutor.runtime_secret', 'secret-hermes-key-do-not-leak');
+
+    fakeTutorReply();
+
+    ['course' => $course, 'lesson' => $lesson] = tutorLesson();
+    ['user' => $user] = createEnrolledLearner($course);
+
+    $this->actingAs($user)
+        ->get(route('courses.lessons.show', [$course, $lesson]))
+        ->assertOk()
+        ->assertDontSee('secret-hermes-key-do-not-leak');
+
+    $this->actingAs($user)
+        ->post(route('courses.lessons.conversation.turns.store', [$course, $lesson]), [
+            'message' => 'Apa bedanya agen dengan chatbot?',
+        ])
+        ->assertRedirect(route('courses.lessons.show', [$course, $lesson]));
+
+    $this->actingAs($user)
+        ->get(route('courses.lessons.show', [$course, $lesson]))
+        ->assertOk()
+        ->assertDontSee('secret-hermes-key-do-not-leak');
+});
+
 describe('Learner talks on a Lesson', function () {
     it('lets an enrolled learner post a turn, reload the Conversation, and does not complete the Lesson', function () {
         fakeTutorReply('Agen berbeda dari chatbot.');

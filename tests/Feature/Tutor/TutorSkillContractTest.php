@@ -10,7 +10,7 @@ it('ships a tutor skill that preloads independently of the Telegram gateway', fu
 
     expect($body)
         ->toContain('name: tutor')
-        ->toContain('hermes chat')
+        ->toContain('hermes -p enterlms-tutor chat')
         ->toContain('-s tutor')
         ->toContain('tutor.read')
         ->toContain('--tutor-read')
@@ -20,6 +20,11 @@ it('ships a tutor skill that preloads independently of the Telegram gateway', fu
         ->toContain('body_ready')
         ->toContain('get-course-outline')
         ->toContain('course_id')
+        ->toContain('user_id')
+        ->toContain('resolve')
+        ->toContain('get-focus')
+        ->toContain('set-focus')
+        ->toContain('commit-turn')
         ->toContain('Bahasa Indonesia')
         ->toContain('Telegram gateway')
         ->toContain('not `hermes serve`');

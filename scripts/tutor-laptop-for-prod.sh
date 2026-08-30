@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Run the enterlms-tutor Hermes profile on this Mac as the runtime for
+# https://lms.pamungkas.org over Tailscale. Keep this process (and the lid) open.
+#
+#   ./scripts/tutor-laptop-for-prod.sh
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${ROOT}"
+
+PORT="${TUTOR_SIDECAR_PORT:-9273}"
+TS_HOST="${TUTOR_TAILSCALE_HOST:-$(tailscale ip -4 | head -1)}"
+
+if [[ ! -f .env ]]; then
+    echo "missing .env" >&2
+    exit 1
+fi
+
+if ! grep -q '^TUTOR_HERMES_PROFILE=enterlms-tutor' .env; then
+    echo "TUTOR_HERMES_PROFILE must be enterlms-tutor" >&2
+    exit 1
+fi
+
+if [[ -z "${TS_HOST}" ]]; then
+    echo "tailscale ip -4 failed" >&2
+    exit 1
+fi
+
+echo "==> sidecar http://${TS_HOST}:${PORT} (profile enterlms-tutor)"
+echo "==> aidev should use TUTOR_RUNTIME_URL=http://${TS_HOST}:${PORT}"
+echo "==> keep this Mac awake. Ctrl-C stops Tutor on production."
+
+caffeinate -dims php artisan tutor:serve --host="${TS_HOST}" --port="${PORT}"

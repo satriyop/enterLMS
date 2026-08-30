@@ -31,6 +31,7 @@ Technical reference material for precise information.
 Discussion and clarification of concepts.
 
 - [Architecture Overview](./architecture/overview.md) - System design and decisions
+- [Tutor runtime and skins](./design/tutor-runtime-and-skins.md) - Hermes job, Focus, overlay and messaging flows (ADR 009)
 - [Security Model](./architecture/security.md) - Authentication and authorization
 - [Content Delivery](./architecture/content-delivery.md) - How content types work
 - [Architecture (detailed)](./ARCHITECTURE.md) - Complete technical architecture

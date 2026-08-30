@@ -2,7 +2,7 @@
 
 Read [`CONTEXT.md`](../../CONTEXT.md) for the glossary, then this file first:
 
-**[001 — AI-first LMS](001-ai-first-class-lms.md)** — what this product is, and the target architecture.
+**[001 — AI-first LMS](001-ai-first-class-lms.md)** — what this product is. **[009 — Tutor runtime and skins](009-tutor-runtime-and-skins.md)** — who runs a Tutor turn, and the skins.
 
 The rest are stack, identity, path, design, and progress. They do not redefine the product.
 
@@ -16,3 +16,4 @@ The rest are stack, identity, path, design, and progress. They do not redefine t
 | [006](006-operator-path-reuses-open-course.md) | Restricted OpenClaw Course reuses the public intro |
 | [007](007-tenang-conformance.md) | Tenang conformance and role collapse |
 | [008](008-one-progress-calculator.md) | One progress calculator, not a strategy |
+| [009](009-tutor-runtime-and-skins.md) | Tutor runtime and skins (revises 001’s invoke path) |

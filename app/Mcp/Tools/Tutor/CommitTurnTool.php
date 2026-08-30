@@ -3,13 +3,13 @@
 namespace App\Mcp\Tools\Tutor;
 
 use App\Domain\Agent\Abilities\AgentAbility;
+use App\Domain\Tutor\Services\ConversationService;
 use App\Domain\Tutor\Services\TutorAccess;
 use App\Mcp\Concerns\AuditsAgentToolCalls;
 use App\Mcp\Concerns\RefusesMismatchedChannelIdentity;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
-use App\Services\TipTapRenderer;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
@@ -17,20 +17,18 @@ use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
-use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
-use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
+use RuntimeException;
 
-#[Name('get-published-lesson')]
-#[Description('Get the current published body of one Lesson for a named enrolled Learner. Scoped to user_id + course_id + lesson_id; does not return other Courses or later Lesson bodies.')]
-#[IsReadOnly]
-#[IsIdempotent]
-class GetPublishedLessonTool extends Tool
+#[Name('commit-turn')]
+#[Description('Record the Learner turn then the Tutor turn on that Enrollment + Lesson Conversation. Do not send a messaging reply unless this succeeds.')]
+class CommitTurnTool extends Tool
 {
     use AuditsAgentToolCalls;
     use RefusesMismatchedChannelIdentity;
 
     public function __construct(
         protected TutorAccess $access,
+        protected ConversationService $conversations,
     ) {}
 
     public function handle(Request $request): Response|ResponseFactory
@@ -44,11 +42,15 @@ class GetPublishedLessonTool extends Tool
                 'user_id' => ['required', 'integer', 'exists:users,id'],
                 'course_id' => ['required', 'integer', 'exists:courses,id'],
                 'lesson_id' => ['required', 'integer', 'exists:lessons,id'],
+                'learner_message' => ['required', 'string', 'min:1', 'max:4000'],
+                'tutor_message' => ['required', 'string', 'min:1', 'max:8000'],
                 ...$this->channelIdentityRules(),
             ], [
                 'user_id.required' => 'user_id wajib diisi.',
                 'course_id.required' => 'course_id wajib diisi.',
                 'lesson_id.required' => 'lesson_id wajib diisi.',
+                'learner_message.required' => 'Pesan Learner wajib diisi.',
+                'tutor_message.required' => 'Pesan Tutor wajib diisi.',
                 ...$this->channelIdentityMessages(),
             ]);
 
@@ -62,35 +64,31 @@ class GetPublishedLessonTool extends Tool
                 return Response::error('Kursus belum dipublikasikan.');
             }
 
-            $lesson = Lesson::query()
-                ->with(['section', 'media'])
-                ->findOrFail($validated['lesson_id']);
+            $lesson = Lesson::query()->with('section')->findOrFail($validated['lesson_id']);
+            $enrollment = $this->access->enrollmentForLesson($validated['user_id'], $course, $lesson);
 
-            $access = $this->access->enrollmentForLesson(
-                $validated['user_id'],
-                $course,
-                $lesson,
-            );
-
-            if (! $access instanceof Enrollment) {
-                return Response::error($access);
+            if (! $enrollment instanceof Enrollment) {
+                return Response::error($enrollment);
             }
 
-            $bodyHtml = $lesson->content_type === 'document'
-                ? null
-                : (new TipTapRenderer)->render($lesson->rich_content);
+            try {
+                $conversation = $this->conversations->persistTurns(
+                    $enrollment,
+                    $lesson,
+                    $validated['learner_message'],
+                    $validated['tutor_message'],
+                );
+            } catch (RuntimeException $e) {
+                return Response::error($e->getMessage());
+            }
 
             return Response::structured([
                 'ok' => true,
                 'data' => [
-                    'course_id' => $course->id,
+                    'conversation_id' => $conversation->id,
+                    'enrollment_id' => $enrollment->id,
                     'lesson_id' => $lesson->id,
-                    'title' => $lesson->title,
-                    'description' => $lesson->description,
-                    'content_type' => $lesson->content_type,
-                    'body_text' => $lesson->readableBody(),
-                    'body_ready' => $lesson->isBodyReady(),
-                    'body_html' => $bodyHtml,
+                    'turns' => $conversation->turns->count(),
                 ],
             ]);
         });
@@ -102,11 +100,11 @@ class GetPublishedLessonTool extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'user_id' => $schema->integer()->description('Named Learner this body is for')->required(),
-            'course_id' => $schema->integer()->description('Course ID that must own the Lesson')->required(),
-            'lesson_id' => $schema->integer()->description('Lesson ID to read')->required(),
-            'channel' => $schema->string()->description('Optional whatsapp or telegram; must match user_id'),
-            'identifier' => $schema->string()->description('Optional channel identity; must match user_id'),
+            'user_id' => $schema->integer()->description('Named Learner')->required(),
+            'course_id' => $schema->integer()->description('Course that owns the Lesson')->required(),
+            'lesson_id' => $schema->integer()->description('Focus Lesson to write')->required(),
+            'learner_message' => $schema->string()->description('Learner turn body')->required(),
+            'tutor_message' => $schema->string()->description('Tutor turn body')->required(),
         ];
     }
 }

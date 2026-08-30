@@ -46,18 +46,45 @@ class ConversationService
             throw new RuntimeException('Tutor runtime failed.', previous: $e);
         }
 
-        return DB::transaction(function () use ($conversation, $message, $reply) {
-            $conversation->turns()->create([
-                'role' => ConversationTurn::ROLE_LEARNER,
-                'body' => $message,
-            ]);
-            $conversation->turns()->create([
-                'role' => ConversationTurn::ROLE_TUTOR,
-                'body' => $reply,
-            ]);
+        return $this->persistTurns($enrollment, $lesson, $message, $reply);
+    }
 
-            return $conversation->fresh(['turns']);
-        });
+    /**
+     * Overlay and MCP both write Learner then Tutor turns here. Persist both or neither.
+     */
+    public function persistTurns(Enrollment $enrollment, Lesson $lesson, string $learnerMessage, string $tutorReply): Conversation
+    {
+        if (! $enrollment->isActive() && ! $enrollment->isCompleted()) {
+            throw new RuntimeException('Enrollment tidak memungkinkan percakapan baru.');
+        }
+
+        $lesson->loadMissing('section');
+
+        if ($lesson->section->course_id !== $enrollment->course_id) {
+            throw new RuntimeException('Pelajaran tidak termasuk dalam Course ini.');
+        }
+
+        try {
+            return DB::transaction(function () use ($enrollment, $lesson, $learnerMessage, $tutorReply) {
+                $conversation = Conversation::query()->firstOrCreate([
+                    'enrollment_id' => $enrollment->id,
+                    'lesson_id' => $lesson->id,
+                ]);
+
+                $conversation->turns()->create([
+                    'role' => ConversationTurn::ROLE_LEARNER,
+                    'body' => $learnerMessage,
+                ]);
+                $conversation->turns()->create([
+                    'role' => ConversationTurn::ROLE_TUTOR,
+                    'body' => $tutorReply,
+                ]);
+
+                return $conversation->fresh(['turns']);
+            });
+        } catch (Throwable $e) {
+            throw new RuntimeException('Gagal menyimpan percakapan.', previous: $e);
+        }
     }
 
     public function resetForEnrollment(Enrollment $enrollment): void

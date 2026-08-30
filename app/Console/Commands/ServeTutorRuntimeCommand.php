@@ -24,8 +24,16 @@ class ServeTutorRuntimeCommand extends Command
             return self::FAILURE;
         }
 
-        if ((string) config('tutor.runtime_secret') === '') {
-            $this->warn('TUTOR_RUNTIME_SECRET is empty. Set it in .env before using the sidecar.');
+        $apiKey = (string) (config('tutor.runtime_api_key') ?: config('tutor.runtime_secret'));
+        if ($apiKey === '') {
+            $this->warn('TUTOR_RUNTIME_API_KEY is empty. Set it in .env before using this adapter.');
+        }
+
+        $profile = trim((string) config('tutor.hermes_profile', ''));
+        if ($profile === '') {
+            $this->warn('TUTOR_HERMES_PROFILE is empty. Sidecar will use the default Hermes profile.');
+        } else {
+            $this->line("Hermes profile: {$profile}");
         }
 
         $this->info("Tutor runtime listening on http://{$host}:{$port}");
