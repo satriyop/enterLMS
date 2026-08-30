@@ -242,8 +242,12 @@ class EnrollmentController extends Controller
             }
         }
 
+        $destination = Academy::enabled('offerings')
+            ? route('courses.offerings.index', $course)
+            : route('courses.show', $course);
+
         return redirect()
-            ->route('courses.show', $course)
+            ->to($destination)
             ->with($type, $message);
     }
 

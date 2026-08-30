@@ -95,7 +95,11 @@ class CourseInvitationController extends Controller
         ]);
 
         $course = Course::findOrFail($request->integer('course_id'));
-        Gate::authorize('create', [CourseInvitation::class, $course]);
+
+        if (! Gate::allows('create', [CourseInvitation::class, $course])
+            && ! Gate::allows('bulkEnroll', $course)) {
+            abort(403);
+        }
 
         $query = $request->get('q', '');
 

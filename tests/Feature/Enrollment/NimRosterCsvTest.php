@@ -34,7 +34,7 @@ it('grants enrollments from a nim and offering_code csv', function () {
         ->post(route('courses.bulk-enroll', $this->course), [
             'file' => rosterCsv('happy.csv'),
         ])
-        ->assertRedirect(route('courses.show', $this->course))
+        ->assertRedirect(route('courses.offerings.index', $this->course))
         ->assertSessionHas('success');
 
     expect(session('success'))->toContain('2 pengguna berhasil didaftarkan')
@@ -48,7 +48,7 @@ it('reports an unknown nim as an error and does not invent a user', function () 
         ->post(route('courses.bulk-enroll', $this->course), [
             'file' => rosterCsv('unknown_nim.csv'),
         ])
-        ->assertRedirect(route('courses.show', $this->course))
+        ->assertRedirect(route('courses.offerings.index', $this->course))
         ->assertSessionHas('error');
 
     expect(session('error'))->toContain('NIM')
@@ -64,7 +64,7 @@ it('rejects default offering_code when named offerings exist', function () {
         ->post(route('courses.bulk-enroll', $this->course), [
             'file' => rosterCsv('default_when_named.csv'),
         ])
-        ->assertRedirect(route('courses.show', $this->course))
+        ->assertRedirect(route('courses.offerings.index', $this->course))
         ->assertSessionHas('error');
 
     expect(session('error'))->toContain('default')
@@ -84,7 +84,7 @@ it('skips a learner already enrolled on that offering', function () {
         ->post(route('courses.bulk-enroll', $this->course), [
             'file' => rosterCsv('duplicate.csv'),
         ])
-        ->assertRedirect(route('courses.show', $this->course))
+        ->assertRedirect(route('courses.offerings.index', $this->course))
         ->assertSessionHas('success');
 
     expect(session('success'))->toContain('dilewati')
@@ -104,7 +104,7 @@ it('rejects a second active enrollment on the same course from the roster', func
         ->post(route('courses.bulk-enroll', $this->course), [
             'file' => rosterCsv('duplicate.csv'),
         ])
-        ->assertRedirect(route('courses.show', $this->course))
+        ->assertRedirect(route('courses.offerings.index', $this->course))
         ->assertSessionHas('error');
 
     expect(session('error'))->toContain('sudah terdaftar aktif')
@@ -127,7 +127,7 @@ it('grants a later offering after the first enrollment is completed', function (
         ->post(route('courses.bulk-enroll', $this->course), [
             'file' => rosterCsv('duplicate.csv'),
         ])
-        ->assertRedirect(route('courses.show', $this->course))
+        ->assertRedirect(route('courses.offerings.index', $this->course))
         ->assertSessionHas('success');
 
     expect(Enrollment::query()->where('user_id', $learner->id)->where('offering_id', $this->kelasA->id)->exists())->toBeTrue();

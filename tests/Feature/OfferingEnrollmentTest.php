@@ -126,7 +126,7 @@ it('lets lms admin grant a learner onto a named offering of a restricted course'
             'user_ids' => [$this->learner->id],
             'offering_id' => $kelasA->id,
         ])
-        ->assertRedirect(route('courses.show', $course));
+        ->assertRedirect(route('courses.offerings.index', $course));
 
     $enrollment = Enrollment::query()
         ->where('user_id', $this->learner->id)
@@ -151,7 +151,7 @@ it('rejects a grant onto the default offering when named offerings exist', funct
             'user_ids' => [$this->learner->id],
             'offering_id' => $default->id,
         ])
-        ->assertRedirect(route('courses.show', $course))
+        ->assertRedirect(route('courses.offerings.index', $course))
         ->assertSessionHas('error');
 
     expect(session('error'))->toContain('default')
@@ -170,7 +170,7 @@ it('grants onto the default offering when it is the only offering', function () 
             'user_ids' => [$this->learner->id],
             'offering_id' => $default->id,
         ])
-        ->assertRedirect(route('courses.show', $course));
+        ->assertRedirect(route('courses.offerings.index', $course));
 
     $enrollment = Enrollment::query()
         ->where('user_id', $this->learner->id)

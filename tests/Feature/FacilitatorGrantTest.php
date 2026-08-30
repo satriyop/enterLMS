@@ -32,7 +32,7 @@ it('lets a facilitator grant a learner onto their offering without being enrolle
             'user_ids' => [$this->learner->id],
             'offering_id' => $this->kelasA->id,
         ])
-        ->assertRedirect(route('courses.show', $this->course));
+        ->assertRedirect(route('courses.offerings.index', $this->course));
 
     $enrollment = Enrollment::query()
         ->where('user_id', $this->learner->id)
@@ -66,10 +66,50 @@ it('lets a facilitator import a nim roster only for offerings they facilitate', 
         ->post(route('courses.bulk-enroll', $this->course), [
             'file' => $file,
         ])
-        ->assertRedirect(route('courses.show', $this->course));
+        ->assertRedirect(route('courses.offerings.index', $this->course));
 
     expect(Enrollment::query()->where('user_id', $this->learner->id)->where('offering_id', $this->kelasA->id)->exists())->toBeTrue()
         ->and(Enrollment::query()->where('user_id', $other->id)->where('offering_id', $this->kelasB->id)->exists())->toBeFalse();
+});
+
+it('lets a facilitator search learners and open the offerings grant page', function () {
+    $this->actingAs($this->facilitator)
+        ->get(route('api.users.search', [
+            'course_id' => $this->course->id,
+            'q' => $this->learner->name,
+        ]))
+        ->assertOk()
+        ->assertJsonFragment([
+            'id' => $this->learner->id,
+            'email' => $this->learner->email,
+        ]);
+
+    $this->actingAs($this->facilitator)
+        ->get(route('courses.offerings.index', $this->course))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('courses/offerings/Index')
+            ->where('can.grant', true)
+            ->where('grantOfferingIds', [$this->kelasA->id])
+        );
+});
+
+it('lands a facilitator on the offerings page after a successful grant', function () {
+    $this->actingAs($this->facilitator)
+        ->followingRedirects()
+        ->post(route('courses.bulk-enroll', $this->course), [
+            'user_ids' => [$this->learner->id],
+            'offering_id' => $this->kelasA->id,
+        ])
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('courses/offerings/Index')
+        );
+
+    expect(Enrollment::query()
+        ->where('user_id', $this->learner->id)
+        ->where('offering_id', $this->kelasA->id)
+        ->exists())->toBeTrue();
 });
 
 it('forbids a facilitator from publishing a course', function () {
