@@ -37,6 +37,7 @@ interface OfferingItem {
 interface Props {
     course: { id: number; title: string };
     offerings: OfferingItem[];
+    grantOfferingIds: number[];
     label: string;
     can: { create: boolean; grant: boolean };
 }
@@ -78,14 +79,11 @@ const submitRoster = () => {
     });
 };
 
-const namedOfferings = computed(() =>
-    props.offerings.filter((offering) => !offering.is_default),
-);
-const grantableOfferings = computed(() =>
-    namedOfferings.value.length > 0
-        ? namedOfferings.value
-        : props.offerings.filter((offering) => offering.is_default),
-);
+const grantableOfferings = computed(() => {
+    const allowed = new Set(props.grantOfferingIds ?? []);
+
+    return props.offerings.filter((offering) => allowed.has(offering.id));
+});
 
 const submitGrant = () => {
     if (!grantUserId.value) {

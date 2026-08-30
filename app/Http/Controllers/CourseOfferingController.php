@@ -11,13 +11,14 @@ use App\Http\Resources\Course\OfferingResource;
 use App\Models\Course;
 use App\Models\Offering;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class CourseOfferingController extends Controller
 {
-    public function index(Course $course): Response
+    public function index(Request $request, Course $course): Response
     {
         Gate::authorize('viewAny', [Offering::class, $course]);
 
@@ -28,12 +29,21 @@ class CourseOfferingController extends Controller
             ->orderBy('name')
             ->get();
 
+        $user = $request->user();
+        $namedIds = $course->offerings()->where('is_default', false)->pluck('id');
+        $grantOfferingIds = $user->isLmsAdmin()
+            ? ($namedIds->isNotEmpty()
+                ? $namedIds->all()
+                : $course->offerings()->where('is_default', true)->pluck('id')->all())
+            : $course->offerings()->where('facilitator_id', $user->id)->pluck('id')->all();
+
         return Inertia::render('courses/offerings/Index', [
             'course' => [
                 'id' => $course->id,
                 'title' => $course->title,
             ],
             'offerings' => OfferingResource::collection($offerings)->resolve(),
+            'grantOfferingIds' => $grantOfferingIds,
             'label' => Academy::label('offering'),
             'can' => [
                 'create' => Gate::allows('create', [Offering::class, $course]),

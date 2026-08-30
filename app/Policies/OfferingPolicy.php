@@ -46,4 +46,13 @@ class OfferingPolicy
 
         return $user->canManageCourses();
     }
+
+    public function grantEnrollment(User $user, Offering $offering): bool
+    {
+        if ($user->isLmsAdmin()) {
+            return true;
+        }
+
+        return $offering->facilitator_id === $user->id;
+    }
 }

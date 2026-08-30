@@ -193,12 +193,10 @@ class CoursePolicy
      */
     public function bulkEnroll(User $user, Course $course): bool
     {
-        // Only LMS Admin can bulk enroll
-        if (! $user->isLmsAdmin()) {
+        if (! $course->isPublished()) {
             return false;
         }
 
-        // Course must be published for bulk enrollment
-        return $course->isPublished();
+        return $user->isLmsAdmin() || $user->facilitatesCourse($course);
     }
 }

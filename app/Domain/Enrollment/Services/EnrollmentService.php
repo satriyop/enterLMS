@@ -473,6 +473,7 @@ class EnrollmentService
         int $offeringCodeIndex,
         int $courseId,
         ?int $enrolledBy = null,
+        ?User $actor = null,
     ): array {
         $results = [
             'success' => 0,
@@ -531,6 +532,13 @@ class EnrollmentService
 
             if (! $offering) {
                 $results['errors'][] = "Baris {$line}: {$offeringLabel} dengan kode {$offeringCode} tidak ditemukan.";
+                $results['failed']++;
+
+                continue;
+            }
+
+            if ($actor && ! $actor->isLmsAdmin() && $offering->facilitator_id !== $actor->id) {
+                $results['errors'][] = "Baris {$line}: Anda tidak dapat mendaftarkan ke {$offeringLabel} ini.";
                 $results['failed']++;
 
                 continue;

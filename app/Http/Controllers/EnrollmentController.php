@@ -8,6 +8,8 @@ use App\Http\Requests\Enrollment\BulkEnrollmentRequest;
 use App\Models\Course;
 use App\Models\CourseInvitation;
 use App\Models\Enrollment;
+use App\Models\Offering;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -87,14 +89,24 @@ class EnrollmentController extends Controller
      */
     public function bulkEnroll(BulkEnrollmentRequest $request, Course $course): RedirectResponse
     {
-        $enrolledBy = $request->user()->id;
+        $actor = $request->user();
+        $enrolledBy = $actor->id;
         $offeringId = Academy::enabled('offerings')
             ? ($request->integer('offering_id') ?: null)
             : null;
 
+        if ($offeringId) {
+            $offering = Offering::query()
+                ->where('course_id', $course->id)
+                ->whereKey($offeringId)
+                ->firstOrFail();
+
+            Gate::authorize('grantEnrollment', $offering);
+        }
+
         // Handle CSV file upload
         if ($request->hasFile('file')) {
-            $results = $this->processCsvEnrollment($request->file('file'), $course->id, $enrolledBy, $offeringId);
+            $results = $this->processCsvEnrollment($request->file('file'), $course->id, $actor, $offeringId);
         } else {
             // Handle user_ids array
             $results = $this->enrollmentService->bulkEnroll(
@@ -122,7 +134,7 @@ class EnrollmentController extends Controller
     protected function processCsvEnrollment(
         \Illuminate\Http\UploadedFile $file,
         int $courseId,
-        int $enrolledBy,
+        User $actor,
         ?int $offeringId = null,
     ): array {
         try {
@@ -146,7 +158,8 @@ class EnrollmentController extends Controller
                     nimIndex: $nimIndex,
                     offeringCodeIndex: $offeringCodeIndex,
                     courseId: $courseId,
-                    enrolledBy: $enrolledBy,
+                    enrolledBy: $actor->id,
+                    actor: $actor,
                 );
             }
 
@@ -165,7 +178,7 @@ class EnrollmentController extends Controller
                 csvData: $csvData,
                 emailIndex: $emailIndex,
                 courseId: $courseId,
-                enrolledBy: $enrolledBy,
+                enrolledBy: $actor->id,
                 offeringId: $offeringId,
             );
 

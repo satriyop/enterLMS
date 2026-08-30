@@ -30,7 +30,8 @@ it('allows a facilitator to view their offering but not create another', functio
     expect($this->policy->view($facilitator, $offering))->toBeTrue()
         ->and($this->policy->viewAny($facilitator, $course))->toBeTrue()
         ->and($this->policy->create($facilitator, $course))->toBeFalse()
-        ->and($this->policy->update($facilitator, $offering))->toBeFalse();
+        ->and($this->policy->update($facilitator, $offering))->toBeFalse()
+        ->and($this->policy->grantEnrollment($facilitator, $offering))->toBeTrue();
 });
 
 it('denies a learner with no grant', function () {
