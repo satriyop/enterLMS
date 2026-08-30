@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\ChannelIdentityController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
@@ -22,6 +23,15 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/Appearance');
     })->name('appearance.edit');
+
+    Route::get('settings/channels', [ChannelIdentityController::class, 'edit'])
+        ->name('channels.edit');
+    Route::put('settings/channels/{channel}', [ChannelIdentityController::class, 'update'])
+        ->whereIn('channel', ['whatsapp', 'telegram'])
+        ->name('channels.update');
+    Route::delete('settings/channels/{channel}', [ChannelIdentityController::class, 'destroy'])
+        ->whereIn('channel', ['whatsapp', 'telegram'])
+        ->name('channels.destroy');
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
         ->name('two-factor.show');

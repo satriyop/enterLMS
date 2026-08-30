@@ -46,4 +46,27 @@ class ChannelIdentity extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public static function normalizeWhatsApp(string $raw): string
+    {
+        $digits = preg_replace('/\D+/', '', $raw) ?? '';
+
+        if (str_starts_with($digits, '0')) {
+            return '62'.substr($digits, 1);
+        }
+
+        return $digits;
+    }
+
+    public static function normalizeTelegram(string $raw): string
+    {
+        return preg_replace('/\D+/', '', $raw) ?? '';
+    }
+
+    public static function normalize(string $channel, string $raw): string
+    {
+        return $channel === self::CHANNEL_WHATSAPP
+            ? self::normalizeWhatsApp($raw)
+            : self::normalizeTelegram($raw);
+    }
 }
