@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Course;
 
+use App\Models\Course;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
@@ -16,6 +17,16 @@ class UpdateCourseRequest extends FormRequest
         return Gate::allows('update', $this->route('course'));
     }
 
+    protected function prepareForValidation(): void
+    {
+        $code = $this->input('code');
+
+        if (is_string($code)) {
+            $trimmed = trim($code);
+            $this->merge(['code' => $trimmed === '' ? null : $trimmed]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,8 +34,12 @@ class UpdateCourseRequest extends FormRequest
      */
     public function rules(): array
     {
+        $course = $this->route('course');
+        $courseId = $course instanceof Course ? $course->id : null;
+
         return [
             'title' => ['required', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:64', Rule::unique('courses', 'code')->ignore($courseId)],
             'short_description' => ['nullable', 'string', 'max:500'],
             'long_description' => ['nullable', 'string'],
             'objectives' => ['nullable', 'array'],
@@ -51,6 +66,8 @@ class UpdateCourseRequest extends FormRequest
         return [
             'title.required' => 'Judul kursus wajib diisi.',
             'title.max' => 'Judul kursus maksimal 255 karakter.',
+            'code.unique' => 'Kode kursus sudah digunakan.',
+            'code.max' => 'Kode kursus maksimal 64 karakter.',
             'short_description.max' => 'Deskripsi singkat maksimal 500 karakter.',
             'objectives.*.max' => 'Setiap tujuan pembelajaran maksimal 500 karakter.',
             'prerequisites.*.max' => 'Setiap prasyarat maksimal 500 karakter.',

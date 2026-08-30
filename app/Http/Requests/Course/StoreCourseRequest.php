@@ -16,6 +16,16 @@ class StoreCourseRequest extends FormRequest
         return Gate::allows('create', \App\Models\Course::class);
     }
 
+    protected function prepareForValidation(): void
+    {
+        $code = $this->input('code');
+
+        if (is_string($code)) {
+            $trimmed = trim($code);
+            $this->merge(['code' => $trimmed === '' ? null : $trimmed]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,6 +35,7 @@ class StoreCourseRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:64', 'unique:courses,code'],
             'short_description' => ['nullable', 'string', 'max:500'],
             'long_description' => ['nullable', 'string'],
             'objectives' => ['nullable', 'array'],
@@ -49,6 +60,8 @@ class StoreCourseRequest extends FormRequest
         return [
             'title.required' => 'Judul kursus wajib diisi.',
             'title.max' => 'Judul kursus maksimal 255 karakter.',
+            'code.unique' => 'Kode kursus sudah digunakan.',
+            'code.max' => 'Kode kursus maksimal 64 karakter.',
             'short_description.max' => 'Deskripsi singkat maksimal 500 karakter.',
             'objectives.*.max' => 'Setiap tujuan pembelajaran maksimal 500 karakter.',
             'prerequisites.*.max' => 'Setiap prasyarat maksimal 500 karakter.',

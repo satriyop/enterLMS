@@ -30,6 +30,7 @@ use Spatie\ModelStates\HasStates;
  * @property int $id
  * @property int $user_id
  * @property string $title
+ * @property string|null $code
  * @property string|null $slug
  * @property string|null $short_description
  * @property string|null $long_description
@@ -116,6 +117,7 @@ class Course extends Model
     protected $fillable = [
         'user_id',
         'title',
+        'code',
         'slug',
         'short_description',
         'long_description',

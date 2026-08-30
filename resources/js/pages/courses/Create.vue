@@ -84,6 +84,22 @@ const prerequisites = ref<string[]>(['']);
                             </div>
 
                             <div class="space-y-2">
+                                <Label for="code" class="text-sm font-medium">
+                                    Kode MK
+                                </Label>
+                                <Input
+                                    id="code"
+                                    name="code"
+                                    placeholder="Contoh: IF101"
+                                    class="h-11"
+                                />
+                                <p class="text-xs text-muted-foreground">
+                                    Kode mata kuliah, opsional. Bukan kode Kelas.
+                                </p>
+                                <InputError :message="errors.code" />
+                            </div>
+
+                            <div class="space-y-2">
                                 <Label for="short_description" class="text-sm font-medium">
                                     Deskripsi Singkat <span class="text-destructive">*</span>
                                 </Label>

@@ -20,6 +20,7 @@ class CourseEditResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'code' => $this->code,
             'short_description' => $this->short_description,
             'long_description' => $this->long_description,
             'objectives' => $this->objectives ?? [],

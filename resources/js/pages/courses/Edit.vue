@@ -49,6 +49,7 @@ interface CurriculumSection {
 interface EditableCourse {
     id: number;
     title: string;
+    code: string | null;
     short_description: string;
     long_description: string | null;
     objectives: string[];

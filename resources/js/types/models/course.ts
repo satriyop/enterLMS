@@ -86,6 +86,7 @@ export interface Course extends SoftDeletes {
     id: CourseId;
     user_id: UserId;
     title: string;
+    code?: string | null;
     slug: string;
     short_description: string | null;
     long_description: string | null;
@@ -182,6 +183,7 @@ export interface Lesson {
 export interface CourseListItem {
     id: CourseId;
     title: string;
+    code?: string | null;
     slug: string;
     short_description: string | null;
     thumbnail_url: string | null;

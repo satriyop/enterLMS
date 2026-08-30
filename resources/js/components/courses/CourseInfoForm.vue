@@ -28,6 +28,7 @@ import type {
 interface CourseData {
     id: number;
     title: string;
+    code: string | null;
     short_description: string;
     long_description: string | null;
     objectives: string[];
@@ -125,6 +126,21 @@ const removePrerequisite = (idx: number) => {
                             :disabled="!editable"
                         />
                         <InputError :message="errors.title" />
+                    </div>
+
+                    <div class="grid gap-2">
+                        <Label for="code">Kode MK</Label>
+                        <Input
+                            id="code"
+                            name="code"
+                            :default-value="course.code ?? ''"
+                            placeholder="Contoh: IF101"
+                            :disabled="!editable"
+                        />
+                        <p class="text-xs text-muted-foreground">
+                            Kode mata kuliah, opsional. Bukan kode Kelas.
+                        </p>
+                        <InputError :message="errors.code" />
                     </div>
 
                     <div class="grid gap-2">
