@@ -20,11 +20,12 @@ First time
   ./scripts/prod.sh inspect      what is already on the droplet
   ./scripts/prod.sh provision    PHP pool, MySQL DB, Caddy site (additive)
   ./scripts/prod.sh env-init     APP_KEY + DB password
-  ./scripts/prod.sh deploy       rsync this laptop + composer + migrate --force
+  ./scripts/prod.sh deploy       push HEAD, rsync that SHA, migrate --force
   ./scripts/prod.sh seed-academy first catalog only. Then change passwords.
   ./scripts/prod.sh health
 
 Every release
+  git status must be clean; deploy pushes HEAD then rsyncs that SHA
   ./scripts/prod.sh deploy
   ./scripts/prod.sh health
 

@@ -4,6 +4,8 @@ Laptop → `root@aidev` (`146.190.87.122`). Public URL: `https://lms.pamungkas.o
 
 Caddy terminates TLS and `php_fastcgi`s to a dedicated PHP 8.4 pool. MySQL holds the academy. Queue + scheduler run under supervisor. Vite assets are **built on the laptop** (the droplet is 2GB).
 
+Deploy requires a clean git tree, `git push`es HEAD so origin has the SHA, rsyncs that tree, then writes `/var/www/enterlms/REVISION`. `./scripts/prod.sh health` prints it. The droplet is not a git checkout.
+
 ```bash
 ./scripts/prod.sh help
 ```

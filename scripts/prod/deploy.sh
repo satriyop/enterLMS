@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ship this laptop's tree to aidev. Does not push git.
+# Release a git SHA to aidev: push origin, rsync that tree, record REVISION.
 set -euo pipefail
 
 # shellcheck source=lib.sh
@@ -11,6 +11,7 @@ while [[ $# -gt 0 ]]; do
         --skip-build) SKIP_BUILD=1; shift ;;
         -h|--help)
             echo "Usage: $0 [--skip-build]"
+            echo "Requires a clean git tree. Pushes HEAD to origin, then rsyncs."
             exit 0
             ;;
         *) die "unknown arg: $1" ;;
@@ -19,9 +20,14 @@ done
 
 require_cmd rsync
 require_cmd ssh
+require_cmd git
 ensure_ssh_alias
 
 [[ -f "${PROD_ROOT}/artisan" ]] || die "not the enterlms root: ${PROD_ROOT}"
+
+require_clean_git
+push_release_git
+
 ssh_aidev "test -d ${APP_DIR} && test -f ${APP_DIR}/.env" \
     || die "${APP_DIR}/.env missing on aidev — run ./scripts/prod.sh provision && ./scripts/prod.sh env-init"
 
@@ -39,10 +45,11 @@ rsync -az --delete --human-readable \
     "${PROD_ROOT}/" "${AIDEV_HOST}:${APP_DIR}/"
 
 ssh_aidev "chown -R ${APP_USER}:${APP_USER} ${APP_DIR} && chmod 640 ${APP_DIR}/.env"
+write_release_revision
 
 info "remote release (composer, migrate --force, optimize)"
 scp_aidev "${PROD_SCRIPTS}/remote-release.sh" "${AIDEV_HOST}:/tmp/enterlms-remote-release.sh"
 ssh_aidev "APP_DIR='${APP_DIR}' APP_USER='${APP_USER}' bash /tmp/enterlms-remote-release.sh"
 
-green "Deployed to https://${DOMAIN}"
+green "Deployed $(git -C "${PROD_ROOT}" rev-parse --short HEAD) to https://${DOMAIN}"
 echo "Check: ./scripts/prod.sh health"

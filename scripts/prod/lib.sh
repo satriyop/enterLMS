@@ -117,3 +117,61 @@ Use: ./scripts/prod.sh seed-academy   (first catalog only)
      ./scripts/prod.sh artisan migrate --force"
     fi
 }
+
+require_clean_git() {
+    local root="${1:-${PROD_ROOT}}"
+    require_cmd git
+    [[ -d "${root}/.git" ]] || die "not a git checkout: ${root}"
+
+    local dirty
+    if ! dirty="$(git -C "${root}" status --porcelain)"; then
+        die "git status failed in ${root}"
+    fi
+
+    if [[ -n "${dirty}" ]]; then
+        die "refusing deploy: working tree is dirty. Commit or stash first.
+$(git -C "${root}" status --short)"
+    fi
+}
+
+require_git_upstream() {
+    local root="${1:-${PROD_ROOT}}"
+    local ref
+    ref="$(git -C "${root}" rev-parse --abbrev-ref HEAD)"
+    git -C "${root}" rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1 \
+        || die "branch ${ref} has no upstream. Run: git push -u origin ${ref}"
+}
+
+push_release_git() {
+    local root="${1:-${PROD_ROOT}}"
+    require_clean_git "${root}"
+    require_git_upstream "${root}"
+
+    local ref sha
+    ref="$(git -C "${root}" rev-parse --abbrev-ref HEAD)"
+    sha="$(git -C "${root}" rev-parse HEAD)"
+    info "git push (${ref} ${sha:0:12})"
+    git -C "${root}" push
+
+    if [[ "$(git -C "${root}" rev-parse HEAD)" != "$(git -C "${root}" rev-parse '@{u}')" ]]; then
+        die "HEAD is not the upstream tip after push — origin does not have ${sha}"
+    fi
+}
+
+write_release_revision() {
+    local sha ref subject tmp
+    sha="$(git -C "${PROD_ROOT}" rev-parse HEAD)"
+    ref="$(git -C "${PROD_ROOT}" rev-parse --abbrev-ref HEAD)"
+    subject="$(git -C "${PROD_ROOT}" log -1 --pretty=%s)"
+    tmp="$(mktemp)"
+    {
+        printf '%s\n' "${sha}"
+        printf '%s\n' "${ref}"
+        printf '%s\n' "${subject}"
+        printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    } >"${tmp}"
+    scp_aidev "${tmp}" "${AIDEV_HOST}:${APP_DIR}/REVISION"
+    rm -f "${tmp}"
+    ssh_aidev "chown ${APP_USER}:${APP_USER} ${APP_DIR}/REVISION && chmod 644 ${APP_DIR}/REVISION"
+    info "production REVISION ${sha:0:12} (${ref})"
+}

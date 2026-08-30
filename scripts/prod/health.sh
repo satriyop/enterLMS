@@ -33,6 +33,11 @@ systemctl is-active supervisor >/dev/null && echo "supervisor=active" || echo "s
 supervisorctl status enterlms-queue enterlms-scheduler 2>/dev/null || true
 if [[ -f "${APP_DIR}/artisan" ]]; then
     sudo -u www-data php "${APP_DIR}/artisan" --version
+    if [[ -f "${APP_DIR}/REVISION" ]]; then
+        echo "revision=$(tr '\n' ' ' < "${APP_DIR}/REVISION")"
+    else
+        echo "revision=MISSING"
+    fi
     curl -sS -o /dev/null -w "local /up %{http_code}\n" --max-time 5 -H "Host: ${DOMAIN}" http://127.0.0.1/up || true
 fi
 REMOTE
