@@ -230,6 +230,11 @@ class Course extends Model
         return $this->hasOne(Offering::class)->where('is_default', true);
     }
 
+    public function hasNamedOfferings(): bool
+    {
+        return $this->offerings()->where('is_default', false)->exists();
+    }
+
     public function ensureDefaultOffering(): Offering
     {
         $existing = Offering::query()

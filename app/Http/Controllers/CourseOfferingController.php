@@ -37,6 +37,7 @@ class CourseOfferingController extends Controller
             'label' => Academy::label('offering'),
             'can' => [
                 'create' => Gate::allows('create', [Offering::class, $course]),
+                'grant' => Gate::allows('bulkEnroll', $course),
             ],
         ]);
     }

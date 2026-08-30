@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { index as courseShow } from '@/actions/App/Http/Controllers/CourseController';
+import { bulkEnroll } from '@/actions/App/Http/Controllers/EnrollmentController';
 import {
     destroy,
     index,
     store,
     update,
 } from '@/actions/App/Http/Controllers/CourseOfferingController';
+import LearnerSearchCombobox from '@/components/courses/LearnerSearchCombobox.vue';
 import EmptyState from '@/components/crud/EmptyState.vue';
 import FormSection from '@/components/crud/FormSection.vue';
 import PageHeader from '@/components/crud/PageHeader.vue';
@@ -17,6 +19,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/vue3';
 import { Layers, Trash2 } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 interface OfferingItem {
     id: number;
@@ -35,10 +38,59 @@ interface Props {
     course: { id: number; title: string };
     offerings: OfferingItem[];
     label: string;
-    can: { create: boolean };
+    can: { create: boolean; grant: boolean };
 }
 
 const props = defineProps<Props>();
+
+const grantUserId = ref<number | null>(null);
+const grantOfferingId = ref<number | null>(null);
+const grantProcessing = ref(false);
+const grantErrors = ref<Record<string, string>>({});
+
+const namedOfferings = computed(() =>
+    props.offerings.filter((offering) => !offering.is_default),
+);
+const grantableOfferings = computed(() =>
+    namedOfferings.value.length > 0
+        ? namedOfferings.value
+        : props.offerings.filter((offering) => offering.is_default),
+);
+
+const submitGrant = () => {
+    if (!grantUserId.value) {
+        grantErrors.value = { user_ids: 'Silakan pilih peserta terlebih dahulu' };
+        return;
+    }
+
+    const offeringId =
+        grantOfferingId.value ?? grantableOfferings.value[0]?.id ?? null;
+
+    if (!offeringId) {
+        grantErrors.value = { offering_id: `Pilih ${props.label} terlebih dahulu` };
+        return;
+    }
+
+    grantProcessing.value = true;
+    grantErrors.value = {};
+
+    router.post(
+        bulkEnroll.url(props.course.id),
+        {
+            user_ids: [grantUserId.value],
+            offering_id: offeringId,
+        },
+        {
+            preserveScroll: true,
+            onError: (formErrors) => {
+                grantErrors.value = formErrors as Record<string, string>;
+            },
+            onFinish: () => {
+                grantProcessing.value = false;
+            },
+        },
+    );
+};
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Kursus', href: courseShow.url(props.course.id) },
@@ -79,6 +131,52 @@ const deleteOffering = (offering: OfferingItem) => {
                 :back-href="courseShow.url(course.id)"
                 back-label="Kembali ke kursus"
             />
+
+            <FormSection
+                v-if="can.grant && grantableOfferings.length > 0"
+                :title="`Daftarkan ke ${label}`"
+                :description="`Grant Enrollment ke ${label} bernama. Bukan ke kursus secara umum.`"
+            >
+                <form class="grid gap-4 sm:grid-cols-2" @submit.prevent="submitGrant">
+                    <div class="sm:col-span-2">
+                        <LearnerSearchCombobox
+                            v-model="grantUserId"
+                            :course-id="course.id"
+                            label="Peserta"
+                        />
+                        <InputError :message="grantErrors.user_ids" />
+                    </div>
+                    <div class="sm:col-span-2">
+                        <Label for="grant_offering_id">{{ label }}</Label>
+                        <select
+                            id="grant_offering_id"
+                            v-model="grantOfferingId"
+                            class="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs"
+                        >
+                            <option
+                                v-for="offering in grantableOfferings"
+                                :key="offering.id"
+                                :value="offering.id"
+                            >
+                                {{ offering.name }}
+                                <template v-if="offering.code">
+                                    ({{ offering.code }})
+                                </template>
+                            </option>
+                        </select>
+                        <InputError :message="grantErrors.offering_id" />
+                    </div>
+                    <div class="flex justify-end sm:col-span-2">
+                        <Button type="submit" :disabled="grantProcessing">
+                            {{
+                                grantProcessing
+                                    ? 'Mendaftarkan...'
+                                    : 'Daftarkan'
+                            }}
+                        </Button>
+                    </div>
+                </form>
+            </FormSection>
 
             <FormSection v-if="can.create" :title="`Buat ${label}`">
                 <Form

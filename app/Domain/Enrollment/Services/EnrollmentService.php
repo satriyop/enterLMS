@@ -7,11 +7,13 @@ use App\Domain\Enrollment\Exceptions\AlreadyEnrolledException;
 use App\Domain\Enrollment\Exceptions\CourseNotPublishedException;
 use App\Domain\Enrollment\Exceptions\EnrollmentCapacityExceededException;
 use App\Domain\Enrollment\Exceptions\EnrollmentDeadlinePassedException;
+use App\Domain\Enrollment\Exceptions\NamedOfferingRequiredException;
 use App\Domain\Enrollment\Exceptions\OfferingClosedForEnrollmentException;
 use App\Domain\Enrollment\Exceptions\PaymentRequiredException;
 use App\Domain\Enrollment\States\ActiveState;
 use App\Domain\Enrollment\States\CompletedState;
 use App\Domain\Enrollment\States\DroppedState;
+use App\Domain\Shared\Academy;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Offering;
@@ -95,14 +97,37 @@ class EnrollmentService
      */
     protected function resolveOffering(Course $course, ?int $offeringId): Offering
     {
+        if (! Academy::enabled('offerings')) {
+            if ($offeringId === null) {
+                return $course->ensureDefaultOffering();
+            }
+
+            return Offering::query()
+                ->where('course_id', $course->id)
+                ->whereKey($offeringId)
+                ->firstOrFail();
+        }
+
+        $namedExist = $course->hasNamedOfferings();
+
         if ($offeringId === null) {
+            if ($namedExist) {
+                throw new NamedOfferingRequiredException($course->id);
+            }
+
             return $course->ensureDefaultOffering();
         }
 
-        return Offering::query()
+        $offering = Offering::query()
             ->where('course_id', $course->id)
             ->whereKey($offeringId)
             ->firstOrFail();
+
+        if ($namedExist && $offering->is_default) {
+            throw new NamedOfferingRequiredException($course->id);
+        }
+
+        return $offering;
     }
 
     protected function assertCapacityAvailable(Course $course, Offering $offering): void
@@ -272,9 +297,10 @@ class EnrollmentService
      * @param  array<int>  $userIds  Array of user IDs to enroll
      * @param  int  $courseId  Course ID to enroll users in
      * @param  int|null  $enrolledBy  User ID of admin performing the bulk enrollment
+     * @param  int|null  $offeringId  Offering to grant onto
      * @return array{success: int, failed: int, skipped: int, errors: array<string>}
      */
-    public function bulkEnroll(array $userIds, int $courseId, ?int $enrolledBy = null): array
+    public function bulkEnroll(array $userIds, int $courseId, ?int $enrolledBy = null, ?int $offeringId = null): array
     {
         $course = Course::findOrFail($courseId);
 
@@ -313,10 +339,15 @@ class EnrollmentService
                 $this->enroll(
                     userId: $userId,
                     courseId: $courseId,
-                    invitedBy: $enrolledBy
+                    invitedBy: $enrolledBy,
+                    offeringId: $offeringId,
                 );
 
                 $results['success']++;
+            } catch (NamedOfferingRequiredException) {
+                $results['errors'][] = 'Tidak dapat mendaftarkan ke '.Academy::label('offering').' default jika '.Academy::label('offering').' bernama sudah ada.';
+                $results['failed']++;
+                break;
             } catch (AlreadyEnrolledException) {
                 $results['skipped']++;
             } catch (CourseNotPublishedException) {
@@ -351,13 +382,15 @@ class EnrollmentService
      * @param  int  $emailIndex  Index of email column
      * @param  int  $courseId  Course ID to enroll users in
      * @param  int|null  $enrolledBy  User ID of admin performing the bulk enrollment
+     * @param  int|null  $offeringId  Offering to grant onto
      * @return array{success: int, failed: int, skipped: int, errors: array<string>}
      */
     public function bulkEnrollFromCsv(
         array $csvData,
         int $emailIndex,
         int $courseId,
-        ?int $enrolledBy = null
+        ?int $enrolledBy = null,
+        ?int $offeringId = null,
     ): array {
         $results = [
             'success' => 0,
@@ -408,12 +441,17 @@ class EnrollmentService
                 $this->enroll(
                     userId: $user->id,
                     courseId: $courseId,
-                    invitedBy: $enrolledBy
+                    invitedBy: $enrolledBy,
+                    offeringId: $offeringId,
                 );
 
                 $results['success']++;
             } catch (AlreadyEnrolledException) {
                 $results['skipped']++;
+            } catch (NamedOfferingRequiredException) {
+                $results['errors'][] = 'Tidak dapat mendaftarkan ke '.Academy::label('offering').' default jika '.Academy::label('offering').' bernama sudah ada.';
+                $results['failed']++;
+                break;
             } catch (\Throwable $e) {
                 $results['errors'][] = 'Baris '.($rowIndex + 2)." ({$email}): ".$e->getMessage();
                 $results['failed']++;

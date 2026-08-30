@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Enrollment\Exceptions\NamedOfferingRequiredException;
+use App\Domain\Shared\Academy;
 use App\Http\Requests\Enrollment\BulkEnrollmentRequest;
 use App\Models\Course;
 use App\Models\CourseInvitation;
@@ -40,7 +42,7 @@ class EnrollmentController extends Controller
                     ->lockForUpdate()
                     ->first();
 
-                $offeringId = \App\Domain\Shared\Academy::enabled('offerings')
+                $offeringId = Academy::enabled('offerings')
                     ? ($request->integer('offering_id') ?: null)
                     : null;
 
@@ -75,6 +77,8 @@ class EnrollmentController extends Controller
             return back()->with('error', 'Kursus ini berbayar. Silakan selesaikan pembayaran terlebih dahulu.');
         } catch (\App\Domain\Enrollment\Exceptions\OfferingClosedForEnrollmentException) {
             return back()->with('error', 'Offering ini sedang tidak menerima pendaftaran.');
+        } catch (NamedOfferingRequiredException) {
+            return back()->with('error', 'Tidak dapat mendaftarkan ke '.Academy::label('offering').' default jika '.Academy::label('offering').' bernama sudah ada.');
         }
     }
 
@@ -84,16 +88,20 @@ class EnrollmentController extends Controller
     public function bulkEnroll(BulkEnrollmentRequest $request, Course $course): RedirectResponse
     {
         $enrolledBy = $request->user()->id;
+        $offeringId = Academy::enabled('offerings')
+            ? ($request->integer('offering_id') ?: null)
+            : null;
 
         // Handle CSV file upload
         if ($request->hasFile('file')) {
-            $results = $this->processCsvEnrollment($request->file('file'), $course->id, $enrolledBy);
+            $results = $this->processCsvEnrollment($request->file('file'), $course->id, $enrolledBy, $offeringId);
         } else {
             // Handle user_ids array
             $results = $this->enrollmentService->bulkEnroll(
                 userIds: $request->input('user_ids'),
                 courseId: $course->id,
-                enrolledBy: $enrolledBy
+                enrolledBy: $enrolledBy,
+                offeringId: $offeringId,
             );
         }
 
@@ -114,7 +122,8 @@ class EnrollmentController extends Controller
     protected function processCsvEnrollment(
         \Illuminate\Http\UploadedFile $file,
         int $courseId,
-        int $enrolledBy
+        int $enrolledBy,
+        ?int $offeringId = null,
     ): array {
         try {
             $csv = Reader::createFromPath($file->getPathname(), 'r');
@@ -145,7 +154,8 @@ class EnrollmentController extends Controller
                 csvData: $csvData,
                 emailIndex: $emailIndex,
                 courseId: $courseId,
-                enrolledBy: $enrolledBy
+                enrolledBy: $enrolledBy,
+                offeringId: $offeringId,
             );
 
         } catch (\Exception $e) {
