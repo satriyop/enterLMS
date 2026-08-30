@@ -20,6 +20,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useAcademy } from '@/composables/useAcademy';
 import type { BreadcrumbItem, UserRole, UserWithDetails } from '@/types';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { AlertTriangle, BookOpen, GraduationCap, Calendar } from 'lucide-vue-next';
@@ -39,6 +40,7 @@ interface Props {
 // =============================================================================
 
 const props = defineProps<Props>();
+const { identity } = useAcademy();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { title: 'Admin', href: '#' },
@@ -117,6 +119,19 @@ const formattedDate = computed(() => {
                                 required
                             />
                             <InputError :message="errors.name" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label for="external_id" class="text-sm font-medium">
+                                {{ identity.label }}
+                            </Label>
+                            <Input
+                                id="external_id"
+                                name="external_id"
+                                :default-value="user.external_id ?? ''"
+                                class="h-11"
+                            />
+                            <InputError :message="errors.external_id" />
                         </div>
 
                         <div class="space-y-2">

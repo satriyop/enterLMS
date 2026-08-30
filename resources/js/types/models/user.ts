@@ -34,6 +34,7 @@ export interface User extends Timestamps {
     id: UserId;
     name: string;
     email: string;
+    external_id?: string | null;
     email_verified_at: string | null;
     role: UserRole;
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Domain\Shared\Academy;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
@@ -25,11 +26,18 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = $this->input('external_id');
+
+        if (is_string($id) && trim($id) === '') {
+            $this->merge(['external_id' => null]);
+        }
+
         $userId = $this->route('user')->id;
 
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
+            'external_id' => ['nullable', 'string', 'max:64', Rule::unique('users', 'external_id')->ignore($userId)],
             'password' => ['nullable', 'confirmed', Password::min(8)],
             'role' => ['required', Rule::in(['learner', 'lms_admin', 'lms_admin', 'lms_admin'])],
         ];
@@ -64,6 +72,8 @@ class UpdateUserRequest extends FormRequest
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah terdaftar.',
+            'external_id.unique' => Academy::identityLabel().' sudah terdaftar.',
+            'external_id.max' => Academy::identityLabel().' maksimal 64 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.min' => 'Password minimal 8 karakter.',
             'role.required' => 'Peran wajib dipilih.',

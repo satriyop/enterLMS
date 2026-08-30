@@ -29,6 +29,7 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'external_id' => $this->external_id,
             'role' => $this->role,
             'email_verified_at' => $this->email_verified_at,
             'courses_count' => $this->whenCounted('courses'),

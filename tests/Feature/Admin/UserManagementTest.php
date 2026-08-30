@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Domain\Shared\Academy;
 use App\Models\User;
 
 /**
@@ -151,6 +152,82 @@ it('validates valid role when creating user', function () {
             'role' => 'invalid_role',
         ])
         ->assertSessionHasErrors('role');
+});
+
+it('allows lms_admin to create a user with a unique NIM', function () {
+    Academy::using('academic');
+
+    asAdmin()
+        ->post(route('admin.users.store'), [
+            'name' => 'Mahasiswa Satu',
+            'email' => 'mhs1@example.com',
+            'external_id' => '21001001',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'role' => 'learner',
+        ])
+        ->assertRedirect(route('admin.users.index'));
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'mhs1@example.com',
+        'external_id' => '21001001',
+    ]);
+});
+
+it('rejects a duplicate NIM when creating a user', function () {
+    User::factory()->create(['external_id' => '21001001']);
+
+    asAdmin()
+        ->post(route('admin.users.store'), [
+            'name' => 'Mahasiswa Dua',
+            'email' => 'mhs2@example.com',
+            'external_id' => '21001001',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'role' => 'learner',
+        ])
+        ->assertSessionHasErrors('external_id');
+});
+
+it('shares the identity label on the create form', function () {
+    Academy::using('academic');
+
+    asAdmin()
+        ->get(route('admin.users.create'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('academy.identity.label', 'NIM'));
+});
+
+it('updates a user NIM', function () {
+    $user = User::factory()->create(['role' => 'learner', 'external_id' => '21001001']);
+
+    asAdmin()
+        ->put(route('admin.users.update', $user), [
+            'name' => $user->name,
+            'email' => $user->email,
+            'external_id' => '21001999',
+            'role' => 'learner',
+        ])
+        ->assertRedirect(route('admin.users.index'));
+
+    expect($user->fresh()->external_id)->toBe('21001999');
+});
+
+it('still logs in with email after a NIM is stored', function () {
+    $user = User::factory()->create([
+        'email' => 'mhs@example.com',
+        'password' => 'password',
+        'external_id' => '21001001',
+        'role' => 'learner',
+    ]);
+
+    $this->post(route('login'), [
+        'email' => 'mhs@example.com',
+        'password' => 'password',
+    ])->assertRedirect();
+
+    $this->assertAuthenticatedAs($user);
 });
 
 it('sets email_verified_at when creating user', function () {

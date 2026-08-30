@@ -19,6 +19,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useAcademy } from '@/composables/useAcademy';
 import type { BreadcrumbItem, UserRole } from '@/types';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -37,6 +38,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 // Form State
 // =============================================================================
 
+const { identity } = useAcademy();
 const selectedRole = ref<UserRole>('learner');
 
 const roleOptions = [
@@ -76,6 +78,19 @@ const roleOptions = [
                                 required
                             />
                             <InputError :message="errors.name" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label for="external_id" class="text-sm font-medium">
+                                {{ identity.label }}
+                            </Label>
+                            <Input
+                                id="external_id"
+                                name="external_id"
+                                :placeholder="`Contoh: ${identity.scheme === 'nim' ? '21001001' : identity.label}`"
+                                class="h-11"
+                            />
+                            <InputError :message="errors.external_id" />
                         </div>
 
                         <div class="space-y-2">

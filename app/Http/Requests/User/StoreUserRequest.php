@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Domain\Shared\Academy;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
@@ -23,11 +24,21 @@ class StoreUserRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
+    protected function prepareForValidation(): void
+    {
+        $id = $this->input('external_id');
+
+        if (is_string($id) && trim($id) === '') {
+            $this->merge(['external_id' => null]);
+        }
+    }
+
     public function rules(): array
     {
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
+            'external_id' => ['nullable', 'string', 'max:64', 'unique:users,external_id'],
             'password' => ['required', 'confirmed', Password::min(8)],
             'role' => ['required', Rule::in(['learner', 'lms_admin', 'lms_admin', 'lms_admin'])],
         ];
@@ -46,6 +57,8 @@ class StoreUserRequest extends FormRequest
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah terdaftar.',
+            'external_id.unique' => Academy::identityLabel().' sudah terdaftar.',
+            'external_id.max' => Academy::identityLabel().' maksimal 64 karakter.',
             'password.required' => 'Password wajib diisi.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.min' => 'Password minimal 8 karakter.',
