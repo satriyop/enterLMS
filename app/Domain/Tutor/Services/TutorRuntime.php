@@ -13,28 +13,29 @@ class TutorRuntime
 {
     /**
      * Produce a Tutor reply for this Conversation by invoking local Hermes.
-     * Grounding lives in the tutor skill + tutor.read MCP — not PHP regex.
+     * Overlay grounding is the Lesson body Laravel already read for this Learner.
+     * MCP remains the door for messaging skins, not a substitute for that read.
      */
-    public function completeTurn(Conversation $conversation, string $learnerMessage): string
+    public function completeTurn(Conversation $conversation, string $learnerMessage, string $lessonBody = ''): string
     {
         $conversation->loadMissing(['turns', 'enrollment']);
 
         $runtimeUrl = (string) config('tutor.runtime_url');
 
         if ($runtimeUrl !== '') {
-            return $this->completeTurnViaHttp($conversation, $learnerMessage, $runtimeUrl);
+            return $this->completeTurnViaHttp($conversation, $learnerMessage, $runtimeUrl, $lessonBody);
         }
 
-        return $this->completeTurnViaCli($conversation, $learnerMessage);
+        return $this->completeTurnViaCli($conversation, $learnerMessage, $lessonBody);
     }
 
-    public function completeTurnViaCli(Conversation $conversation, string $learnerMessage): string
+    public function completeTurnViaCli(Conversation $conversation, string $learnerMessage, string $lessonBody = ''): string
     {
         $conversation->loadMissing(['turns', 'enrollment']);
 
         return $this->completeTurnFromPrompt(
             'enterlms-conversation-'.$conversation->id,
-            $this->prompt($conversation, $learnerMessage),
+            $this->prompt($conversation, $learnerMessage, $lessonBody),
         );
     }
 
@@ -100,7 +101,7 @@ class TutorRuntime
         return $reply;
     }
 
-    private function completeTurnViaHttp(Conversation $conversation, string $learnerMessage, string $runtimeUrl): string
+    private function completeTurnViaHttp(Conversation $conversation, string $learnerMessage, string $runtimeUrl, string $lessonBody = ''): string
     {
         $conversation->loadMissing(['turns', 'enrollment']);
 
@@ -108,7 +109,7 @@ class TutorRuntime
         $model = trim((string) config('tutor.model', 'hermes')) ?: 'hermes';
         $timeout = max(1, (int) config('tutor.timeout_seconds', 90));
         $this->allowRuntimeWait($timeout);
-        $messages = $this->messages($conversation, $learnerMessage);
+        $messages = $this->messages($conversation, $learnerMessage, $lessonBody);
 
         try {
             $request = Http::timeout($timeout)
@@ -143,20 +144,13 @@ class TutorRuntime
     /**
      * @return list<array{role: string, content: string}>
      */
-    public function messages(Conversation $conversation, string $learnerMessage): array
+    public function messages(Conversation $conversation, string $learnerMessage, string $lessonBody = ''): array
     {
         $conversation->loadMissing(['turns', 'enrollment']);
 
         $messages = [[
             'role' => 'system',
-            'content' => implode("\n", [
-                'You are the EnterLMS Tutor.',
-                'Learner id: '.(string) $conversation->enrollment->user_id,
-                'Course id: '.(string) $conversation->enrollment->course_id,
-                'Lesson id: '.$conversation->lesson_id,
-                'Conversation id: '.$conversation->id,
-                'Call get-published-lesson with this user_id, course_id, and lesson_id.',
-            ]),
+            'content' => $this->grounding($conversation, $lessonBody),
         ]];
 
         foreach ($conversation->turns as $turn) {
@@ -179,18 +173,32 @@ class TutorRuntime
         set_time_limit($timeout + 15);
     }
 
-    private function prompt(Conversation $conversation, string $learnerMessage): string
+    private function grounding(Conversation $conversation, string $lessonBody): string
     {
-        $courseId = $conversation->enrollment->course_id;
-
         $lines = [
-            'Conversation id: '.$conversation->id,
-            'Learner id: '.(string) $conversation->enrollment->user_id,
-            'Course id: '.(string) $courseId,
-            'Lesson id: '.$conversation->lesson_id,
-            'Enrollment id: '.$conversation->enrollment_id,
-            '',
-            'Call get-published-lesson with this user_id, course_id, and lesson_id.',
+            'You are the EnterLMS Tutor.',
+            'user_id: '.(string) $conversation->enrollment->user_id,
+            'course_id: '.(string) $conversation->enrollment->course_id,
+            'lesson_id: '.$conversation->lesson_id,
+            'conversation_id: '.$conversation->id,
+        ];
+
+        if ($lessonBody !== '') {
+            $lines[] = 'body_ready: true';
+            $lines[] = 'body_text:';
+            $lines[] = $lessonBody;
+            $lines[] = 'Answer from this body_text. Do not invent a user_id.';
+        } else {
+            $lines[] = 'Call get-published-lesson with this user_id, course_id, and lesson_id.';
+        }
+
+        return implode("\n", $lines);
+    }
+
+    private function prompt(Conversation $conversation, string $learnerMessage, string $lessonBody = ''): string
+    {
+        $lines = [
+            $this->grounding($conversation, $lessonBody),
             '',
             'History:',
         ];

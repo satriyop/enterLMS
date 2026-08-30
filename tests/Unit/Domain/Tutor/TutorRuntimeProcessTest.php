@@ -109,9 +109,10 @@ SH);
 
     $courseId = $conversation->enrollment()->value('course_id');
 
-    expect($stdin)->toContain('Conversation id: '.$conversation->id)
-        ->toContain('Course id: '.$courseId)
-        ->toContain('Lesson id: '.$conversation->lesson_id)
+    expect($stdin)->toContain('conversation_id: '.$conversation->id)
+        ->toContain('user_id: '.(string) $conversation->enrollment->user_id)
+        ->toContain('course_id: '.$courseId)
+        ->toContain('lesson_id: '.$conversation->lesson_id)
         ->toContain('Call get-published-lesson with this user_id, course_id, and lesson_id.')
         ->toContain('Learner: Apa bedanya agen dengan chatbot?')
         ->toContain('Pertanyaan lama');
@@ -298,12 +299,42 @@ it('posts Conversation history as chat completions messages when runtime_url is 
             && $request->hasHeader('Authorization', 'Bearer secret-test')
             && $request['model'] === 'hermes'
             && $roles === ['system', 'user', 'user']
-            && str_contains((string) $contents[0], 'Learner id: '.(string) $conversation->enrollment->user_id)
+            && str_contains((string) $contents[0], 'user_id: '.(string) $conversation->enrollment->user_id)
+            && str_contains((string) $contents[0], 'course_id: '.(string) $conversation->enrollment->course_id)
+            && str_contains((string) $contents[0], 'lesson_id: '.$conversation->lesson_id)
             && str_contains((string) $contents[0], 'Call get-published-lesson with this user_id, course_id, and lesson_id.')
             && $contents[1] === 'Pertanyaan lama'
             && $contents[2] === 'Halo'
             && ! array_key_exists('prompt', $request->data())
             && ! array_key_exists('session', $request->data());
+    });
+});
+
+it('puts academy-read body_text on chat completions so overlay does not wait for MCP user_id', function () {
+    Http::fake([
+        'http://127.0.0.1:8642/v1/chat/completions' => Http::response([
+            'choices' => [['message' => ['content' => 'Agen berbeda dari chatbot.']]],
+        ], 200),
+    ]);
+
+    config()->set('tutor.runtime_url', 'http://127.0.0.1:8642');
+    config()->set('tutor.runtime_api_key', 'secret-test');
+    config()->set('tutor.hermes_binary', '');
+
+    $conversation = tutorRuntimeConversation();
+    $body = 'Agen menerima tujuan dan memakai alat.';
+
+    (new TutorRuntime)->completeTurn($conversation, 'Apa bedanya agen dengan chatbot?', $body);
+
+    Http::assertSent(function ($request) use ($conversation, $body) {
+        $system = (string) ($request['messages'][0]['content'] ?? '');
+
+        return str_contains($system, 'user_id: '.(string) $conversation->enrollment->user_id)
+            && str_contains($system, 'course_id: '.(string) $conversation->enrollment->course_id)
+            && str_contains($system, 'lesson_id: '.$conversation->lesson_id)
+            && str_contains($system, 'body_text:')
+            && str_contains($system, $body)
+            && ! str_contains($system, 'Call get-published-lesson');
     });
 });
 

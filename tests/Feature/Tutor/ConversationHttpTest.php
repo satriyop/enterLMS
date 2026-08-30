@@ -9,6 +9,7 @@ use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
 use Inertia\Testing\AssertableInertia;
 
 function tutorLesson(string $title = 'Apa itu agen', string $body = 'Agen berbeda dari chatbot biasa.'): array
@@ -375,5 +376,86 @@ describe('Tutor stays in the Lesson', function () {
 
         $tutorTurn = ConversationTurn::query()->where('role', 'tutor')->first();
         expect($tutorTurn->body)->toStartWith('Based on this Lesson:');
+    });
+});
+
+describe('Overlay persist is grounded or nothing', function () {
+    beforeEach(function () {
+        config()->set('tutor.runtime_url', 'http://127.0.0.1:8642');
+        config()->set('tutor.runtime_api_key', 'secret-test');
+        config()->set('tutor.hermes_binary', '');
+        config()->set('tutor.model', 'hermes');
+    });
+
+    it('persists Learner then Tutor only after Laravel reads this Lesson body for that Learner', function () {
+        ['course' => $course, 'lesson' => $lesson] = tutorLesson('Apa itu agen', 'Agen berbeda dari chatbot biasa.');
+        ['user' => $user, 'enrollment' => $enrollment] = createEnrolledLearner($course);
+
+        Http::fake([
+            'http://127.0.0.1:8642/v1/chat/completions' => Http::response([
+                'choices' => [['message' => ['role' => 'assistant', 'content' => 'Agen berbeda dari chatbot biasa.']]],
+            ], 200),
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('courses.lessons.conversation.turns.store', [$course, $lesson]), [
+                'message' => 'Apa bedanya agen dengan chatbot?',
+            ])
+            ->assertRedirect(route('courses.lessons.show', [$course, $lesson]));
+
+        $conversation = Conversation::query()
+            ->where('enrollment_id', $enrollment->id)
+            ->where('lesson_id', $lesson->id)
+            ->first();
+
+        expect($conversation)->not->toBeNull()
+            ->and($conversation->turns)->toHaveCount(2)
+            ->and($conversation->turns[0]->role)->toBe('learner')
+            ->and($conversation->turns[0]->body)->toBe('Apa bedanya agen dengan chatbot?')
+            ->and($conversation->turns[1]->role)->toBe('tutor')
+            ->and($conversation->turns[1]->body)->toBe('Agen berbeda dari chatbot biasa.');
+
+        expect($enrollment->fresh()->progress_percentage)->toBe(0);
+        expect(LessonProgress::query()->where('enrollment_id', $enrollment->id)->where('is_completed', true)->count())->toBe(0);
+
+        Http::assertSent(function ($request) use ($user, $course, $lesson) {
+            $system = (string) ($request['messages'][0]['content'] ?? '');
+
+            return $request->url() === 'http://127.0.0.1:8642/v1/chat/completions'
+                && str_contains($system, 'user_id: '.$user->id)
+                && str_contains($system, 'course_id: '.$course->id)
+                && str_contains($system, 'lesson_id: '.$lesson->id)
+                && str_contains($system, 'body_text:')
+                && str_contains($system, 'Agen berbeda dari chatbot biasa.');
+        });
+    });
+
+    it('persists no turns when the Lesson body cannot be read', function () {
+        $course = Course::factory()->published()->public()->create();
+        $section = CourseSection::factory()->create(['course_id' => $course->id]);
+        $lesson = Lesson::factory()->create([
+            'course_section_id' => $section->id,
+            'title' => 'Lembar glosarium agen',
+            'content_type' => 'document',
+            'is_free_preview' => false,
+        ]);
+        ['user' => $user] = createEnrolledLearner($course);
+
+        Http::fake([
+            'http://127.0.0.1:8642/v1/chat/completions' => Http::response([
+                'choices' => [['message' => ['content' => 'Jawaban tanpa tubuh pelajaran.']]],
+            ], 200),
+        ]);
+
+        $this->actingAs($user)
+            ->from(route('courses.lessons.show', [$course, $lesson]))
+            ->post(route('courses.lessons.conversation.turns.store', [$course, $lesson]), [
+                'message' => 'Apa bedanya agen dengan chatbot?',
+            ])
+            ->assertRedirect(route('courses.lessons.show', [$course, $lesson]))
+            ->assertSessionHasErrors(['message' => 'Tutor sedang tidak dapat menjawab. Silakan coba lagi.']);
+
+        expect(ConversationTurn::query()->count())->toBe(0);
+        Http::assertNothingSent();
     });
 });

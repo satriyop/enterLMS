@@ -15,6 +15,7 @@ class ConversationService
 {
     public function __construct(
         protected TutorRuntime $runtime,
+        protected TutorAccess $access,
     ) {}
 
     public function forEnrollmentAndLesson(Enrollment $enrollment, Lesson $lesson): ?Conversation
@@ -28,15 +29,25 @@ class ConversationService
 
     public function postTurn(Enrollment $enrollment, Lesson $lesson, string $message): Conversation
     {
+        $lesson->loadMissing(['section.course', 'media']);
+        $course = $lesson->section->course;
+        $allowed = $this->access->enrollmentForLesson($enrollment->user_id, $course, $lesson);
+
+        if (! $allowed instanceof Enrollment || ! $lesson->isBodyReady()) {
+            throw new RuntimeException('Tutor runtime failed.');
+        }
+
+        $body = $lesson->readableBody();
+
         $conversation = Conversation::query()->firstOrCreate([
             'enrollment_id' => $enrollment->id,
             'lesson_id' => $lesson->id,
         ]);
 
-        $conversation->load(['lesson.section.course', 'turns']);
+        $conversation->load(['lesson.section.course', 'turns', 'enrollment']);
 
         try {
-            $reply = $this->runtime->completeTurn($conversation, $message);
+            $reply = $this->runtime->completeTurn($conversation, $message, $body);
         } catch (Throwable $e) {
             Log::warning('Tutor runtime failed.', [
                 'conversation_id' => $conversation->id,
