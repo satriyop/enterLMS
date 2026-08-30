@@ -460,4 +460,115 @@ class EnrollmentService
 
         return $results;
     }
+
+    /**
+     * Grant enrollments from a NIM + offering_code roster.
+     *
+     * @param  array<int, array<int, string>>  $csvData
+     * @return array{success: int, failed: int, skipped: int, errors: array<string>}
+     */
+    public function bulkEnrollFromNimRoster(
+        array $csvData,
+        int $nimIndex,
+        int $offeringCodeIndex,
+        int $courseId,
+        ?int $enrolledBy = null,
+    ): array {
+        $results = [
+            'success' => 0,
+            'failed' => 0,
+            'skipped' => 0,
+            'errors' => [],
+        ];
+
+        $course = Course::findOrFail($courseId);
+        $identityLabel = Academy::identityLabel();
+        $offeringLabel = Academy::label('offering');
+
+        foreach ($csvData as $rowIndex => $row) {
+            $line = $rowIndex + 2;
+            $nim = trim((string) ($row[$nimIndex] ?? ''));
+            $offeringCode = trim((string) ($row[$offeringCodeIndex] ?? ''));
+
+            if ($nim === '' && $offeringCode === '') {
+                continue;
+            }
+
+            if ($nim === '') {
+                $results['errors'][] = "Baris {$line}: {$identityLabel} wajib diisi.";
+                $results['failed']++;
+
+                continue;
+            }
+
+            if ($offeringCode === '') {
+                $results['errors'][] = "Baris {$line}: Kode {$offeringLabel} wajib diisi.";
+                $results['failed']++;
+
+                continue;
+            }
+
+            $user = User::query()->where('external_id', $nim)->first();
+
+            if (! $user) {
+                $results['errors'][] = "Baris {$line}: {$identityLabel} {$nim} tidak ditemukan.";
+                $results['failed']++;
+
+                continue;
+            }
+
+            if (! $user->isLearner()) {
+                $results['errors'][] = "Baris {$line}: {$nim} bukan learner.";
+                $results['skipped']++;
+
+                continue;
+            }
+
+            $offering = Offering::query()
+                ->where('course_id', $course->id)
+                ->where('code', $offeringCode)
+                ->first();
+
+            if (! $offering) {
+                $results['errors'][] = "Baris {$line}: {$offeringLabel} dengan kode {$offeringCode} tidak ditemukan.";
+                $results['failed']++;
+
+                continue;
+            }
+
+            $alreadyOnOffering = Enrollment::query()
+                ->where('user_id', $user->id)
+                ->where('offering_id', $offering->id)
+                ->whereIn('status', [ActiveState::$name, CompletedState::$name])
+                ->exists();
+
+            if ($alreadyOnOffering) {
+                $results['skipped']++;
+
+                continue;
+            }
+
+            try {
+                $this->enroll(
+                    userId: $user->id,
+                    courseId: $course->id,
+                    invitedBy: $enrolledBy,
+                    offeringId: $offering->id,
+                );
+
+                $results['success']++;
+            } catch (NamedOfferingRequiredException) {
+                $results['errors'][] = "Baris {$line}: Tidak dapat mendaftarkan ke {$offeringLabel} default jika {$offeringLabel} bernama sudah ada.";
+                $results['failed']++;
+            } catch (AlreadyEnrolledException) {
+                $results['errors'][] = "Baris {$line}: {$nim} sudah terdaftar aktif di kursus ini.";
+                $results['failed']++;
+            } catch (\Throwable $e) {
+                $results['errors'][] = "Baris {$line} ({$nim}): ".$e->getMessage();
+                $results['failed']++;
+            }
+        }
+
+        return $results;
+    }
 }

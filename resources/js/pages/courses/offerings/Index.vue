@@ -47,6 +47,36 @@ const grantUserId = ref<number | null>(null);
 const grantOfferingId = ref<number | null>(null);
 const grantProcessing = ref(false);
 const grantErrors = ref<Record<string, string>>({});
+const rosterFile = ref<File | null>(null);
+const rosterProcessing = ref(false);
+
+const onRosterFile = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    rosterFile.value = input.files?.[0] ?? null;
+};
+
+const submitRoster = () => {
+    if (!rosterFile.value) {
+        grantErrors.value = { file: 'Silakan pilih file CSV terlebih dahulu' };
+        return;
+    }
+
+    rosterProcessing.value = true;
+    grantErrors.value = {};
+
+    const formData = new FormData();
+    formData.append('file', rosterFile.value);
+
+    router.post(bulkEnroll.url(props.course.id), formData, {
+        preserveScroll: true,
+        onError: (formErrors) => {
+            grantErrors.value = formErrors as Record<string, string>;
+        },
+        onFinish: () => {
+            rosterProcessing.value = false;
+        },
+    });
+};
 
 const namedOfferings = computed(() =>
     props.offerings.filter((offering) => !offering.is_default),
@@ -172,6 +202,34 @@ const deleteOffering = (offering: OfferingItem) => {
                                 grantProcessing
                                     ? 'Mendaftarkan...'
                                     : 'Daftarkan'
+                            }}
+                        </Button>
+                    </div>
+                </form>
+
+                <form class="mt-6 grid gap-4 border-t border-border pt-6" @submit.prevent="submitRoster">
+                    <div>
+                        <Label for="roster_csv">Roster CSV (nim, offering_code)</Label>
+                        <Input
+                            id="roster_csv"
+                            type="file"
+                            accept=".csv,text/csv"
+                            class="mt-1"
+                            @change="onRosterFile"
+                        />
+                        <p class="mt-1 text-xs text-muted-foreground">
+                            Kolom wajib: nim, offering_code. NIM yang tidak
+                            ditemukan atau kode default saat {{ label }} bernama
+                            sudah ada menjadi baris error.
+                        </p>
+                        <InputError :message="grantErrors.file" />
+                    </div>
+                    <div class="flex justify-end">
+                        <Button type="submit" variant="outline" :disabled="rosterProcessing">
+                            {{
+                                rosterProcessing
+                                    ? 'Mengunggah...'
+                                    : 'Unggah roster'
                             }}
                         </Button>
                     </div>

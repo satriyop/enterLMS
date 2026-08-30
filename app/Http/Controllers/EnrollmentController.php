@@ -132,22 +132,33 @@ class EnrollmentController extends Controller
             $records = iterator_to_array($csv->getRecords());
             $headers = $csv->getHeader();
 
-            // Find email column (case-insensitive)
-            $emailIndex = $this->findEmailColumnIndex($headers);
+            $csvData = [];
+            foreach ($records as $record) {
+                $csvData[] = array_values($record);
+            }
+
+            $nimIndex = $this->findCsvColumnIndex($headers, 'nim');
+            $offeringCodeIndex = $this->findCsvColumnIndex($headers, 'offering_code');
+
+            if ($nimIndex !== null && $offeringCodeIndex !== null) {
+                return $this->enrollmentService->bulkEnrollFromNimRoster(
+                    csvData: $csvData,
+                    nimIndex: $nimIndex,
+                    offeringCodeIndex: $offeringCodeIndex,
+                    courseId: $courseId,
+                    enrolledBy: $enrolledBy,
+                );
+            }
+
+            $emailIndex = $this->findCsvColumnIndex($headers, 'email');
 
             if ($emailIndex === null) {
                 return [
                     'success' => 0,
                     'failed' => 1,
                     'skipped' => 0,
-                    'errors' => ['File CSV harus memiliki kolom "email".'],
+                    'errors' => ['File CSV harus memiliki kolom "email", atau "nim" dan "offering_code".'],
                 ];
-            }
-
-            // Convert associative records to indexed rows for the service
-            $csvData = [];
-            foreach ($records as $record) {
-                $csvData[] = array_values($record);
             }
 
             return $this->enrollmentService->bulkEnrollFromCsv(
@@ -174,14 +185,12 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * Find the index of the email column in CSV headers.
-     *
-     * @param  array<string>  $headers
+     * @param  array<int, string>  $headers
      */
-    protected function findEmailColumnIndex(array $headers): ?int
+    protected function findCsvColumnIndex(array $headers, string $name): ?int
     {
         foreach ($headers as $index => $header) {
-            if (strtolower(trim($header)) === 'email') {
+            if (strtolower(trim($header)) === $name) {
                 return $index;
             }
         }
