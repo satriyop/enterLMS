@@ -33,6 +33,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Collection<int, CourseInvitation> $courseInvitations
  * @property-read Collection<int, CourseInvitation> $pendingInvitations
  * @property-read Collection<int, CourseRating> $courseRatings
+ * @property-read Collection<int, Offering> $facilitatedOfferings
  */
 class User extends Authenticatable
 {
@@ -174,6 +175,29 @@ class User extends Authenticatable
     public function canGradeAssessments(): bool
     {
         return $this->isLmsAdmin();
+    }
+
+    public function facilitatedOfferings(): HasMany
+    {
+        return $this->hasMany(Offering::class, 'facilitator_id');
+    }
+
+    public function facilitatesOffering(Offering|int $offering): bool
+    {
+        $offeringId = $offering instanceof Offering ? $offering->id : $offering;
+
+        return $this->facilitatedOfferings()->whereKey($offeringId)->exists();
+    }
+
+    public function facilitatesEnrollment(Enrollment $enrollment): bool
+    {
+        return $enrollment->offering_id !== null
+            && $this->facilitatesOffering($enrollment->offering_id);
+    }
+
+    public function facilitatesCourse(Course $course): bool
+    {
+        return $this->facilitatedOfferings()->where('course_id', $course->id)->exists();
     }
 
     /**

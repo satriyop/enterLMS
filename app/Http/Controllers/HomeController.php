@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Shared\Academy;
 use App\Http\Resources\HomeCourseResource;
 use App\Models\Category;
 use App\Models\Course;
@@ -15,6 +16,8 @@ class HomeController extends Controller
 {
     public function index(): Response
     {
+        $catalogOpen = ! Academy::enabled('offerings');
+
         $baseQuery = Course::query()
             ->published()
             ->visible()
@@ -23,13 +26,17 @@ class HomeController extends Controller
             ->withAvg('ratings', 'rating')
             ->withCount('ratings');
 
-        $featuredCourses = HomeCourseResource::collection(
-            (clone $baseQuery)->latest()->limit(8)->get()
-        )->resolve();
+        $featuredCourses = $catalogOpen
+            ? HomeCourseResource::collection(
+                (clone $baseQuery)->latest()->limit(8)->get()
+            )->resolve()
+            : [];
 
-        $popularCourses = HomeCourseResource::collection(
-            (clone $baseQuery)->orderByDesc('enrollments_count')->limit(8)->get()
-        )->resolve();
+        $popularCourses = $catalogOpen
+            ? HomeCourseResource::collection(
+                (clone $baseQuery)->orderByDesc('enrollments_count')->limit(8)->get()
+            )->resolve()
+            : [];
 
         $categories = Category::query()
             ->whereNull('parent_id')
@@ -81,10 +88,10 @@ class HomeController extends Controller
         });
 
         return Inertia::render('Welcome', [
-            'canRegister' => Features::enabled(Features::registration()),
+            'canRegister' => $catalogOpen && Features::enabled(Features::registration()),
             'featuredCourses' => $featuredCourses,
             'popularCourses' => $popularCourses,
-            'categories' => $categories,
+            'categories' => $catalogOpen ? $categories : collect(),
             'stats' => $stats,
         ]);
     }

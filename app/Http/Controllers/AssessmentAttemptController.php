@@ -14,6 +14,7 @@ use App\Http\Resources\AssessmentResource;
 use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
 use App\Models\Course;
+use App\Models\Enrollment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -55,8 +56,12 @@ class AssessmentAttemptController extends Controller
 
         $nextAttemptNumber = $assessment->attempts()->where('user_id', $user->id)->max('attempt_number') + 1;
 
+        $enrollment = Enrollment::getActiveForUserAndCourse($user, $course)
+            ?? Enrollment::query()->forUserAndCourse($user, $course)->first();
+
         $attempt = $assessment->attempts()->create([
             'user_id' => $user->id,
+            'enrollment_id' => $enrollment?->id,
             'attempt_number' => $nextAttemptNumber,
             'status' => 'in_progress',
             'started_at' => now(),
@@ -87,6 +92,7 @@ class AssessmentAttemptController extends Controller
             'attempt' => new AssessmentAttemptResource($attempt),
             'can' => [
                 'submit' => $attempt->isInProgress(),
+                'grade' => Gate::allows('grade', [$attempt, $assessment, $course]),
             ],
         ]);
     }

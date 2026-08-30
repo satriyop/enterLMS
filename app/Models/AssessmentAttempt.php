@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property int $assessment_id
  * @property int $user_id
+ * @property int|null $enrollment_id
  * @property int $attempt_number
  * @property string $status
  * @property int|null $score
@@ -30,6 +31,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Carbon\Carbon|null $deleted_at
  * @property-read Assessment $assessment
  * @property-read User $user
+ * @property-read Enrollment|null $enrollment
  * @property-read User|null $gradedBy
  * @property-read \Illuminate\Database\Eloquent\Collection<int, AttemptAnswer> $answers
  */
@@ -40,6 +42,7 @@ class AssessmentAttempt extends Model
     protected $fillable = [
         'assessment_id',
         'user_id',
+        'enrollment_id',
         'attempt_number',
         'status',
         'score',
@@ -73,6 +76,11 @@ class AssessmentAttempt extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function enrollment(): BelongsTo
+    {
+        return $this->belongsTo(Enrollment::class);
     }
 
     public function gradedBy(): BelongsTo

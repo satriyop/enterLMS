@@ -17,7 +17,11 @@ class ConversationPolicy
             return true;
         }
 
-        return $user->canManageCourses();
+        if ($user->canManageCourses()) {
+            return true;
+        }
+
+        return $user->facilitatesEnrollment($conversation->enrollment);
     }
 
     public function addTurn(User $user, Enrollment $enrollment, Lesson $lesson): bool

@@ -83,15 +83,23 @@ class ConversationTurnController extends Controller
             return null;
         }
 
-        if ($user->canManageCourses()) {
-            $learnerId = $request->integer('enrollment_id') ?: null;
+        $requestedEnrollmentId = $request->integer('enrollment_id') ?: null;
 
-            if ($learnerId) {
-                return Enrollment::query()
-                    ->where('id', $learnerId)
-                    ->where('course_id', $course->id)
-                    ->first();
+        if ($requestedEnrollmentId && ($user->canManageCourses() || $user->facilitatedOfferings()->exists())) {
+            $enrollment = Enrollment::query()
+                ->where('id', $requestedEnrollmentId)
+                ->where('course_id', $course->id)
+                ->first();
+
+            if ($enrollment === null) {
+                return null;
             }
+
+            if ($user->canManageCourses() || $user->facilitatesEnrollment($enrollment)) {
+                return $enrollment;
+            }
+
+            return null;
         }
 
         return Enrollment::query()

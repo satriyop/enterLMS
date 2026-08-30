@@ -1,5 +1,48 @@
 <?php
 
+use App\Domain\Shared\AcademyPresetCatalog;
+
+$lmsBoolEnv = static function (string $key): ?bool {
+    $raw = env($key);
+
+    if ($raw === null || $raw === '') {
+        return null;
+    }
+
+    return filter_var($raw, FILTER_VALIDATE_BOOLEAN);
+};
+
+$lmsStringEnv = static function (string $key): ?string {
+    $raw = env($key);
+
+    if ($raw === null || $raw === '') {
+        return null;
+    }
+
+    return (string) $raw;
+};
+
+$academy = AcademyPresetCatalog::resolve(
+    (string) env('LMS_PRESET', AcademyPresetCatalog::DEFAULT),
+    [
+        'offerings' => $lmsBoolEnv('LMS_FEATURE_OFFERINGS'),
+        'facilitators' => $lmsBoolEnv('LMS_FEATURE_FACILITATORS'),
+        'attendance' => $lmsBoolEnv('LMS_FEATURE_ATTENDANCE'),
+        'letter_grades' => $lmsBoolEnv('LMS_FEATURE_LETTER_GRADES'),
+        'academic_calendar' => $lmsBoolEnv('LMS_FEATURE_ACADEMIC_CALENDAR'),
+        'sso' => $lmsBoolEnv('LMS_FEATURE_SSO'),
+    ],
+    [
+        'offering' => $lmsStringEnv('LMS_LABEL_OFFERING'),
+        'facilitator' => $lmsStringEnv('LMS_LABEL_FACILITATOR'),
+        'learner' => $lmsStringEnv('LMS_LABEL_LEARNER'),
+    ],
+    [
+        'scheme' => $lmsStringEnv('LMS_IDENTITY_SCHEME'),
+        'label' => $lmsStringEnv('LMS_IDENTITY_LABEL'),
+    ],
+);
+
 return [
 
     /*
@@ -115,10 +158,31 @@ return [
     | - 'commercial': Courses can carry a price
     |
     | A priced Course has no self-serve path; LMS Admin grants Enrollment.
+    | This is not flavor (ADR 010). Flavor is the preset below.
     |
     */
 
     'mode' => env('LMS_MODE', 'internal'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Install preset (ADR 010)
+    |--------------------------------------------------------------------------
+    |
+    | One client, one installation. Presets turn capabilities on.
+    | Domain code uses Academy::enabled() / Academy::label(), never
+    | compares preset names. Env LMS_FEATURE_* and LMS_LABEL_* override
+    | individual keys; unset means "use the preset".
+    |
+    */
+
+    'preset' => $academy['preset'],
+
+    'features' => $academy['features'],
+
+    'labels' => $academy['labels'],
+
+    'identity' => $academy['identity'],
 
     /*
     |--------------------------------------------------------------------------

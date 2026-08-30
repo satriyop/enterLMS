@@ -23,19 +23,22 @@
 export * from './models/common';
 
 // Domain model types
-export * from './models/user';
-export * from './models/course';
-export * from './models/lesson';
 export * from './models/assessment';
+export * from './models/course';
 export * from './models/enrollment';
 export * from './models/learning-path';
+export * from './models/lesson';
+export * from './models/user';
 
 // API/Inertia response types
 export * from './api/responses';
 
 // Re-export specific types that are commonly used
-export type { Paginated, SimplePaginated } from './models/common';
-export type { CourseVisibility as AssessmentVisibility } from './models/common';
+export type {
+    CourseVisibility as AssessmentVisibility,
+    Paginated,
+    SimplePaginated,
+} from './models/common';
 
 // Legacy alias for PaginatedResponse (for backwards compatibility)
 export type { Paginated as PaginatedResponse } from './models/common';
@@ -46,7 +49,17 @@ export type { Paginated as PaginatedResponse } from './models/common';
 
 import type { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
+import type { AcademyShared } from './academy';
 import type { User } from './models/user';
+
+export type {
+    AcademyFeature,
+    AcademyFeatures,
+    AcademyIdentity,
+    AcademyLabel,
+    AcademyLabels,
+    AcademyShared,
+} from './academy';
 
 /**
  * Auth shape passed to all pages via Inertia.
@@ -92,6 +105,7 @@ export type AppPageProps<
     quote: { message: string; author: string };
     auth: Auth;
     sidebarOpen: boolean;
+    academy: AcademyShared;
     flash?: {
         success?: string;
         error?: string;

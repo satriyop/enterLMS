@@ -17,3 +17,7 @@ The rest are stack, identity, path, design, and progress. They do not redefine t
 | [007](007-tenang-conformance.md) | Tenang conformance and role collapse |
 | [008](008-one-progress-calculator.md) | One progress calculator, not a strategy |
 | [009](009-tutor-runtime-and-skins.md) | Tutor runtime and skins (revises 001’s invoke path) |
+| [010](010-install-presets.md) | Flavor is an install preset of capabilities, not a product type |
+| [011](011-offering-and-facilitator.md) | Offering is the run of a Course; Facilitator owns that run |
+| [012](012-restricted-grant-onto-named-offering.md) | Restricted Enrollment is granted onto a named Offering |
+| [013](013-assessment-on-course-window-on-offering.md) | Assessment belongs to the Course; the Offering times the attempt |

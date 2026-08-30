@@ -21,6 +21,10 @@ class EnrollmentSummaryResource extends JsonResource
             'status' => (string) $this->status,
             'enrolled_at' => $this->enrolled_at,
             'progress_percentage' => $this->progress_percentage ?? 0,
+            'offering' => $this->whenLoaded('offering', fn () => [
+                'id' => $this->offering->id,
+                'name' => $this->offering->name,
+            ]),
         ];
     }
 }

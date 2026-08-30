@@ -9,21 +9,29 @@ A person who has an Enrollment in at least one Course. Anyone who registers may 
 _Avoid_: student, user (when you mean the learning person)
 
 **LMS Admin**:
-The person who runs this academy: creates and publishes Courses and Learning Paths, grants Enrollment to Restricted Courses and Learning Paths, and grades. They are the teacher of record — they may read Conversations; a Tutor does not publish; a Grade Proposal is not a grade until they accept it. In this phase that is only the founder — see ADR 007.
+The person who runs this academy: creates and publishes Courses and Learning Paths, grants Enrollment onto Offerings of Restricted Courses and Learning Paths, assigns a Facilitator to an Offering, and grades. A Grade Proposal is not a grade until a human of record accepts it. Until an Offering has a Facilitator, that person is the LMS Admin. In this phase LMS Admin is only the founder — see ADR 007.
 _Avoid_: Content Manager, Trainer, Instructor, Teaching Assistant (staff distinctions this academy does not have)
 
-**Learner** and **LMS Admin** are the only two roles this academy models.
+**Learner** and **LMS Admin** are the only two roles this academy models. Facilitator is a grant on an Offering, not a role.
 
 **Course**:
-A collection of learning content organized into sections and lessons.
-_Avoid_: materi (say Course or Lesson), lab, environment
+A collection of learning content organized into sections and lessons. It may have a code (the kampus identifier for that Course). That code is not the Offering’s code.
+_Avoid_: materi (say Course or Lesson), lab, environment, putting kode MK only on the Offering
+
+**Offering**:
+A time-bounded run of a Course with a roster. A Course may have many Offerings. An Enrollment belongs to one Offering. Every Course has a default Offering so an academy without named runs still enrolls. If a Course has named Offerings, Enrollment is granted onto a named Offering, not the default. The UI may say Kelas or Batch.
+_Avoid_: class, section (that is CourseSection), batch, kelas, cohort (say Offering)
+
+**Facilitator**:
+The human of record for an Offering. They may grant Enrollment onto that Offering, read Conversations on it, and accept Grade Proposals on it. They need not have an Enrollment. LMS Admin assigns the grant. A Tutor is not a Facilitator.
+_Avoid_: Instructor, Trainer, Dosen, PIC, Guru (those are UI labels), Tutor, teacher (when you mean the Tutor), Learner (when they have no Enrollment)
 
 **Open Course**:
 A Course listed in the public catalog. A Learner may create their own Enrollment. v1: Pengenalan Agen AI, which is free. It introduces what an agent is, without assuming the Learner operates one.
 _Avoid_: public course (say Open Course), preview (that is a Lesson anyone can watch without Enrollment)
 
 **Restricted Course**:
-A Course hidden from the public catalog. LMS Admin grants Enrollment. Completing an Open Course does not grant it. v1: Administrasi Agen OpenClaw.
+A Course hidden from the public catalog. LMS Admin or that Offering’s Facilitator grants Enrollment onto an Offering. Completing an Open Course does not grant it. v1: Administrasi Agen OpenClaw.
 _Avoid_: private course, invite-only (when you mean this)
 
 **Lesson**:
@@ -35,23 +43,27 @@ An ordered sequence of Courses for the same Learner. v1 has one: Pengenalan Agen
 _Avoid_: program, track, curriculum (when you mean the sequenced object), using a Path as a folder for unrelated Courses
 
 **Enrollment**:
-The record of a Learner being registered in a Course. Logging in does not create it. On an Open Course the Learner may create it; on a Restricted Course or Learning Path, LMS Admin grants it. A Conversation belongs to an Enrollment; talking to a Tutor does not create one.
-_Avoid_: registration, subscription, automatic assignment
+The record of a Learner being registered in a Course on one Offering. Logging in does not create it. On an Open Course the Learner may create it on an Offering. On a Restricted Course or Learning Path, LMS Admin or that Offering’s Facilitator grants it onto an Offering. A Conversation belongs to an Enrollment; talking to a Tutor does not create one. Completing or dropping an Offering does not block Enrollment in a later Offering of the same Course.
+_Avoid_: registration, subscription, automatic assignment; granting Enrollment to a Course without naming the Offering when that Course has named Offerings; granting onto the default Offering while named Offerings exist
 
 **Tutor**:
 The teacher a Learner talks to about a Lesson on their Enrollment. The Lesson overlay, WhatsApp, and Telegram are skins of the same Tutor — not a second teacher. It may talk across that Learner’s Enrollments. It does not teach a Restricted Course they were not granted, and it does not treat a later locked Lesson as if it were current (outline only, not the body). It is not an LMS Agent and not a live console in the Lesson.
 _Avoid_: chatbot, copilot, assistant, LMS Agent, lab, Agent (unqualified), catalog oracle (teaching Courses they are not enrolled in)
 
 **Conversation**:
-The record of a Tutor and a Learner talking about one Lesson on one Enrollment. Readable by that Learner and by LMS Admin. New turns only while the Enrollment is active or completed — not dropped, not without an Enrollment, and not without that Lesson. A turn exists only after Laravel has recorded it — a reply that never persisted is not part of this record. A WhatsApp or Telegram thread is not this record; it is a channel that adds turns to it.
+The record of a Tutor and a Learner talking about one Lesson on one Enrollment. Readable by that Learner, by LMS Admin, and by the Facilitator of that Enrollment’s Offering. New turns only while the Enrollment is active or completed — not dropped, not without an Enrollment, and not without that Lesson. A turn exists only after Laravel has recorded it — a reply that never persisted is not part of this record. A WhatsApp or Telegram thread is not this record; it is a channel that adds turns to it.
 _Avoid_: chat, thread, session (when you mean this record)
 
 **Focus**:
 The Lesson (on an Enrollment) that new Tutor turns on a given skin are recorded against until the Learner switches. The overlay’s Focus is the Lesson page. WhatsApp and Telegram each have their own Focus. A first WhatsApp/Telegram Focus is the Lesson last opened in the overlay if still allowed; otherwise the Learner picks from a short list. A deep link from a Lesson page sets that messaging Focus. A Learner moves a messaging Focus only by asking to switch and Laravel accepting (enrolled, unlocked). Mentioning another Lesson does not move Focus; the Tutor may offer to switch. Outline-level talk stays on the current Focus’s Conversation.
 _Avoid_: session, context, current lesson (when you mean progress)
 
+**Assessment**:
+A measure of understanding that belongs to a Course. Every Offering of that Course shares it. An Offering may set when it can be attempted. Tugas, UTS, and UAS are labels on an Assessment, not other objects. Talking to a Tutor does not complete a Lesson; understanding is still measured by Assessment.
+_Avoid_: quiz (when you mean this), copying an Assessment per Offering, a separate Tugas record beside Assessment
+
 **Grade Proposal**:
-A suggested score and feedback on an Assessment answer that already requires LMS Admin. It is not a grade until they accept it, not shown to the Learner before that, and not a turn in a Conversation.
+A suggested score and feedback on an Assessment answer that already requires a human of record. It is not a grade until the Facilitator of that Enrollment’s Offering accepts it — or LMS Admin, if none is assigned. It is not shown to the Learner before that, and not a turn in a Conversation.
 _Avoid_: auto-grade (deterministic strategies already grade), AI grade, Tutor (when you mean this)
 
 **LMS Agent**:

@@ -4,11 +4,9 @@
 // Displays enrollment status and actions in course detail sidebar
 // =============================================================================
 
-import { ref, computed } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { ProgressBar } from '@/components/features/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ProgressBar } from '@/components/features/shared';
 import {
     Dialog,
     DialogContent,
@@ -17,7 +15,16 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { CheckCircle, ClipboardCheck, Eye, RotateCcw, Trophy, XCircle } from 'lucide-vue-next';
+import { Link, router } from '@inertiajs/vue3';
+import {
+    CheckCircle,
+    ClipboardCheck,
+    Eye,
+    RotateCcw,
+    Trophy,
+    XCircle,
+} from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 // =============================================================================
 // Types
@@ -28,6 +35,14 @@ interface UserEnrollment {
     status: 'active' | 'completed' | 'dropped';
     enrolled_at: string;
     progress_percentage: number;
+    offering?: { id: number; name: string } | null;
+}
+
+interface CourseOffering {
+    id: number;
+    name: string;
+    is_open: boolean;
+    is_default: boolean;
 }
 
 interface AssessmentStats {
@@ -53,6 +68,8 @@ interface Props {
     firstLessonId?: number | null;
     /** Assessment completion stats for enrolled users */
     assessmentStats?: AssessmentStats | null;
+    /** Named offerings when the install has offerings enabled */
+    offerings?: CourseOffering[];
 }
 
 // =============================================================================
@@ -65,6 +82,7 @@ const props = withDefaults(defineProps<Props>(), {
     previewLessonsCount: 0,
     firstLessonId: null,
     assessmentStats: null,
+    offerings: () => [],
 });
 
 // =============================================================================
@@ -82,29 +100,43 @@ const showReenrollDialog = ref(false);
 const isActive = computed(() => props.enrollment?.status === 'active');
 const isCompleted = computed(() => props.enrollment?.status === 'completed');
 const isDropped = computed(() => props.enrollment?.status === 'dropped');
-const hasProgress = computed(() => (props.enrollment?.progress_percentage ?? 0) > 0);
-const hasPendingAssessments = computed(() =>
-    props.assessmentStats && props.assessmentStats.required_pending > 0
+const hasProgress = computed(
+    () => (props.enrollment?.progress_percentage ?? 0) > 0,
 );
-const hasAssessments = computed(() =>
-    props.assessmentStats && props.assessmentStats.required_total > 0
+const hasPendingAssessments = computed(
+    () => props.assessmentStats && props.assessmentStats.required_pending > 0,
+);
+const hasAssessments = computed(
+    () => props.assessmentStats && props.assessmentStats.required_total > 0,
 );
 
 // =============================================================================
 // Methods
 // =============================================================================
 
-const handleEnroll = () => {
+const namedOfferings = computed(() =>
+    props.offerings.filter((offering) => !offering.is_default),
+);
+
+const handleEnroll = (offeringId?: number) => {
     isEnrolling.value = true;
-    router.post(`/courses/${props.courseId}/enroll`, {}, {
-        onFinish: () => {
-            isEnrolling.value = false;
+    router.post(
+        `/courses/${props.courseId}/enroll`,
+        offeringId ? { offering_id: offeringId } : {},
+        {
+            onFinish: () => {
+                isEnrolling.value = false;
+            },
         },
-    });
+    );
 };
 
 const handleUnenroll = () => {
-    if (!confirm('Apakah Anda yakin ingin membatalkan pendaftaran dari kursus ini?')) {
+    if (
+        !confirm(
+            'Apakah Anda yakin ingin membatalkan pendaftaran dari kursus ini?',
+        )
+    ) {
         return;
     }
     router.delete(`/courses/${props.courseId}/unenroll`);
@@ -113,13 +145,17 @@ const handleUnenroll = () => {
 const handleReenroll = (preserveProgress: boolean) => {
     isReenrolling.value = true;
     showReenrollDialog.value = false;
-    router.post(`/courses/${props.courseId}/reenroll`, {
-        preserve_progress: preserveProgress,
-    }, {
-        onFinish: () => {
-            isReenrolling.value = false;
+    router.post(
+        `/courses/${props.courseId}/reenroll`,
+        {
+            preserve_progress: preserveProgress,
         },
-    });
+        {
+            onFinish: () => {
+                isReenrolling.value = false;
+            },
+        },
+    );
 };
 
 const openReenrollDialog = () => {
@@ -142,6 +178,12 @@ const openReenrollDialog = () => {
                     <CheckCircle class="h-5 w-5" />
                     <span class="font-medium">Anda sudah terdaftar</span>
                 </div>
+                <p
+                    v-if="enrollment?.offering"
+                    class="text-sm text-muted-foreground"
+                >
+                    {{ enrollment.offering.name }}
+                </p>
                 <div class="text-sm text-muted-foreground">
                     Progress: {{ enrollment?.progress_percentage || 0 }}%
                 </div>
@@ -150,19 +192,26 @@ const openReenrollDialog = () => {
                     size="sm"
                 />
                 <!-- Assessment Status -->
-                <div v-if="hasAssessments" class="rounded-lg bg-surface-2/50 p-3 text-sm">
-                    <div class="flex items-center gap-2 mb-2">
+                <div
+                    v-if="hasAssessments"
+                    class="rounded-lg bg-surface-2/50 p-3 text-sm"
+                >
+                    <div class="mb-2 flex items-center gap-2">
                         <ClipboardCheck class="h-4 w-4 text-muted-foreground" />
                         <span class="font-medium">Assessment</span>
                     </div>
                     <div v-if="hasPendingAssessments" class="text-warn">
-                        {{ assessmentStats?.required_pending }} assessment wajib belum selesai
+                        {{ assessmentStats?.required_pending }} assessment wajib
+                        belum selesai
                     </div>
                     <div v-else class="text-ok">
                         Semua assessment wajib sudah lulus
                     </div>
-                    <div class="text-xs text-muted-foreground mt-1">
-                        {{ assessmentStats?.required_passed }}/{{ assessmentStats?.required_total }} assessment wajib lulus
+                    <div class="mt-1 text-xs text-muted-foreground">
+                        {{ assessmentStats?.required_passed }}/{{
+                            assessmentStats?.required_total
+                        }}
+                        assessment wajib lulus
                     </div>
                 </div>
                 <Link
@@ -227,34 +276,69 @@ const openReenrollDialog = () => {
                     :disabled="isReenrolling"
                 >
                     <RotateCcw class="mr-2 h-4 w-4" />
-                    {{ isReenrolling ? 'Mendaftar Ulang...' : 'Lanjutkan Belajar' }}
+                    {{
+                        isReenrolling
+                            ? 'Mendaftar Ulang...'
+                            : 'Lanjutkan Belajar'
+                    }}
                 </Button>
-                <p class="text-xs text-center text-muted-foreground">
-                    {{ hasProgress ? 'Anda dapat melanjutkan atau memulai dari awal' : 'Mulai belajar lagi' }}
+                <p class="text-center text-xs text-muted-foreground">
+                    {{
+                        hasProgress
+                            ? 'Anda dapat melanjutkan atau memulai dari awal'
+                            : 'Mulai belajar lagi'
+                    }}
                 </p>
             </div>
 
             <!-- Not Enrolled -->
             <div v-else class="space-y-4">
                 <div class="text-center">
-                    <div class="text-stat text-primary mb-1">Gratis</div>
-                    <p class="text-sm text-muted-foreground">Akses penuh ke semua materi</p>
+                    <div class="text-stat mb-1 text-primary">Gratis</div>
+                    <p class="text-sm text-muted-foreground">
+                        Akses penuh ke semua materi
+                    </p>
+                </div>
+                <div
+                    v-if="canEnroll && namedOfferings.length > 0"
+                    class="space-y-2"
+                >
+                    <Button
+                        v-for="offering in namedOfferings"
+                        :key="offering.id"
+                        class="w-full"
+                        size="lg"
+                        :disabled="isEnrolling || !offering.is_open"
+                        @click="handleEnroll(offering.id)"
+                    >
+                        {{
+                            isEnrolling
+                                ? 'Mendaftar...'
+                                : `Daftar · ${offering.name}`
+                        }}
+                    </Button>
                 </div>
                 <Button
-                    v-if="canEnroll"
+                    v-else-if="canEnroll"
                     class="w-full"
                     size="lg"
-                    @click="handleEnroll"
                     :disabled="isEnrolling"
+                    @click="handleEnroll()"
                 >
                     {{ isEnrolling ? 'Mendaftar...' : 'Daftar Sekarang' }}
                 </Button>
-                <p v-else class="text-sm text-center text-muted-foreground">
+                <p v-else class="text-center text-sm text-muted-foreground">
                     Kursus ini tidak tersedia untuk pendaftaran.
                 </p>
-                <div v-if="previewLessonsCount > 0" class="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">
+                <div
+                    v-if="previewLessonsCount > 0"
+                    class="flex items-center gap-2 border-t pt-2 text-sm text-muted-foreground"
+                >
                     <Eye class="h-4 w-4 text-info" />
-                    <span>{{ previewLessonsCount }} materi dapat dipreview gratis</span>
+                    <span
+                        >{{ previewLessonsCount }} materi dapat dipreview
+                        gratis</span
+                    >
                 </div>
             </div>
         </CardContent>
@@ -266,25 +350,29 @@ const openReenrollDialog = () => {
             <DialogHeader>
                 <DialogTitle>Lanjutkan Belajar</DialogTitle>
                 <DialogDescription>
-                    Anda memiliki progress {{ enrollment?.progress_percentage }}% di kursus ini.
-                    Pilih bagaimana Anda ingin melanjutkan:
+                    Anda memiliki progress
+                    {{ enrollment?.progress_percentage }}% di kursus ini. Pilih
+                    bagaimana Anda ingin melanjutkan:
                 </DialogDescription>
             </DialogHeader>
             <div class="space-y-3 py-4">
                 <Button
-                    class="w-full justify-start h-auto py-3"
+                    class="h-auto w-full justify-start py-3"
                     variant="outline"
                     @click="handleReenroll(true)"
                 >
                     <div class="text-left">
-                        <div class="font-medium">Lanjutkan dari Progress Sebelumnya</div>
+                        <div class="font-medium">
+                            Lanjutkan dari Progress Sebelumnya
+                        </div>
                         <div class="text-xs text-muted-foreground">
-                            Mulai dari {{ enrollment?.progress_percentage }}% progress yang sudah ada
+                            Mulai dari {{ enrollment?.progress_percentage }}%
+                            progress yang sudah ada
                         </div>
                     </div>
                 </Button>
                 <Button
-                    class="w-full justify-start h-auto py-3"
+                    class="h-auto w-full justify-start py-3"
                     variant="outline"
                     @click="handleReenroll(false)"
                 >

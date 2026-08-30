@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Offering;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -25,6 +27,29 @@ class EnrollmentFactory extends Factory
             'progress_percentage' => 0,
             'enrolled_at' => now(),
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterMaking(function (Enrollment $enrollment): void {
+            if ($enrollment->offering_id) {
+                if (! $enrollment->course_id) {
+                    $enrollment->course_id = Offering::query()->find($enrollment->offering_id)?->course_id;
+                }
+
+                return;
+            }
+
+            if (! $enrollment->course_id) {
+                return;
+            }
+
+            $course = Course::query()->find($enrollment->course_id);
+
+            if ($course) {
+                $enrollment->offering_id = $course->ensureDefaultOffering()->id;
+            }
+        });
     }
 
     /**

@@ -24,6 +24,7 @@ use Spatie\ModelStates\HasStates;
  * @property int $id
  * @property int $user_id
  * @property int $course_id
+ * @property int $offering_id
  * @property EnrollmentState $status
  * @property int $progress_percentage
  * @property Carbon|null $enrolled_at
@@ -35,6 +36,7 @@ use Spatie\ModelStates\HasStates;
  * @property Carbon|null $updated_at
  * @property-read User $user
  * @property-read Course $course
+ * @property-read Offering $offering
  * @property-read User|null $inviter
  * @property-read Lesson|null $lastLesson
  * @property-read Collection<int, LessonProgress> $lessonProgress
@@ -54,6 +56,7 @@ class Enrollment extends Model
     protected $fillable = [
         'user_id',
         'course_id',
+        'offering_id',
         'status',
         'progress_percentage',
         'enrolled_at',
@@ -223,6 +226,11 @@ class Enrollment extends Model
         return $this->belongsTo(Course::class);
     }
 
+    public function offering(): BelongsTo
+    {
+        return $this->belongsTo(Offering::class);
+    }
+
     public function invitedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'invited_by');
@@ -276,7 +284,9 @@ class Enrollment extends Model
     public function scopeForUserAndCourse(Builder $query, User $user, Course $course): Builder
     {
         return $query->where('user_id', $user->id)
-            ->where('course_id', $course->id);
+            ->where('course_id', $course->id)
+            ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'completed' THEN 1 ELSE 2 END")
+            ->orderByDesc('enrolled_at');
     }
 
     public static function getActiveForUserAndCourse(User $user, Course $course): ?self

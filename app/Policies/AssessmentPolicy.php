@@ -22,6 +22,10 @@ class AssessmentPolicy
             return true;
         }
 
+        if ($user->facilitatesCourse($course)) {
+            return true;
+        }
+
         // Learners can view published assessments for courses they're enrolled in
         if ($user->isLearner() && $context !== null) {
             return $context->hasAnyEnrollment;
@@ -44,6 +48,10 @@ class AssessmentPolicy
 
         // LMS Admin can view all assessments
         if ($user->isLmsAdmin()) {
+            return true;
+        }
+
+        if ($user->facilitatesCourse($course)) {
             return true;
         }
 
@@ -163,6 +171,12 @@ class AssessmentPolicy
             return true;
         }
 
+        $attempt->loadMissing('enrollment');
+
+        if ($attempt->enrollment && $user->facilitatesEnrollment($attempt->enrollment)) {
+            return true;
+        }
+
         // Learners can view their own attempts
         if ($user->isLearner() && $attempt->user_id === $user->id) {
             return true;
@@ -215,6 +229,9 @@ class AssessmentPolicy
             return true;
         }
 
-        return false;
+        $attempt->loadMissing('enrollment');
+
+        return $attempt->enrollment !== null
+            && $user->facilitatesEnrollment($attempt->enrollment);
     }
 }

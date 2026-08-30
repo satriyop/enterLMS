@@ -31,6 +31,12 @@ class AssessmentAttemptPolicy
             return true;
         }
 
+        $attempt->loadMissing('enrollment');
+
+        if ($attempt->enrollment && $user->facilitatesEnrollment($attempt->enrollment)) {
+            return true;
+        }
+
         // Users can view their own attempts
         return $attempt->user_id === $user->id;
     }
@@ -103,6 +109,12 @@ class AssessmentAttemptPolicy
             return true;
         }
 
+        $attempt->loadMissing('enrollment');
+
+        if ($attempt->enrollment && $user->facilitatesEnrollment($attempt->enrollment)) {
+            return true;
+        }
+
         // Learners can view their own attempts
         if ($user->isLearner() && $attempt->user_id === $user->id) {
             return true;
@@ -160,6 +172,9 @@ class AssessmentAttemptPolicy
             return true;
         }
 
-        return false;
+        $attempt->loadMissing('enrollment');
+
+        return $attempt->enrollment !== null
+            && $user->facilitatesEnrollment($attempt->enrollment);
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ConversationTurnController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseInvitationController;
+use App\Http\Controllers\CourseOfferingController;
 use App\Http\Controllers\CoursePublishController;
 use App\Http\Controllers\CourseRatingController;
 use App\Http\Controllers\CourseReorderController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\LessonPreviewController;
 use App\Http\Controllers\LessonProgressController;
 use App\Http\Controllers\MediaController;
+use App\Http\Middleware\EnsureOfferingsEnabled;
 use Illuminate\Support\Facades\Route;
 
 // Lesson Preview (accessible to authenticated users)
@@ -51,6 +53,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('courses.force-delete');
 
     // Enrollments
+    Route::middleware(EnsureOfferingsEnabled::class)->group(function () {
+        Route::get('courses/{course}/offerings', [CourseOfferingController::class, 'index'])
+            ->name('courses.offerings.index');
+        Route::post('courses/{course}/offerings', [CourseOfferingController::class, 'store'])
+            ->name('courses.offerings.store');
+        Route::put('courses/{course}/offerings/{offering}', [CourseOfferingController::class, 'update'])
+            ->name('courses.offerings.update');
+        Route::delete('courses/{course}/offerings/{offering}', [CourseOfferingController::class, 'destroy'])
+            ->name('courses.offerings.destroy');
+    });
+
     Route::post('courses/{course}/enroll', [EnrollmentController::class, 'store'])
         ->middleware('throttle:10,1')
         ->name('courses.enroll');

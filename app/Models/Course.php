@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -60,6 +61,8 @@ use Spatie\ModelStates\HasStates;
  * @property-read Collection<int, CourseSection> $sections
  * @property-read Collection<int, Lesson> $lessons
  * @property-read Collection<int, Enrollment> $enrollments
+ * @property-read Collection<int, Offering> $offerings
+ * @property-read Offering|null $defaultOffering
  * @property-read Collection<int, Assessment> $assessments
  * @property-read Collection<int, LearningPath> $learningPaths
  * @property-read Collection<int, CourseInvitation> $invitations
@@ -79,6 +82,10 @@ class Course extends Model
 
     protected static function booted(): void
     {
+        static::created(function (Course $course) {
+            $course->ensureDefaultOffering();
+        });
+
         static::deleting(function (Course $course) {
             if ($course->isForceDeleting()) {
                 // Clean up via Eloquent so child model events fire
@@ -209,6 +216,36 @@ class Course extends Model
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    public function offerings(): HasMany
+    {
+        return $this->hasMany(Offering::class);
+    }
+
+    public function defaultOffering(): HasOne
+    {
+        return $this->hasOne(Offering::class)->where('is_default', true);
+    }
+
+    public function ensureDefaultOffering(): Offering
+    {
+        $existing = Offering::query()
+            ->where('course_id', $this->id)
+            ->where('is_default', true)
+            ->first();
+
+        if ($existing) {
+            return $existing;
+        }
+
+        return Offering::query()->create([
+            'course_id' => $this->id,
+            'name' => $this->title,
+            'code' => Offering::DEFAULT_CODE,
+            'is_default' => true,
+            'capacity' => $this->max_enrollments,
+        ]);
     }
 
     public function assessments(): HasMany

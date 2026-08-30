@@ -31,7 +31,7 @@ class EnrollmentController extends Controller
         Gate::authorize('enroll', [$course, $context]);
 
         try {
-            DB::transaction(function () use ($user, $course) {
+            DB::transaction(function () use ($user, $course, $request) {
                 $invitation = CourseInvitation::query()
                     ->where('user_id', $user->id)
                     ->where('course_id', $course->id)
@@ -40,10 +40,15 @@ class EnrollmentController extends Controller
                     ->lockForUpdate()
                     ->first();
 
+                $offeringId = \App\Domain\Shared\Academy::enabled('offerings')
+                    ? ($request->integer('offering_id') ?: null)
+                    : null;
+
                 $this->enrollmentService->enroll(
                     userId: $user->id,
                     courseId: $course->id,
                     invitedBy: $invitation?->invited_by,
+                    offeringId: $offeringId,
                 );
 
                 if ($invitation) {
@@ -68,6 +73,8 @@ class EnrollmentController extends Controller
             return back()->with('error', 'Kuota pendaftaran kursus ini sudah penuh.');
         } catch (\App\Domain\Enrollment\Exceptions\PaymentRequiredException) {
             return back()->with('error', 'Kursus ini berbayar. Silakan selesaikan pembayaran terlebih dahulu.');
+        } catch (\App\Domain\Enrollment\Exceptions\OfferingClosedForEnrollmentException) {
+            return back()->with('error', 'Offering ini sedang tidak menerima pendaftaran.');
         }
     }
 

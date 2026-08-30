@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Enrollment\DTOs\EnrollmentContext;
 use App\Domain\Enrollment\Services\EnrollmentService;
 use App\Domain\Progress\Services\ProgressTrackingService;
+use App\Domain\Shared\Academy;
 use App\Http\Requests\Course\StoreCourseRequest;
 use App\Http\Requests\Course\UpdateCourseRequest;
 use App\Http\Resources\CategoryResource;
@@ -13,6 +14,7 @@ use App\Http\Resources\Course\CourseListResource;
 use App\Http\Resources\Course\CourseRatingResource;
 use App\Http\Resources\Course\CourseShowResource;
 use App\Http\Resources\Course\EnrollmentSummaryResource;
+use App\Http\Resources\Course\OfferingResource;
 use App\Http\Resources\CourseInvitationResource;
 use App\Http\Resources\TagResource;
 use App\Models\Category;
@@ -50,7 +52,11 @@ class CourseController extends Controller
             ->withAvg('ratings', 'rating');
 
         if ($user->isLearner()) {
-            $query->published()->visible();
+            if (Academy::enabled('offerings')) {
+                $query->whereIn('id', []);
+            } else {
+                $query->published()->visible();
+            }
         } elseif (! $user->isLmsAdmin()) {
             $query->where('user_id', $user->id);
         }
@@ -133,6 +139,7 @@ class CourseController extends Controller
 
         $enrollment = Enrollment::query()
             ->forUserAndCourse($user, $course)
+            ->with('offering')
             ->first();
 
         $enrollmentContext = EnrollmentContext::fromData(
@@ -190,6 +197,11 @@ class CourseController extends Controller
             'ratingsCount' => $course->ratings_count,
             'invitations' => $invitations,
             'invitationsTotal' => $invitationsTotal,
+            'offerings' => Academy::enabled('offerings')
+                ? OfferingResource::collection(
+                    $course->offerings()->withCount('enrollments')->orderByDesc('is_default')->orderBy('name')->get()
+                )->resolve()
+                : [],
             'can' => [
                 'update' => Gate::allows('update', $course),
                 'delete' => Gate::allows('delete', $course),

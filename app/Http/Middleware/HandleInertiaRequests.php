@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Domain\Shared\Academy;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -47,6 +48,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
             ],
             'unreadNotificationsCount' => $request->user()?->unreadNotifications()->count() ?? 0,
+            'academy' => Academy::toInertia(),
         ];
     }
 }

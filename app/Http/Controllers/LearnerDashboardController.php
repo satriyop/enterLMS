@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Shared\Academy;
 use App\Http\Resources\Dashboard\DashboardCourseResource;
 use App\Http\Resources\Dashboard\DashboardEnrollmentResource;
 use App\Http\Resources\Dashboard\DashboardInvitationResource;
@@ -21,15 +22,16 @@ class LearnerDashboardController extends Controller
             abort(403);
         }
 
-        // Featured courses for carousel (5 published public courses)
-        $featuredCourses = Course::query()
-            ->published()
-            ->visible()
-            ->with(['user:id,name', 'category:id,name'])
-            ->withCount('enrollments')
-            ->orderByDesc('enrollments_count')
-            ->limit(5)
-            ->get();
+        $featuredCourses = Academy::enabled('offerings')
+            ? collect()
+            : Course::query()
+                ->published()
+                ->visible()
+                ->with(['user:id,name', 'category:id,name'])
+                ->withCount('enrollments')
+                ->orderByDesc('enrollments_count')
+                ->limit(5)
+                ->get();
 
         // My learning - enrolled courses with progress (including completed courses)
         $myLearning = $user->enrollments()

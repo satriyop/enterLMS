@@ -7,12 +7,14 @@ use App\Domain\Enrollment\Exceptions\AlreadyEnrolledException;
 use App\Domain\Enrollment\Exceptions\CourseNotPublishedException;
 use App\Domain\Enrollment\Exceptions\EnrollmentCapacityExceededException;
 use App\Domain\Enrollment\Exceptions\EnrollmentDeadlinePassedException;
+use App\Domain\Enrollment\Exceptions\OfferingClosedForEnrollmentException;
 use App\Domain\Enrollment\Exceptions\PaymentRequiredException;
 use App\Domain\Enrollment\States\ActiveState;
 use App\Domain\Enrollment\States\CompletedState;
 use App\Domain\Enrollment\States\DroppedState;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Offering;
 use App\Models\User;
 use App\Support\Helpers\DatabaseHelper;
 use DateTimeInterface;
@@ -36,21 +38,22 @@ class EnrollmentService
         int $userId,
         int $courseId,
         ?int $invitedBy = null,
-        ?DateTimeInterface $enrolledAt = null
+        ?DateTimeInterface $enrolledAt = null,
+        ?int $offeringId = null,
     ): Enrollment {
         $user = User::findOrFail($userId);
         $course = Course::findOrFail($courseId);
+        $offering = $this->resolveOffering($course, $offeringId);
 
-        $this->validateEnrollment($user, $course);
+        $this->validateEnrollment($user, $course, $offering);
 
-        // Check for existing dropped enrollment (re-enrollment case)
-        $droppedEnrollment = $this->getDroppedEnrollment($user, $course);
+        $droppedEnrollment = $this->getDroppedEnrollment($user, $course, $offering);
 
         if ($droppedEnrollment) {
-            // Capacity still applies when reactivating a dropped seat
-            return DB::transaction(function () use ($courseId, $droppedEnrollment, $invitedBy) {
+            return DB::transaction(function () use ($courseId, $offering, $droppedEnrollment, $invitedBy) {
                 $lockedCourse = Course::query()->whereKey($courseId)->lockForUpdate()->firstOrFail();
-                $this->assertCapacityAvailable($lockedCourse);
+                $lockedOffering = Offering::query()->whereKey($offering->id)->lockForUpdate()->firstOrFail();
+                $this->assertCapacityAvailable($lockedCourse, $lockedOffering);
 
                 return $droppedEnrollment->reactivate(
                     preserveProgress: true,
@@ -60,14 +63,15 @@ class EnrollmentService
         }
 
         try {
-            return DB::transaction(function () use ($userId, $courseId, $invitedBy, $enrolledAt) {
-                // Serialize capacity checks across concurrent enrolls for the same course.
+            return DB::transaction(function () use ($userId, $courseId, $offering, $invitedBy, $enrolledAt) {
                 $lockedCourse = Course::query()->whereKey($courseId)->lockForUpdate()->firstOrFail();
-                $this->assertCapacityAvailable($lockedCourse);
+                $lockedOffering = Offering::query()->whereKey($offering->id)->lockForUpdate()->firstOrFail();
+                $this->assertCapacityAvailable($lockedCourse, $lockedOffering);
 
                 $enrollment = Enrollment::create([
                     'user_id' => $userId,
                     'course_id' => $courseId,
+                    'offering_id' => $lockedOffering->id,
                     'status' => ActiveState::$name,
                     'progress_percentage' => 0,
                     'enrolled_at' => $enrolledAt ?? now(),
@@ -89,13 +93,37 @@ class EnrollmentService
     /**
      * Re-check capacity after locking the course row.
      */
-    protected function assertCapacityAvailable(Course $course): void
+    protected function resolveOffering(Course $course, ?int $offeringId): Offering
     {
+        if ($offeringId === null) {
+            return $course->ensureDefaultOffering();
+        }
+
+        return Offering::query()
+            ->where('course_id', $course->id)
+            ->whereKey($offeringId)
+            ->firstOrFail();
+    }
+
+    protected function assertCapacityAvailable(Course $course, Offering $offering): void
+    {
+        if ($offering->capacity !== null) {
+            $taken = Enrollment::query()
+                ->where('offering_id', $offering->id)
+                ->whereIn('status', [ActiveState::$name, CompletedState::$name])
+                ->count();
+
+            if ($taken >= $offering->capacity) {
+                throw new EnrollmentCapacityExceededException($course->id, $offering->capacity);
+            }
+
+            return;
+        }
+
         if ($course->max_enrollments === null) {
             return;
         }
 
-        // Fresh count under the course lock (same transaction).
         $activeCount = Enrollment::query()
             ->where('course_id', $course->id)
             ->whereIn('status', [ActiveState::$name, CompletedState::$name])
@@ -151,20 +179,25 @@ class EnrollmentService
         return Enrollment::query()
             ->where('user_id', $user->id)
             ->where('course_id', $course->id)
-            ->whereIn('status', [ActiveState::$name, CompletedState::$name])
+            ->where('status', ActiveState::$name)
             ->first();
     }
 
-    public function getDroppedEnrollment(User $user, Course $course): ?Enrollment
+    public function getDroppedEnrollment(User $user, Course $course, ?Offering $offering = null): ?Enrollment
     {
-        return Enrollment::query()
+        $query = Enrollment::query()
             ->where('user_id', $user->id)
             ->where('course_id', $course->id)
-            ->where('status', DroppedState::$name)
-            ->first();
+            ->where('status', DroppedState::$name);
+
+        if ($offering) {
+            $query->where('offering_id', $offering->id);
+        }
+
+        return $query->first();
     }
 
-    protected function validateEnrollment(User $user, Course $course): void
+    protected function validateEnrollment(User $user, Course $course, Offering $offering): void
     {
         $existingEnrollment = $this->getActiveEnrollment($user, $course);
         if ($existingEnrollment) {
@@ -179,11 +212,18 @@ class EnrollmentService
             throw new EnrollmentDeadlinePassedException($course->id, $course->enrollment_deadline);
         }
 
-        if ($course->isAtCapacity()) {
+        if (! $offering->isOpenForEnrollment()) {
+            throw new OfferingClosedForEnrollmentException($offering->id);
+        }
+
+        if ($offering->capacity !== null) {
+            if ($offering->isAtCapacity()) {
+                throw new EnrollmentCapacityExceededException($course->id, $offering->capacity);
+            }
+        } elseif ($course->isAtCapacity()) {
             throw new EnrollmentCapacityExceededException($course->id, $course->max_enrollments);
         }
 
-        // A priced Course has no self-serve path: LMS Admin grants Enrollment.
         if ($course->isPaid()) {
             throw new PaymentRequiredException($course->id, $course->price);
         }

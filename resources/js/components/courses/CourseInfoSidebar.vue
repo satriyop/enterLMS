@@ -4,23 +4,33 @@
 // Sidebar showing course information, tags, and assessment links
 // =============================================================================
 
+import { index as offeringsIndex } from '@/actions/App/Http/Controllers/CourseOfferingController';
 import FormSection from '@/components/crud/FormSection.vue';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useAcademy } from '@/composables/useAcademy';
+import { difficultyLabel, formatDuration } from '@/lib/formatters';
+import type {
+    Category,
+    CourseStatus,
+    CourseVisibility,
+    DifficultyLevel,
+    Tag,
+    UserSummary,
+} from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
-    Clock,
     BookOpen,
-    Globe,
+    Calendar,
+    Clock,
     Eye,
     EyeOff,
-    Calendar,
     FileText,
+    Globe,
+    Layers,
     Plus,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
-import type { CourseStatus, CourseVisibility, DifficultyLevel, Category, Tag, UserSummary } from '@/types';
-import { formatDuration, difficultyLabel } from '@/lib/formatters';
 
 // =============================================================================
 // Types
@@ -46,6 +56,7 @@ interface Props {
 // =============================================================================
 
 const props = defineProps<Props>();
+const { enabled, label } = useAcademy();
 
 // =============================================================================
 // Computed
@@ -108,9 +119,14 @@ const formattedPublishedDate = computed(() => {
                     </Badge>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Visibilitas</span>
+                    <span class="text-sm text-muted-foreground"
+                        >Visibilitas</span
+                    >
                     <span class="flex items-center gap-1.5 text-sm">
-                        <component :is="visibilityConfig.icon" class="h-4 w-4" />
+                        <component
+                            :is="visibilityConfig.icon"
+                            class="h-4 w-4"
+                        />
                         {{ visibilityConfig.label }}
                     </span>
                 </div>
@@ -121,14 +137,18 @@ const formattedPublishedDate = computed(() => {
                     </Badge>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Durasi Total</span>
+                    <span class="text-sm text-muted-foreground"
+                        >Durasi Total</span
+                    >
                     <span class="flex items-center gap-1.5 text-sm font-medium">
                         <Clock class="h-4 w-4 text-muted-foreground" />
                         {{ formatDuration(estimatedDurationMinutes, 'long') }}
                     </span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Jumlah Materi</span>
+                    <span class="text-sm text-muted-foreground"
+                        >Jumlah Materi</span
+                    >
                     <span class="flex items-center gap-1.5 text-sm font-medium">
                         <BookOpen class="h-4 w-4 text-muted-foreground" />
                         {{ totalLessons }} materi
@@ -139,11 +159,18 @@ const formattedPublishedDate = computed(() => {
                     <span class="text-sm font-medium">{{ category.name }}</span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Instruktur</span>
+                    <span class="text-sm text-muted-foreground"
+                        >Instruktur</span
+                    >
                     <span class="text-sm font-medium">{{ user.name }}</span>
                 </div>
-                <div v-if="formattedPublishedDate" class="flex items-center justify-between">
-                    <span class="text-sm text-muted-foreground">Diterbitkan</span>
+                <div
+                    v-if="formattedPublishedDate"
+                    class="flex items-center justify-between"
+                >
+                    <span class="text-sm text-muted-foreground"
+                        >Diterbitkan</span
+                    >
                     <span class="flex items-center gap-1.5 text-sm">
                         <Calendar class="h-4 w-4 text-muted-foreground" />
                         {{ formattedPublishedDate }}
@@ -155,22 +182,45 @@ const formattedPublishedDate = computed(() => {
         <!-- Tags -->
         <FormSection v-if="tags && tags.length > 0" title="Tag">
             <div class="flex flex-wrap gap-2">
-                <Badge v-for="tag in tags" :key="tag.id" variant="secondary" class="rounded-full">
+                <Badge
+                    v-for="tag in tags"
+                    :key="tag.id"
+                    variant="secondary"
+                    class="rounded-full"
+                >
                     {{ tag.name }}
                 </Badge>
             </div>
         </FormSection>
 
+        <FormSection v-if="enabled('offerings')" :title="label('offering')">
+            <Link :href="offeringsIndex.url(courseId)" class="block w-full">
+                <Button variant="outline" class="w-full justify-start gap-2">
+                    <Layers class="h-4 w-4" />
+                    <span>Kelola {{ label('offering') }}</span>
+                </Button>
+            </Link>
+        </FormSection>
+
         <!-- Assessment Links -->
         <FormSection title="Penilaian">
             <div class="space-y-3">
-                <Link :href="`/courses/${courseId}/assessments`" class="block w-full">
-                    <Button variant="outline" class="w-full justify-start gap-2">
+                <Link
+                    :href="`/courses/${courseId}/assessments`"
+                    class="block w-full"
+                >
+                    <Button
+                        variant="outline"
+                        class="w-full justify-start gap-2"
+                    >
                         <FileText class="h-4 w-4" />
                         <span>Lihat Penilaian</span>
                     </Button>
                 </Link>
-                <Link :href="`/courses/${courseId}/assessments/create`" class="block w-full">
+                <Link
+                    :href="`/courses/${courseId}/assessments/create`"
+                    class="block w-full"
+                >
                     <Button class="w-full justify-start gap-2">
                         <Plus class="h-4 w-4" />
                         <span>Buat Penilaian</span>

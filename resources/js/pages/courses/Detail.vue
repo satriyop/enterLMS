@@ -4,26 +4,26 @@
 // Uses CourseContentOutline, CourseRatingsSection, CourseEnrollmentCard, CourseMetaCard
 // =============================================================================
 
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import CourseContentOutline from '@/components/courses/CourseContentOutline.vue';
-import CourseRatingsSection from '@/components/courses/CourseRatingsSection.vue';
 import CourseEnrollmentCard from '@/components/courses/CourseEnrollmentCard.vue';
 import CourseMetaCard from '@/components/courses/CourseMetaCard.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { BookOpen, AlertTriangle } from 'lucide-vue-next';
-import { computed } from 'vue';
-import { formatDuration, difficultyLabel, difficultyColor } from '@/lib/utils';
+import CourseRatingsSection from '@/components/courses/CourseRatingsSection.vue';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { difficultyColor, difficultyLabel, formatDuration } from '@/lib/utils';
 import type {
+    BreadcrumbItem,
     Category,
-    Tag,
     ContentType,
     DifficultyLevel,
+    Tag,
     UserSummary,
 } from '@/types';
-import type { BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/vue3';
+import { AlertTriangle, BookOpen } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 // =============================================================================
 // Page-Specific Types
@@ -70,6 +70,14 @@ interface UserEnrollment {
     status: string;
     enrolled_at: string;
     progress_percentage: number;
+    offering?: { id: number; name: string } | null;
+}
+
+interface CourseOffering {
+    id: number;
+    name: string;
+    is_open: boolean;
+    is_default: boolean;
 }
 
 interface CourseRating {
@@ -101,6 +109,7 @@ interface Props {
     ratings: CourseRating[];
     averageRating: number | null;
     ratingsCount: number;
+    offerings?: CourseOffering[];
     can: {
         update: boolean;
         delete: boolean;
@@ -114,7 +123,9 @@ interface Props {
 // Component Setup
 // =============================================================================
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    offerings: () => [],
+});
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     { title: 'Katalog kursus', href: '/courses' },
@@ -125,22 +136,31 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
 // Computed
 // =============================================================================
 
-const isEnrolled = computed(() =>
-    props.enrollment && props.enrollment.status === 'active'
+const isEnrolled = computed(
+    () => props.enrollment && props.enrollment.status === 'active',
 );
 
 const totalDuration = computed(() => {
-    const minutes = props.course.manual_duration_minutes ?? props.course.estimated_duration_minutes ?? 0;
+    const minutes =
+        props.course.manual_duration_minutes ??
+        props.course.estimated_duration_minutes ??
+        0;
     return formatDuration(minutes, 'long');
 });
 
 const totalLessons = computed(() =>
-    props.course.sections.reduce((total, section) => total + section.lessons.length, 0)
+    props.course.sections.reduce(
+        (total, section) => total + section.lessons.length,
+        0,
+    ),
 );
 
 const previewLessonsCount = computed(() =>
-    props.course.sections.reduce((total, section) =>
-        total + section.lessons.filter(l => l.is_free_preview).length, 0)
+    props.course.sections.reduce(
+        (total, section) =>
+            total + section.lessons.filter((l) => l.is_free_preview).length,
+        0,
+    ),
 );
 
 const firstLessonId = computed(() => {
@@ -162,11 +182,15 @@ const firstLessonId = computed(() => {
             <nav class="mb-6 text-sm">
                 <ol class="flex items-center gap-2 text-muted-foreground">
                     <li>
-                        <Link href="/" class="hover:text-foreground">Beranda</Link>
+                        <Link href="/" class="hover:text-foreground"
+                            >Beranda</Link
+                        >
                     </li>
                     <li>/</li>
                     <li>
-                        <Link href="/courses" class="hover:text-foreground">Kursus</Link>
+                        <Link href="/courses" class="hover:text-foreground"
+                            >Kursus</Link
+                        >
                     </li>
                     <li>/</li>
                     <li class="text-foreground">{{ course.title }}</li>
@@ -174,12 +198,20 @@ const firstLessonId = computed(() => {
             </nav>
 
             <!-- Under Revision Alert -->
-            <Alert v-if="isUnderRevision" variant="destructive" class="mb-6 border-warn bg-warn-soft">
+            <Alert
+                v-if="isUnderRevision"
+                variant="destructive"
+                class="mb-6 border-warn bg-warn-soft"
+            >
                 <AlertTriangle class="h-5 w-5 text-warn" />
-                <AlertTitle class="text-warn">Kursus Sedang Dalam Revisi</AlertTitle>
+                <AlertTitle class="text-warn"
+                    >Kursus Sedang Dalam Revisi</AlertTitle
+                >
                 <AlertDescription class="text-warn">
-                    Kursus ini sedang dalam proses revisi oleh admin. Anda mungkin tidak dapat mengakses konten baru sampai revisi selesai dan kursus dipublikasikan kembali.
-                    Progress pembelajaran Anda tetap tersimpan.
+                    Kursus ini sedang dalam proses revisi oleh admin. Anda
+                    mungkin tidak dapat mengakses konten baru sampai revisi
+                    selesai dan kursus dipublikasikan kembali. Progress
+                    pembelajaran Anda tetap tersimpan.
                 </AlertDescription>
             </Alert>
 
@@ -188,27 +220,38 @@ const firstLessonId = computed(() => {
                 <div class="lg:col-span-2">
                     <!-- Course Header -->
                     <div class="mb-6">
-                        <div class="flex flex-wrap items-center gap-2 mb-3">
-                            <Badge :class="difficultyColor(course.difficulty_level)">
+                        <div class="mb-3 flex flex-wrap items-center gap-2">
+                            <Badge
+                                :class="
+                                    difficultyColor(course.difficulty_level)
+                                "
+                            >
                                 {{ difficultyLabel(course.difficulty_level) }}
                             </Badge>
                             <Badge v-if="course.category" variant="outline">
                                 {{ course.category.name }}
                             </Badge>
                         </div>
-                        <h1 class="text-editorial-h1 mb-3">{{ course.title }}</h1>
+                        <h1 class="text-editorial-h1 mb-3">
+                            {{ course.title }}
+                        </h1>
                         <p class="text-lead">{{ course.short_description }}</p>
                     </div>
 
                     <!-- Thumbnail -->
-                    <div class="mb-6 aspect-video rounded-lg bg-surface-2 overflow-hidden">
+                    <div
+                        class="mb-6 aspect-video overflow-hidden rounded-lg bg-surface-2"
+                    >
                         <img
                             v-if="course.thumbnail_path"
                             :src="`/storage/${course.thumbnail_path}`"
                             :alt="course.title"
                             class="h-full w-full object-cover"
                         />
-                        <div v-else class="flex h-full items-center justify-center">
+                        <div
+                            v-else
+                            class="flex h-full items-center justify-center"
+                        >
                             <BookOpen class="h-20 w-20 text-muted-foreground" />
                         </div>
                     </div>
@@ -224,7 +267,9 @@ const firstLessonId = computed(() => {
                             <div class="text-tiny">Durasi</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-stat">{{ course.enrollments_count }}</div>
+                            <div class="text-stat">
+                                {{ course.enrollments_count }}
+                            </div>
                             <div class="text-tiny">Peserta</div>
                         </div>
                     </div>
@@ -235,7 +280,10 @@ const firstLessonId = computed(() => {
                             <CardTitle>Tentang Kursus</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div class="prose prose-sm dark:prose-invert max-w-none" v-html="course.description" />
+                            <div
+                                class="prose prose-sm dark:prose-invert max-w-none"
+                                v-html="course.description"
+                            />
                         </CardContent>
                     </Card>
 
@@ -243,15 +291,22 @@ const firstLessonId = computed(() => {
                     <CourseContentOutline
                         :course-id="course.id"
                         :sections="course.sections"
-                        :total-duration-minutes="course.manual_duration_minutes ?? course.estimated_duration_minutes"
+                        :total-duration-minutes="
+                            course.manual_duration_minutes ??
+                            course.estimated_duration_minutes
+                        "
                         :is-enrolled="isEnrolled"
                     />
 
                     <!-- Tags -->
                     <div v-if="course.tags.length > 0" class="mt-6">
-                        <h3 class="text-sm font-medium mb-2">Tags</h3>
+                        <h3 class="mb-2 text-sm font-medium">Tags</h3>
                         <div class="flex flex-wrap gap-2">
-                            <Badge v-for="tag in course.tags" :key="tag.id" variant="secondary">
+                            <Badge
+                                v-for="tag in course.tags"
+                                :key="tag.id"
+                                variant="secondary"
+                            >
                                 {{ tag.name }}
                             </Badge>
                         </div>
@@ -281,13 +336,17 @@ const firstLessonId = computed(() => {
                             :preview-lessons-count="previewLessonsCount"
                             :first-lesson-id="firstLessonId"
                             :assessment-stats="assessmentStats"
+                            :offerings="offerings"
                         />
 
                         <!-- Course Info Card -->
                         <CourseMetaCard
                             :instructor="course.user"
                             :lessons-count="totalLessons"
-                            :duration-minutes="course.manual_duration_minutes ?? course.estimated_duration_minutes"
+                            :duration-minutes="
+                                course.manual_duration_minutes ??
+                                course.estimated_duration_minutes
+                            "
                             :enrollments-count="course.enrollments_count"
                             :difficulty-level="course.difficulty_level"
                             :category="course.category"

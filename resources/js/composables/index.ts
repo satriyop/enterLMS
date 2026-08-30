@@ -8,41 +8,45 @@
 // For fetching and managing domain data
 // =============================================================================
 
+export { useAssessment } from './data/useAssessment';
 export { useCourse } from './data/useCourse';
 export { useCourses } from './data/useCourses';
 export { useEnrollment } from './data/useEnrollment';
 export { useLesson } from './data/useLesson';
-export { useAssessment } from './data/useAssessment';
 
 // =============================================================================
 // UI Composables
 // For managing UI state
 // =============================================================================
 
-export { useModal } from './ui/useModal';
 export { useConfirmation } from './ui/useConfirmation';
-export { useToast } from './ui/useToast';
-export { useSearch } from './ui/useSearch';
+export { useModal } from './ui/useModal';
 export { usePagination, type PaginationMeta } from './ui/usePagination';
+export { useSearch } from './ui/useSearch';
 export { useTabs } from './ui/useTabs';
+export { useToast } from './ui/useToast';
 
 // =============================================================================
 // Utility Composables
 // General-purpose composables for common patterns
 // =============================================================================
 
+export {
+    useDebouncedWatch,
+    useDebouncedWatchMultiple,
+} from './utils/useDebouncedWatch';
 export { useEventListener } from './utils/useEventListener';
-export { useDebouncedWatch, useDebouncedWatchMultiple } from './utils/useDebouncedWatch';
 
 // =============================================================================
 // Existing Composables (Root Level)
 // Legacy composables kept at root for backward compatibility
 // =============================================================================
 
+export { useAcademy } from './useAcademy';
 export { useAppearance } from './useAppearance';
+export { useAssessmentTimer } from './useAssessmentTimer';
 export { useInitials } from './useInitials';
-export { useTwoFactorAuth } from './useTwoFactorAuth';
-export { useLessonProgress } from './useLessonProgress';
 export { useLessonMediaProgress } from './useLessonMediaProgress';
 export { useLessonPagination } from './useLessonPagination';
-export { useAssessmentTimer } from './useAssessmentTimer';
+export { useLessonProgress } from './useLessonProgress';
+export { useTwoFactorAuth } from './useTwoFactorAuth';
