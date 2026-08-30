@@ -112,6 +112,36 @@ it('lands a facilitator on the offerings page after a successful grant', functio
         ->exists())->toBeTrue();
 });
 
+it('shows a facilitator only the roster of their offering', function () {
+    $this->learner->update(['name' => 'Budi Santoso']);
+    $inB = User::factory()->learner()->create([
+        'name' => 'Siti Aminah',
+        'external_id' => '21001002',
+    ]);
+
+    Enrollment::factory()->active()->create([
+        'user_id' => $this->learner->id,
+        'course_id' => $this->course->id,
+        'offering_id' => $this->kelasA->id,
+    ]);
+    Enrollment::factory()->active()->create([
+        'user_id' => $inB->id,
+        'course_id' => $this->course->id,
+        'offering_id' => $this->kelasB->id,
+    ]);
+
+    $this->actingAs($this->facilitator)
+        ->get(route('courses.offerings.index', $this->course))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('courses/offerings/Index')
+            ->where('offerings.1.name', 'Kelas A')
+            ->where('offerings.1.roster.0.external_id', '21001001')
+            ->where('offerings.2.name', 'Kelas B')
+            ->missing('offerings.2.roster')
+        );
+});
+
 it('forbids a facilitator from publishing a course', function () {
     $draft = Course::factory()->draft()->create();
     Offering::factory()->for($draft)->create([

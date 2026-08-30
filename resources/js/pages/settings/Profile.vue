@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
+import { useAcademy } from '@/composables/useAcademy';
 import { type BreadcrumbItem } from '@/types';
 
 // =============================================================================
@@ -34,6 +35,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const page = usePage();
 const user = page.props.auth.user;
+const { identity } = useAcademy();
 </script>
 
 <template>
@@ -64,6 +66,22 @@ const user = page.props.auth.user;
                             placeholder="Full name"
                         />
                         <InputError class="mt-2" :message="errors.name" />
+                    </div>
+
+                    <div
+                        v-if="identity.scheme !== 'email'"
+                        class="grid gap-2"
+                    >
+                        <Label for="external_id">{{ identity.label }}</Label>
+                        <Input
+                            id="external_id"
+                            class="mt-1 block w-full"
+                            :default-value="user.external_id ?? ''"
+                            disabled
+                        />
+                        <p class="text-xs text-muted-foreground">
+                            Hanya dibaca. Hubungi pengelola untuk mengubah.
+                        </p>
                     </div>
 
                     <div class="grid gap-2">

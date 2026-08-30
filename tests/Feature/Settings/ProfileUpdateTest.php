@@ -1,6 +1,24 @@
 <?php
 
+use App\Domain\Shared\Academy;
 use App\Models\User;
+use Inertia\Testing\AssertableInertia;
+
+it('shows NIM on the profile page for an academic learner', function () {
+    Academy::using('academic');
+    $user = User::factory()->create([
+        'role' => 'learner',
+        'external_id' => '21001001',
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('profile.edit'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('auth.user.external_id', '21001001')
+            ->where('academy.identity.label', 'NIM')
+        );
+});
 
 it('displays the profile page', function () {
     $user = User::factory()->create();

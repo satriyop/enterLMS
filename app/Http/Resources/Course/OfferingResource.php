@@ -24,7 +24,8 @@ class OfferingResource extends JsonResource
      *     is_default: bool,
      *     is_open: bool,
      *     enrollments_count: int|null,
-     *     facilitator: array{id: int, name: string}|null
+     *     facilitator: array{id: int, name: string}|null,
+     *     roster?: list<array{id: int, status: string, name: string, email: string, external_id: string|null}>
      * }
      */
     public function toArray(Request $request): array
@@ -47,6 +48,16 @@ class OfferingResource extends JsonResource
                     'name' => $this->facilitator->name,
                     'email' => $this->facilitator->email,
                 ]),
+            'roster' => $this->whenLoaded('enrollments', fn () => $this->enrollments
+                ->map(fn ($enrollment) => [
+                    'id' => $enrollment->id,
+                    'status' => (string) $enrollment->status,
+                    'name' => $enrollment->user->name,
+                    'email' => $enrollment->user->email,
+                    'external_id' => $enrollment->user->external_id,
+                ])
+                ->values()
+                ->all()),
         ];
     }
 }

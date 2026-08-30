@@ -32,6 +32,31 @@ it('lists offerings when the capability is on', function () {
         );
 });
 
+it('lists the roster of an offering for lms admin', function () {
+    Academy::using('academic');
+
+    $kelasA = Offering::factory()->for($this->course)->create(['name' => 'Kelas A', 'code' => 'a']);
+    $learner = User::factory()->learner()->create([
+        'name' => 'Budi Santoso',
+        'external_id' => '21001001',
+    ]);
+    Enrollment::factory()->active()->create([
+        'user_id' => $learner->id,
+        'course_id' => $this->course->id,
+        'offering_id' => $kelasA->id,
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('courses.offerings.index', $this->course))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('courses/offerings/Index')
+            ->where('offerings.1.name', 'Kelas A')
+            ->where('offerings.1.roster.0.external_id', '21001001')
+            ->where('offerings.1.roster.0.name', 'Budi Santoso')
+        );
+});
+
 it('creates a named offering scoped to the course', function () {
     Academy::using('academic');
 

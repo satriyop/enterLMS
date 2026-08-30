@@ -32,6 +32,13 @@ interface OfferingItem {
     is_open: boolean;
     enrollments_count?: number;
     facilitator?: { id: number; name: string; email: string } | null;
+    roster?: {
+        id: number;
+        status: string;
+        name: string;
+        email: string;
+        external_id: string | null;
+    }[];
 }
 
 interface Props {
@@ -391,6 +398,37 @@ const deleteOffering = (offering: OfferingItem) => {
                                 · {{ offering.facilitator.name }}</span
                             >
                         </p>
+                        <div
+                            v-if="offering.roster"
+                            class="mt-4 space-y-2 border-t border-border pt-4"
+                        >
+                            <p class="text-sm font-medium">Peserta</p>
+                            <ul
+                                v-if="offering.roster.length > 0"
+                                class="space-y-1 text-sm"
+                            >
+                                <li
+                                    v-for="member in offering.roster"
+                                    :key="member.id"
+                                >
+                                    <span class="text-foreground">{{
+                                        member.name
+                                    }}</span>
+                                    <span
+                                        v-if="member.external_id"
+                                        class="text-muted-foreground"
+                                    >
+                                        · {{ member.external_id }}</span
+                                    >
+                                    <span class="text-muted-foreground">
+                                        · {{ member.status }}</span
+                                    >
+                                </li>
+                            </ul>
+                            <p v-else class="text-sm text-muted-foreground">
+                                Belum ada peserta.
+                            </p>
+                        </div>
                         <div class="mt-4 flex justify-end gap-2">
                             <Button
                                 v-if="!offering.is_default"

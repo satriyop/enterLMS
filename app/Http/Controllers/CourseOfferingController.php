@@ -9,6 +9,7 @@ use App\Http\Requests\Offering\StoreOfferingRequest;
 use App\Http\Requests\Offering\UpdateOfferingRequest;
 use App\Http\Resources\Course\OfferingResource;
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Offering;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,6 +31,31 @@ class CourseOfferingController extends Controller
             ->get();
 
         $user = $request->user();
+        $rosterOfferingIds = $user->isLmsAdmin()
+            ? $offerings->pluck('id')
+            : $offerings->where('facilitator_id', $user->id)->pluck('id');
+
+        if ($rosterOfferingIds->isNotEmpty()) {
+            $roster = Enrollment::query()
+                ->whereIn('offering_id', $rosterOfferingIds)
+                ->with('user:id,name,email,external_id')
+                ->orderBy('id')
+                ->get()
+                ->groupBy('offering_id');
+
+            foreach ($offerings as $offering) {
+                if (! $offering instanceof Offering) {
+                    continue;
+                }
+
+                if ($rosterOfferingIds->contains($offering->id)) {
+                    $offering->setRelation(
+                        'enrollments',
+                        $roster->get($offering->id, collect()),
+                    );
+                }
+            }
+        }
         $namedIds = $course->offerings()->where('is_default', false)->pluck('id');
         $grantOfferingIds = $user->isLmsAdmin()
             ? ($namedIds->isNotEmpty()
