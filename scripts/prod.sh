@@ -21,7 +21,7 @@ First time
   ./scripts/prod.sh provision    PHP pool, MySQL DB, Caddy site (additive)
   ./scripts/prod.sh env-init     APP_KEY + DB password
   ./scripts/prod.sh deploy       push HEAD, rsync that SHA, migrate --force
-  ./scripts/prod.sh seed-academy first catalog only. Then change passwords.
+  ./scripts/prod.sh seed-academy first catalog only. Then rotate every user password.
   ./scripts/prod.sh health
 
 Every release

@@ -18,4 +18,4 @@ TLS: DNS A `lms.pamungkas.org` → this host. If Cloudflare is orange-cloud and 
 
 Hermes is **not** installed on aidev. Production points `TUTOR_RUNTIME_URL` at this Mac’s Hermes API server over Tailscale (`scripts/tutor-laptop-for-prod.sh`, `POST /v1/chat/completions`). Lid closed = Tutor down. PHP-FPM and Caddy read timeouts are 200s so a Tutor turn can wait.
 
-First seed creates `admin@enterlms.test` and `learner@enterlms.test` with password `password`. Change them immediately.
+First seed creates `admin@enterlms.test` and `learner@enterlms.test` (and the other catalog users) with the local demo password. Rotate every production user to a unique secret before anyone logs in. Do not leave the demo password in production.

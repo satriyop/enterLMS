@@ -37,7 +37,17 @@ it('parses the deploy scripts', function (string $script) {
     'scripts/prod/lib.sh',
     'scripts/prod/deploy.sh',
     'scripts/prod/health.sh',
+    'scripts/prod/seed-academy.sh',
 ]);
+
+it('does not print the local demo password as a production login', function () {
+    $script = file_get_contents(base_path('scripts/prod/seed-academy.sh'));
+
+    expect($script)
+        ->toContain('Rotate every seeded user password')
+        ->not->toContain('Login: admin@enterlms.test / password')
+        ->not->toContain('password=password');
+});
 
 it('refuses deploy when the git tree is dirty', function () {
     $dir = gitGateRepo();

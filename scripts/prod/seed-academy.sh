@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# First catalog only. Demo passwords are "password" — change them after.
+# First catalog only. Seeded users share the local demo password — rotate them on production before anyone logs in.
 set -euo pipefail
 
 # shellcheck source=lib.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
 
 ensure_ssh_alias
-confirm "Seed the academy catalog on ${DOMAIN}? Demo logins use password=password. Change them after." \
+confirm "Seed the academy catalog on ${DOMAIN}? Seeded users keep the local demo password until you rotate them." \
     || die "aborted"
 
 ssh_aidev "APP_DIR='${APP_DIR}' APP_USER='${APP_USER}' DB_NAME='${DB_NAME}' bash -s" <<'REMOTE'
@@ -20,6 +20,5 @@ if [[ "${count}" != "0" && "${FORCE_SEED:-}" != "1" ]]; then
 fi
 sudo -u "${APP_USER}" -H php artisan db:seed --force
 echo "SEED_OK"
-echo "Login: admin@enterlms.test / password  and  learner@enterlms.test / password"
-echo "Change those passwords immediately."
+echo "Rotate every seeded user password before anyone logs in. Do not leave the local demo password in production."
 REMOTE
