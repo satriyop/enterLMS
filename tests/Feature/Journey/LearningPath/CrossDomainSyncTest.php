@@ -245,6 +245,44 @@ describe('Shared Course Across Paths', function () {
 
         expect($pathProgress->course_enrollment_id)->toBe($existingEnrollment->id);
     });
+
+    /**
+     * The same adoption has to happen when the course is reached later, not
+     * only when the path is joined -- unlocking runs through a second, separate
+     * ensureCourseEnrollment().
+     */
+    it('unlocking a course the learner already finished adopts that enrollment', function () {
+        $first = Course::factory()->published()->create();
+        $second = Course::factory()->published()->create();
+
+        // Finished on their own initiative, before this path was ever joined.
+        $finished = Enrollment::factory()->completed()->create([
+            'user_id' => $this->learner->id,
+            'course_id' => $second->id,
+            'completed_at' => now()->subDays(3),
+        ]);
+
+        $path = LearningPath::factory()->published()->create(['prerequisite_mode' => 'sequential']);
+        $path->courses()->attach($first->id, ['position' => 1, 'is_required' => true]);
+        $path->courses()->attach($second->id, ['position' => 2, 'is_required' => true]);
+
+        $enrollment = app(PathEnrollmentService::class)->enroll($this->learner, $path);
+        $enrollment = LearningPathEnrollment::find($enrollment->id);
+
+        $enrollment->courseProgress()->where('course_id', $first->id)->first()->update([
+            'state' => CompletedCourseState::$name,
+            'completed_at' => now(),
+        ]);
+
+        app(PathProgressService::class)->unlockNextCourses($enrollment);
+
+        $secondProgress = $enrollment->courseProgress()->where('course_id', $second->id)->first();
+
+        expect($secondProgress->course_enrollment_id)->toBe($finished->id);
+        expect(
+            Enrollment::where('user_id', $this->learner->id)->where('course_id', $second->id)->count()
+        )->toBe(1);
+    });
 });
 
 describe('Course Drop → Path Progress Reversion', function () {

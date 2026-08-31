@@ -320,13 +320,14 @@ class PathProgressService
     }
 
     /**
-     * Ensure user has an active course enrollment.
-     * Reuses existing enrollment or creates new one.
+     * Ensure the Learner holds a seat in the Course this path step unlocks.
+     * Reuses the enrollment they already have, or creates one.
      */
     protected function ensureCourseEnrollment(User $user, Course $course): Enrollment
     {
-        // Check if user already has an active enrollment for this course
-        $existingEnrollment = $this->enrollmentService->getActiveEnrollment($user, $course);
+        // Unlocking a Course the Learner already finished on their own must
+        // adopt that enrollment, not race a second one into the same seat.
+        $existingEnrollment = $this->enrollmentService->getCurrentEnrollment($user, $course);
 
         if ($existingEnrollment) {
             $this->logger->info('learning_path.course_enrollment.reused_on_unlock', [

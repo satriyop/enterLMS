@@ -458,7 +458,7 @@ describe('Error Handling', function () {
 
         // Mock enrollment service to fail
         $this->mock(EnrollmentService::class)
-            ->shouldReceive('getActiveEnrollment')
+            ->shouldReceive('getCurrentEnrollment')
             ->andReturn(null)
             ->shouldReceive('enroll')
             ->andThrow(new \RuntimeException('Database error'));

@@ -312,13 +312,15 @@ class PathEnrollmentService
     }
 
     /**
-     * Ensure user has an active course enrollment.
-     * Reuses existing enrollment or creates new one.
+     * Ensure the Learner holds a seat in the Course this path step points at.
+     * Reuses the enrollment they already have, or creates one.
      */
     public function ensureCourseEnrollment(User $user, Course $course): \App\Models\Enrollment
     {
-        // Check if user already has an active enrollment for this course
-        $existingEnrollment = $this->enrollmentService->getActiveEnrollment($user, $course);
+        // A Course finished before the path was joined still counts as held --
+        // asking only for an *active* enrollment would try to create a second
+        // one and hit the unique seat constraint.
+        $existingEnrollment = $this->enrollmentService->getCurrentEnrollment($user, $course);
 
         if ($existingEnrollment) {
             $this->logger->info('learning_path.course_enrollment.reused', [

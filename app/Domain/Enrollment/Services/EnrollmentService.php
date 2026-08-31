@@ -208,6 +208,28 @@ class EnrollmentService
             ->first();
     }
 
+    /**
+     * The enrollment already holding this Learner's seat in the Course, whether
+     * they are still working through it or have finished it.
+     *
+     * Deliberately not the same question as getActiveEnrollment(). Since
+     * Offerings landed, finishing a Course no longer bars a Learner from taking
+     * it again in another Kelas -- so "is there an active enrollment?" is the
+     * right guard when deciding whether a *new* one may be created, and the
+     * wrong one when deciding whether an *existing* one can be reused. A live
+     * seat is preferred over a finished one.
+     */
+    public function getCurrentEnrollment(User $user, Course $course): ?Enrollment
+    {
+        return $this->getActiveEnrollment($user, $course)
+            ?? Enrollment::query()
+                ->where('user_id', $user->id)
+                ->where('course_id', $course->id)
+                ->where('status', CompletedState::$name)
+                ->latest('id')
+                ->first();
+    }
+
     public function getDroppedEnrollment(User $user, Course $course, ?Offering $offering = null): ?Enrollment
     {
         $query = Enrollment::query()
