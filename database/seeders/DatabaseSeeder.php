@@ -40,8 +40,9 @@ class DatabaseSeeder extends Seeder
             FreeFlowDemoSeeder::class,
             CategorySeeder::class,
             TagSeeder::class,
-            // Open catalog: AI untuk Kampus (sivitas)
+            // Open catalog: AI untuk Kampus (sivitas), AI untuk Korporat (pimpinan)
             AiForCampusCourseSeeder::class,
+            AiForCorporateCourseSeeder::class,
             // Restricted OpenClaw course + operator path
             AgentAcademyCourseSeeder::class,
             // Sample activity
