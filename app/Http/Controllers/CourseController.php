@@ -9,6 +9,7 @@ use App\Domain\Shared\Academy;
 use App\Http\Requests\Course\StoreCourseRequest;
 use App\Http\Requests\Course\UpdateCourseRequest;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ContentProposalResource;
 use App\Http\Resources\Course\CourseEditResource;
 use App\Http\Resources\Course\CourseListResource;
 use App\Http\Resources\Course\CourseRatingResource;
@@ -18,6 +19,7 @@ use App\Http\Resources\Course\OfferingResource;
 use App\Http\Resources\CourseInvitationResource;
 use App\Http\Resources\TagResource;
 use App\Models\Category;
+use App\Models\ContentProposal;
 use App\Models\Course;
 use App\Models\CourseInvitation;
 use App\Models\Enrollment;
@@ -224,16 +226,24 @@ class CourseController extends Controller
 
         $activeEnrollmentsCount = $course->enrollments()->where('status', 'active')->count();
 
+        $contentProposals = $course->contentProposals()
+            ->with('lesson:id,title')
+            ->latest()
+            ->limit(20)
+            ->get();
+
         return Inertia::render('courses/Edit', [
             'course' => new CourseEditResource($course),
             'categories' => CategoryResource::collection(Category::orderBy('name')->get())->resolve(),
             'tags' => TagResource::collection(Tag::orderBy('name')->get())->resolve(),
             'activeEnrollmentsCount' => $activeEnrollmentsCount,
+            'contentProposals' => ContentProposalResource::collection($contentProposals)->resolve(),
             'can' => [
                 'publish' => Gate::allows('publish', $course),
                 'setStatus' => Gate::allows('setStatus', $course),
                 'setVisibility' => Gate::allows('setVisibility', $course),
                 'delete' => Gate::allows('delete', $course),
+                'proposeContent' => Gate::allows('create', [ContentProposal::class, $course]),
             ],
         ]);
     }

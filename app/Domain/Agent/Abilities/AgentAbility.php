@@ -25,6 +25,8 @@ final class AgentAbility
 
     public const TUTOR_READ = 'tutor.read';
 
+    public const AUTHOR_READ = 'author.read';
+
     /**
      * Safe default until B-013 tools ship: identity only.
      *
@@ -86,9 +88,22 @@ final class AgentAbility
         ];
     }
 
+    /**
+     * Author Agent door. Never bundled into free-flow, tutor.read, or --all-abilities.
+     *
+     * @return list<string>
+     */
+    public static function authorRead(): array
+    {
+        return [
+            self::AUTHOR_READ,
+        ];
+    }
+
     public static function isValid(string $ability): bool
     {
         return in_array($ability, self::all(), true)
-            || $ability === self::TUTOR_READ;
+            || $ability === self::TUTOR_READ
+            || $ability === self::AUTHOR_READ;
     }
 }

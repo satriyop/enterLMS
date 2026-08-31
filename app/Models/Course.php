@@ -68,6 +68,7 @@ use Spatie\ModelStates\HasStates;
  * @property-read Collection<int, LearningPath> $learningPaths
  * @property-read Collection<int, CourseInvitation> $invitations
  * @property-read Collection<int, CourseRating> $ratings
+ * @property-read Collection<int, ContentProposal> $contentProposals
  * @property-read \Illuminate\Database\Eloquent\Relations\Pivot|null $pivot
  *
  * @method static Builder|Course published()
@@ -198,6 +199,11 @@ class Course extends Model
     public function publishedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'published_by');
+    }
+
+    public function contentProposals(): HasMany
+    {
+        return $this->hasMany(ContentProposal::class);
     }
 
     public function sections(): HasMany

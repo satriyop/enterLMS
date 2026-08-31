@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContentProposalController;
 use App\Http\Controllers\ConversationTurnController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseInvitationController;
@@ -67,6 +68,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('courses/{course}/offerings/{offering}', [CourseOfferingController::class, 'destroy'])
             ->name('courses.offerings.destroy');
     });
+
+    Route::post('courses/{course}/content-proposals', [ContentProposalController::class, 'store'])
+        ->name('courses.content-proposals.store');
+    Route::post('courses/{course}/content-proposals/{contentProposal}/accept', [ContentProposalController::class, 'accept'])
+        ->name('courses.content-proposals.accept');
+    Route::post('courses/{course}/content-proposals/{contentProposal}/reject', [ContentProposalController::class, 'reject'])
+        ->name('courses.content-proposals.reject');
 
     Route::post('courses/{course}/enroll', [EnrollmentController::class, 'store'])
         ->middleware('throttle:10,1')

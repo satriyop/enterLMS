@@ -16,6 +16,7 @@ class CreateAgentToken extends Command
                             {--ability=* : Ability (repeatable). Default: agent:ping only}
                             {--free-flow : Issue full free-flow abilities (after B-013 tools)}
                             {--tutor-read : Issue tutor.read only (Tutor runtime; never bundled with --free-flow)}
+                            {--author-read : Issue author.read only (Author Agent; never bundled with --free-flow or --tutor-read)}
                             {--all-abilities : Issue all known agent abilities}
                             {--expires= : Expiry datetime (Y-m-d or ISO8601)}
                             {--revoke= : Revoke token by id instead of creating}';
@@ -83,6 +84,10 @@ class CreateAgentToken extends Command
     {
         if ($this->option('tutor-read')) {
             return AgentAbility::tutorRead();
+        }
+
+        if ($this->option('author-read')) {
+            return AgentAbility::authorRead();
         }
 
         if ($this->option('all-abilities')) {

@@ -8,6 +8,7 @@ import { index, show } from '@/actions/App/Http/Controllers/CourseController';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import ContentProposalPanel from '@/components/courses/ContentProposalPanel.vue';
 import CourseInfoForm from '@/components/courses/CourseInfoForm.vue';
 import CourseOutline from '@/components/courses/CourseOutline.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -64,17 +65,30 @@ interface EditableCourse {
     sections: CurriculumSection[];
 }
 
+interface ContentProposalItem {
+    id: number;
+    lesson_id: number;
+    lesson_title: string | null;
+    instruction: string;
+    grounding_body: string;
+    proposed_body_text: string | null;
+    reason: string | null;
+    status: string;
+}
+
 interface Props {
     course: EditableCourse;
     categories: Category[];
     tags: Tag[];
     /** Number of active enrollments for warning display */
     activeEnrollmentsCount: number;
+    contentProposals: ContentProposalItem[];
     can: {
         publish: boolean;
         setStatus: boolean;
         setVisibility: boolean;
         delete: boolean;
+        proposeContent: boolean;
     };
 }
 
@@ -94,7 +108,11 @@ const breadcrumbItems: BreadcrumbItem[] = [
 // State
 // =============================================================================
 
-const activeTab = ref<'info' | 'outline'>('outline');
+const activeTab = ref<'info' | 'outline' | 'proposals'>('outline');
+
+const textLessons = computed(() =>
+    props.course.sections.flatMap((section) => section.lessons),
+);
 
 // =============================================================================
 // Computed
@@ -233,6 +251,14 @@ const readinessGaps = computed(() => {
                 >
                     Informasi Kursus
                 </button>
+                <button
+                    v-if="can.proposeContent"
+                    class="px-4 py-2 text-sm font-medium transition-colors"
+                    :class="activeTab === 'proposals' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'"
+                    @click="activeTab = 'proposals'"
+                >
+                    Usulan konten
+                </button>
             </div>
 
             <!-- Outline Tab -->
@@ -252,6 +278,14 @@ const readinessGaps = computed(() => {
                 :tags="tags"
                 :cancel-url="show(course.id).url"
                 :editable="isEditable"
+            />
+
+            <ContentProposalPanel
+                v-if="activeTab === 'proposals' && can.proposeContent"
+                :course-id="course.id"
+                :lessons="textLessons"
+                :proposals="contentProposals"
+                :can-propose="can.proposeContent"
             />
         </div>
     </AppLayout>
