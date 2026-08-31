@@ -9,6 +9,7 @@
 #   API_SERVER_HOST=<this Mac's tailscale IPv4>
 #   API_SERVER_PORT=8642
 #   API_SERVER_KEY=<same as aidev TUTOR_RUNTIME_API_KEY>
+#   TELEGRAM_BOT_TOKEN=<Tutor bot only; never the lsptdi-ops / default profile token>
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -30,6 +31,11 @@ fi
 
 if [[ ! -f "${PROFILE_ENV}" ]] || ! grep -q '^API_SERVER_ENABLED=true' "${PROFILE_ENV}"; then
     echo "enable the API server in ${PROFILE_ENV}" >&2
+    exit 1
+fi
+
+if ! grep -q '^TELEGRAM_BOT_TOKEN=.\+' "${PROFILE_ENV}"; then
+    echo "set TELEGRAM_BOT_TOKEN on ${PROFILE_ENV} (Tutor bot, not lsptdi-ops)" >&2
     exit 1
 fi
 
