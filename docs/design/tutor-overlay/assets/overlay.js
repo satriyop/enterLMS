@@ -377,47 +377,40 @@ export function createTutorOverlay(root) {
 }
 
 /* ============================================================
-   Focus changes — YOUR CALL
+   Focus changes — DECIDED: follow
    ------------------------------------------------------------
    ADR 009: "The overlay's Focus is the Lesson URL." So when a
-   Learner clicks Selanjutnya with the overlay open, the Focus
-   really does move, and the Conversation on screen is no longer
-   the Conversation new turns are recorded against.
+   Learner clicks Selanjutnya with the overlay open, Focus really
+   does move, and the Conversation on screen stops being the one
+   new turns are recorded against.
 
-   Three defensible behaviours, and the choice is a product
-   choice, not a styling one:
+   We follow the URL and say so with a divider. The Learner loses
+   sight of an answer they were half-way through, which is the
+   real cost — but the record keeps it, so navigating back brings
+   it straight back, and the overlay never shows a composer
+   pointed somewhere other than where it will write.
 
-     a) FOLLOW  — swap to the new Lesson's Conversation, draw a
-                  .tutor__focus-shift divider saying so. Honest
-                  and quiet; the Learner loses sight of the answer
-                  they were mid-way through reading.
-
-     b) ASK     — keep the old transcript, grey the composer, and
-                  offer "Pindah ke <Lesson>?" as a chip. Nothing
-                  is lost, but the overlay is briefly lying about
-                  what it will record.
-
-     c) CARRY   — keep the old transcript visible above the
-                  divider, composer already pointed at the new
-                  Lesson. Reading continuity plus a truthful
-                  composer, at the cost of one screen showing two
-                  Conversations.
-
-   Implement the one you want in applyFocusChange() below.
+   We rejected: ASK — freeze the old transcript and offer to move
+   — because declining leaves an overlay Focus that is not the
+   URL, which is an amendment to ADR 009 rather than a styling
+   choice. And CARRY — keep the old turns above the divider —
+   because a visible answer the Tutor can no longer see invites
+   "tapi tadi kamu bilang…", and the screen would be promising a
+   continuity the Conversation does not have.
    ============================================================ */
 
 /**
  * @param {{ id: number, title: string, locked: boolean }} nextFocus
- * @param {{ el: HTMLElement, thread: HTMLElement, composer: HTMLElement }} ui
+ * @param {{ el: HTMLElement, thread: HTMLElement }} ui
  */
 export function applyFocusChange(nextFocus, ui) {
-    // TODO(satriyo): pick a), b) or c) above and implement it here.
-    //
-    // Available to you:
-    //   ui.el.querySelector('.tutor__focus-label').textContent
-    //   ui.el.querySelector('.tutor__focus').dataset.locked
-    //   renderFocusShift(ui.thread, nextFocus.title)   // divider
-    //   ui.composer.dataset.disabled = 'true'          // grey the field
+    /* The divider goes in before the thread is refilled, so it
+       reads as the last thing that happened on the Conversation
+       being left rather than the first thing on the new one. */
+    renderFocusShift(ui.thread, nextFocus.title);
+
+    ui.el.querySelector('.tutor__focus-label').textContent = nextFocus.title;
+    ui.el.querySelector('.tutor__focus').dataset.locked = String(nextFocus.locked);
 }
 
 export function renderFocusShift(thread, title) {

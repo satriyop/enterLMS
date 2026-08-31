@@ -158,19 +158,20 @@ tokens must land in `app.css` before any of this markup does.
 
 ---
 
-## One decision left open
+## Focus changes: follow the URL
 
-The overlay's Focus **is** the Lesson URL (ADR 009). So when a Learner clicks *Selanjutnya*
-with the overlay open, Focus genuinely moves, and the Conversation on screen stops being the
-Conversation new turns are recorded against. Three defensible behaviours, and the choice is
-a product decision:
+ADR 009 says the overlay's Focus **is** the Lesson URL. So when a Learner clicks
+*Selanjutnya* with the overlay open, Focus genuinely moves, and the Conversation on screen
+stops being the one new turns are recorded against. **Decided: follow it, and draw a
+divider saying so.** The Learner loses sight of an answer they were half-way through — the
+real cost — but `ConversationService` has already persisted every turn, so navigating back
+brings it straight back, and the composer is never pointed somewhere other than where it
+will write.
 
-- **Follow** — swap to the new Conversation, draw a divider saying Focus moved. Honest and
-  quiet; the Learner loses the answer they were half-way through reading.
-- **Ask** — keep the old transcript, grey the composer, offer "Pindah ke &lt;Lesson&gt;?".
-  Nothing is lost, but for a moment the overlay is lying about what it will record.
-- **Carry** — keep the old transcript above the divider, composer already pointed at the new
-  Lesson. Reading continuity and a truthful composer, at the cost of one screen showing two
-  Conversations.
+We rejected **ask** — freeze the old transcript and offer to move — because declining
+leaves an overlay Focus that is not the URL, which amends ADR 009 rather than styling
+around it. And **carry** — keep the old turns above the divider — because an answer that is
+still on screen but no longer visible to the Tutor invites *"tapi tadi kamu bilang…"*, and
+the screen would be promising a continuity the Conversation does not have.
 
-The stub is `applyFocusChange()` at the bottom of `assets/overlay.js`.
+Implemented in `applyFocusChange()` at the bottom of `assets/overlay.js`.
