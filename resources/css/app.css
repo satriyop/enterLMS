@@ -594,3 +594,123 @@
         box-shadow: 0 0 0 3px var(--primary-ring);
     }
 }
+
+/* ============================================================
+   Tutor launcher
+   Design source: docs/design/tutor-overlay/launcher.html
+
+   Not written as utility classes on purpose. The aura is a
+   conic gradient masked into a ring with `mask-composite`, driven
+   by an animated `@property` angle — Tailwind expresses none of
+   that, and the alternative is a forty-class string the Tenang
+   gate then has to squint at.
+   ============================================================ */
+
+@property --tutor-aura-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+@layer components {
+    .tutor-launch {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: var(--tutor-launcher-h);
+        padding: 0 var(--tutor-launcher-pad-x);
+        border-radius: var(--r-pill);
+        background: var(--tutor-launcher-bg);
+        color: var(--tutor-launcher-fg);
+        font-size: 0.875rem;
+        font-weight: 500;
+        box-shadow: var(--shadow);
+        transition:
+            background var(--tutor-dur-fast) var(--tutor-ease),
+            box-shadow var(--tutor-dur) var(--tutor-ease),
+            transform var(--tutor-dur-fast) var(--tutor-ease);
+    }
+
+    .tutor-launch:hover {
+        background: var(--tutor-launcher-bg-hover);
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-1px);
+    }
+
+    .tutor-launch:active {
+        transform: translateY(0) scale(0.98);
+    }
+
+    .tutor-launch:focus-visible {
+        outline: 2px solid var(--tutor-ring);
+        outline-offset: 3px;
+    }
+
+    /* One highlight running the rim, on hover and focus only. A
+       Learner reading a Lesson is never chased by movement in the
+       corner of the screen. */
+    .tutor-launch::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: var(--tutor-aura-width);
+        background: conic-gradient(
+            from var(--tutor-aura-angle),
+            transparent 0turn 0.52turn,
+            var(--tutor-aura) 0.75turn,
+            transparent 0.95turn
+        );
+        -webkit-mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity var(--tutor-dur) var(--tutor-ease);
+    }
+
+    .tutor-launch:hover::before,
+    .tutor-launch:focus-visible::before {
+        opacity: 1;
+        animation: tutor-aura var(--tutor-dur-aura) linear infinite;
+    }
+
+    /* Answering: the same aura at speed, and it does not stop.
+       The thread says so in words at the same time. */
+    .tutor-launch[data-state='thinking'] {
+        cursor: progress;
+    }
+
+    .tutor-launch[data-state='thinking']::before {
+        opacity: 1;
+        animation: tutor-aura calc(var(--tutor-dur-aura) / 2.2) linear infinite;
+    }
+
+    .tutor-launch__mark {
+        flex: 0 0 auto;
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    /* The spark is the part that means "this one knows the Lesson",
+       so it is the part that moves. */
+    .tutor-launch__spark {
+        transform-origin: 19px 5.5px;
+        transition: transform var(--tutor-dur) var(--tutor-ease-settle);
+    }
+
+    .tutor-launch:hover .tutor-launch__spark {
+        transform: rotate(90deg) scale(1.12);
+    }
+}
+
+@keyframes tutor-aura {
+    to {
+        --tutor-aura-angle: 360deg;
+    }
+}

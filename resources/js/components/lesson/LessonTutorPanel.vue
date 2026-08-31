@@ -6,7 +6,7 @@ import { store as storeFocus } from '@/actions/App/Http/Controllers/MessagingFoc
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { STORAGE_KEYS } from '@/lib/constants';
-import { MessageCircle, X } from 'lucide-vue-next';
+import { X } from 'lucide-vue-next';
 
 interface ConversationTurn {
     id: number;
@@ -215,11 +215,24 @@ watch(
             <button
                 v-show="!open"
                 type="button"
-                class="pointer-events-auto flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg"
+                class="tutor-launch pointer-events-auto"
                 aria-label="Buka Tutor"
+                :aria-expanded="open"
                 @click="open = true"
             >
-                <MessageCircle class="size-5" />
+                <svg class="tutor-launch__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                        d="M5.5 6h9A2.5 2.5 0 0 1 17 8.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.8 3.2V16H5.5A2.5 2.5 0 0 1 3 13.5v-5A2.5 2.5 0 0 1 5.5 6Z"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linejoin="round"
+                    />
+                    <path
+                        class="tutor-launch__spark"
+                        d="M19 2.2 19.9 4.6 22.3 5.5 19.9 6.4 19 8.8 18.1 6.4 15.7 5.5 18.1 4.6Z"
+                        fill="currentColor"
+                    />
+                </svg>
                 Tutor
             </button>
     </div>

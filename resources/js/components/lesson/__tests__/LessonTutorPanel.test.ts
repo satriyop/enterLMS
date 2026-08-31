@@ -28,6 +28,26 @@ describe('LessonTutorPanel', () => {
         expect(wrapper.get('[aria-label="Buka Tutor"]').isVisible()).toBe(true);
     });
 
+    /**
+     * CONTEXT.md forbids `chatbot`, `copilot` and `assistant` for the Tutor --
+     * it is the teacher a Learner talks to about a Lesson. A bare speech
+     * bubble with no label is the chatbot glyph, so the mark carries a spark
+     * and the control keeps its word.
+     */
+    it('names the Tutor on its trigger and marks it as more than a chat bubble', async () => {
+        const wrapper = mount(LessonTutorPanel, {
+            props: { courseId: 1, lessonId: 14, conversation },
+        });
+
+        await flushPromises();
+
+        const launcher = wrapper.get('[aria-label="Buka Tutor"]');
+
+        expect(launcher.classes()).toContain('tutor-launch');
+        expect(launcher.text()).toContain('Tutor');
+        expect(launcher.find('.tutor-launch__spark').exists()).toBe(true);
+    });
+
     it('reopens after a remount when the learner had the Tutor open', async () => {
         sessionStorage.setItem(`${STORAGE_KEYS.tutorOpen}-14`, '1');
 
