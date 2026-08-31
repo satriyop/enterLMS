@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import { store as storeTurn } from '@/actions/App/Http/Controllers/ConversationTurnController';
+import { store as storeFocus } from '@/actions/App/Http/Controllers/MessagingFocusController';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { STORAGE_KEYS } from '@/lib/constants';
@@ -67,6 +68,18 @@ const tutorForm = useForm({
 });
 
 const pendingMessage = computed(() => tutorForm.message.trim());
+
+const setMessagingFocus = (skin: 'whatsapp' | 'telegram') => {
+    router.post(
+        storeFocus.url({
+            course: props.courseId,
+            lesson: props.lessonId,
+            skin,
+        }),
+        {},
+        { preserveScroll: true },
+    );
+};
 
 const submitTutorTurn = () => {
     open.value = true;
@@ -173,6 +186,26 @@ watch(
                     <Button type="submit" class="w-full" :disabled="tutorForm.processing">
                         {{ tutorForm.processing ? 'Tutor sedang menjawab…' : 'Kirim' }}
                     </Button>
+                    <div class="flex gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            class="flex-1"
+                            size="sm"
+                            @click="setMessagingFocus('whatsapp')"
+                        >
+                            Lanjut di WhatsApp
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            class="flex-1"
+                            size="sm"
+                            @click="setMessagingFocus('telegram')"
+                        >
+                            Lanjut di Telegram
+                        </Button>
+                    </div>
                 </form>
                 <p v-else class="shrink-0 border-t border-border p-4 text-sm text-muted-foreground">
                     Percakapan ini tidak dapat ditambah.

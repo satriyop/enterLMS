@@ -14,6 +14,7 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\LessonPreviewController;
 use App\Http\Controllers\LessonProgressController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\MessagingFocusController;
 use App\Http\Middleware\EnsureOfferingsEnabled;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('courses.lessons.conversation.show');
     Route::post('courses/{course}/lessons/{lesson}/conversation/turns', [ConversationTurnController::class, 'store'])
         ->name('courses.lessons.conversation.turns.store');
+    Route::post('courses/{course}/lessons/{lesson}/focus/{skin}', [MessagingFocusController::class, 'store'])
+        ->whereIn('skin', ['whatsapp', 'telegram'])
+        ->name('courses.lessons.focus.store');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
