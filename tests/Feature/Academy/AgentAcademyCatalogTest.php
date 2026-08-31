@@ -20,9 +20,9 @@ describe('Agent academy catalog', function () {
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('courses/Browse')
-                ->has('courses.data', 1)
                 ->where('courses.data.0.title', FreeFlowDemoSeeder::FREE_COURSE_TITLE)
-            );
+            )
+            ->assertDontSee(AgentAcademyCourseSeeder::RESTRICTED_COURSE_TITLE);
 
         $openClaw = Course::query()->where('title', AgentAcademyCourseSeeder::RESTRICTED_COURSE_TITLE)->first();
         expect($openClaw)->not->toBeNull();
