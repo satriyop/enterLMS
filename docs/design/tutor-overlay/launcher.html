@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tutor launcher — varian & keadaan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tenang.css" />
+<link rel="stylesheet" href="assets/tokens.css" />
+<link rel="stylesheet" href="assets/overlay.css" />
+<link rel="stylesheet" href="assets/mockup.css" />
+<style>
+  /* mark, reused by every variant on this page */
+  .mk { width: 1.25rem; height: 1.25rem; }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="theme">Terang / Gelap</button>
+
+<template id="mark">
+  <svg class="tutor-launch__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M5.5 6h9A2.5 2.5 0 0 1 17 8.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.8 3.2V16H5.5A2.5 2.5 0 0 1 3 13.5v-5A2.5 2.5 0 0 1 5.5 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <path class="tutor-launch__spark" d="M19 2.2 19.9 4.6 22.3 5.5 19.9 6.4 19 8.8 18.1 6.4 15.7 5.5 18.1 4.6Z" fill="currentColor"/>
+  </svg>
+</template>
+
+<div class="wrap">
+
+  <h1 class="h">Pemicu Tutor</h1>
+  <p class="lede">
+    Tombol yang ada sekarang memakai gelembung obrolan standar. <code>CONTEXT.md</code> justru
+    melarang kata <em>chatbot</em> untuk objek ini — Tutor adalah pengajar untuk satu Lesson pada
+    satu Enrollment. Gelembung polos menjanjikan hal yang salah. Tanda di bawah tetap gelembung
+    (supaya “ini tempat bertanya” langsung terbaca), tapi gelembung itu <strong>membawa percik</strong>:
+    ada yang menguasai materinya di balik sana. Kesan futuristik dibelanjakan pada
+    <strong>satu</strong> hal — aura yang berjalan di tepi saat disentuh — bukan pada neon,
+    gradasi dua warna, atau ikon yang harus ditebak.
+  </p>
+
+  <div class="rule"></div>
+
+  <h2 class="h" style="font-size:1.25rem">Tanda</h2>
+  <div class="grid" style="margin-top:1rem">
+    <div class="cell">
+      <div class="cell__stage" style="gap:1.5rem; display:flex">
+        <svg viewBox="0 0 24 24" fill="none" style="width:4rem;height:4rem;color:var(--primary)">
+          <path d="M5.5 6h9A2.5 2.5 0 0 1 17 8.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.8 3.2V16H5.5A2.5 2.5 0 0 1 3 13.5v-5A2.5 2.5 0 0 1 5.5 6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M19 2.2 19.9 4.6 22.3 5.5 19.9 6.4 19 8.8 18.1 6.4 15.7 5.5 18.1 4.6Z" fill="currentColor"/>
+        </svg>
+        <svg viewBox="0 0 24 24" fill="none" style="width:1.5rem;height:1.5rem;color:var(--muted-foreground)">
+          <path d="M5.5 6h9A2.5 2.5 0 0 1 17 8.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.8 3.2V16H5.5A2.5 2.5 0 0 1 3 13.5v-5A2.5 2.5 0 0 1 5.5 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M19 2.2 19.9 4.6 22.3 5.5 19.9 6.4 19 8.8 18.1 6.4 15.7 5.5 18.1 4.6Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="cell__name">Gelembung + percik</div>
+      <p class="cell__note">Percik menempel di sudut kanan atas gelembung, bukan di tengahnya —
+        jadi bentuk gelembung tetap utuh saat mengecil ke 14&nbsp;px. Diuji pada 64, 24, dan 14&nbsp;px.</p>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2 class="h" style="font-size:1.25rem">Varian</h2>
+  <p class="lede" style="margin-top:.5rem">Pilih satu. Ketiganya memakai tanda dan token yang sama.</p>
+
+  <div class="grid" style="margin-top:1rem">
+
+    <div class="cell">
+      <div class="cell__stage">
+        <button class="tutor-launch" data-mark data-state="idle">Tutor<span class="tutor-launch__badge"></span></button>
+      </div>
+      <div class="cell__name">A · Pil berlabel <span class="tag" data-tone="rec">disarankan</span></div>
+      <p class="cell__note">Label selalu terlihat, jadi tidak ada yang perlu ditebak — syarat “langsung
+        paham” terpenuhi tanpa hover. Aura hanya berjalan saat hover/fokus, supaya sudut layar tidak
+        bergerak-gerak selama orang membaca Lesson.</p>
+    </div>
+
+    <div class="cell">
+      <div class="cell__stage">
+        <button class="tutor-launch tutor-launch--orb" data-mark data-state="idle" aria-label="Tutor">
+          <span class="tutor-launch__label">Tanya Tutor</span>
+          <span class="tutor-launch__badge"></span>
+        </button>
+      </div>
+      <div class="cell__name">B · Orb</div>
+      <p class="cell__note">Paling ringan di layar dan paling futuristik. Harga yang dibayar: tanpa label
+        ia bisa dibaca sebagai tombol apa saja — maka label wajib muncul sendiri sekali pada kunjungan
+        pertama (lihat <code>data-reveal</code>), lalu seterusnya saat hover.</p>
+    </div>
+
+    <div class="cell">
+      <div class="cell__stage" style="justify-items:end; padding-right:0">
+        <button class="tutor-launch tutor-launch--rail" data-mark data-state="idle">Tutor</button>
+      </div>
+      <div class="cell__name">C · Tab tepi</div>
+      <p class="cell__note">Satu-satunya varian yang bentuknya meramalkan hasilnya: panel keluar dari
+        jahitan ini. Cocok bila mode tempel-kanan dijadikan bawaan. Menghabiskan tepi kanan, yang di
+        halaman Lesson sudah dipakai Konten Kursus.</p>
+    </div>
+
+    <div class="cell">
+      <div class="cell__stage">
+        <span class="tutor-anchor" style="position:static; animation:none">
+          <svg class="tutor-launch__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="width:.875rem;height:.875rem">
+            <path d="M5.5 6h9A2.5 2.5 0 0 1 17 8.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.8 3.2V16H5.5A2.5 2.5 0 0 1 3 13.5v-5A2.5 2.5 0 0 1 5.5 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          Tanya Tutor tentang ini
+        </span>
+      </div>
+      <div class="cell__name">D · Jangkar seleksi <span class="tag">pelengkap</span></div>
+      <p class="cell__note">Bukan pengganti A–C, melainkan tambahan: sorot kalimat di Lesson, jangkar
+        muncul, pertanyaannya sudah membawa subjeknya. Ini ekspresi Fokus yang paling langsung —
+        coba di <a href="overlay.html">overlay.html</a>.</p>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2 class="h" style="font-size:1.25rem">Keadaan</h2>
+  <p class="lede" style="margin-top:.5rem">
+    Setiap keadaan punya kata atau warna, bukan hanya gerak. Matikan animasi
+    (<code>prefers-reduced-motion</code>) dan semuanya masih terbaca.
+  </p>
+
+  <div class="grid" style="margin-top:1rem">
+    <div class="cell">
+      <div class="cell__stage"><button class="tutor-launch" data-mark data-state="idle">Tutor<span class="tutor-launch__badge"></span></button></div>
+      <div class="cell__name">Diam</div>
+      <p class="cell__note">Tanpa gerak. Aura mati.</p>
+    </div>
+    <div class="cell">
+      <div class="cell__stage"><button class="tutor-launch" data-mark data-state="thinking">Tutor<span class="tutor-launch__badge"></span></button></div>
+      <div class="cell__name">Menjawab</div>
+      <p class="cell__note">Aura berjalan dua kali lebih cepat dan tidak berhenti. Di dalam overlay
+        keadaan yang sama ditulis dengan kata: “Tutor sedang menjawab…”.</p>
+    </div>
+    <div class="cell">
+      <div class="cell__stage"><button class="tutor-launch" data-mark data-state="unread">Tutor<span class="tutor-launch__badge"></span></button></div>
+      <div class="cell__name">Ada jawaban baru</div>
+      <p class="cell__note">Titik emas. Emas di palet ini berarti “ini milikmu, ambil” (ADR 007) —
+        satu-satunya hal di sini yang pantas memakainya.</p>
+    </div>
+    <div class="cell">
+      <div class="cell__stage"><button class="tutor-launch" data-mark data-state="unavailable" title="Lesson pratinjau tidak punya Tutor">Tutor<span class="tutor-launch__badge"></span></button></div>
+      <div class="cell__name">Tidak tersedia</div>
+      <p class="cell__note">Lesson pratinjau tidak punya Tutor, dan Enrollment yang di-drop tidak bisa
+        menambah turn. Tombolnya tetap ada tapi mati — menyembunyikannya membuat orang mengira
+        fiturnya hilang. Alasannya wajib ada di <code>title</code>.</p>
+    </div>
+    <div class="cell">
+      <div class="cell__stage"><button class="tutor-launch" data-mark aria-expanded="true">Tutor<span class="tutor-launch__badge"></span></button></div>
+      <div class="cell__name">Overlay terbuka</div>
+      <p class="cell__note">Pemicu tidak menghilang saat overlay terbuka; ia menjadi tab jendela itu,
+        supaya jelas ke mana jendela akan kembali setelah ditutup.</p>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2 class="h" style="font-size:1.25rem">Token</h2>
+  <p class="lede" style="margin-top:.5rem">
+    Semua di <code>assets/tokens.css</code>. Tidak ada satu pun nilai warna baru: setiap warna
+    di bawah menunjuk ke token Tenang yang sudah ada di <code>resources/css/app.css</code>.
+  </p>
+
+  <table class="tokens" style="margin-top:1rem">
+    <thead><tr><th>Token</th><th>Nilai</th><th>Kenapa ada</th></tr></thead>
+    <tbody id="tokrows"></tbody>
+  </table>
+</div>
+
+<script type="module">
+const tpl = document.getElementById('mark').content;
+document.querySelectorAll('[data-mark]').forEach((b) => {
+    b.prepend(tpl.cloneNode(true));
+});
+
+document.getElementById('theme').addEventListener('click', () => {
+    const root = document.documentElement;
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    renderTokens();
+});
+
+/* Orb: reveal its own label once, unprompted, on first visit. */
+const orb = document.querySelector('.tutor-launch--orb');
+if (!localStorage.getItem('tutor.seen')) {
+    orb.dataset.reveal = 'true';
+    setTimeout(() => delete orb.dataset.reveal, 3200);
+    localStorage.setItem('tutor.seen', '1');
+}
+
+const ROWS = [
+    ['--tutor-z-overlay', 'Satu tangga tumpuk. Panel sekarang memakai z-40 telanjang di dalam <main>, itu sebabnya ia terperangkap.'],
+    ['--tutor-elev-rest', 'Bayangan saat diam: kartu yang kebetulan melayang.'],
+    ['--tutor-elev-drag', 'Bayangan saat diseret — satu-satunya isyarat kedalaman bahwa jendela benar-benar lepas.'],
+    ['--tutor-w-min', 'Di bawah ini composer berhenti berfungsi; resize berhenti di sini, bukan di nol.'],
+    ['--tutor-snap', 'Jarak ke tepi yang mengubah seret menjadi tempel.'],
+    ['--tutor-keep-visible', 'Lebar bilah judul yang wajib tetap di layar, supaya jendela tidak bisa dibuang keluar.'],
+    ['--tutor-focus-bg', 'Fokus adalah objek domain, bukan subjudul. Diberi token sendiri agar tidak bisa didandani jadi teks kecil.'],
+    ['--tutor-voice-rule', 'Garis kiri jawaban Tutor. Tutor tidak memakai balon: ia dosen yang menjawab panjang.'],
+    ['--tutor-state-unread', 'Emas = ada yang menunggumu.'],
+    ['--tutor-aura', 'Satu sorot berjalan di tepi. Seluruh anggaran “futuristik” ada di sini.'],
+    ['--tutor-dur-aura', 'Satu putaran aura. 0 saat prefers-reduced-motion.'],
+    ['--tutor-ease-settle', 'Kurva mendarat untuk jendela dan sheet — cepat lalu berhenti, tanpa pantulan.'],
+];
+
+function renderTokens() {
+    const cs = getComputedStyle(document.documentElement);
+    document.getElementById('tokrows').innerHTML = ROWS.map(([name, why]) => {
+        const v = cs.getPropertyValue(name).trim();
+        const isColor = /^(#|rgb|hsl|oklch)/.test(v);
+        return `<tr>
+            <td><code>${name}</code></td>
+            <td>${isColor ? `<span class="swatch" style="background:${v}"></span>` : ''}<code>${v}</code></td>
+            <td>${why}</td>
+        </tr>`;
+    }).join('');
+}
+renderTokens();
+</script>
+</body>
+</html>

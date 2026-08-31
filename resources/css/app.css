@@ -261,6 +261,125 @@
     --sidebar: var(--background);
 }
 
+/* ============================================================
+   Tutor overlay tokens
+   Design source: docs/design/tutor-overlay/
+
+   Three families here do not exist anywhere else in this file:
+   an explicit stacking ladder, an elevation that changes while a
+   window is being dragged, and a motion scale. Everything else
+   resolves through a Tenang primitive above — ADR 007 leaves no
+   room for a colour that is not already in the palette.
+   ============================================================ */
+:root {
+    /* stacking — one ladder, so the overlay cannot be trapped
+       under the lesson chrome the way a bare z-40 leaves it */
+    --tutor-z-anchor: 40;
+    --tutor-z-launcher: 60;
+    --tutor-z-overlay: 70;
+    --tutor-z-dragging: 80;
+    --tutor-z-sheet-scrim: 69;
+
+    /* geometry */
+    --tutor-w: 24rem;
+    --tutor-h: 30rem;
+    --tutor-w-min: 19rem; /* below this the composer stops working */
+    --tutor-h-min: 14rem; /* header + one turn + composer */
+    --tutor-w-max: 44rem;
+    --tutor-dock-w: 26rem;
+    --tutor-dock-w-min: 20rem;
+    --tutor-dock-w-max: 38rem;
+    --tutor-gutter: 1rem;
+    --tutor-snap: 28px; /* drag within this of an edge => dock */
+    --tutor-keep-visible: 6rem; /* header that must stay grabbable */
+    --tutor-header-h: 3rem;
+    --tutor-grip: 8px;
+    --tutor-grip-touch: 16px;
+
+    /* surfaces */
+    --tutor-surface: var(--surface);
+    --tutor-surface-header: var(--surface-2);
+    --tutor-border: var(--border);
+    --tutor-border-strong: var(--border-strong);
+    --tutor-scrim: rgb(25 23 19 / 0.32); /* mobile sheet only */
+
+    /* elevation — rest is a card that happens to float; drag adds
+       a second, wider shadow, the only cue that it is loose */
+    --tutor-elev-rest: var(--shadow-lg);
+    --tutor-elev-drag:
+        0 2px 8px rgb(25 23 19 / 0.08), 0 40px 80px -28px rgb(25 23 19 / 0.32);
+    --tutor-elev-dock: none;
+
+    /* voices — the Learner gets a bubble, the Tutor does not */
+    --tutor-learner-bg: var(--surface-2);
+    --tutor-learner-fg: var(--foreground);
+    --tutor-learner-label: var(--subtle-foreground);
+    --tutor-voice-rule: var(--primary);
+    --tutor-voice-fg: var(--foreground);
+    --tutor-voice-label: var(--primary);
+    --tutor-measure: 42rem;
+
+    /* Focus is a domain object (CONTEXT.md), not a subtitle */
+    --tutor-focus-bg: var(--primary-soft);
+    --tutor-focus-fg: var(--primary-hover);
+    --tutor-focus-locked-bg: var(--surface-3);
+    --tutor-focus-locked-fg: var(--muted-foreground);
+
+    /* launcher */
+    --tutor-launcher-h: 2.75rem;
+    --tutor-launcher-orb: 3.5rem;
+    --tutor-launcher-pad-x: 1rem;
+    --tutor-launcher-bg: var(--primary);
+    --tutor-launcher-fg: var(--primary-foreground);
+    --tutor-launcher-bg-hover: var(--primary-hover);
+    --tutor-launcher-ring: var(--primary-ring);
+    --tutor-aura: rgb(255 255 255 / 0.5);
+    --tutor-aura-width: 2px;
+
+    /* states */
+    --tutor-state-thinking: var(--primary);
+    --tutor-state-unread: var(--gold); /* gold = this one is yours */
+    --tutor-state-unavailable-bg: var(--surface-2);
+    --tutor-state-unavailable-fg: var(--subtle-foreground);
+    --tutor-ring: var(--primary);
+
+    /* motion */
+    --tutor-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --tutor-ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+    --tutor-dur-fast: 120ms;
+    --tutor-dur: 200ms;
+    --tutor-dur-slow: 320ms;
+    --tutor-dur-aura: 2600ms;
+    --tutor-dur-think: 1400ms;
+}
+
+.dark {
+    --tutor-scrim: rgb(0 0 0 / 0.55);
+    --tutor-elev-drag:
+        0 2px 8px rgb(0 0 0 / 0.5), 0 40px 80px -28px rgb(0 0 0 / 0.75);
+    /* dark mode's --primary is a light mint: a white aura over it
+       is invisible, so the aura darkens instead of brightening */
+    --tutor-aura: rgb(5 38 32 / 0.55);
+}
+
+@media (pointer: coarse) {
+    :root {
+        --tutor-grip: var(--tutor-grip-touch);
+    }
+}
+
+/* Motion is decoration here, never information: every state that
+   animates also carries a word or a colour. Safe to switch off. */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --tutor-dur-fast: 0ms;
+        --tutor-dur: 0ms;
+        --tutor-dur-slow: 0ms;
+        --tutor-dur-aura: 0ms;
+        --tutor-dur-think: 0ms;
+    }
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;

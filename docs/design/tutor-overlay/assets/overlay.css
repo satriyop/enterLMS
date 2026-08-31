@@ -1,0 +1,1034 @@
+/* ============================================================
+   Tutor overlay + launcher — presentation
+   Consumes tokens.css only. No literal colour appears below.
+   ============================================================ */
+
+@property --tutor-aura-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+/* ============================================================
+   1. LAYER
+   A viewport-level layer. The panel shipping today is
+   `absolute` inside <main>, which is why it can never cross the
+   course-outline column. Everything here is `fixed`.
+   ============================================================ */
+
+.tutor-layer {
+    position: fixed;
+    inset: 0;
+    z-index: var(--tutor-z-overlay);
+    pointer-events: none;
+}
+
+.tutor-layer > * {
+    pointer-events: auto;
+}
+
+/* ============================================================
+   2. WINDOW
+   ============================================================ */
+
+.tutor {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    min-width: var(--tutor-w-min);
+    min-height: var(--tutor-h-min);
+    max-width: var(--tutor-w-max);
+    overflow: hidden;
+    background: var(--tutor-surface);
+    border: 1px solid var(--tutor-border);
+    border-radius: var(--tutor-radius);
+    box-shadow: var(--tutor-elev-rest);
+    transition:
+        box-shadow var(--tutor-dur) var(--tutor-ease),
+        border-radius var(--tutor-dur-slow) var(--tutor-ease),
+        opacity var(--tutor-dur) var(--tutor-ease);
+}
+
+/* Opening from the launcher: the window grows out of the corner
+   it was summoned from, so the eye never loses the object. */
+@keyframes tutor-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+}
+
+.tutor[data-mode='float'] {
+    animation: tutor-enter var(--tutor-dur) var(--tutor-ease-settle);
+    transform-origin: bottom right;
+}
+
+.tutor[data-dragging='true'] {
+    box-shadow: var(--tutor-elev-drag);
+    z-index: var(--tutor-z-dragging);
+    user-select: none;
+    /* No transition while dragging — the window must track the
+       pointer exactly or it feels like it is on a rubber band. */
+    transition: none;
+}
+
+.tutor[data-resizing='true'] {
+    user-select: none;
+    transition: none;
+}
+
+/* --- docked ------------------------------------------------ */
+/* Snapping to an edge is not a different component. It is the
+   same window with its free axis surrendered: full height,
+   square inner corners, no shadow, width still resizable. */
+
+.tutor[data-mode='dock-right'],
+.tutor[data-mode='dock-left'] {
+    top: 0;
+    height: 100%;
+    max-width: var(--tutor-dock-w-max);
+    min-width: var(--tutor-dock-w-min);
+    box-shadow: var(--tutor-elev-dock);
+    transition:
+        box-shadow var(--tutor-dur-slow) var(--tutor-ease),
+        border-radius var(--tutor-dur-slow) var(--tutor-ease);
+}
+
+.tutor[data-mode='dock-right'] {
+    right: 0;
+    left: auto;
+    border-radius: 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 0;
+}
+
+.tutor[data-mode='dock-left'] {
+    left: 0;
+    right: auto;
+    border-radius: 0;
+    border-left: 0;
+    border-top: 0;
+    border-bottom: 0;
+}
+
+/* --- collapsed --------------------------------------------- */
+/* Double-click the header, or press the chevron: the window
+   becomes its own title bar and parks. Distinct from closing —
+   the transcript is still on screen conceptually, and the
+   Focus chip stays readable. */
+
+.tutor[data-collapsed='true'] {
+    height: var(--tutor-header-h) !important;
+    min-height: 0;
+    border-radius: var(--tutor-radius-pill);
+}
+
+.tutor[data-collapsed='true'] .tutor__thread,
+.tutor[data-collapsed='true'] .tutor__composer,
+.tutor[data-collapsed='true'] .tutor__grip {
+    display: none;
+}
+
+/* ============================================================
+   3. HEADER — the drag handle
+   ============================================================ */
+
+.tutor__header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex: 0 0 auto;
+    height: var(--tutor-header-h);
+    padding: 0 0.5rem 0 0.875rem;
+    background: var(--tutor-surface-header);
+    border-bottom: 1px solid var(--tutor-border);
+    cursor: grab;
+    touch-action: none;
+}
+
+.tutor[data-collapsed='true'] .tutor__header {
+    border-bottom: 0;
+}
+
+.tutor[data-dragging='true'] .tutor__header {
+    cursor: grabbing;
+}
+
+/* Docked has no free axis to drag along, so the grab cursor
+   would be a lie. */
+.tutor[data-mode='dock-right'] .tutor__header,
+.tutor[data-mode='dock-left'] .tutor__header {
+    cursor: default;
+}
+
+/* Two dots and a rule: the oldest, least ambiguous "this moves"
+   sign there is. Shown only where dragging is actually possible. */
+.tutor__grabber {
+    flex: 0 0 auto;
+    width: 0.75rem;
+    height: 1rem;
+    background-image: radial-gradient(
+        currentColor 1px,
+        transparent 1.2px
+    );
+    background-size: 4px 4px;
+    color: var(--tutor-border-strong);
+    opacity: 0;
+    transition: opacity var(--tutor-dur-fast) var(--tutor-ease);
+}
+
+.tutor[data-mode='float'] .tutor__header:hover .tutor__grabber,
+.tutor[data-dragging='true'] .tutor__grabber {
+    opacity: 1;
+}
+
+.tutor__title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    flex: 0 0 auto;
+}
+
+/* --- Focus chip -------------------------------------------- */
+/* Focus is the Lesson this Conversation is recorded against.
+   The old panel said "Tanya tentang Lesson ini" — true, but it
+   never named which Lesson, so a Learner who dragged the window
+   past a navigation could not tell what they were asking about. */
+
+.tutor__focus {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 0;
+    padding: 0.125rem 0.5rem 0.125rem 0.375rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    border-radius: var(--tutor-radius-pill);
+    background: var(--tutor-focus-bg);
+    color: var(--tutor-focus-fg);
+    border: 1px solid var(--tutor-focus-border);
+}
+
+.tutor__focus-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tutor__focus[data-locked='true'] {
+    background: var(--tutor-focus-locked-bg);
+    color: var(--tutor-focus-locked-fg);
+}
+
+.tutor__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    margin-left: auto;
+    flex: 0 0 auto;
+}
+
+.tutor__icon-btn {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--tutor-radius-sm);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition:
+        background var(--tutor-dur-fast) var(--tutor-ease),
+        color var(--tutor-dur-fast) var(--tutor-ease);
+}
+
+.tutor__icon-btn:hover {
+    background: var(--surface-3);
+    color: var(--foreground);
+}
+
+.tutor__icon-btn[aria-pressed='true'] {
+    background: var(--primary-soft);
+    color: var(--primary-hover);
+}
+
+/* ============================================================
+   4. THREAD
+   ============================================================ */
+
+.tutor__thread {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    scrollbar-width: thin;
+}
+
+.tutor__turn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-width: var(--tutor-measure);
+}
+
+.tutor__turn-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* The Learner speaks in a bubble, right-aligned and quiet —
+   their own words are the least interesting thing on screen. */
+.tutor__turn[data-role='learner'] {
+    align-self: flex-end;
+    align-items: flex-end;
+    max-width: min(85%, var(--tutor-measure));
+}
+
+.tutor__turn[data-role='learner'] .tutor__turn-label {
+    color: var(--tutor-learner-label);
+}
+
+.tutor__turn[data-role='learner'] .tutor__turn-body {
+    background: var(--tutor-learner-bg);
+    color: var(--tutor-learner-fg);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--tutor-radius-turn);
+    border-bottom-right-radius: var(--tutor-radius-sm);
+}
+
+/* The Tutor does not get a balloon. It is a lecturer answering
+   at length inside an editorial surface: a rule, a name, prose.
+   Balloons cap comfortable reading at a few lines; this does not. */
+.tutor__turn[data-role='tutor'] {
+    align-self: stretch;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--tutor-voice-rule);
+}
+
+.tutor__turn[data-role='tutor'] .tutor__turn-label {
+    color: var(--tutor-voice-label);
+}
+
+.tutor__turn[data-role='tutor'] .tutor__turn-body {
+    color: var(--tutor-voice-fg);
+}
+
+.tutor__turn-body {
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.tutor__turn[data-pending='true'] {
+    opacity: 0.55;
+}
+
+/* --- thinking ---------------------------------------------- */
+/* Three marks that breathe, plus the words. The words are what
+   a screen reader and a reduced-motion user get. */
+
+.tutor__thinking {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--tutor-voice-rule);
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+}
+
+.tutor__thinking-dots {
+    display: inline-flex;
+    gap: 3px;
+}
+
+.tutor__thinking-dots i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--tutor-state-thinking);
+    animation: tutor-think var(--tutor-dur-think) var(--tutor-ease) infinite;
+}
+
+.tutor__thinking-dots i:nth-child(2) {
+    animation-delay: 160ms;
+}
+.tutor__thinking-dots i:nth-child(3) {
+    animation-delay: 320ms;
+}
+
+@keyframes tutor-think {
+    0%,
+    60%,
+    100% {
+        opacity: 0.25;
+        transform: translateY(0);
+    }
+    30% {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+}
+
+/* --- Focus change divider ----------------------------------- */
+/* Drawn when the Learner navigates to another Lesson with the
+   overlay open. The overlay's Focus is the URL, so the transcript
+   really does change; saying so beats a silent swap. */
+
+.tutor__focus-shift {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.75rem;
+    color: var(--subtle-foreground);
+}
+
+.tutor__focus-shift::before,
+.tutor__focus-shift::after {
+    content: '';
+    height: 1px;
+    flex: 1 1 auto;
+    background: var(--tutor-border);
+}
+
+/* --- empty state -------------------------------------------- */
+
+.tutor__empty {
+    margin: auto 0;
+    text-align: center;
+    padding: 1rem 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+}
+
+.tutor__seeds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+}
+
+.tutor__seed {
+    padding: 0.3125rem 0.625rem;
+    font: inherit;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    background: var(--surface-2);
+    border: 1px solid var(--tutor-border);
+    border-radius: var(--tutor-radius-pill);
+    cursor: pointer;
+    transition: all var(--tutor-dur-fast) var(--tutor-ease);
+}
+
+.tutor__seed:hover {
+    background: var(--primary-soft);
+    color: var(--primary-hover);
+    border-color: transparent;
+}
+
+/* ============================================================
+   5. COMPOSER
+   ============================================================ */
+
+.tutor__composer {
+    flex: 0 0 auto;
+    padding: 0.75rem;
+    border-top: 1px solid var(--tutor-border);
+    background: var(--tutor-surface-composer);
+}
+
+.tutor__field {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+    background: var(--surface-2);
+    border: 1px solid var(--tutor-border);
+    border-radius: var(--tutor-radius-turn);
+    transition:
+        border-color var(--tutor-dur-fast) var(--tutor-ease),
+        box-shadow var(--tutor-dur-fast) var(--tutor-ease);
+}
+
+.tutor__field:focus-within {
+    border-color: var(--tutor-ring);
+    box-shadow: 0 0 0 3px var(--tutor-launcher-ring);
+}
+
+.tutor__input {
+    flex: 1 1 auto;
+    min-height: 1.5rem;
+    max-height: 8rem;
+    border: 0;
+    padding: 0;
+    resize: none;
+    background: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.875rem;
+    outline: none;
+}
+
+.tutor__input::placeholder {
+    color: var(--subtle-foreground);
+}
+
+.tutor__send {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: var(--tutor-radius-sm);
+    background: var(--tutor-launcher-bg);
+    color: var(--tutor-launcher-fg);
+    cursor: pointer;
+    transition:
+        background var(--tutor-dur-fast) var(--tutor-ease),
+        opacity var(--tutor-dur-fast) var(--tutor-ease);
+}
+
+.tutor__send:hover:not(:disabled) {
+    background: var(--tutor-launcher-bg-hover);
+}
+
+.tutor__send:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.tutor__composer-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.6875rem;
+    color: var(--subtle-foreground);
+}
+
+kbd {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    padding: 0.0625rem 0.25rem;
+    border: 1px solid var(--tutor-border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    background: var(--surface-2);
+}
+
+.tutor__error {
+    margin: 0 0 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--danger);
+}
+
+.tutor__locked {
+    padding: 0.875rem 1rem;
+    border-top: 1px solid var(--tutor-border);
+    background: var(--tutor-state-unavailable-bg);
+    color: var(--tutor-state-unavailable-fg);
+    font-size: 0.8125rem;
+}
+
+/* --- skins menu --------------------------------------------- */
+/* WhatsApp and Telegram are skins of the same Tutor, not other
+   places to ask. Two full-width buttons under the composer said
+   otherwise; a hand-off menu says what they are. */
+
+.tutor__menu {
+    position: absolute;
+    right: 0.5rem;
+    top: calc(var(--tutor-header-h) + 0.25rem);
+    min-width: 15rem;
+    padding: 0.375rem;
+    background: var(--tutor-surface);
+    border: 1px solid var(--tutor-border);
+    border-radius: var(--tutor-radius-turn);
+    box-shadow: var(--shadow-lg);
+    z-index: 1;
+}
+
+.tutor__menu[hidden] {
+    display: none;
+}
+
+.tutor__menu-head {
+    padding: 0.375rem 0.5rem 0.25rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--subtle-foreground);
+}
+
+.tutor__menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem;
+    border: 0;
+    border-radius: var(--tutor-radius-sm);
+    background: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tutor__menu-item:hover {
+    background: var(--surface-2);
+}
+
+.tutor__menu-note {
+    padding: 0.375rem 0.5rem 0.25rem;
+    font-size: 0.6875rem;
+    color: var(--subtle-foreground);
+}
+
+/* ============================================================
+   6. RESIZE GRIPS
+   Eight of them. Edges are invisible until hovered; the SE
+   corner carries a permanent hairline because it is the one
+   most people look for.
+   ============================================================ */
+
+.tutor__grip {
+    position: absolute;
+    z-index: 2;
+}
+
+.tutor[data-mode='float'] .tutor__grip[data-dir='n'],
+.tutor[data-mode='float'] .tutor__grip[data-dir='s'] {
+    left: var(--tutor-grip);
+    right: var(--tutor-grip);
+    height: var(--tutor-grip);
+    cursor: ns-resize;
+}
+
+.tutor__grip[data-dir='n'] {
+    top: 0;
+}
+.tutor__grip[data-dir='s'] {
+    bottom: 0;
+}
+
+.tutor__grip[data-dir='e'],
+.tutor__grip[data-dir='w'] {
+    top: var(--tutor-grip);
+    bottom: var(--tutor-grip);
+    width: var(--tutor-grip);
+    cursor: ew-resize;
+}
+
+.tutor__grip[data-dir='e'] {
+    right: 0;
+}
+.tutor__grip[data-dir='w'] {
+    left: 0;
+}
+
+.tutor__grip[data-dir='ne'],
+.tutor__grip[data-dir='nw'],
+.tutor__grip[data-dir='se'],
+.tutor__grip[data-dir='sw'] {
+    width: calc(var(--tutor-grip) * 2);
+    height: calc(var(--tutor-grip) * 2);
+}
+
+.tutor__grip[data-dir='nw'] {
+    top: 0;
+    left: 0;
+    cursor: nwse-resize;
+}
+.tutor__grip[data-dir='ne'] {
+    top: 0;
+    right: 0;
+    cursor: nesw-resize;
+}
+.tutor__grip[data-dir='sw'] {
+    bottom: 0;
+    left: 0;
+    cursor: nesw-resize;
+}
+.tutor__grip[data-dir='se'] {
+    bottom: 0;
+    right: 0;
+    cursor: nwse-resize;
+}
+
+/* Docked windows resize on one axis only. */
+.tutor[data-mode='dock-right'] .tutor__grip,
+.tutor[data-mode='dock-left'] .tutor__grip {
+    display: none;
+}
+
+.tutor[data-mode='dock-right'] .tutor__grip[data-dir='w'],
+.tutor[data-mode='dock-left'] .tutor__grip[data-dir='e'] {
+    display: block;
+    top: 0;
+    bottom: 0;
+}
+
+.tutor__grip[data-dir='se']::after {
+    content: '';
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 8px;
+    height: 8px;
+    border-right: 1.5px solid var(--tutor-border-strong);
+    border-bottom: 1.5px solid var(--tutor-border-strong);
+    border-bottom-right-radius: 3px;
+    opacity: 0.7;
+}
+
+/* --- snap preview -------------------------------------------- */
+/* Painted while a drag is inside the snap threshold, before the
+   pointer is released. Dragging to an edge is the only way most
+   people will discover docking, so the promise must be visible. */
+
+.tutor-snap-hint {
+    position: fixed;
+    top: 0;
+    height: 100%;
+    width: var(--tutor-dock-w);
+    background: var(--primary-soft);
+    border: 1px dashed var(--tutor-ring);
+    opacity: 0;
+    pointer-events: none;
+    z-index: calc(var(--tutor-z-overlay) - 1);
+    transition: opacity var(--tutor-dur-fast) var(--tutor-ease);
+}
+
+.tutor-snap-hint[data-side='left'] {
+    left: 0;
+}
+.tutor-snap-hint[data-side='right'] {
+    right: 0;
+}
+.tutor-snap-hint[data-active='true'] {
+    opacity: 0.55;
+}
+
+/* ============================================================
+   7. MOBILE — a floating window on a phone is a bad joke
+   ============================================================ */
+
+@media (max-width: 640px) {
+    .tutor[data-mode] {
+        inset: auto 0 0 0 !important;
+        width: 100% !important;
+        height: min(78vh, 34rem) !important;
+        max-width: none;
+        border-radius: var(--tutor-radius) var(--tutor-radius) 0 0;
+        border-bottom: 0;
+        animation: tutor-sheet var(--tutor-dur-slow) var(--tutor-ease-settle);
+    }
+
+    .tutor__grip,
+    .tutor__grabber {
+        display: none !important;
+    }
+
+    /* The sheet keeps one drag axis: pull the header down to
+       dismiss. That is the gesture a phone user already has. */
+    .tutor__header::before {
+        content: '';
+        position: absolute;
+        top: 0.375rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2.25rem;
+        height: 4px;
+        border-radius: var(--tutor-radius-pill);
+        background: var(--tutor-border-strong);
+    }
+
+    .tutor__header {
+        position: relative;
+        padding-top: 0.5rem;
+        height: calc(var(--tutor-header-h) + 0.5rem);
+    }
+
+    .tutor-scrim {
+        position: fixed;
+        inset: 0;
+        background: var(--tutor-scrim);
+        z-index: var(--tutor-z-sheet-scrim);
+    }
+}
+
+@keyframes tutor-sheet {
+    from {
+        transform: translateY(100%);
+    }
+}
+
+@media (min-width: 641px) {
+    .tutor-scrim {
+        display: none;
+    }
+}
+
+/* ============================================================
+   8. LAUNCHER
+   ------------------------------------------------------------
+   The shipping button is a stock speech bubble. CONTEXT.md
+   spends a paragraph forbidding the word "chatbot" for this
+   object, and a speech bubble is the chatbot glyph. The mark
+   below is a bubble *carrying a spark* — talk, plus something
+   that knows the material. The futurism budget is spent on one
+   travelling aura, not on a second hue or a neon glow.
+   ============================================================ */
+
+.tutor-launch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: var(--tutor-launcher-h);
+    padding: 0 var(--tutor-launcher-pad-x);
+    border: 0;
+    border-radius: var(--tutor-radius-pill);
+    background: var(--tutor-launcher-bg);
+    color: var(--tutor-launcher-fg);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: var(--tutor-launcher-shadow);
+    transition:
+        background var(--tutor-dur-fast) var(--tutor-ease),
+        box-shadow var(--tutor-dur) var(--tutor-ease),
+        transform var(--tutor-dur-fast) var(--tutor-ease);
+}
+
+.tutor-launch:hover {
+    background: var(--tutor-launcher-bg-hover);
+    box-shadow: var(--tutor-launcher-shadow-hover);
+    transform: translateY(-1px);
+}
+
+.tutor-launch:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.tutor-launch:focus-visible {
+    outline: 2px solid var(--tutor-ring);
+    outline-offset: 3px;
+}
+
+/* The aura: a single highlight running the rim. Idle laps once
+   every --tutor-dur-aura on hover only, so a Learner reading a
+   Lesson is never chased by movement in the corner. */
+.tutor-launch::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: var(--tutor-aura-width);
+    background: conic-gradient(
+        from var(--tutor-aura-angle),
+        transparent 0turn 0.52turn,
+        var(--tutor-aura) 0.75turn,
+        transparent 0.95turn
+    );
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity var(--tutor-dur) var(--tutor-ease);
+}
+
+.tutor-launch:hover::before,
+.tutor-launch:focus-visible::before {
+    opacity: 1;
+    animation: tutor-aura var(--tutor-dur-aura) linear infinite;
+}
+
+@keyframes tutor-aura {
+    to {
+        --tutor-aura-angle: 360deg;
+    }
+}
+
+.tutor-launch__mark {
+    flex: 0 0 auto;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* The spark is the only part that moves on hover: it is the part
+   that means "this one knows the Lesson". */
+.tutor-launch__spark {
+    transform-origin: 19px 5.5px;
+    transition: transform var(--tutor-dur) var(--tutor-ease-settle);
+}
+
+.tutor-launch:hover .tutor-launch__spark {
+    transform: rotate(90deg) scale(1.12);
+}
+
+/* --- variant: orb -------------------------------------------- */
+
+.tutor-launch--orb {
+    width: var(--tutor-launcher-orb);
+    height: var(--tutor-launcher-orb);
+    padding: 0;
+    justify-content: center;
+}
+
+.tutor-launch--orb .tutor-launch__mark {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* The orb loses the label, so it must lend one. The tab slides
+   out on hover and — see launcher.js — on first visit, unprompted,
+   for one beat. A control nobody can name is not predictable. */
+.tutor-launch--orb .tutor-launch__label {
+    position: absolute;
+    right: calc(100% + 0.5rem);
+    white-space: nowrap;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--tutor-radius-pill);
+    background: var(--surface);
+    color: var(--foreground);
+    border: 1px solid var(--tutor-border);
+    box-shadow: var(--shadow-sm);
+    font-size: 0.8125rem;
+    opacity: 0;
+    transform: translateX(6px);
+    pointer-events: none;
+    transition:
+        opacity var(--tutor-dur) var(--tutor-ease),
+        transform var(--tutor-dur) var(--tutor-ease-settle);
+}
+
+.tutor-launch--orb:hover .tutor-launch__label,
+.tutor-launch--orb:focus-visible .tutor-launch__label,
+.tutor-launch--orb[data-reveal='true'] .tutor-launch__label {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* --- variant: rail tab ---------------------------------------- */
+/* Attached to the edge it will open from. The one variant whose
+   shape predicts the result: a panel slides out of this seam. */
+
+.tutor-launch--rail {
+    height: auto;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.875rem 0.5rem;
+    border-radius: var(--tutor-radius) 0 0 var(--tutor-radius);
+    writing-mode: vertical-rl;
+}
+
+.tutor-launch--rail .tutor-launch__mark {
+    writing-mode: horizontal-tb;
+}
+
+/* --- states --------------------------------------------------- */
+
+.tutor-launch[data-state='thinking'] {
+    cursor: progress;
+}
+
+.tutor-launch[data-state='thinking']::before {
+    opacity: 1;
+    animation: tutor-aura calc(var(--tutor-dur-aura) / 2.2) linear infinite;
+}
+
+/* Gold is achievement and attention in this palette (ADR 007).
+   An answer waiting for you is the only thing that earns it here. */
+.tutor-launch__badge {
+    display: none;
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 0.625rem;
+    height: 0.625rem;
+    border-radius: var(--tutor-radius-pill);
+    background: var(--tutor-state-unread);
+    border: 2px solid var(--background);
+}
+
+.tutor-launch[data-state='unread'] .tutor-launch__badge {
+    display: block;
+}
+
+.tutor-launch[data-state='unavailable'],
+.tutor-launch:disabled {
+    background: var(--tutor-state-unavailable-bg);
+    color: var(--tutor-state-unavailable-fg);
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.tutor-launch[data-state='unavailable']:hover {
+    transform: none;
+}
+
+.tutor-launch[data-state='unavailable']::before {
+    display: none;
+}
+
+/* When the overlay is open the launcher does not vanish — it
+   becomes the window's tab, so the Learner can see where the
+   thing they just closed will come back. */
+.tutor-launch[aria-expanded='true'] {
+    background: var(--surface-2);
+    color: var(--foreground);
+    box-shadow: var(--shadow-sm);
+}
+
+/* --- selection anchor ------------------------------------------ */
+/* Select a phrase in the Lesson body and ask about that phrase.
+   The most direct expression of Focus there is: the question
+   already carries its subject. */
+
+.tutor-anchor {
+    position: absolute;
+    z-index: var(--tutor-z-anchor);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.3125rem 0.625rem;
+    border-radius: var(--tutor-radius-pill);
+    background: var(--foreground);
+    color: var(--background);
+    border: 0;
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    animation: tutor-enter var(--tutor-dur) var(--tutor-ease-settle);
+}
+
+.tutor-anchor[hidden] {
+    display: none;
+}
+
+.tutor-anchor .tutor-launch__mark {
+    width: 0.875rem;
+    height: 0.875rem;
+}

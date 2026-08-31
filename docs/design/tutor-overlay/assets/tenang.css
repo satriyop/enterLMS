@@ -1,0 +1,126 @@
+/* ============================================================
+   Tenang primitives — COPIED from resources/css/app.css.
+   Do not edit here. This file exists only so the mockup renders
+   standalone in a browser without Tailwind. It is not part of
+   the deliverable; tokens.css is.
+   ============================================================ */
+
+:root {
+    --background: #f8f7f4;
+    --surface: #ffffff;
+    --surface-2: #f1efe9;
+    --surface-3: #e9e6de;
+
+    --foreground: #191713;
+    --muted-foreground: #5f5b52;
+    --subtle-foreground: #8e897d;
+
+    --border: #e4e0d7;
+    --border-strong: #cfcabe;
+
+    --primary: #0b5d4e;
+    --primary-hover: #094a3e;
+    --primary-foreground: #ffffff;
+    --primary-soft: #e4efea;
+    --primary-ring: rgb(11 93 78 / 0.18);
+
+    --gold: #9a6614;
+    --gold-soft: #f7efdf;
+
+    --ok: #2c6a4e;
+    --ok-soft: #e5f0e9;
+    --warn: #94581a;
+    --warn-soft: #f8efe0;
+    --danger: #9e2f2a;
+    --danger-soft: #f7e7e5;
+    --danger-foreground: #ffffff;
+    --info: #2a5490;
+    --info-soft: #e6edf7;
+
+    --r: 10px;
+    --r-sm: 6px;
+    --r-lg: 16px;
+    --r-pill: 999px;
+
+    --shadow-sm: 0 1px 2px rgb(25 23 19 / 0.04);
+    --shadow:
+        0 1px 3px rgb(25 23 19 / 0.05), 0 12px 32px -12px rgb(25 23 19 / 0.1);
+    --shadow-lg:
+        0 2px 6px rgb(25 23 19 / 0.06), 0 28px 64px -24px rgb(25 23 19 / 0.18);
+
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+[data-theme='dark'] {
+    --background: #101311;
+    --surface: #171b19;
+    --surface-2: #1f2421;
+    --surface-3: #272d29;
+
+    --foreground: #edeae3;
+    --muted-foreground: #a5a096;
+    --subtle-foreground: #726d64;
+
+    --border: #262c29;
+    --border-strong: #38403c;
+
+    --primary: #58cfaf;
+    --primary-hover: #74dcc0;
+    --primary-foreground: #052620;
+    --primary-soft: #13312a;
+    --primary-ring: rgb(88 207 175 / 0.22);
+
+    --gold: #d8a852;
+    --gold-soft: #2e2618;
+
+    --ok: #63c093;
+    --ok-soft: #16301f;
+    --warn: #d6a05a;
+    --warn-soft: #2e2517;
+    --danger: #e08c86;
+    --danger-soft: #331e1c;
+    --danger-foreground: #2b100d;
+    --info: #85aee8;
+    --info-soft: #172436;
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow: 0 1px 3px rgb(0 0 0 / 0.5), 0 12px 32px -12px rgb(0 0 0 / 0.6);
+    --shadow-lg: 0 2px 6px rgb(0 0 0 / 0.5), 0 28px 64px -24px rgb(0 0 0 / 0.7);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0;
+    line-height: 1.18;
+    letter-spacing: -0.018em;
+    font-weight: 600;
+}
+
+.display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+}
+
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}

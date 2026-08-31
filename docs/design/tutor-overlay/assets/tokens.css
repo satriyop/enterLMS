@@ -1,0 +1,155 @@
+/* ============================================================
+   Tutor overlay — design tokens
+   ------------------------------------------------------------
+   Scoped layer on top of the Tenang primitives already declared
+   in resources/css/app.css. Every colour here resolves through a
+   Tenang token; ADR 007 forbids stock Tailwind hues, so nothing
+   below invents a colour that has an ancestor.
+
+   Three token families are genuinely new to the app and are the
+   reason this file exists rather than a handful of utilities:
+
+     --tutor-z-*      an explicit stacking order (today: bare z-40)
+     --tutor-elev-*   elevation that changes while dragging
+     --tutor-dur/ease motion scale (app.css has none)
+
+   Adoption: copy the :root / .dark blocks into
+   resources/css/app.css. The mockup ships them here so the
+   overlay can be judged before the app is touched.
+   ============================================================ */
+
+:root {
+    /* ---------- stacking ---------------------------------- */
+    /* One ladder, so the overlay can never be trapped under the
+       lesson chrome the way the absolute-positioned panel is. */
+    --tutor-z-anchor: 40; /* selection anchor, inline in content */
+    --tutor-z-launcher: 60;
+    --tutor-z-overlay: 70;
+    --tutor-z-dragging: 80; /* lifted above its own siblings mid-drag */
+    --tutor-z-sheet-scrim: 69; /* mobile only */
+
+    /* ---------- geometry ---------------------------------- */
+    --tutor-w: 24rem;
+    --tutor-h: 30rem;
+    --tutor-w-min: 19rem; /* below this the composer stops working */
+    --tutor-h-min: 14rem; /* header + 1 turn + composer */
+    --tutor-w-max: 44rem;
+    --tutor-h-max: calc(100vh - (2 * var(--tutor-gutter)));
+
+    --tutor-dock-w: 26rem;
+    --tutor-dock-w-min: 20rem;
+    --tutor-dock-w-max: 38rem;
+
+    --tutor-gutter: 1rem; /* min gap to any viewport edge */
+    --tutor-snap: 28px; /* drag within this of an edge => dock */
+    --tutor-keep-visible: 6rem; /* header width that must stay on screen */
+
+    --tutor-header-h: 3rem; /* the drag handle */
+    --tutor-grip: 8px; /* resize hit area, pointer */
+    --tutor-grip-touch: 16px; /* resize hit area, coarse pointer */
+
+    --tutor-radius: var(--r-lg);
+    --tutor-radius-sm: var(--r-sm);
+    --tutor-radius-turn: var(--r);
+    --tutor-radius-pill: var(--r-pill);
+
+    /* ---------- surfaces ---------------------------------- */
+    --tutor-surface: var(--surface);
+    --tutor-surface-header: var(--surface-2);
+    --tutor-surface-composer: var(--surface);
+    --tutor-border: var(--border);
+    --tutor-border-strong: var(--border-strong);
+    --tutor-scrim: rgb(25 23 19 / 0.32); /* mobile sheet only */
+
+    /* ---------- elevation --------------------------------- */
+    /* Rest reads as "a card that happens to float". Drag adds a
+       second, wider shadow so the window visibly leaves the page —
+       the only depth cue a pointer user gets that it is loose. */
+    --tutor-elev-rest: var(--shadow-lg);
+    --tutor-elev-drag:
+        0 2px 8px rgb(25 23 19 / 0.08), 0 40px 80px -28px rgb(25 23 19 / 0.32);
+    --tutor-elev-dock: none; /* docked is flush, not floating */
+
+    /* ---------- voices in the thread ---------------------- */
+    /* The Learner gets a bubble; the Tutor does not. A lecturer
+       speaking at length in an editorial surface should read as
+       prose with a rule, not as a chat balloon. */
+    --tutor-learner-bg: var(--surface-2);
+    --tutor-learner-fg: var(--foreground);
+    --tutor-learner-label: var(--subtle-foreground);
+    --tutor-voice-rule: var(--primary);
+    --tutor-voice-fg: var(--foreground);
+    --tutor-voice-label: var(--primary);
+    --tutor-measure: 42rem; /* max line length for a Tutor answer */
+
+    /* ---------- Focus chip -------------------------------- */
+    /* Focus is a first-class domain object (CONTEXT.md). It gets a
+       token of its own so it can never be restyled into a subtitle. */
+    --tutor-focus-bg: var(--primary-soft);
+    --tutor-focus-fg: var(--primary-hover);
+    --tutor-focus-border: transparent;
+    --tutor-focus-locked-bg: var(--surface-3);
+    --tutor-focus-locked-fg: var(--muted-foreground);
+
+    /* ---------- launcher ---------------------------------- */
+    --tutor-launcher-h: 2.75rem;
+    --tutor-launcher-orb: 3.5rem;
+    --tutor-launcher-pad-x: 1rem;
+    --tutor-launcher-bg: var(--primary);
+    --tutor-launcher-fg: var(--primary-foreground);
+    --tutor-launcher-bg-hover: var(--primary-hover);
+    --tutor-launcher-ring: var(--primary-ring);
+    --tutor-launcher-shadow: var(--shadow);
+    --tutor-launcher-shadow-hover: var(--shadow-lg);
+    /* The aura is the whole futurism budget: one travelling
+       highlight, no neon, no second hue. */
+    --tutor-aura: rgb(255 255 255 / 0.5);
+    --tutor-aura-width: 2px;
+
+    /* ---------- states ------------------------------------ */
+    --tutor-state-thinking: var(--primary);
+    --tutor-state-unread: var(--gold); /* gold = something for you */
+    --tutor-state-unavailable-bg: var(--surface-2);
+    --tutor-state-unavailable-fg: var(--subtle-foreground);
+    --tutor-ring: var(--primary);
+
+    /* ---------- motion ------------------------------------ */
+    --tutor-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --tutor-ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+    --tutor-dur-fast: 120ms; /* hover, press */
+    --tutor-dur: 200ms; /* open, close, chip swap */
+    --tutor-dur-slow: 320ms; /* dock transition, sheet */
+    --tutor-dur-aura: 2600ms; /* one lap of the launcher aura */
+    --tutor-dur-think: 1400ms; /* one pulse while answering */
+}
+
+.dark,
+[data-theme='dark'] {
+    --tutor-scrim: rgb(0 0 0 / 0.55);
+
+    --tutor-elev-drag:
+        0 2px 8px rgb(0 0 0 / 0.5), 0 40px 80px -28px rgb(0 0 0 / 0.75);
+
+    /* Dark mode's --primary is a light mint. A white aura over it
+       is invisible, so the aura darkens instead of brightening. */
+    --tutor-aura: rgb(5 38 32 / 0.55);
+}
+
+/* Coarse pointers get a bigger grip and no hairline handles. */
+@media (pointer: coarse) {
+    :root {
+        --tutor-grip: var(--tutor-grip-touch);
+    }
+}
+
+/* Motion is decoration here, never information: every state that
+   animates also carries a label or a colour. Safe to switch off. */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --tutor-dur-fast: 0ms;
+        --tutor-dur: 0ms;
+        --tutor-dur-slow: 0ms;
+        --tutor-dur-aura: 0ms;
+        --tutor-dur-think: 0ms;
+    }
+}

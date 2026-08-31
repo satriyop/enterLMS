@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tutor overlay — mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tenang.css" />
+<link rel="stylesheet" href="assets/tokens.css" />
+<link rel="stylesheet" href="assets/overlay.css" />
+<link rel="stylesheet" href="assets/mockup.css" />
+</head>
+<body>
+
+<button class="theme-toggle" id="theme">Terang / Gelap</button>
+
+<!-- ============================================================
+     Fake Lesson page. Reproduces the shell in the screenshot:
+     content column + Konten Kursus outline + bottom tabs.
+     ============================================================ -->
+<div class="lesson">
+    <div class="lesson__bar">
+        <span aria-hidden="true">←</span>
+        <h1>Pengenalan Agen AI</h1>
+        <span class="spacer"></span>
+        <span style="color: var(--muted-foreground); font-size: .875rem">25%</span>
+        <span aria-hidden="true">✕</span>
+    </div>
+
+    <div class="lesson__body">
+        <main class="lesson__main">
+            <article class="lesson__prose">
+                <h2 class="display">Selamat Datang di EnterLMS</h2>
+                <p>EnterLMS adalah academy untuk orang yang menjalankan dan membangun keluarga produk agen — bukan sekolah AI generik. Ini bukan tempat men-deploy agen.</p>
+                <p>Kamu masuk sebagai Learner. LMS Admin — di fase ini hanya pendiri academy — yang menerbitkan Course, memberikan Enrollment ke Course terbatas, dan mengunci nilai.</p>
+
+                <h3>Apa yang akan kamu lakukan</h3>
+                <p>Membaca, menonton, dan mendengarkan Lesson — teks, video, audio, dokumen, YouTube, atau konferensi.</p>
+                <p>Bertanya pada Tutor tentang Lesson yang sedang kamu buka. Tutor tidak menyelesaikan Lesson untukmu.</p>
+                <p>Menyelesaikan kuis wajib. Jawaban singkat dinilai LMS Admin, bukan langsung lulus.</p>
+                <p>Selesaikan setiap Lesson untuk menandai progres. Sertifikat menunggu penyelesaian yang sah.</p>
+
+                <h3>Coba ini</h3>
+                <p>Sorot kalimat mana pun di halaman ini — jangkar “Tanya Tutor” akan muncul di dekat teks yang kamu sorot.</p>
+            </article>
+        </main>
+
+        <aside class="lesson__outline">
+            <h2>Konten Kursus</h2>
+            <div class="outline-item" data-active="true"><span>Selamat Datang di EnterLMS</span><small>8 menit</small></div>
+            <div class="outline-item"><span>Cara Menyelesaikan Pelajaran</span><small>8 menit</small></div>
+            <div class="outline-item"><span>Apa itu Agen AI</span><small>33 menit</small></div>
+            <div class="outline-item"><span>Anatomi, tanpa runtime</span><small>25 menit</small></div>
+            <div class="outline-item"><span>Batas academy</span><small>32 menit</small></div>
+        </aside>
+    </div>
+</div>
+
+<!-- selection anchor -->
+<button class="tutor-anchor" id="anchor" hidden>
+    <svg class="tutor-launch__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5.5 6h9A2.5 2.5 0 0 1 17 8.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.8 3.2V16H5.5A2.5 2.5 0 0 1 3 13.5v-5A2.5 2.5 0 0 1 5.5 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    </svg>
+    Tanya Tutor tentang ini
+</button>
+
+<!-- ============================================================
+     Launcher — parked bottom right, outside the overlay layer so
+     it keeps its own stacking order.
+     ============================================================ -->
+<div style="position: fixed; right: 1rem; bottom: 1rem; z-index: var(--tutor-z-launcher)">
+    <button class="tutor-launch" data-tutor-launch aria-expanded="false" data-state="idle">
+        <svg class="tutor-launch__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5.5 6h9A2.5 2.5 0 0 1 17 8.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.8 3.2V16H5.5A2.5 2.5 0 0 1 3 13.5v-5A2.5 2.5 0 0 1 5.5 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path class="tutor-launch__spark" d="M19 2.2 19.9 4.6 22.3 5.5 19.9 6.4 19 8.8 18.1 6.4 15.7 5.5 18.1 4.6Z" fill="currentColor"/>
+        </svg>
+        Tutor
+        <span class="tutor-launch__badge" aria-hidden="true"></span>
+    </button>
+</div>
+
+<!-- ============================================================
+     Overlay layer
+     ============================================================ -->
+<div class="tutor-layer" id="layer" hidden>
+    <div class="tutor-snap-hint" data-side="left" data-active="false"></div>
+    <div class="tutor-snap-hint" data-side="right" data-active="false"></div>
+
+    <section class="tutor" data-mode="float" data-collapsed="false"
+             role="dialog" aria-modal="false" aria-label="Tutor">
+
+        <header class="tutor__header" tabindex="0"
+                aria-label="Bilah judul Tutor. Panah memindahkan, Alt+panah mengubah ukuran, Home dan End menempel ke tepi, Enter menciutkan.">
+            <span class="tutor__grabber" aria-hidden="true"></span>
+            <span class="tutor__title display">Tutor</span>
+
+            <span class="tutor__focus" id="focus" data-locked="false" title="Fokus: percakapan ini tercatat pada Lesson berikut">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+                </svg>
+                <span class="tutor__focus-label">Selamat Datang di EnterLMS</span>
+            </span>
+
+            <div class="tutor__actions">
+                <button class="tutor__icon-btn" data-act="menu" aria-label="Lanjutkan di kanal lain" aria-haspopup="menu">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+                </button>
+                <button class="tutor__icon-btn" data-act="dock" aria-label="Tempel ke tepi kanan" aria-pressed="false">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M14 4.5v15"/></svg>
+                </button>
+                <button class="tutor__icon-btn" data-act="collapse" aria-label="Ciutkan">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14"/></svg>
+                </button>
+                <button class="tutor__icon-btn" data-act="close" aria-label="Tutup Tutor">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                </button>
+            </div>
+
+            <div class="tutor__menu" hidden role="menu">
+                <p class="tutor__menu-head">Lanjutkan Tutor yang sama di</p>
+                <button class="tutor__menu-item" role="menuitem">💬 WhatsApp</button>
+                <button class="tutor__menu-item" role="menuitem">✈️ Telegram</button>
+                <p class="tutor__menu-note">Kanal lain memindahkan Fokus pesannya ke Lesson ini. Percakapannya satu, bukan Tutor kedua.</p>
+            </div>
+        </header>
+
+        <div class="tutor__thread" id="thread" aria-live="polite">
+            <div class="tutor__turn" data-role="learner">
+                <span class="tutor__turn-label">Anda</span>
+                <div class="tutor__turn-body">Dalam satu kalimat, apa bedanya agen dengan chatbot?</div>
+            </div>
+
+            <div class="tutor__turn" data-role="tutor">
+                <span class="tutor__turn-label">Tutor</span>
+                <div class="tutor__turn-body">Pelajaran yang sedang kamu buka ini (Selamat Datang di EnterLMS) belum membahas perbedaan itu, jadi aku tidak akan mendahului materinya. Yang dibahas di sini adalah peranmu sebagai Learner dan apa yang academy ini kerjakan. Bedanya agen dan chatbot dibahas di Lesson “Apa itu Agen AI”. Mau aku pindahkan Fokus ke sana?</div>
+            </div>
+
+            <div class="tutor__turn" data-role="learner">
+                <span class="tutor__turn-label">Anda</span>
+                <div class="tutor__turn-body">Belum. Jelaskan dulu kenapa Tutor tidak bisa menyelesaikan Lesson untukku.</div>
+            </div>
+        </div>
+
+        <form class="tutor__form tutor__composer" id="form">
+            <div class="tutor__field">
+                <textarea class="tutor__input" rows="1" placeholder="Tanyakan tentang Lesson ini…"></textarea>
+                <button class="tutor__send" type="submit" disabled aria-label="Kirim">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+            <div class="tutor__composer-foot">
+                <span><kbd>⌘ ↵</kbd> kirim</span>
+                <span>Bertanya tidak menyelesaikan Lesson</span>
+            </div>
+        </form>
+
+        <div class="tutor__grip" data-dir="n"></div>
+        <div class="tutor__grip" data-dir="s"></div>
+        <div class="tutor__grip" data-dir="e"></div>
+        <div class="tutor__grip" data-dir="w"></div>
+        <div class="tutor__grip" data-dir="ne"></div>
+        <div class="tutor__grip" data-dir="nw"></div>
+        <div class="tutor__grip" data-dir="se"></div>
+        <div class="tutor__grip" data-dir="sw"></div>
+    </section>
+</div>
+
+<!-- demo strip -->
+<div class="demo">
+    <b>Mode</b>
+    <button data-demo="float">Mengambang</button>
+    <button data-demo="dock-right">Tempel kanan</button>
+    <button data-demo="dock-left">Tempel kiri</button>
+    <button data-demo="collapse">Ciutkan</button>
+    <b>Keadaan</b>
+    <button data-demo="thinking">Menjawab</button>
+    <button data-demo="focus-shift">Fokus pindah</button>
+    <button data-demo="locked">Terkunci</button>
+    <button data-demo="reset">Atur ulang</button>
+</div>
+
+<script type="module">
+import { createTutorOverlay, renderFocusShift } from './assets/overlay.js';
+
+const layer = document.getElementById('layer');
+const api = createTutorOverlay(layer);
+const el = layer.querySelector('.tutor');
+const thread = document.getElementById('thread');
+const form = document.getElementById('form');
+
+document.getElementById('theme').addEventListener('click', () => {
+    const root = document.documentElement;
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+});
+
+/* --- fake turn round-trip ------------------------------------- */
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = form.querySelector('.tutor__input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    addTurn('learner', text, true);
+    input.value = '';
+    input.dispatchEvent(new Event('input'));
+    thinking(true);
+
+    setTimeout(() => {
+        thinking(false);
+        thread.querySelector('[data-pending="true"]')?.removeAttribute('data-pending');
+        addTurn('tutor', 'Karena penyelesaian Lesson adalah catatan progres milikmu, bukan milikku. Aku menjelaskan isi Lesson; yang menandai selesai tetap kamu, dan pemahamanmu tetap diukur lewat Assessment.');
+    }, 1900);
+});
+
+function addTurn(role, body, pending = false) {
+    const turn = document.createElement('div');
+    turn.className = 'tutor__turn';
+    turn.dataset.role = role;
+    if (pending) turn.dataset.pending = 'true';
+    turn.innerHTML = `<span class="tutor__turn-label">${role === 'learner' ? 'Anda' : 'Tutor'}</span><div class="tutor__turn-body"></div>`;
+    turn.querySelector('.tutor__turn-body').textContent = body;
+    thread.append(turn);
+    api.scrollToLatest();
+}
+
+function thinking(on) {
+    document.querySelectorAll('[data-tutor-launch]').forEach((b) => {
+        b.dataset.state = on ? 'thinking' : 'idle';
+    });
+    thread.querySelector('.tutor__thinking')?.remove();
+    if (!on) return;
+    const row = document.createElement('div');
+    row.className = 'tutor__thinking';
+    row.innerHTML = '<span class="tutor__thinking-dots"><i></i><i></i><i></i></span> Tutor sedang menjawab…';
+    thread.append(row);
+    api.scrollToLatest();
+}
+
+/* --- demo strip ------------------------------------------------ */
+document.querySelector('.demo').addEventListener('click', (e) => {
+    const what = e.target.dataset?.demo;
+    if (!what) return;
+    api.setOpen(true);
+
+    if (what === 'float') api.undock();
+    if (what === 'dock-right') api.dock('right');
+    if (what === 'dock-left') api.dock('left');
+    if (what === 'collapse') el.querySelector('[data-act="collapse"]').click();
+    if (what === 'thinking') { thinking(true); setTimeout(() => thinking(false), 2600); }
+    if (what === 'focus-shift') {
+        renderFocusShift(thread, 'Cara Menyelesaikan Pelajaran');
+        document.querySelector('.tutor__focus-label').textContent = 'Cara Menyelesaikan Pelajaran';
+        api.scrollToLatest();
+    }
+    if (what === 'locked') {
+        form.hidden = !form.hidden;
+        let lock = el.querySelector('.tutor__locked');
+        if (!lock) {
+            lock = document.createElement('p');
+            lock.className = 'tutor__locked';
+            lock.textContent = 'Enrollment ini sudah di-drop. Percakapan bisa dibaca, tidak bisa ditambah.';
+            el.append(lock);
+        } else {
+            lock.remove();
+        }
+    }
+    if (what === 'reset') { localStorage.removeItem('tutor.geometry'); location.reload(); }
+});
+
+/* --- selection anchor ------------------------------------------ */
+const anchor = document.getElementById('anchor');
+document.querySelector('.lesson__main').addEventListener('mouseup', () => {
+    const sel = window.getSelection();
+    const text = sel.toString().trim();
+    if (text.length < 4) { anchor.hidden = true; return; }
+    const r = sel.getRangeAt(0).getBoundingClientRect();
+    anchor.style.left = `${r.left + window.scrollX}px`;
+    anchor.style.top = `${r.bottom + window.scrollY + 8}px`;
+    anchor.hidden = false;
+});
+
+anchor.addEventListener('click', () => {
+    const text = window.getSelection().toString().trim();
+    anchor.hidden = true;
+    api.setOpen(true);
+    const input = form.querySelector('.tutor__input');
+    input.value = `Tentang “${text.slice(0, 90)}” — `;
+    input.dispatchEvent(new Event('input'));
+    input.focus();
+});
+
+document.addEventListener('mousedown', (e) => {
+    if (!anchor.contains(e.target)) anchor.hidden = true;
+});
+</script>
+</body>
+</html>
