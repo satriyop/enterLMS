@@ -37,7 +37,6 @@ const BOUNDS = {
     gutter: 1, // --tutor-gutter
     keepVisible: 6, // --tutor-keep-visible
     headerHeight: 3, // --tutor-header-h
-    launcher: 3.5, // --tutor-launcher-h plus its gutter
 } as const;
 
 const clamp = (value: number, min: number, max: number): number =>
@@ -47,23 +46,27 @@ const rem = (value: number): number =>
     value * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
 /**
- * First run parks the window above its own launcher rather than on top of it:
- * the Learner has to be able to see the control they just used.
+ * First run parks the window in the reading column rather than the viewport
+ * corner, using whatever the caller anchors it to — in practice the launcher,
+ * which sits in the Lesson by construction. Anchoring beats a hardcoded inset
+ * because the Lesson's sidebar can be closed, and it keeps the window off the
+ * course progress that lives in the viewport's bottom-right.
  */
-const defaultGeometry = (): TutorGeometry => {
+const defaultGeometry = (anchor: HTMLElement | null): TutorGeometry => {
     const width = rem(BOUNDS.width);
     const height = Math.min(rem(BOUNDS.height), window.innerHeight - rem(8));
+    const rect = anchor?.getBoundingClientRect();
 
-    return {
-        width,
-        height,
-        left: window.innerWidth - width - rem(BOUNDS.gutter),
-        top:
-            window.innerHeight -
-            height -
-            rem(BOUNDS.gutter) -
-            rem(BOUNDS.launcher),
-    };
+    if (!rect || rect.right <= 0) {
+        return {
+            width,
+            height,
+            left: window.innerWidth - width - rem(BOUNDS.gutter),
+            top: window.innerHeight - height - rem(BOUNDS.gutter),
+        };
+    }
+
+    return { width, height, left: rect.right - width, top: rect.top };
 };
 
 /**
@@ -98,7 +101,7 @@ const clampToViewport = (geometry: TutorGeometry): TutorGeometry => {
     };
 };
 
-const readGeometry = (): TutorGeometry | null => {
+const readGeometry = (fallback: TutorGeometry): TutorGeometry | null => {
     try {
         const raw = localStorage.getItem(STORAGE_KEYS.tutorGeometry);
 
@@ -107,7 +110,6 @@ const readGeometry = (): TutorGeometry | null => {
         }
 
         const parsed = JSON.parse(raw) as Partial<TutorGeometry>;
-        const fallback = defaultGeometry();
 
         return {
             left: Number.isFinite(parsed.left)
@@ -144,7 +146,7 @@ const persistGeometry = (geometry: TutorGeometry): void => {
  * and outlive the Lesson. Whether the overlay was *open* is about this Lesson
  * and stays in sessionStorage, which is the split the panel already makes.
  */
-export function useTutorWindow() {
+export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
     const geometry = ref<TutorGeometry>({
         left: 0,
         top: 0,
@@ -362,7 +364,9 @@ export function useTutorWindow() {
          * saved at, so the same Learner on the same big screen tomorrow gets
          * their window back where they left it.
          */
-        geometry.value = readGeometry() ?? defaultGeometry();
+        const fallback = defaultGeometry(anchor.value);
+
+        geometry.value = readGeometry(fallback) ?? fallback;
         reflow();
 
         window.addEventListener('resize', onViewportResize);

@@ -63,13 +63,21 @@ const persistOpen = (value: boolean): void => {
 
 const open = ref(false);
 const threadEl = ref<HTMLElement | null>(null);
+
+/**
+ * The launcher stays in the reading column while the window teleports away, so
+ * its wrapper doubles as the anchor that tells the window where the Lesson is.
+ */
+const anchorEl = ref<HTMLElement | null>(null);
 const page = usePage();
 
 /**
- * The overlay has to escape `<main>`, which clips it. Teleport does that, but
- * it has nowhere to land during SSR — Vue buffers teleported content into a
- * slot Inertia's server render never emits — so it stays in place until the
+ * The window has to escape `<main>`, which clips it. Teleport does that, but it
+ * has nowhere to land during SSR — Vue buffers teleported content into a slot
+ * Inertia's server render never emits — so it stays in place until the
  * component is mounted, where the wrapper's fixed positioning already holds.
+ * The launcher is not teleported: it is a control on this Lesson, and over in
+ * the viewport corner it would sit on top of the course progress.
  */
 const isMounted = ref(false);
 
@@ -80,7 +88,7 @@ const {
     startDrag,
     startResize,
     onHeaderKeydown,
-} = useTutorWindow();
+} = useTutorWindow(anchorEl);
 
 onMounted(() => {
     isMounted.value = true;
@@ -150,6 +158,35 @@ watch(
 </script>
 
 <template>
+    <div
+        ref="anchorEl"
+        class="pointer-events-none absolute top-4 right-4 z-[var(--tutor-z-launcher)]"
+    >
+        <button
+            v-show="!open"
+            type="button"
+            class="tutor-launch pointer-events-auto"
+            aria-label="Buka Tutor"
+            :aria-expanded="open"
+            @click="open = true"
+        >
+            <svg class="tutor-launch__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                    d="M5.5 6h9A2.5 2.5 0 0 1 17 8.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.8 3.2V16H5.5A2.5 2.5 0 0 1 3 13.5v-5A2.5 2.5 0 0 1 5.5 6Z"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                />
+                <path
+                    class="tutor-launch__spark"
+                    d="M19 2.2 19.9 4.6 22.3 5.5 19.9 6.4 19 8.8 18.1 6.4 15.7 5.5 18.1 4.6Z"
+                    fill="currentColor"
+                />
+            </svg>
+            Tutor
+        </button>
+    </div>
+
     <Teleport to="body" :disabled="!isMounted">
         <div class="pointer-events-none fixed inset-0 z-[var(--tutor-z-overlay)]">
             <section
@@ -267,29 +304,6 @@ watch(
                 />
             </section>
 
-            <button
-                v-show="!open"
-                type="button"
-                class="tutor-launch pointer-events-auto absolute right-[var(--tutor-gutter)] bottom-[var(--tutor-gutter)]"
-                aria-label="Buka Tutor"
-                :aria-expanded="open"
-                @click="open = true"
-            >
-                <svg class="tutor-launch__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path
-                        d="M5.5 6h9A2.5 2.5 0 0 1 17 8.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.8 3.2V16H5.5A2.5 2.5 0 0 1 3 13.5v-5A2.5 2.5 0 0 1 5.5 6Z"
-                        stroke="currentColor"
-                        stroke-width="1.6"
-                        stroke-linejoin="round"
-                    />
-                    <path
-                        class="tutor-launch__spark"
-                        d="M19 2.2 19.9 4.6 22.3 5.5 19.9 6.4 19 8.8 18.1 6.4 15.7 5.5 18.1 4.6Z"
-                        fill="currentColor"
-                    />
-                </svg>
-                Tutor
-            </button>
         </div>
     </Teleport>
 </template>
