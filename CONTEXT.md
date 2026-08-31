@@ -1,6 +1,6 @@
 # EnterLMS
 
-An AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent may operate the academy from outside. It is not a generic AI school and not a control plane for live agents. See ADR 001 and ADR 009.
+An AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent may operate the academy from outside. The public catalog may hold many free Open Courses for learning AI. It is not a control plane for live agents. See ADR 001, ADR 009, and ADR 014.
 
 ## Language
 
@@ -27,8 +27,8 @@ The human of record for an Offering. They may grant Enrollment onto that Offerin
 _Avoid_: Instructor, Trainer, Dosen, PIC, Guru (those are UI labels), Tutor, teacher (when you mean the Tutor), Learner (when they have no Enrollment)
 
 **Open Course**:
-A Course listed in the public catalog. A Learner may create their own Enrollment. v1: Pengenalan Agen AI, which is free. It introduces what an agent is, without assuming the Learner operates one.
-_Avoid_: public course (say Open Course), preview (that is a Lesson anyone can watch without Enrollment)
+A Course listed in the public catalog. A Learner may create their own Enrollment. Open Courses are free. The catalog may list many of them; they teach AI (what an agent is, this product family, and related understanding). Pengenalan Agen AI is the first, not the only. Completing an Open Course does not grant a Restricted Course.
+_Avoid_: public course (say Open Course), preview (that is a Lesson anyone can watch without Enrollment), one-intro-only (ADR 014 retired that as a catalog limit)
 
 **Restricted Course**:
 A Course hidden from the public catalog. LMS Admin or that Offering’s Facilitator grants Enrollment onto an Offering. Completing an Open Course does not grant it. v1: Administrasi Agen OpenClaw.

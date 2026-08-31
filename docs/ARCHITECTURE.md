@@ -19,10 +19,11 @@
 ## System Overview
 
 **EnterLMS** is an AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent
-may operate the academy from outside. It is not a generic AI school and not a control
-plane for live agents. See `CONTEXT.md` for the domain language, ADR 001 for the
-product, and ADR 009 / `docs/design/tutor-runtime-and-skins.md` for the Tutor
-runtime and skins (Laravel academy; Hermes `enterlms-tutor` runs the turn).
+may operate the academy from outside. The public catalog may list many free Open
+Courses (ADR 014). It is not a control plane for live agents. See `CONTEXT.md` for
+the domain language, ADR 001 for the product, ADR 014 for catalog size, and ADR 009 /
+`docs/design/tutor-runtime-and-skins.md` for the Tutor runtime and skins
+(Laravel academy; Hermes `enterlms-tutor` runs the turn).
 
 - **Mobile-first responsive UI**, conforming to the Tenang design system (ADR 007)
 - **Bahasa Indonesia** as primary language
