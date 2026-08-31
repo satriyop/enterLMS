@@ -45,6 +45,8 @@ it('tells the tutor skill to refuse live OpenClaw and not enroll or complete', f
         ->toContain('not a console')
         ->toContain('PDF body, not the teaser')
         ->toContain('ignore `body_html`')
+        ->toContain('Do not paste the whole body')
+        ->toContain('skill_manage')
         ->and($body)->toContain('Never')
         ->and($body)->toContain('tutor.read');
 });
