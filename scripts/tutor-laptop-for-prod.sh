@@ -10,6 +10,8 @@
 #   API_SERVER_PORT=8642
 #   API_SERVER_KEY=<same as aidev TUTOR_RUNTIME_API_KEY>
 #   TELEGRAM_BOT_TOKEN=<Tutor bot only; never the lsptdi-ops / default profile token>
+# Profile config.yaml must hook scripts/tutor/inject-telegram-identifier.py
+# so resolve uses the numeric Telegram user id, never the display name.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
