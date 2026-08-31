@@ -208,6 +208,7 @@ onMounted(() => {
                         v-if="conversation"
                         :course-id="course.id"
                         :lesson-id="lesson.id"
+                        :lesson-title="lesson.title"
                         :conversation="conversation"
                     />
                 </div>

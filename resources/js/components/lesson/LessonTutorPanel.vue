@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { STORAGE_KEYS } from '@/lib/constants';
 import { useEventListener } from '@/composables/utils/useEventListener';
 import { useTutorWindow, type ResizeDirection } from '@/composables/useTutorWindow';
-import { ChevronDown, ChevronUp, PanelRight, PictureInPicture2, X } from 'lucide-vue-next';
+import { ChevronDown, ChevronUp, PanelRight, PictureInPicture2, Target, X } from 'lucide-vue-next';
 
 interface ConversationTurn {
     id: number;
@@ -26,6 +26,7 @@ interface LessonConversation {
 const props = defineProps<{
     courseId: number;
     lessonId: number;
+    lessonTitle: string;
     conversation: LessonConversation;
 }>();
 
@@ -62,7 +63,41 @@ const persistOpen = (value: boolean): void => {
     sessionStorage.setItem(panelStorageKey.value, value ? '1' : '0');
 };
 
+/**
+ * ADR 009: the overlay's Focus *is* the Lesson URL. Inertia gives every visit a
+ * fresh page key, so this component is destroyed and rebuilt on the far side of
+ * a Focus move -- and `tutorOpen` is keyed by Lesson, so an open window would
+ * simply vanish when the Learner clicks Selanjutnya. One shared key carries the
+ * fact across: the Lesson the Tutor was last left open on.
+ */
+const readFocusCarrier = (): string | null => {
+    if (typeof sessionStorage === 'undefined') {
+        return null;
+    }
+
+    return sessionStorage.getItem(STORAGE_KEYS.tutorFollow);
+};
+
+const carryFocus = (value: boolean): void => {
+    if (typeof sessionStorage === 'undefined') {
+        return;
+    }
+
+    if (value) {
+        sessionStorage.setItem(STORAGE_KEYS.tutorFollow, String(props.lessonId));
+    } else {
+        sessionStorage.removeItem(STORAGE_KEYS.tutorFollow);
+    }
+};
+
 const open = ref(false);
+
+/**
+ * The Lesson Focus has just moved to, held only for as long as the window
+ * stays on it. It marks a transition, not a fact about the Conversation, so
+ * it is never persisted -- a reload has nothing to announce.
+ */
+const focusShift = ref<string | null>(null);
 const threadEl = ref<HTMLElement | null>(null);
 
 /**
@@ -115,11 +150,20 @@ useEventListener(document, 'keydown', (event: KeyboardEvent) => {
 
 onMounted(() => {
     isMounted.value = true;
-    open.value = readOpen();
+
+    const carriedFrom = readFocusCarrier();
+    const followed = carriedFrom !== null && carriedFrom !== String(props.lessonId);
+
+    open.value = followed || readOpen();
+
+    if (followed) {
+        focusShift.value = props.lessonTitle;
+    }
 });
 
 watch(open, (value) => {
     persistOpen(value);
+    carryFocus(value);
 });
 
 const flashError = computed(() => {
@@ -133,6 +177,12 @@ const tutorForm = useForm({
 });
 
 const pendingMessage = computed(() => tutorForm.message.trim());
+
+const focusHint = computed(() =>
+    props.conversation.can_post
+        ? `Fokus: percakapan ini tercatat pada Lesson "${props.lessonTitle}"`
+        : `Percakapan ini terkunci pada Lesson "${props.lessonTitle}"`,
+);
 
 const headerHint = computed(() => {
     if (isSheet.value) {
@@ -276,7 +326,25 @@ watch(
                         >
                             <span v-for="dot in 6" :key="dot" class="size-[3px] rounded-full bg-foreground" />
                         </span>
-                        <h2 class="truncate font-heading text-base text-foreground">Tutor</h2>
+                        <h2 class="shrink-0 font-heading text-base text-foreground">Tutor</h2>
+
+                        <!-- Focus is a first-class object in CONTEXT.md, and
+                             once the window floats free of the content column
+                             "Lesson ini" stops pointing at anything. The chip
+                             names it, and it survives a collapse. -->
+                        <span
+                            class="flex min-w-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs"
+                            :class="
+                                conversation.can_post
+                                    ? 'bg-[var(--tutor-focus-bg)] text-[var(--tutor-focus-fg)]'
+                                    : 'bg-[var(--tutor-focus-locked-bg)] text-[var(--tutor-focus-locked-fg)]'
+                            "
+                            :title="focusHint"
+                            data-focus-chip
+                        >
+                            <Target class="size-3 shrink-0" aria-hidden="true" />
+                            <span class="truncate">{{ lessonTitle }}</span>
+                        </span>
                     </div>
                     <div class="flex shrink-0 items-center">
                         <Button
@@ -314,6 +382,16 @@ watch(
                 </header>
 
                 <div ref="threadEl" class="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
+                    <!-- The Learner asked to move on, not to change Tutors.
+                         The divider says which Conversation their next
+                         question will be written against. -->
+                    <p
+                        v-if="focusShift"
+                        class="flex items-center gap-2 text-xs text-muted-foreground before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border"
+                        data-focus-shift
+                    >
+                        Fokus pindah ke {{ focusShift }}
+                    </p>
                     <p v-if="conversation.turns.length === 0 && !tutorForm.processing" class="text-sm text-muted-foreground">
                         Belum ada percakapan. Tulis pertanyaan di bawah.
                     </p>

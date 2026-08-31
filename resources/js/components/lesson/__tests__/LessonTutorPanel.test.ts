@@ -16,9 +16,17 @@ const conversation = {
  * The overlay teleports to `<body>` to escape the Lesson's clipping `<main>`,
  * so the stub keeps it inside the wrapper where the assertions can reach it.
  */
-const mountPanel = async (overrides: Partial<typeof conversation> = {}) => {
+const mountPanel = async (
+    overrides: Partial<typeof conversation> = {},
+    lesson: { id?: number; title?: string } = {},
+) => {
     const wrapper = mount(LessonTutorPanel, {
-        props: { courseId: 1, lessonId: 14, conversation: { ...conversation, ...overrides } },
+        props: {
+            courseId: 1,
+            lessonId: lesson.id ?? 14,
+            lessonTitle: lesson.title ?? 'Cara Menyelesaikan Pelajaran',
+            conversation: { ...conversation, ...overrides },
+        },
         global: { stubs: { teleport: true } },
     });
 
@@ -29,6 +37,7 @@ const mountPanel = async (overrides: Partial<typeof conversation> = {}) => {
 
 const openOnLesson = (lessonId: number) => {
     sessionStorage.setItem(`${STORAGE_KEYS.tutorOpen}-${lessonId}`, '1');
+    sessionStorage.setItem(STORAGE_KEYS.tutorFollow, String(lessonId));
 };
 
 describe('LessonTutorPanel', () => {
@@ -289,6 +298,71 @@ describe('LessonTutorPanel', () => {
             await flushPromises();
 
             expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+        });
+    });
+
+    /**
+     * ADR 009: the overlay's Focus *is* the Lesson URL. Inertia rebuilds the
+     * page on every visit, so the Tutor has to survive the rebuild and then say
+     * out loud which Conversation the next question will be written against.
+     */
+    describe('when focus moves', () => {
+        it('names the lesson it is focused on in its own title bar', async () => {
+            openOnLesson(14);
+
+            const wrapper = await mountPanel({}, { title: 'Cara Menyelesaikan Pelajaran' });
+            const chip = wrapper.get('[data-focus-chip]');
+
+            expect(chip.text()).toContain('Cara Menyelesaikan Pelajaran');
+            expect(chip.classes()).toContain('bg-[var(--tutor-focus-bg)]');
+        });
+
+        it('mutes the chip on a conversation that is closed to new turns', async () => {
+            openOnLesson(14);
+
+            const wrapper = await mountPanel({ can_post: false });
+
+            expect(wrapper.get('[data-focus-chip]').classes()).toContain(
+                'bg-[var(--tutor-focus-locked-bg)]',
+            );
+        });
+
+        it('follows the learner onto the next lesson and says focus moved', async () => {
+            // The learner left lesson 14 with the Tutor open, then clicked
+            // Selanjutnya: a fresh mount on a lesson that has never been opened.
+            openOnLesson(14);
+
+            const wrapper = await mountPanel({}, { id: 15, title: 'Loop, Tool, Konteks' });
+
+            expect(wrapper.find('[role="dialog"]').exists()).toBe(true);
+            expect(wrapper.get('[data-focus-shift]').text()).toBe('Fokus pindah ke Loop, Tool, Konteks');
+            expect(wrapper.get('[data-focus-chip]').text()).toContain('Loop, Tool, Konteks');
+
+            // The window is now the one lesson 15 carries forward.
+            expect(sessionStorage.getItem(STORAGE_KEYS.tutorFollow)).toBe('15');
+            expect(sessionStorage.getItem(`${STORAGE_KEYS.tutorOpen}-15`)).toBe('1');
+        });
+
+        it('says nothing when the learner reopens the lesson it was already on', async () => {
+            openOnLesson(14);
+
+            const wrapper = await mountPanel();
+
+            expect(wrapper.find('[role="dialog"]').exists()).toBe(true);
+            expect(wrapper.find('[data-focus-shift]').exists()).toBe(false);
+        });
+
+        it('does not follow a learner who closed the tutor before moving on', async () => {
+            openOnLesson(14);
+
+            const wrapper = await mountPanel();
+            await wrapper.get('[aria-label="Tutup Tutor"]').trigger('click');
+
+            expect(sessionStorage.getItem(STORAGE_KEYS.tutorFollow)).toBeNull();
+
+            const next = await mountPanel({}, { id: 15, title: 'Loop, Tool, Konteks' });
+
+            expect(next.find('[role="dialog"]').exists()).toBe(false);
         });
     });
 

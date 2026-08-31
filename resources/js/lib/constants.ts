@@ -170,6 +170,7 @@ export const STORAGE_KEYS = {
     lessonProgress: 'enterlms-lesson-progress',
     tutorOpen: 'enterlms-tutor-open',
     tutorGeometry: 'enterlms-tutor-geometry',
+    tutorFollow: 'enterlms-tutor-follow',
 } as const;
 
 // =============================================================================
