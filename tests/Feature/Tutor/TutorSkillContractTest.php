@@ -58,7 +58,8 @@ it('requires Telegram resolve then commit-turn before any reply', function () {
         ->toContain('Telegram')
         ->toContain('resolve')
         ->toContain('get-focus')
-        ->toContain('Do not send a Telegram reply unless `commit-turn` succeeds.');
+        ->toContain('Do not send a Telegram reply unless `commit-turn` succeeds.')
+        ->toContain('never the display name');
 
     $overlayPos = strpos($body, '## Overlay');
     $messagingPos = strpos($body, '## Messaging (Telegram)');

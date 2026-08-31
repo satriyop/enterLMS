@@ -60,6 +60,38 @@ it('resolves a linked Telegram id to user_id', function () {
         });
 });
 
+it('resolves a Telegram id after stripping non-digits', function () {
+    $learner = User::factory()->learner()->create();
+
+    ChannelIdentity::factory()->telegram()->create([
+        'user_id' => $learner->id,
+        'identifier' => '99887766',
+    ]);
+
+    Sanctum::actingAs(User::factory()->lmsAdmin()->create(), AgentAbility::tutorRead());
+
+    EnterLmsAgentServer::tool(ResolveChannelTool::class, [
+        'channel' => 'telegram',
+        'identifier' => ' 99887766 ',
+    ])
+        ->assertOk()
+        ->assertStructuredContent(function ($json) use ($learner) {
+            $json->where('ok', true)
+                ->where('data.user_id', $learner->id)
+                ->where('data.identifier', '99887766')
+                ->etc();
+        });
+});
+
+it('refuses a Telegram display name and asks for the numeric user id', function () {
+    Sanctum::actingAs(User::factory()->lmsAdmin()->create(), AgentAbility::tutorRead());
+
+    EnterLmsAgentServer::tool(ResolveChannelTool::class, [
+        'channel' => 'telegram',
+        'identifier' => 'Budi Santoso',
+    ])->assertSee('bukan nama tampilan');
+});
+
 it('errors when the channel identity is unlinked', function () {
     Sanctum::actingAs(User::factory()->lmsAdmin()->create(), AgentAbility::tutorRead());
 

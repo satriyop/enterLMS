@@ -17,7 +17,7 @@ use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('resolve')]
-#[Description('Map a linked WhatsApp phone or Telegram id to the named Learner user_id for the one runtime Bearer.')]
+#[Description('Map a linked WhatsApp phone or numeric Telegram user id to the named Learner user_id. Telegram identifier is digits only (inbound user_id/chat_id), never the display name.')]
 #[IsReadOnly]
 #[IsIdempotent]
 class ResolveChannelTool extends Tool
@@ -40,9 +40,20 @@ class ResolveChannelTool extends Tool
                 'identifier.required' => 'identifier wajib diisi.',
             ]);
 
+            $channel = $validated['channel'];
+            $identifier = ChannelIdentity::normalize($channel, $validated['identifier']);
+
+            if ($identifier === '') {
+                return Response::error(
+                    $channel === ChannelIdentity::CHANNEL_TELEGRAM
+                        ? 'ID Telegram harus angka ID akun (user_id/chat_id inbound), bukan nama tampilan.'
+                        : 'Nomor WhatsApp tidak valid.'
+                );
+            }
+
             $link = ChannelIdentity::query()
-                ->where('channel', $validated['channel'])
-                ->where('identifier', $validated['identifier'])
+                ->where('channel', $channel)
+                ->where('identifier', $identifier)
                 ->first();
 
             if ($link === null) {
@@ -67,7 +78,7 @@ class ResolveChannelTool extends Tool
     {
         return [
             'channel' => $schema->string()->description('whatsapp or telegram')->required(),
-            'identifier' => $schema->string()->description('Phone number or Telegram id')->required(),
+            'identifier' => $schema->string()->description('WhatsApp digits or numeric Telegram user id, never a display name')->required(),
         ];
     }
 }

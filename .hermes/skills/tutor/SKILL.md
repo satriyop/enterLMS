@@ -36,7 +36,7 @@ Session identity **is** `enterlms-conversation-{id}`. Do not invent a parallel t
 
 Completion: `commit-turn` returned ok, then the Telegram reply is sent. No `commit-turn` success → no send.
 
-1. `resolve` `channel=telegram` `identifier=` the Telegram id → `user_id`. Never invent a `user_id`. Unlinked: tell them to tautkan di Pengaturan → Kanal. Stop.
+1. `resolve` `channel=telegram` `identifier=` the inbound numeric Telegram user id (digits only: the chat/user id, never the display name) → `user_id`. Never invent a `user_id`. Unlinked: tell them to tautkan di Pengaturan → Kanal. Stop.
 2. Pass that `user_id` plus the same `channel` + `identifier` on every later tool that accepts them.
 3. `get-focus` `user_id` `skin=telegram`.
    - `must_pick` true: `list-focusable-lessons` (titles only), ask them to pick, `set-focus` only after they pick. Do not fetch a Lesson body until Focus is set.
@@ -61,7 +61,7 @@ Tools you may call:
 
 - `get-published-lesson` — named Learner (`user_id`) + this Conversation's `course_id` + `lesson_id` only. Body as it is now, only if that Learner has an Enrollment that can access the Lesson. Use `body_text` when `body_ready` is true. Document Lessons put PDF text in `body_text`; `body_html` is null — ignore `body_html` even if `body_ready` is true.
 - `get-course-outline` — this `course_id` titles only (no later Lesson bodies).
-- `resolve` — WhatsApp phone or Telegram id → `user_id`. Then pass that `user_id` on every other tool.
+- `resolve` — WhatsApp phone or numeric Telegram user id (never the display name) → `user_id`. Then pass that `user_id` on every other tool.
 - `get-focus` / `set-focus` / `list-focusable-lessons` — messaging Focus only. Overlay Focus is the Lesson URL. `set-focus` only when the Learner asks or when `must_pick`; Laravel refuses locked or unenrolled Lessons.
 - `commit-turn` — Learner body then Tutor body. Messaging: do not send a Telegram reply unless this succeeds. Overlay: Laravel already writes; do not call `commit-turn`.
 
