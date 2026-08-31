@@ -161,8 +161,21 @@ export function useTutorWindow() {
         height: `${Math.round(geometry.value.height)}px`,
     }));
 
-    const commit = (): void => {
+    /**
+     * Bring the window back within reach without recording that we did. Used
+     * for every move the Learner did not ask for.
+     */
+    const reflow = (): void => {
         geometry.value = clampToViewport(geometry.value);
+    };
+
+    /**
+     * Reflow, then remember. Only a deliberate gesture — a drag, a resize, an
+     * arrow key — is allowed to write geometry, so a viewport the Learner is
+     * merely passing through never overwrites the one they chose.
+     */
+    const commit = (): void => {
+        reflow();
         persistGeometry(geometry.value);
     };
 
@@ -332,33 +345,25 @@ export function useTutorWindow() {
     };
 
     /**
-     * TODO(satriyo): decide what a viewport change does to a remembered window.
-     *
-     * Rotating a tablet, opening devtools or dragging a desktop window narrower
-     * can leave the overlay hanging off the edge. Two defensible answers:
-     *
-     *   a) Re-clamp on every resize — the window is never lost, but it slides
-     *      under the Learner's hands while they are doing something else, and
-     *      the rescued position is what gets persisted.
-     *   b) Leave it, and let the clamp on next mount rescue it — nothing moves
-     *      unbidden, but a Learner who narrows their window sees the composer
-     *      go off-screen until they reload.
-     *
-     * Five lines either way. `commit()` is (a); an empty body is (b).
+     * Rotating a tablet, opening devtools or dragging the browser narrower can
+     * leave the overlay hanging off an edge, so a viewport change re-clamps
+     * what is painted. It deliberately does not persist: the window can never
+     * end up unreachable, and a viewport the Learner is only passing through
+     * does not get to rewrite where they parked it. The next drag does.
      */
     const onViewportResize = (): void => {
-        // TODO: your call — see the note above.
+        reflow();
     };
 
     onMounted(() => {
-        geometry.value = clampToViewport(readGeometry() ?? defaultGeometry());
-
         /**
-         * Persist the clamped geometry, not just the painted one: a position
-         * rescued from a wider monitor should stay rescued even if the Learner
-         * never touches the window.
+         * Restore, then reflow rather than commit. A geometry saved on a wider
+         * monitor paints within reach here without losing the position it was
+         * saved at, so the same Learner on the same big screen tomorrow gets
+         * their window back where they left it.
          */
-        persistGeometry(geometry.value);
+        geometry.value = readGeometry() ?? defaultGeometry();
+        reflow();
 
         window.addEventListener('resize', onViewportResize);
     });

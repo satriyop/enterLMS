@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import LessonTutorPanel from '../LessonTutorPanel.vue';
 import { STORAGE_KEYS } from '@/lib/constants';
@@ -35,6 +35,10 @@ describe('LessonTutorPanel', () => {
     beforeEach(() => {
         sessionStorage.clear();
         localStorage.clear();
+    });
+
+    afterEach(() => {
+        window.innerWidth = 1024;
     });
 
     it('starts closed so the lesson is not covered', async () => {
@@ -103,7 +107,28 @@ describe('LessonTutorPanel', () => {
 
         expect(left).toBeLessThanOrEqual(window.innerWidth - 96);
         expect(top).toBeLessThanOrEqual(window.innerHeight - 48);
-        expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.tutorGeometry) as string).left).toBe(left);
+
+        // The rescue is painted, not recorded: the wider monitor still has a
+        // position waiting for the next time the learner sits at it.
+        expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.tutorGeometry) as string).left).toBe(5000);
+    });
+
+    it('pulls the window back into a narrowed viewport without forgetting where it was parked', async () => {
+        openOnLesson(14);
+        localStorage.setItem(
+            STORAGE_KEYS.tutorGeometry,
+            JSON.stringify({ left: 600, top: 200, width: 400, height: 360 }),
+        );
+
+        const wrapper = await mountPanel();
+        expect(wrapper.get('[role="dialog"]').attributes('style')).toContain('left: 600px');
+
+        window.innerWidth = 500;
+        window.dispatchEvent(new Event('resize'));
+        await flushPromises();
+
+        expect(wrapper.get('[role="dialog"]').attributes('style')).toContain('left: 404px');
+        expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.tutorGeometry) as string).left).toBe(600);
     });
 
     it('moves the window when the header is dragged, and remembers where it landed', async () => {

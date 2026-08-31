@@ -56,6 +56,12 @@ chip on screen.
 wider monitor is clamped on load so at least `--tutor-keep-visible` of the header is
 reachable — a window that cannot be grabbed is a window that is gone.
 
+**Only a deliberate gesture writes geometry.** Loading on a narrower screen, or resizing
+the browser while the overlay is open, re-clamps what is *painted* and stops there. The
+window can never end up out of reach, and a viewport the Learner is merely passing through
+— a rotated tablet, an opened devtools pane, a laptop away from the desk — never overwrites
+the position they actually chose. The next drag or resize does.
+
 **Every pointer gesture has a key.** The header is focusable: arrows move, `Alt`+arrows
 resize, `Shift` makes either step 1px, `Home`/`End` dock, `Enter` collapses, `Alt`+`T`
 toggles the whole thing. Drag-only would make the feature unusable with a keyboard, and
