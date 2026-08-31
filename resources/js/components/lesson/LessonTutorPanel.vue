@@ -6,6 +6,7 @@ import { store as storeFocus } from '@/actions/App/Http/Controllers/MessagingFoc
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { STORAGE_KEYS } from '@/lib/constants';
+import { useTutorWindow, type ResizeDirection } from '@/composables/useTutorWindow';
 import { X } from 'lucide-vue-next';
 
 interface ConversationTurn {
@@ -26,6 +27,21 @@ const props = defineProps<{
     lessonId: number;
     conversation: LessonConversation;
 }>();
+
+/**
+ * Corners are listed after edges so they win the overlap and a diagonal drag
+ * never degrades into a single-axis one.
+ */
+const resizeHandles: { dir: ResizeDirection; class: string }[] = [
+    { dir: 'n', class: 'top-0 right-0 left-0 h-[var(--tutor-grip)] cursor-ns-resize' },
+    { dir: 's', class: 'right-0 bottom-0 left-0 h-[var(--tutor-grip)] cursor-ns-resize' },
+    { dir: 'w', class: 'top-0 bottom-0 left-0 w-[var(--tutor-grip)] cursor-ew-resize' },
+    { dir: 'e', class: 'top-0 right-0 bottom-0 w-[var(--tutor-grip)] cursor-ew-resize' },
+    { dir: 'nw', class: 'top-0 left-0 size-[var(--tutor-grip-touch)] cursor-nwse-resize' },
+    { dir: 'ne', class: 'top-0 right-0 size-[var(--tutor-grip-touch)] cursor-nesw-resize' },
+    { dir: 'sw', class: 'bottom-0 left-0 size-[var(--tutor-grip-touch)] cursor-nesw-resize' },
+    { dir: 'se', class: 'right-0 bottom-0 size-[var(--tutor-grip-touch)] cursor-nwse-resize' },
+];
 
 const panelStorageKey = computed(() => `${STORAGE_KEYS.tutorOpen}-${props.lessonId}`);
 
@@ -49,7 +65,25 @@ const open = ref(false);
 const threadEl = ref<HTMLElement | null>(null);
 const page = usePage();
 
+/**
+ * The overlay has to escape `<main>`, which clips it. Teleport does that, but
+ * it has nowhere to land during SSR — Vue buffers teleported content into a
+ * slot Inertia's server render never emits — so it stays in place until the
+ * component is mounted, where the wrapper's fixed positioning already holds.
+ */
+const isMounted = ref(false);
+
+const {
+    style: windowStyle,
+    isDragging,
+    isResizing,
+    startDrag,
+    startResize,
+    onHeaderKeydown,
+} = useTutorWindow();
+
 onMounted(() => {
+    isMounted.value = true;
     open.value = readOpen();
 });
 
@@ -116,17 +150,29 @@ watch(
 </script>
 
 <template>
-    <div class="pointer-events-none absolute top-4 right-4 z-40 flex flex-col items-end gap-3">
+    <Teleport to="body" :disabled="!isMounted">
+        <div class="pointer-events-none fixed inset-0 z-[var(--tutor-z-overlay)]">
             <section
                 v-if="open"
-                class="pointer-events-auto flex max-h-[min(60vh,28rem)] w-[min(calc(100vw-2rem),22rem)] flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-lg"
+                class="pointer-events-auto absolute flex flex-col overflow-hidden rounded-xl border border-border bg-surface"
+                :class="
+                    isDragging || isResizing
+                        ? 'shadow-[var(--tutor-elev-drag)] select-none'
+                        : 'shadow-[var(--tutor-elev-rest)]'
+                "
+                :style="windowStyle"
                 role="dialog"
                 aria-label="Tutor"
             >
-                <header class="flex shrink-0 items-center justify-between gap-3 border-b border-border px-4 py-3">
-                    <div>
-                        <h2 class="font-heading text-base text-foreground">Tutor</h2>
-                        <p class="text-xs text-muted-foreground">Tanya tentang Lesson ini</p>
+                <header
+                    class="flex h-[var(--tutor-header-h)] shrink-0 cursor-grab items-center justify-between gap-3 border-b border-border bg-surface-2 px-4 select-none active:cursor-grabbing"
+                    tabindex="0"
+                    aria-label="Pindahkan jendela Tutor. Panah untuk menggeser, Alt dan panah untuk mengubah ukuran."
+                    @pointerdown="startDrag"
+                    @keydown="onHeaderKeydown"
+                >
+                    <div class="min-w-0">
+                        <h2 class="truncate font-heading text-base text-foreground">Tutor</h2>
                     </div>
                     <Button
                         type="button"
@@ -210,12 +256,21 @@ watch(
                 <p v-else class="shrink-0 border-t border-border p-4 text-sm text-muted-foreground">
                     Percakapan ini tidak dapat ditambah.
                 </p>
+
+                <div
+                    v-for="handle in resizeHandles"
+                    :key="handle.dir"
+                    class="absolute touch-none"
+                    :class="handle.class"
+                    :data-resize="handle.dir"
+                    @pointerdown="startResize($event, handle.dir)"
+                />
             </section>
 
             <button
                 v-show="!open"
                 type="button"
-                class="tutor-launch pointer-events-auto"
+                class="tutor-launch pointer-events-auto absolute right-[var(--tutor-gutter)] bottom-[var(--tutor-gutter)]"
                 aria-label="Buka Tutor"
                 :aria-expanded="open"
                 @click="open = true"
@@ -235,5 +290,6 @@ watch(
                 </svg>
                 Tutor
             </button>
-    </div>
+        </div>
+    </Teleport>
 </template>

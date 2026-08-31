@@ -138,19 +138,25 @@ because no state in this design is carried by motion alone.
 
 ## Adoption
 
-| Step | Change |
-|---|---|
-| 1 | Copy the token blocks into `resources/css/app.css`, and add `tutorGeometry` to `STORAGE_KEYS` in `lib/constants.ts`. No visual change; nothing else can land first. |
-| 2 | `LessonTutorPanel.vue` wraps its root in `<Teleport to="body">` and drops its own `absolute top-4 right-4 z-40` wrapper. `Show.vue` needs **no** change — the wrapper lives in the panel, and Teleport relocates the DOM from wherever the component is declared. |
-| 3 | Port `assets/overlay.js` to a `useTutorWindow()` composable in `resources/js/composables/` — `geometry`, `clamp`, `dock`, `undock`, `persist`. It is deliberately framework-free so this is a transcription, not a rewrite. |
-| 4 | Extend `LessonTutorPanel.test.ts`: clamp restores an off-screen geometry, snap thresholds dock, Escape collapses without closing, and the composer stays disabled when `can_post` is false. |
+| Step | Change | |
+|---|---|---|
+| 1 | Copy the token blocks into `resources/css/app.css`, and add `tutorGeometry` to `STORAGE_KEYS` in `lib/constants.ts`. No visual change; nothing else can land first. | done |
+| 2 | The launcher stops being a speech bubble and starts carrying its own name. | done |
+| 3 | `LessonTutorPanel.vue` wraps its root in `<Teleport to="body">` and drops its own `absolute top-4 right-4 z-40` wrapper, and `assets/overlay.js` becomes a `useTutorWindow()` composable — `geometry`, `clamp`, `persist`, drag, resize, keyboard. `Show.vue` needs **no** change: the wrapper lives in the panel, and Teleport relocates the DOM from wherever the component is declared. | done |
+| 4 | `dock`, `undock`, the snap preview, collapse, and the mobile sheet. | |
+| 5 | The Focus chip and the Follow divider. | |
 
-Two things will bite on step 2. The existing tests mount with a bare `mount()` and assert
-through `wrapper.find()`, so teleported DOM becomes invisible to them — both need
-`global: { stubs: { teleport: true } }` or a query against `document.body`. And
-`LessonTutorPanel.vue` is **not** in `tests/Feature/Design/tenang-baseline.json`, so it has
-no licence to carry a literal hex or a `bg-card`; the tokens have to exist in `app.css`
-before the markup can reference them.
+Three things bit on step 3. The existing tests mount with a bare `mount()` and assert
+through `wrapper.find()`, so teleported DOM became invisible to them — they now mount with
+`global: { stubs: { teleport: true } }`. `LessonTutorPanel.vue` is **not** in
+`tests/Feature/Design/tenang-baseline.json`, so it has no licence to carry a literal hex or
+a `bg-card`; the tokens have to exist in `app.css` before the markup can reference them.
+
+And the app server-renders (`vite build --ssr`, `INERTIA_SSR_ENABLED` defaults true). Vue
+buffers teleported content into a slot Inertia's server render never emits, so a plain
+`<Teleport to="body">` would drop the overlay on the server and then log a hydration
+mismatch. The teleport is disabled until `onMounted`, which costs three lines and no visual
+difference — the wrapper is `fixed`, so it looks identical rendered in place.
 
 `components/ui/` is exempt from the Tenang gate, but this component is not — the conformance
 test in `tests/Feature/Design/TenangConformanceTest.php` will see it, so the `--tutor-*`

@@ -49,4 +49,9 @@ export { useInitials } from './useInitials';
 export { useLessonMediaProgress } from './useLessonMediaProgress';
 export { useLessonPagination } from './useLessonPagination';
 export { useLessonProgress } from './useLessonProgress';
+export {
+    useTutorWindow,
+    type ResizeDirection,
+    type TutorGeometry,
+} from './useTutorWindow';
 export { useTwoFactorAuth } from './useTwoFactorAuth';
