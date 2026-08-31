@@ -10,7 +10,7 @@ EnterLMS is a Learning Management System (LMS) designed for:
 
 | Requirement | Description |
 |-------------|-------------|
-| AI-first LMS | Learner takes a Course with a Tutor; Laravel owns Conversation; locked-down runtime; LMS Agent is a different token (ADR 001) |
+| AI-first LMS | Learner takes a Course with a Tutor; Laravel owns Conversation; locked-down runtime; LMS Agent and Author Agent are different tokens (ADR 001, ADR 015) |
 | Multi-content Support | Text, video, audio, documents, live sessions |
 | Assessment & Grading | Quizzes with auto and manual grading; a Grade Proposal is not a grade until LMS Admin accepts it |
 | Progress Tracking | Detailed learner progress and completion |

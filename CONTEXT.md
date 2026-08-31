@@ -1,6 +1,6 @@
 # EnterLMS
 
-An AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent may operate the academy from outside. The public catalog may hold many free Open Courses for learning AI. It is not a control plane for live agents. See ADR 001, ADR 009, and ADR 014.
+An AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent may operate the academy from outside; an Author Agent may propose content changes. The public catalog may hold many free Open Courses for learning AI. It is not a control plane for live agents. See ADR 001, ADR 009, ADR 014, and ADR 015.
 
 ## Language
 
@@ -9,7 +9,7 @@ A person who has an Enrollment in at least one Course. Anyone who registers may 
 _Avoid_: student, user (when you mean the learning person)
 
 **LMS Admin**:
-The person who runs this academy: creates and publishes Courses and Learning Paths, grants Enrollment onto Offerings of Restricted Courses and Learning Paths, assigns a Facilitator to an Offering, and grades. A Grade Proposal is not a grade until a human of record accepts it. Until an Offering has a Facilitator, that person is the LMS Admin. In this phase LMS Admin is only the founder — see ADR 007.
+The person who runs this academy: creates and publishes Courses and Learning Paths, grants Enrollment onto Offerings of Restricted Courses and Learning Paths, assigns a Facilitator to an Offering, grades, and accepts Content Proposals. A Grade Proposal is not a grade until a human of record accepts it. A Content Proposal is not the Lesson until LMS Admin accepts it. Until an Offering has a Facilitator, that person is the LMS Admin. In this phase LMS Admin is only the founder — see ADR 007.
 _Avoid_: Content Manager, Trainer, Instructor, Teaching Assistant (staff distinctions this academy does not have)
 
 **Learner** and **LMS Admin** are the only two roles this academy models. Facilitator is a grant on an Offering, not a role.
@@ -47,8 +47,8 @@ The record of a Learner being registered in a Course on one Offering. Logging in
 _Avoid_: registration, subscription, automatic assignment; granting Enrollment to a Course without naming the Offering when that Course has named Offerings; granting onto the default Offering while named Offerings exist
 
 **Tutor**:
-The teacher a Learner talks to about a Lesson on their Enrollment. The Lesson overlay, WhatsApp, and Telegram are skins of the same Tutor — not a second teacher. It may talk across that Learner’s Enrollments. It does not teach a Restricted Course they were not granted, and it does not treat a later locked Lesson as if it were current (outline only, not the body). It is not an LMS Agent and not a live console in the Lesson.
-_Avoid_: chatbot, copilot, assistant, LMS Agent, lab, Agent (unqualified), catalog oracle (teaching Courses they are not enrolled in)
+The teacher a Learner talks to about a Lesson on their Enrollment. The Lesson overlay, WhatsApp, and Telegram are skins of the same Tutor — not a second teacher. It may talk across that Learner’s Enrollments. It does not teach a Restricted Course they were not granted, and it does not treat a later locked Lesson as if it were current (outline only, not the body). It is not an LMS Agent, not an Author Agent, and not a live console in the Lesson.
+_Avoid_: chatbot, copilot, assistant, LMS Agent, Author Agent, lab, Agent (unqualified), catalog oracle (teaching Courses they are not enrolled in)
 
 **Conversation**:
 The record of a Tutor and a Learner talking about one Lesson on one Enrollment. Readable by that Learner, by LMS Admin, and by the Facilitator of that Enrollment’s Offering. New turns only while the Enrollment is active or completed — not dropped, not without an Enrollment, and not without that Lesson. A turn exists only after Laravel has recorded it — a reply that never persisted is not part of this record. A WhatsApp or Telegram thread is not this record; it is a channel that adds turns to it.
@@ -66,19 +66,27 @@ _Avoid_: quiz (when you mean this), copying an Assessment per Offering, a separa
 A suggested score and feedback on an Assessment answer that already requires a human of record. It is not a grade until the Facilitator of that Enrollment’s Offering accepts it — or LMS Admin, if none is assigned. It is not shown to the Learner before that, and not a turn in a Conversation.
 _Avoid_: auto-grade (deterministic strategies already grade), AI grade, Tutor (when you mean this)
 
+**Content Proposal**:
+A suggested change to an existing Course’s content. It is not the Lesson until LMS Admin accepts it. The Author Agent writes it; LMS Admin asks for it. A Facilitator does not accept it.
+_Avoid_: auto-update, draft Lesson (when you mean this), Tutor (when you mean this), Grade Proposal (that is Assessment)
+
 **LMS Agent**:
-A program *outside* this academy that calls MCP to catalog / enroll / progress. It is a client, like a browser. A Hermes process may be that client on a **different token** from the Tutor.
-_Avoid_: Agent (unqualified), Tutor, calling the Tutor an LMS Agent
+A program *outside* this academy that calls MCP to catalog / enroll / progress. It is a client, like a browser. A Hermes process may be that client on a **different token** from the Tutor and from the Author Agent.
+_Avoid_: Agent (unqualified), Tutor, Author Agent, calling the Tutor an LMS Agent
+
+**Author Agent**:
+A program *outside* this academy that, when LMS Admin asks, proposes a change to an existing Course. It is a client, like a browser. A Hermes process may be that client on a **different token** from the Tutor and from the LMS Agent. It does not teach, enroll, complete, or publish.
+_Avoid_: role, Tutor, LMS Agent, Content Manager, editor, copilot, auto-update (when you mean publish), Agent (unqualified)
 
 **OpenClaw**:
 An agent runtime. In this academy it is a Course subject (Administrasi Agen OpenClaw). A Lesson is not a live console for it.
 _Avoid_: Agent (unqualified), using OpenClaw to mean the Tutor or the LMS Agent without saying which job
 
 **Hermes**:
-An agent runtime. The Tutor is one job (its own identity and channels). An LMS Agent is another job (free-flow token). Those stay two jobs, two tokens. It is not a Lesson form.
-_Avoid_: Agent (unqualified), collapsing Tutor and LMS Agent into one Hermes with every tool, sharing the Tutor’s WhatsApp or Telegram with the LMS Agent job
+An agent runtime. The Tutor is one job (its own identity and channels). An LMS Agent is another (free-flow token). An Author Agent is a third (propose content). Those stay three jobs, three tokens. It is not a Lesson form.
+_Avoid_: Agent (unqualified), collapsing any two jobs into one Hermes with every tool, sharing the Tutor’s WhatsApp or Telegram with another job
 
-A Learner takes a Course with a Tutor even if no LMS Agent ever connects.
+A Learner takes a Course with a Tutor even if no LMS Agent or Author Agent ever connects.
 
 ## Out of this context
 

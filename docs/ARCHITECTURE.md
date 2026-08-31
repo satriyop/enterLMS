@@ -19,9 +19,10 @@
 ## System Overview
 
 **EnterLMS** is an AI-first LMS. A Learner takes a Course with a Tutor; an LMS Agent
-may operate the academy from outside. The public catalog may list many free Open
-Courses (ADR 014). It is not a control plane for live agents. See `CONTEXT.md` for
-the domain language, ADR 001 for the product, ADR 014 for catalog size, and ADR 009 /
+may operate the academy from outside; an Author Agent may propose content changes
+(ADR 015). The public catalog may list many free Open Courses (ADR 014). It is not
+a control plane for live agents. See `CONTEXT.md` for the domain language, ADR 001
+for the product, ADR 014 for catalog size, ADR 015 for Author Agent, and ADR 009 /
 `docs/design/tutor-runtime-and-skins.md` for the Tutor runtime and skins
 (Laravel academy; Hermes `enterlms-tutor` runs the turn).
 

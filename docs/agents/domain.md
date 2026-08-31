@@ -9,6 +9,7 @@ How the engineering skills should consume this repo's domain documentation when 
 - **`docs/adr/001-ai-first-class-lms.md`** — what this product is. Always.
 - **`docs/adr/009-tutor-runtime-and-skins.md`** — who runs a Tutor turn, and the skins.
 - **`docs/adr/014-open-catalog-many-courses.md`** — the public catalog may list many free Open Courses.
+- **`docs/adr/015-author-agent-content-proposal.md`** — Author Agent proposes content; LMS Admin accepts.
 - **`docs/adr/`** — then read ADRs that touch the area you're about to work in. In multi-context repos, also check `src/<context>/docs/adr/` for context-scoped decisions.
 
 If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The `/domain-modeling` skill (reached via `/grill-with-docs` and `/improve-codebase-architecture`) creates them lazily when terms or decisions actually get resolved.

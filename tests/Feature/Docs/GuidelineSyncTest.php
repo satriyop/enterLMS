@@ -74,7 +74,7 @@ describe('agent guidelines', function () {
             'banking', 'perbankan', 'OJK', 'APU-PPT', 'Enteraksi',
             'Open Course', 'Restricted Course', 'Learning Path',
             'LMS Admin', 'OpenClaw', 'Hermes',
-            'Tutor', 'LMS Agent', 'Grade Proposal', 'Conversation',
+            'Tutor', 'LMS Agent', 'Author Agent', 'Grade Proposal', 'Content Proposal', 'Conversation',
         ];
 
         $found = [];

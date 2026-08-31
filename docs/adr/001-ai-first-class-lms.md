@@ -6,9 +6,9 @@ The public catalog lists Open Courses only (free, self-enroll). Restricted Cours
 
 A **Tutor** is a first-class participant: the teacher a Learner talks to about a Lesson on their Enrollment. Laravel owns the Conversation, Policy, Enrollment, and Focus. The Tutor's brain is a **locked-down Hermes job** (`enterlms-tutor`) — not a chat widget, not the LMS Agent, and not a live console in the Lesson. Overlay, WhatsApp, and Telegram are skins of that Tutor (ADR 009). Talking does not complete a Lesson and does not publish a Course. Understanding is still measured by Assessment. A **Grade Proposal** is not a grade until LMS Admin accepts it.
 
-The LMS Agent is a different client on a different token (catalog, enroll, progress). Hermes may run either job. Those are two doors, not one process with every tool. A Lesson is not an OpenClaw desktop.
+The LMS Agent is a different client on a different token (catalog, enroll, progress). The Author Agent is a third (propose content; ADR 015). Hermes may run those jobs. Those are separate doors, not one process with every tool. A Lesson is not an OpenClaw desktop.
 
-We rejected a live-agent lab in a Lesson, collapsing Tutor and LMS Agent onto one token, storing Conversation only in the runtime, letting the Tutor complete Lessons or publish Courses, a provider-strategy tree inside Laravel, and opening OpenClaw to the public. We also rejected “the Tutor must not be a runtime” — that mixed up the lab with the teacher. Who invokes Hermes, and which skins exist, is ADR 009. Catalog size for Open Courses is ADR 014.
+We rejected a live-agent lab in a Lesson, collapsing Tutor and LMS Agent onto one token, storing Conversation only in the runtime, letting the Tutor complete Lessons or publish Courses, a provider-strategy tree inside Laravel, and opening OpenClaw to the public. We also rejected “the Tutor must not be a runtime” — that mixed up the lab with the teacher. Who invokes Hermes, and which skins exist, is ADR 009. Catalog size for Open Courses is ADR 014. Author Agent is ADR 015.
 
 ## When this is true
 

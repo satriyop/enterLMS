@@ -2,7 +2,7 @@
 
 Read [`CONTEXT.md`](../../CONTEXT.md) for the glossary, then this file first:
 
-**[001 — AI-first LMS](001-ai-first-class-lms.md)** — what this product is. **[009 — Tutor runtime and skins](009-tutor-runtime-and-skins.md)** — who runs a Tutor turn, and the skins. **[014 — Open catalog](014-open-catalog-many-courses.md)** — the public catalog may list many free Open Courses.
+**[001 — AI-first LMS](001-ai-first-class-lms.md)** — what this product is. **[009 — Tutor runtime and skins](009-tutor-runtime-and-skins.md)** — who runs a Tutor turn, and the skins. **[014 — Open catalog](014-open-catalog-many-courses.md)** — the public catalog may list many free Open Courses. **[015 — Author Agent](015-author-agent-content-proposal.md)** — a third job proposes content; LMS Admin accepts.
 
 The rest are stack, identity, path, design, and progress. They do not redefine the product.
 
@@ -22,3 +22,4 @@ The rest are stack, identity, path, design, and progress. They do not redefine t
 | [012](012-restricted-grant-onto-named-offering.md) | Restricted Enrollment is granted onto a named Offering |
 | [013](013-assessment-on-course-window-on-offering.md) | Assessment belongs to the Course; the Offering times the attempt |
 | [014](014-open-catalog-many-courses.md) | Public catalog may list many free Open Courses |
+| [015](015-author-agent-content-proposal.md) | Author Agent proposes; LMS Admin accepts |

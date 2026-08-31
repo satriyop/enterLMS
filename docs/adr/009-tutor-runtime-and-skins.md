@@ -1,6 +1,6 @@
 # Tutor runtime and skins
 
-ADR 001 still defines the product: an AI-first LMS, Open vs Restricted, two Hermes jobs (Tutor vs LMS Agent), Laravel as academy, Conversation as the transcript, no live console in a Lesson. It said the Learner never talks to Hermes, the Tutor sits on the Lesson page only, and Laravel invokes every turn. That was a chat-widget rail. It does not survive WhatsApp and Telegram, and it fought “Tutor is first-class.”
+ADR 001 still defines the product: an AI-first LMS, Open vs Restricted, Hermes jobs (Tutor vs LMS Agent; Author Agent is ADR 015), Laravel as academy, Conversation as the transcript, no live console in a Lesson. It said the Learner never talks to Hermes, the Tutor sits on the Lesson page only, and Laravel invokes every turn. That was a chat-widget rail. It does not survive WhatsApp and Telegram, and it fought “Tutor is first-class.”
 
 The Tutor is one lecturer for that Learner. Overlay, WhatsApp, and Telegram are skins of the same Tutor, not a second teacher. Hermes `enterlms-tutor` (one profile, one gateway: API server plus later messaging adapters) **runs the turn**. Laravel **is the academy**: Enrollment, Lesson body, Focus, Conversation, progress, Assessment. Official Hermes docs: HTTP clients use the API server, not a custom plugin; WA/TG are platform adapters. We do not write those stacks in PHP, and we do not share this job’s WhatsApp or Telegram with another Hermes job.
 
