@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| **Status** | Proposal — mockup only, nothing implemented |
+| **Status** | Adopted — all five steps landed in `LessonTutorPanel.vue` and `useTutorWindow.ts` |
 | **Related** | ADR 007 (Tenang conformance), ADR 009 (Tutor runtime and skins), `CONTEXT.md` |
 | **Files** | `overlay.html`, `launcher.html`, `assets/tokens.css` |
 
@@ -149,8 +149,8 @@ because no state in this design is carried by motion alone.
 | 1 | Copy the token blocks into `resources/css/app.css`, and add `tutorGeometry` to `STORAGE_KEYS` in `lib/constants.ts`. No visual change; nothing else can land first. | done |
 | 2 | The launcher stops being a speech bubble and starts carrying its own name. | done |
 | 3 | `LessonTutorPanel.vue` wraps its root in `<Teleport to="body">` and drops its own `absolute top-4 right-4 z-40` wrapper, and `assets/overlay.js` becomes a `useTutorWindow()` composable — `geometry`, `clamp`, `persist`, drag, resize, keyboard. `Show.vue` needs **no** change: the wrapper lives in the panel, and Teleport relocates the DOM from wherever the component is declared. | done |
-| 4 | `dock`, `undock`, the snap preview, collapse, and the mobile sheet. | |
-| 5 | The Focus chip and the Follow divider. | |
+| 4 | `dock`, `undock`, the snap preview, collapse, and the mobile sheet. | done |
+| 5 | The Focus chip and the Follow divider. | done |
 
 Three things bit on step 3. The existing tests mount with a bare `mount()` and assert
 through `wrapper.find()`, so teleported DOM became invisible to them — they now mount with
@@ -187,3 +187,14 @@ still on screen but no longer visible to the Tutor invites *"tapi tadi kamu bila
 the screen would be promising a continuity the Conversation does not have.
 
 Implemented in `applyFocusChange()` at the bottom of `assets/overlay.js`.
+
+Step 5 found that following the URL costs more than a divider. Inertia stamps
+every visit with a fresh page key (`preserveState ? key : Date.now()`), so
+`LessonTutorPanel` is destroyed and rebuilt on the far side of *Selanjutnya* —
+and `tutorOpen` is keyed by Lesson, which the new Lesson does not have. An open
+window did not follow the Learner; it **vanished**, leaving nothing for a
+divider to be drawn on. So the fact that the Tutor was open travels under one
+shared session key, written whenever `open` changes rather than on unmount, so
+it never rests on Vue's teardown ordering. The divider then opens the new
+thread rather than closing the old one — in the mockup both threads are on the
+same page, and in the app the old one is already gone.
