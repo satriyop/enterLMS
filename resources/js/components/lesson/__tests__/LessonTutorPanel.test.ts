@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
 import LessonTutorPanel from '../LessonTutorPanel.vue';
 import { STORAGE_KEYS } from '@/lib/constants';
 
@@ -153,6 +153,142 @@ describe('LessonTutorPanel', () => {
         expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.tutorGeometry) as string)).toMatchObject({
             left: 200,
             top: 370,
+        });
+    });
+
+    const dragHeaderTo = async (wrapper: VueWrapper, x: number, y: number) => {
+        await wrapper.get('header').trigger('pointerdown', { clientX: 700, clientY: 230, button: 0 });
+        document.dispatchEvent(new MouseEvent('pointermove', { clientX: x, clientY: y }));
+        await flushPromises();
+    };
+
+    const releaseAt = async (x: number, y: number) => {
+        document.dispatchEvent(new MouseEvent('pointerup', { clientX: x, clientY: y }));
+        await flushPromises();
+    };
+
+    /**
+     * Dragging to an edge is the only way most learners will ever discover
+     * docking, so the hint has to show before the pointer is released and the
+     * release has to honour it.
+     */
+    it('previews a dock while the drag is near an edge, then docks on release', async () => {
+        openOnLesson(14);
+
+        const wrapper = await mountPanel();
+
+        await dragHeaderTo(wrapper, 6, 300);
+
+        expect(wrapper.get('.tutor-snap-hint[data-side="left"]').attributes('data-active')).toBe('true');
+        expect(wrapper.get('.tutor-snap-hint[data-side="right"]').attributes('data-active')).toBe('false');
+
+        await releaseAt(6, 300);
+
+        const dialog = wrapper.get('[role="dialog"]');
+
+        expect(dialog.attributes('data-mode')).toBe('dock-left');
+        expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.tutorGeometry) as string).mode).toBe('dock-left');
+
+        // CSS pins a docked window; emitting left/top here would only give the
+        // stylesheet something to fight.
+        expect(dialog.attributes('style')).not.toContain('left:');
+        expect(dialog.attributes('style')).not.toContain('height:');
+    });
+
+    it('docks from the keyboard and refuses to nudge what is pinned', async () => {
+        openOnLesson(14);
+
+        const wrapper = await mountPanel();
+        const header = wrapper.get('header');
+
+        await header.trigger('keydown', { key: 'End' });
+
+        const dialog = wrapper.get('[role="dialog"]');
+        expect(dialog.attributes('data-mode')).toBe('dock-right');
+
+        const pinned = dialog.attributes('style');
+        await header.trigger('keydown', { key: 'ArrowLeft' });
+
+        expect(wrapper.get('[role="dialog"]').attributes('style')).toBe(pinned);
+    });
+
+    /**
+     * Escape is the key a learner reaches for to get the Lesson back. Closing
+     * on it would be the one action here they cannot undo with the same key.
+     */
+    it('collapses on Escape rather than closing the conversation', async () => {
+        openOnLesson(14);
+
+        const wrapper = await mountPanel();
+
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+        await flushPromises();
+
+        const dialog = wrapper.get('[role="dialog"]');
+
+        expect(dialog.attributes('data-collapsed')).toBe('true');
+        expect(dialog.exists()).toBe(true);
+        expect(wrapper.get('header').exists()).toBe(true);
+    });
+
+    /**
+     * A draggable, resizable window on a phone is a bad joke, so below the
+     * breakpoint the same markup is a sheet: no dock control, a scrim behind
+     * it, and the header carrying the one gesture a phone user already knows.
+     */
+    describe('on a phone', () => {
+        const realMatchMedia = window.matchMedia;
+        const realRect = Element.prototype.getBoundingClientRect;
+
+        beforeEach(() => {
+            window.matchMedia = ((query: string) => ({
+                matches: query.includes('640'),
+                media: query,
+                onchange: null,
+                addEventListener: () => {},
+                removeEventListener: () => {},
+                addListener: () => {},
+                removeListener: () => {},
+                dispatchEvent: () => true,
+            })) as unknown as typeof window.matchMedia;
+        });
+
+        afterEach(() => {
+            window.matchMedia = realMatchMedia;
+            Element.prototype.getBoundingClientRect = realRect;
+        });
+
+        it('becomes a sheet with a scrim and no dock control', async () => {
+            openOnLesson(14);
+
+            const wrapper = await mountPanel();
+
+            expect(wrapper.find('[aria-label="Tempelkan Tutor ke tepi"]').exists()).toBe(false);
+            expect(wrapper.get('header').attributes('aria-label')).toContain('Tarik ke bawah');
+            expect(wrapper.find('.bg-\\[var\\(--tutor-scrim\\)\\]').exists()).toBe(true);
+        });
+
+        it('closes when the sheet is pulled past a quarter of its height, and not before', async () => {
+            openOnLesson(14);
+            Element.prototype.getBoundingClientRect = function () {
+                return { height: 400, width: 380, top: 0, left: 0, right: 380, bottom: 400, x: 0, y: 0, toJSON: () => ({}) };
+            };
+
+            const wrapper = await mountPanel();
+
+            await wrapper.get('header').trigger('pointerdown', { clientX: 190, clientY: 10, button: 0 });
+            document.dispatchEvent(new MouseEvent('pointermove', { clientX: 190, clientY: 70 }));
+            document.dispatchEvent(new MouseEvent('pointerup', { clientX: 190, clientY: 70 }));
+            await flushPromises();
+
+            expect(wrapper.find('[role="dialog"]').exists()).toBe(true);
+
+            await wrapper.get('header').trigger('pointerdown', { clientX: 190, clientY: 10, button: 0 });
+            document.dispatchEvent(new MouseEvent('pointermove', { clientX: 190, clientY: 260 }));
+            document.dispatchEvent(new MouseEvent('pointerup', { clientX: 190, clientY: 260 }));
+            await flushPromises();
+
+            expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
         });
     });
 

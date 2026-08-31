@@ -11,15 +11,24 @@ import {
     onMounted,
     ref,
     type CSSProperties,
+    type Ref,
 } from 'vue';
 
 export type ResizeDirection = 'n' | 'e' | 's' | 'w' | 'ne' | 'se' | 'sw' | 'nw';
+
+export type TutorMode = 'float' | 'dock-left' | 'dock-right';
 
 export interface TutorGeometry {
     left: number;
     top: number;
     width: number;
     height: number;
+    /**
+     * Docking is not a different component. It is the same window with one
+     * axis surrendered to an edge, so it rides along in the same record.
+     */
+    mode: TutorMode;
+    collapsed: boolean;
 }
 
 /**
@@ -37,7 +46,17 @@ const BOUNDS = {
     gutter: 1, // --tutor-gutter
     keepVisible: 6, // --tutor-keep-visible
     headerHeight: 3, // --tutor-header-h
+    dockMinWidth: 20, // --tutor-dock-w-min
+    dockMaxWidth: 38, // --tutor-dock-w-max
 } as const;
+
+/** `--tutor-snap`, the one bound the design states in px rather than rem. */
+const SNAP_PX = 28;
+
+/** Below this the design abandons the floating window for a sheet. */
+const SHEET_QUERY = '(max-width: 640px)';
+
+const MODES: TutorMode[] = ['float', 'dock-left', 'dock-right'];
 
 const clamp = (value: number, min: number, max: number): number =>
     Math.min(Math.max(value, min), Math.max(min, max));
@@ -63,10 +82,19 @@ const defaultGeometry = (anchor: HTMLElement | null): TutorGeometry => {
             height,
             left: window.innerWidth - width - rem(BOUNDS.gutter),
             top: window.innerHeight - height - rem(BOUNDS.gutter),
+            mode: 'float',
+            collapsed: false,
         };
     }
 
-    return { width, height, left: rect.right - width, top: rect.top };
+    return {
+        width,
+        height,
+        left: rect.right - width,
+        top: rect.top,
+        mode: 'float',
+        collapsed: false,
+    };
 };
 
 /**
@@ -77,6 +105,21 @@ const defaultGeometry = (anchor: HTMLElement | null): TutorGeometry => {
 const clampToViewport = (geometry: TutorGeometry): TutorGeometry => {
     const gutter = rem(BOUNDS.gutter);
     const keep = rem(BOUNDS.keepVisible);
+
+    /**
+     * A docked window has no free axis to be pushed off — CSS pins it to the
+     * edge and to full height — so only its width is worth bounding.
+     */
+    if (geometry.mode !== 'float') {
+        return {
+            ...geometry,
+            width: clamp(
+                geometry.width,
+                rem(BOUNDS.dockMinWidth),
+                Math.min(rem(BOUNDS.dockMaxWidth), window.innerWidth - gutter),
+            ),
+        };
+    }
 
     const width = clamp(
         geometry.width,
@@ -90,6 +133,7 @@ const clampToViewport = (geometry: TutorGeometry): TutorGeometry => {
     );
 
     return {
+        ...geometry,
         width,
         height,
         left: clamp(geometry.left, keep - width, window.innerWidth - keep),
@@ -124,6 +168,10 @@ const readGeometry = (fallback: TutorGeometry): TutorGeometry | null => {
             height: Number.isFinite(parsed.height)
                 ? (parsed.height as number)
                 : fallback.height,
+            mode: MODES.includes(parsed.mode as TutorMode)
+                ? (parsed.mode as TutorMode)
+                : fallback.mode,
+            collapsed: parsed.collapsed === true,
         };
     } catch {
         return null;
@@ -146,7 +194,10 @@ const persistGeometry = (geometry: TutorGeometry): void => {
  * and outlive the Lesson. Whether the overlay was *open* is about this Lesson
  * and stays in sessionStorage, which is the split the panel already makes.
  */
-export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
+export function useTutorWindow(
+    anchor: Ref<HTMLElement | null>,
+    options: { onDismiss?: () => void } = {},
+) {
     const geometry = ref<TutorGeometry>({
         left: 0,
         top: 0,
@@ -156,12 +207,51 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
     const isDragging = ref(false);
     const isResizing = ref(false);
 
-    const style = computed<CSSProperties>(() => ({
-        left: `${Math.round(geometry.value.left)}px`,
-        top: `${Math.round(geometry.value.top)}px`,
-        width: `${Math.round(geometry.value.width)}px`,
-        height: `${Math.round(geometry.value.height)}px`,
-    }));
+    /** Which edge the current drag would dock to, or null. Drives the hint. */
+    const snapTarget = ref<'left' | 'right' | null>(null);
+
+    /**
+     * A phone gets a sheet, not a window, and the sheet is pinned by CSS that
+     * outranks the inline geometry. Dragging under it would silently rewrite a
+     * position the Learner cannot see changing, so the gestures stand down.
+     */
+    const isSheet = ref(false);
+
+    /** How far the sheet has been pulled down, mid-gesture. */
+    const sheetOffset = ref(0);
+
+    const mode = computed(() => geometry.value.mode);
+    const isDocked = computed(() => geometry.value.mode !== 'float');
+    const isCollapsed = computed(() => geometry.value.collapsed);
+
+    const style = computed<CSSProperties>(() => {
+        /**
+         * A docked window is positioned entirely by CSS — pinned to its edge
+         * and to full height — so emitting left/top/height here would just be
+         * dead declarations the stylesheet has to fight.
+         */
+        if (geometry.value.mode !== 'float') {
+            return { width: `${Math.round(geometry.value.width)}px` };
+        }
+
+        return {
+            left: `${Math.round(geometry.value.left)}px`,
+            top: `${Math.round(geometry.value.top)}px`,
+            width: `${Math.round(geometry.value.width)}px`,
+            height: `${Math.round(geometry.value.height)}px`,
+        };
+    });
+
+    /**
+     * The sheet is pinned by CSS, so its one gesture rides on a transform
+     * instead of on geometry — nothing here is persisted, because pulling a
+     * sheet down is a way of closing it, not a way of placing it.
+     */
+    const sheetStyle = computed<CSSProperties>(() =>
+        sheetOffset.value > 0
+            ? { transform: `translateY(${Math.round(sheetOffset.value)}px)` }
+            : {},
+    );
 
     /**
      * Bring the window back within reach without recording that we did. Used
@@ -182,18 +272,153 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
     };
 
     /**
+     * Surrender one axis to an edge. A docked window keeps its width, because
+     * that is the one thing the Learner still gets to choose about it, but
+     * within the narrower band a full-height column reads well at.
+     */
+    const dock = (side: 'left' | 'right'): void => {
+        geometry.value = {
+            ...geometry.value,
+            mode: side === 'left' ? 'dock-left' : 'dock-right',
+            collapsed: false,
+        };
+
+        commit();
+    };
+
+    /**
+     * Undocking has to invent a position, because a docked window does not
+     * have one. Park it just inside the edge it was clinging to so it appears
+     * where the Learner last saw it rather than jumping across the screen.
+     */
+    const undock = (): void => {
+        const gutter = rem(BOUNDS.gutter);
+        const wasLeft = geometry.value.mode === 'dock-left';
+
+        geometry.value = {
+            ...geometry.value,
+            mode: 'float',
+            left: wasLeft
+                ? gutter
+                : window.innerWidth - geometry.value.width - gutter,
+            top: rem(4),
+            height: Math.min(rem(BOUNDS.height), window.innerHeight - rem(8)),
+        };
+
+        commit();
+    };
+
+    const toggleDock = (): void => {
+        if (isDocked.value) {
+            undock();
+            return;
+        }
+
+        /**
+         * Dock to whichever half the window already sits in, so the button
+         * moves it the shorter distance and the result is not a surprise.
+         */
+        const centre = geometry.value.left + geometry.value.width / 2;
+
+        dock(centre > window.innerWidth / 2 ? 'right' : 'left');
+    };
+
+    /**
+     * Collapsing is not closing. The window becomes its own title bar and
+     * parks; the Conversation is still there, and one more click brings it
+     * back. Escape reaches for this rather than for the close button.
+     */
+    const toggleCollapse = (): void => {
+        geometry.value = {
+            ...geometry.value,
+            collapsed: !geometry.value.collapsed,
+        };
+
+        commit();
+    };
+
+    const collapse = (): void => {
+        if (geometry.value.collapsed) {
+            return;
+        }
+
+        toggleCollapse();
+    };
+
+    /** How close to an edge a drag has to end before it docks instead. */
+    const snapSideAt = (x: number): 'left' | 'right' | null => {
+        if (x <= SNAP_PX) {
+            return 'left';
+        }
+
+        if (x >= window.innerWidth - SNAP_PX) {
+            return 'right';
+        }
+
+        return null;
+    };
+
+    /**
      * Move and up are bound to the document, not to the handle. Pointer capture
      * would be tidier, but a pointer that leaves the handle faster than the
      * window can follow — which happens on every quick throw toward an edge —
      * stops delivering events to the captured element in some engines, and the
      * window is left stuck mid-flight.
      */
+    /**
+     * On a phone the header is not a move handle — there is nowhere to move
+     * to — so it becomes the one gesture the platform already taught: pull
+     * down to dismiss. Past a quarter of its own height the sheet goes; short
+     * of that it springs back, so a hesitant pull is not a closed Conversation.
+     */
+    const startSheetDismiss = (event: PointerEvent): void => {
+        const startY = event.clientY;
+        const height = (event.currentTarget as HTMLElement)
+            .closest('[data-mode]')
+            ?.getBoundingClientRect().height;
+
+        const onMove = (moveEvent: PointerEvent): void => {
+            sheetOffset.value = Math.max(0, moveEvent.clientY - startY);
+        };
+
+        const onEnd = (): void => {
+            document.removeEventListener('pointermove', onMove);
+            document.removeEventListener('pointerup', onEnd);
+            document.removeEventListener('pointercancel', onEnd);
+
+            const travelled = sheetOffset.value;
+
+            sheetOffset.value = 0;
+
+            if (height && travelled > height * 0.25) {
+                options.onDismiss?.();
+            }
+        };
+
+        document.addEventListener('pointermove', onMove);
+        document.addEventListener('pointerup', onEnd);
+        document.addEventListener('pointercancel', onEnd);
+    };
+
     const startDrag = (event: PointerEvent): void => {
         if (event.button !== 0) {
             return;
         }
 
         if ((event.target as HTMLElement).closest('button')) {
+            return;
+        }
+
+        if (isSheet.value) {
+            startSheetDismiss(event);
+            return;
+        }
+
+        /**
+         * A docked window has no free axis, so the header is not a handle.
+         * Undocking first is the deliberate act that gives it one back.
+         */
+        if (isDocked.value) {
             return;
         }
 
@@ -208,13 +433,29 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
                 left: moveEvent.clientX - offsetX,
                 top: moveEvent.clientY - offsetY,
             };
+
+            snapTarget.value = snapSideAt(moveEvent.clientX);
         };
 
-        const onEnd = (): void => {
+        const onEnd = (endEvent: PointerEvent): void => {
             isDragging.value = false;
             document.removeEventListener('pointermove', onMove);
             document.removeEventListener('pointerup', onEnd);
             document.removeEventListener('pointercancel', onEnd);
+
+            /**
+             * Dragging to an edge is how most people will ever discover
+             * docking, so the release honours the hint that was showing.
+             */
+            const side = snapSideAt(endEvent.clientX);
+
+            snapTarget.value = null;
+
+            if (side) {
+                dock(side);
+                return;
+            }
+
             commit();
         };
 
@@ -228,12 +469,15 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
         event: PointerEvent,
         direction: ResizeDirection,
     ): void => {
-        if (event.button !== 0) {
+        if (event.button !== 0 || isSheet.value) {
             return;
         }
 
         event.preventDefault();
 
+        const docked = isDocked.value;
+        const minWidth = rem(docked ? BOUNDS.dockMinWidth : BOUNDS.minWidth);
+        const maxWidth = rem(docked ? BOUNDS.dockMaxWidth : BOUNDS.maxWidth);
         const start = { x: event.clientX, y: event.clientY, ...geometry.value };
 
         const onMove = (moveEvent: PointerEvent): void => {
@@ -263,11 +507,7 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
              * Doing it the other way round lets a drag past the minimum walk
              * the opposite edge across the screen.
              */
-            next.width = clamp(
-                next.width,
-                rem(BOUNDS.minWidth),
-                rem(BOUNDS.maxWidth),
-            );
+            next.width = clamp(next.width, minWidth, maxWidth);
             next.height = clamp(
                 next.height,
                 rem(BOUNDS.minHeight),
@@ -305,6 +545,22 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
      * not a trade-off the academy gets to make.
      */
     const onHeaderKeydown = (event: KeyboardEvent): void => {
+        if (isSheet.value) {
+            return;
+        }
+
+        if (event.key === 'Home' || event.key === 'End') {
+            event.preventDefault();
+            dock(event.key === 'Home' ? 'left' : 'right');
+            return;
+        }
+
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleCollapse();
+            return;
+        }
+
         const step = event.shiftKey ? 1 : 16;
         const moves: Record<string, [number, number]> = {
             ArrowLeft: [-step, 0],
@@ -322,12 +578,14 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
         event.preventDefault();
 
         if (event.altKey) {
+            const docked = isDocked.value;
+
             geometry.value = {
                 ...geometry.value,
                 width: clamp(
                     geometry.value.width + move[0],
-                    rem(BOUNDS.minWidth),
-                    rem(BOUNDS.maxWidth),
+                    rem(docked ? BOUNDS.dockMinWidth : BOUNDS.minWidth),
+                    rem(docked ? BOUNDS.dockMaxWidth : BOUNDS.maxWidth),
                 ),
                 height: clamp(
                     geometry.value.height + move[1],
@@ -336,6 +594,11 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
                 ),
             };
         } else {
+            /** Nudging a docked window would move something CSS has pinned. */
+            if (isDocked.value) {
+                return;
+            }
+
             geometry.value = {
                 ...geometry.value,
                 left: geometry.value.left + move[0],
@@ -357,6 +620,14 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
         reflow();
     };
 
+    let sheetQuery: MediaQueryList | null = null;
+
+    const onSheetChange = (
+        event: MediaQueryListEvent | MediaQueryList,
+    ): void => {
+        isSheet.value = event.matches;
+    };
+
     onMounted(() => {
         /**
          * Restore, then reflow rather than commit. A geometry saved on a wider
@@ -369,20 +640,36 @@ export function useTutorWindow(anchor: Ref<HTMLElement | null>) {
         geometry.value = readGeometry(fallback) ?? fallback;
         reflow();
 
+        sheetQuery = window.matchMedia(SHEET_QUERY);
+        onSheetChange(sheetQuery);
+        sheetQuery.addEventListener('change', onSheetChange);
+
         window.addEventListener('resize', onViewportResize);
     });
 
     onBeforeUnmount(() => {
+        sheetQuery?.removeEventListener('change', onSheetChange);
         window.removeEventListener('resize', onViewportResize);
     });
 
     return {
         geometry,
         style,
+        sheetStyle,
+        mode,
+        isDocked,
+        isCollapsed,
         isDragging,
         isResizing,
+        isSheet,
+        snapTarget,
         startDrag,
         startResize,
         onHeaderKeydown,
+        dock,
+        undock,
+        toggleDock,
+        toggleCollapse,
+        collapse,
     };
 }

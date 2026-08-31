@@ -6,8 +6,9 @@ import { store as storeFocus } from '@/actions/App/Http/Controllers/MessagingFoc
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { STORAGE_KEYS } from '@/lib/constants';
+import { useEventListener } from '@/composables/utils/useEventListener';
 import { useTutorWindow, type ResizeDirection } from '@/composables/useTutorWindow';
-import { X } from 'lucide-vue-next';
+import { ChevronDown, ChevronUp, PanelRight, PictureInPicture2, X } from 'lucide-vue-next';
 
 interface ConversationTurn {
     id: number;
@@ -83,12 +84,34 @@ const isMounted = ref(false);
 
 const {
     style: windowStyle,
+    sheetStyle,
+    mode,
+    isDocked,
+    isCollapsed,
     isDragging,
     isResizing,
+    isSheet,
+    snapTarget,
     startDrag,
     startResize,
     onHeaderKeydown,
-} = useTutorWindow(anchorEl);
+    toggleDock,
+    toggleCollapse,
+    collapse,
+} = useTutorWindow(anchorEl, { onDismiss: () => (open.value = false) });
+
+/**
+ * Escape collapses rather than closes. A Learner reaching for it wants the
+ * Lesson back, not the Conversation gone — and closing would be the one
+ * action here they cannot undo with the same key.
+ */
+useEventListener(document, 'keydown', (event: KeyboardEvent) => {
+    if (event.key !== 'Escape' || !open.value || isCollapsed.value) {
+        return;
+    }
+
+    collapse();
+});
 
 onMounted(() => {
     isMounted.value = true;
@@ -110,6 +133,18 @@ const tutorForm = useForm({
 });
 
 const pendingMessage = computed(() => tutorForm.message.trim());
+
+const headerHint = computed(() => {
+    if (isSheet.value) {
+        return 'Tarik ke bawah untuk menutup Tutor';
+    }
+
+    if (isDocked.value) {
+        return 'Tutor menempel di tepi. Home atau End untuk pindah tepi, Enter untuk menciutkan.';
+    }
+
+    return 'Pindahkan jendela Tutor. Panah untuk menggeser, Alt dan panah untuk mengubah ukuran, Home atau End untuk menempel ke tepi.';
+});
 
 const setMessagingFocus = (skin: 'whatsapp' | 'telegram') => {
     router.post(
@@ -189,38 +224,93 @@ watch(
 
     <Teleport to="body" :disabled="!isMounted">
         <div class="pointer-events-none fixed inset-0 z-[var(--tutor-z-overlay)]">
+            <div
+                v-for="side in ['left', 'right'] as const"
+                :key="side"
+                class="tutor-snap-hint"
+                :data-side="side"
+                :data-active="String(snapTarget === side)"
+                aria-hidden="true"
+            />
+
+            <!-- The sheet covers the Lesson, so it needs something behind it
+                 saying the Lesson is still there and one tap away. -->
+            <div
+                v-if="open && isSheet"
+                class="pointer-events-auto fixed inset-0 z-[var(--tutor-z-sheet-scrim)] bg-[var(--tutor-scrim)]"
+                aria-hidden="true"
+                @click="open = false"
+            />
+
             <section
                 v-if="open"
-                class="pointer-events-auto absolute flex flex-col overflow-hidden rounded-xl border border-border bg-surface"
+                class="tutor-window pointer-events-auto absolute flex flex-col overflow-hidden rounded-xl border border-border bg-surface"
                 :class="
                     isDragging || isResizing
                         ? 'shadow-[var(--tutor-elev-drag)] select-none'
                         : 'shadow-[var(--tutor-elev-rest)]'
                 "
-                :style="windowStyle"
+                :style="[windowStyle, sheetStyle]"
+                :data-mode="mode"
+                :data-collapsed="String(isCollapsed)"
                 role="dialog"
                 aria-label="Tutor"
             >
                 <header
-                    class="flex h-[var(--tutor-header-h)] shrink-0 cursor-grab items-center justify-between gap-3 border-b border-border bg-surface-2 px-4 select-none active:cursor-grabbing"
+                    class="flex h-[var(--tutor-header-h)] shrink-0 items-center justify-between gap-2 border-b border-border bg-surface-2 pr-1 pl-3 select-none"
+                    :class="isDocked || isSheet ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'"
                     tabindex="0"
-                    aria-label="Pindahkan jendela Tutor. Panah untuk menggeser, Alt dan panah untuk mengubah ukuran."
+                    :aria-label="headerHint"
                     @pointerdown="startDrag"
                     @keydown="onHeaderKeydown"
+                    @dblclick="toggleCollapse"
                 >
-                    <div class="min-w-0">
+                    <div class="flex min-w-0 items-center gap-2">
+                        <!-- Two dots and a rule: the oldest, least ambiguous
+                             "this moves" sign there is. Shown only where
+                             dragging is actually possible. -->
+                        <span
+                            v-if="!isDocked && !isSheet"
+                            class="grid shrink-0 grid-cols-2 gap-[3px] opacity-40"
+                            aria-hidden="true"
+                        >
+                            <span v-for="dot in 6" :key="dot" class="size-[3px] rounded-full bg-foreground" />
+                        </span>
                         <h2 class="truncate font-heading text-base text-foreground">Tutor</h2>
                     </div>
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        class="shrink-0"
-                        aria-label="Tutup Tutor"
-                        @click="open = false"
-                    >
-                        <X class="size-4" />
-                    </Button>
+                    <div class="flex shrink-0 items-center">
+                        <Button
+                            v-if="!isSheet"
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            :aria-label="isDocked ? 'Lepaskan Tutor dari tepi' : 'Tempelkan Tutor ke tepi'"
+                            @click="toggleDock"
+                        >
+                            <PanelRight v-if="!isDocked" class="size-4" />
+                            <PictureInPicture2 v-else class="size-4" />
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            :aria-label="isCollapsed ? 'Bentangkan Tutor' : 'Ciutkan Tutor'"
+                            :aria-expanded="!isCollapsed"
+                            @click="toggleCollapse"
+                        >
+                            <ChevronDown v-if="isCollapsed" class="size-4" />
+                            <ChevronUp v-else class="size-4" />
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Tutup Tutor"
+                            @click="open = false"
+                        >
+                            <X class="size-4" />
+                        </Button>
+                    </div>
                 </header>
 
                 <div ref="threadEl" class="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">

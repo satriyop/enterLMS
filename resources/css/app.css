@@ -714,3 +714,147 @@
         --tutor-aura-angle: 360deg;
     }
 }
+
+/* ============================================================
+   Tutor window — the states inline styles cannot be told about
+   ------------------------------------------------------------
+   `useTutorWindow` writes left/top/width/height straight onto
+   the element, and an inline style outranks every utility class.
+   Docking, collapsing and the mobile sheet all have to overrule
+   that geometry, so they live here as real rules rather than as
+   `data-[mode=...]:` variants that could never win.
+   Design source: docs/design/tutor-overlay/
+   ============================================================ */
+
+@layer components {
+    /* --- docked ---------------------------------------------
+       Not a different component: the same window with one axis
+       surrendered. Full height, square against its edge, no
+       shadow to cast onto a wall it is flush with. Width stays
+       the Learner's to choose. */
+    .tutor-window[data-mode='dock-left'],
+    .tutor-window[data-mode='dock-right'] {
+        top: 0;
+        height: 100%;
+        min-width: var(--tutor-dock-w-min);
+        max-width: var(--tutor-dock-w-max);
+        border-radius: 0;
+        border-top: 0;
+        border-bottom: 0;
+        box-shadow: var(--tutor-elev-dock);
+    }
+
+    .tutor-window[data-mode='dock-left'] {
+        left: 0;
+        right: auto;
+        border-left: 0;
+    }
+
+    .tutor-window[data-mode='dock-right'] {
+        right: 0;
+        left: auto;
+        border-right: 0;
+    }
+
+    /* --- collapsed ------------------------------------------
+       The window becomes its own title bar and parks. Distinct
+       from closing: the Conversation is still there, and the
+       header still says whose it is. */
+    .tutor-window[data-collapsed='true'] {
+        height: var(--tutor-header-h) !important;
+        min-height: 0;
+    }
+
+    .tutor-window[data-collapsed='true'] > :not(header) {
+        display: none;
+    }
+
+    /* --- snap preview ---------------------------------------
+       Painted while a drag is inside the snap threshold, before
+       the pointer is released. Dragging to an edge is the only
+       way most people will ever find docking, so the promise
+       has to be visible before they commit to it. */
+    .tutor-snap-hint {
+        position: fixed;
+        top: 0;
+        height: 100%;
+        width: var(--tutor-dock-w);
+        background: var(--primary-soft);
+        border: 1px dashed var(--tutor-ring);
+        opacity: 0;
+        pointer-events: none;
+        z-index: calc(var(--tutor-z-overlay) - 1);
+        transition: opacity var(--tutor-dur-fast) var(--tutor-ease);
+    }
+
+    .tutor-snap-hint[data-side='left'] {
+        left: 0;
+    }
+
+    .tutor-snap-hint[data-side='right'] {
+        right: 0;
+    }
+
+    .tutor-snap-hint[data-active='true'] {
+        opacity: 0.55;
+    }
+
+    /* --- mobile ---------------------------------------------
+       A draggable, resizable window on a phone is a bad joke.
+       Below the breakpoint the same markup is a bottom sheet,
+       and every geometry the composable persisted is overruled
+       — which is also why the composable stops writing one. */
+    @media (max-width: 640px) {
+        .tutor-window[data-mode] {
+            inset: auto 0 0 0 !important;
+            width: 100% !important;
+            height: min(78vh, 34rem) !important;
+            max-width: none;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            border-bottom: 0;
+            animation: tutor-sheet var(--tutor-dur-slow) var(--tutor-ease-settle);
+        }
+
+        .tutor-window[data-collapsed='true'] {
+            height: var(--tutor-header-h) !important;
+        }
+
+        /* The grips are gone, so the header carries the only
+           handle left: the grab bar a phone user already reads
+           as "pull me down". */
+        .tutor-window[data-mode] header::before {
+            content: '';
+            position: absolute;
+            top: 0.375rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2.25rem;
+            height: 4px;
+            border-radius: 9999px;
+            background: var(--tutor-border-strong);
+        }
+
+        .tutor-window[data-mode] header {
+            position: relative;
+            padding-top: 0.5rem;
+            height: calc(var(--tutor-header-h) + 0.5rem);
+            cursor: default;
+        }
+
+        .tutor-window [data-resize] {
+            display: none;
+        }
+    }
+}
+
+@keyframes tutor-sheet {
+    from {
+        transform: translateY(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tutor-window[data-mode] {
+        animation: none;
+    }
+}
