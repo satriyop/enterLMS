@@ -1,6 +1,6 @@
 <?php
 
-it('ships a tutor skill that preloads independently of the Telegram gateway', function () {
+it('ships a tutor skill for overlay and Telegram on enterlms-tutor', function () {
     $path = base_path('.hermes/skills/tutor/SKILL.md');
 
     expect($path)->toBeFile();
@@ -24,9 +24,13 @@ it('ships a tutor skill that preloads independently of the Telegram gateway', fu
         ->toContain('resolve')
         ->toContain('get-focus')
         ->toContain('set-focus')
+        ->toContain('list-focusable-lessons')
+        ->toContain('must_pick')
         ->toContain('commit-turn')
         ->toContain('Bahasa Indonesia')
-        ->toContain('Telegram gateway')
+        ->toContain('Lesson URL')
+        ->toContain('Laravel holds the')
+        ->toContain('lsptdi-ops')
         ->toContain('not `hermes serve`');
 });
 
@@ -37,9 +41,32 @@ it('tells the tutor skill to refuse live OpenClaw and not enroll or complete', f
         ->toContain('OpenClaw')
         ->toContain('enroll-course')
         ->toContain('mark-lesson-complete')
+        ->toContain('--free-flow')
         ->toContain('not a console')
         ->toContain('PDF body, not the teaser')
         ->toContain('ignore `body_html`')
         ->and($body)->toContain('Never')
         ->and($body)->toContain('tutor.read');
+});
+
+it('requires Telegram resolve then commit-turn before any reply', function () {
+    $body = file_get_contents(base_path('.hermes/skills/tutor/SKILL.md'));
+
+    expect($body)->toBeString();
+
+    expect($body)
+        ->toContain('Telegram')
+        ->toContain('resolve')
+        ->toContain('get-focus')
+        ->toContain('Do not send a Telegram reply unless `commit-turn` succeeds.');
+
+    $overlayPos = strpos($body, '## Overlay');
+    $messagingPos = strpos($body, '## Messaging (Telegram)');
+    $resolvePos = strpos($body, '`resolve` `channel=telegram`');
+    $commitPos = strpos($body, '`commit-turn` with `learner_message` then `tutor_message`');
+
+    expect($overlayPos)->toBeInt();
+    expect($messagingPos)->toBeInt()->toBeGreaterThan($overlayPos);
+    expect($resolvePos)->toBeInt()->toBeGreaterThan($messagingPos);
+    expect($commitPos)->toBeInt()->toBeGreaterThan($resolvePos);
 });
