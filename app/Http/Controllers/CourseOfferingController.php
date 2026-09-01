@@ -8,6 +8,7 @@ use App\Domain\Shared\Academy;
 use App\Http\Requests\Offering\StoreOfferingRequest;
 use App\Http\Requests\Offering\UpdateOfferingRequest;
 use App\Http\Resources\Course\OfferingResource;
+use App\Models\Conversation;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Offering;
@@ -74,6 +75,9 @@ class CourseOfferingController extends Controller
             'can' => [
                 'create' => Gate::allows('create', [Offering::class, $course]),
                 'grant' => Gate::allows('bulkEnroll', $course),
+                // A Facilitator is refused the Course page, so this is the only
+                // place they can be handed the Conversation review.
+                'reviewConversations' => Gate::allows('viewAny', [Conversation::class, $course]),
             ],
         ]);
     }

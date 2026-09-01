@@ -184,6 +184,37 @@ it('does not let a search match a Learner who is not on this conversation', func
         );
 });
 
+/**
+ * A Facilitator "need not have an Enrollment" (CONTEXT.md), and CoursePolicy
+ * has no Facilitator branch -- so on a Restricted Course the Course page is a
+ * 403 for them. The review has to stand on its own route, and be reachable
+ * from the Offering page, which is the only hub they can actually open.
+ */
+it('reaches the review without being able to open the course page', function () {
+    $course = Course::factory()->published()->create(['visibility' => 'restricted']);
+    $section = CourseSection::factory()->create(['course_id' => $course->id, 'order' => 1]);
+    $lesson = Lesson::factory()->text()->create(['course_section_id' => $section->id, 'order' => 1]);
+
+    $facilitator = User::factory()->create(['role' => 'learner']);
+    $offering = Offering::factory()->create([
+        'course_id' => $course->id,
+        'facilitator_id' => $facilitator->id,
+    ]);
+
+    conversationFor($course, $lesson, $offering, 'pertanyaan kelas saya');
+
+    $this->actingAs($facilitator)
+        ->get(route('courses.show', $course))
+        ->assertForbidden();
+
+    $this->actingAs($facilitator)
+        ->get(route('courses.conversations.index', $course))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('conversations.data', 1)
+        );
+});
+
 it('narrows the list to one lesson', function () {
     ['course' => $course, 'lesson' => $first] = reviewCourse();
     $second = Lesson::factory()->text()->create([

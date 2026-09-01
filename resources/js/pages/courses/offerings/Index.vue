@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { index as courseShow } from '@/actions/App/Http/Controllers/CourseController';
+import { index as conversationsIndex } from '@/actions/App/Http/Controllers/CourseConversationController';
 import { bulkEnroll } from '@/actions/App/Http/Controllers/EnrollmentController';
 import {
     destroy,
@@ -17,8 +18,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import { Form, Head, router } from '@inertiajs/vue3';
-import { Layers, Trash2 } from 'lucide-vue-next';
+import { Form, Head, Link, router } from '@inertiajs/vue3';
+import { Layers, MessagesSquare, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface OfferingItem {
@@ -46,7 +47,7 @@ interface Props {
     offerings: OfferingItem[];
     grantOfferingIds: number[];
     label: string;
-    can: { create: boolean; grant: boolean };
+    can: { create: boolean; grant: boolean; reviewConversations?: boolean };
 }
 
 const props = defineProps<Props>();
@@ -165,7 +166,16 @@ const deleteOffering = (offering: OfferingItem) => {
                 :description="`Run dari kursus ${course.title}`"
                 :back-href="courseShow.url(course.id)"
                 back-label="Kembali ke kursus"
-            />
+            >
+                <template v-if="can.reviewConversations" #actions>
+                    <Link :href="conversationsIndex.url(course.id)">
+                        <Button variant="outline" class="gap-2">
+                            <MessagesSquare class="h-4 w-4" />
+                            Percakapan
+                        </Button>
+                    </Link>
+                </template>
+            </PageHeader>
 
             <FormSection
                 v-if="can.grant && grantableOfferings.length > 0"
