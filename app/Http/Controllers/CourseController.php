@@ -19,6 +19,7 @@ use App\Http\Resources\Course\OfferingResource;
 use App\Http\Resources\CourseInvitationResource;
 use App\Http\Resources\TagResource;
 use App\Models\Category;
+use App\Models\Conversation;
 use App\Models\ContentProposal;
 use App\Models\Course;
 use App\Models\CourseInvitation;
@@ -211,6 +212,7 @@ class CourseController extends Controller
                 'enroll' => Gate::allows('enroll', [$course, $enrollmentContext]),
                 'rate' => $enrollment && ! $userRating,
                 'invite' => Gate::allows('create', [CourseInvitation::class, $course]),
+                'reviewConversations' => Gate::allows('viewAny', [Conversation::class, $course]),
             ],
         ]);
     }

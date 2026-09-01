@@ -4,6 +4,7 @@
 // Sidebar showing course information, tags, and assessment links
 // =============================================================================
 
+import { index as conversationsIndex } from '@/actions/App/Http/Controllers/CourseConversationController';
 import { index as offeringsIndex } from '@/actions/App/Http/Controllers/CourseOfferingController';
 import FormSection from '@/components/crud/FormSection.vue';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +29,7 @@ import {
     FileText,
     Globe,
     Layers,
+    MessagesSquare,
     Plus,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
@@ -49,6 +51,8 @@ interface Props {
     user: UserSummary;
     publishedAt: string | null;
     tags: Tag[];
+    /** CONTEXT.md grants this read to LMS Admin and to an Offering's Facilitator. */
+    canReviewConversations?: boolean;
 }
 
 // =============================================================================
@@ -198,6 +202,15 @@ const formattedPublishedDate = computed(() => {
                 <Button variant="outline" class="w-full justify-start gap-2">
                     <Layers class="h-4 w-4" />
                     <span>Kelola {{ label('offering') }}</span>
+                </Button>
+            </Link>
+        </FormSection>
+
+        <FormSection v-if="canReviewConversations" title="Tutor">
+            <Link :href="conversationsIndex.url(courseId)" class="block w-full">
+                <Button variant="outline" class="w-full justify-start gap-2">
+                    <MessagesSquare class="h-4 w-4" />
+                    <span>Percakapan</span>
                 </Button>
             </Link>
         </FormSection>

@@ -89,6 +89,7 @@ interface Props {
         delete: boolean;
         publish: boolean;
         invite?: boolean;
+        reviewConversations?: boolean;
     };
 }
 
@@ -236,6 +237,7 @@ const tabs = computed(() => {
                             :user="course.user"
                             :published-at="course.published_at"
                             :tags="course.tags"
+                            :can-review-conversations="can.reviewConversations ?? false"
                         />
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ContentProposalController;
 use App\Http\Controllers\ConversationTurnController;
+use App\Http\Controllers\CourseConversationController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseInvitationController;
 use App\Http\Controllers\CourseOfferingController;
@@ -75,6 +76,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('courses.content-proposals.accept');
     Route::post('courses/{course}/content-proposals/{contentProposal}/reject', [ContentProposalController::class, 'reject'])
         ->name('courses.content-proposals.reject');
+
+    // Reading what the Tutor taught. Not gated on EnsureOfferingsEnabled --
+    // every Course has a default Offering, so this reads on any install.
+    Route::get('courses/{course}/conversations', [CourseConversationController::class, 'index'])
+        ->name('courses.conversations.index');
+    Route::get('courses/{course}/conversations/{conversation}', [CourseConversationController::class, 'show'])
+        ->name('courses.conversations.show');
 
     Route::post('courses/{course}/enroll', [EnrollmentController::class, 'store'])
         ->middleware('throttle:10,1')
