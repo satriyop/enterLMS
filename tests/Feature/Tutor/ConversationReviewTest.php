@@ -170,6 +170,20 @@ it('refuses a facilitator the transcript of an offering they do not hold', funct
         ->assertForbidden();
 });
 
+it('does not let a search match a Learner who is not on this conversation', function () {
+    ['course' => $course, 'lesson' => $lesson] = reviewCourse();
+
+    conversationFor($course, $lesson, question: 'hanya alice');
+    User::factory()->create(['email' => 'stranger@gmail.com']);
+
+    $this->actingAs(User::factory()->create(['role' => 'lms_admin']))
+        ->get(route('courses.conversations.index', [$course, 'search' => 'gmail.com']))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('conversations.data', 0)
+        );
+});
+
 it('narrows the list to one lesson', function () {
     ['course' => $course, 'lesson' => $first] = reviewCourse();
     $second = Lesson::factory()->text()->create([

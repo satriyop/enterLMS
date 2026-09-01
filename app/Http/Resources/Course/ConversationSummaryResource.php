@@ -5,6 +5,7 @@ namespace App\Http\Resources\Course;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * One row in the Conversation review list.
@@ -30,7 +31,9 @@ class ConversationSummaryResource extends JsonResource
             'turns_count' => (int) $this->turns_count,
             // Subquery aliases from the review query, not columns every
             // Conversation carries -- hence getAttribute rather than a property.
-            'last_turn_at' => $this->getAttribute('last_turn_at'),
+            'last_turn_at' => ($at = $this->getAttribute('last_turn_at'))
+                ? Carbon::parse($at)->toISOString()
+                : null,
             'opening_question' => $this->getAttribute('opening_question'),
             'lesson' => [
                 'id' => $this->lesson->id,

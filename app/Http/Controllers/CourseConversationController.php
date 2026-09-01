@@ -67,9 +67,11 @@ class CourseConversationController extends Controller
                 $request->string('search')->trim()->value(),
                 fn (Builder $query, string $search) => $query->whereHas(
                     'enrollment.user',
-                    fn (Builder $learner) => $learner
-                        ->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
+                    fn (Builder $learner) => $learner->where(function (Builder $match) use ($search): void {
+                        $match
+                            ->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
                 )
             )
             ->orderByDesc('last_turn_at')
