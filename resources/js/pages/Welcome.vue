@@ -4,7 +4,6 @@ import HeroSection from '@/components/home/HeroSection.vue';
 import StatsSection from '@/components/home/StatsSection.vue';
 import FeaturedCourses from '@/components/home/FeaturedCourses.vue';
 import CategoriesSection from '@/components/home/CategoriesSection.vue';
-import TestimonialsSection from '@/components/home/TestimonialsSection.vue';
 import CTASection from '@/components/home/CTASection.vue';
 import Footer from '@/components/home/Footer.vue';
 import { Head, usePage } from '@inertiajs/vue3';
@@ -122,11 +121,6 @@ const formattedStats = computed(() => {
                 :courses="popularCourses"
                 view-all-href="/courses?sort=popular"
                 class="bg-surface-2/30"
-            />
-
-            <TestimonialsSection
-                title="Apa Kata Mereka"
-                subtitle="Dengarkan pengalaman belajar dari siswa kami"
             />
 
             <CTASection

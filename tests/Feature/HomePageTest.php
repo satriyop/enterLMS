@@ -81,6 +81,16 @@ class HomePageTest extends TestCase
         );
     }
 
+    public function test_homepage_does_not_mount_placeholder_testimonials(): void
+    {
+        $welcome = file_get_contents(resource_path('js/pages/Welcome.vue'));
+
+        $this->assertIsString($welcome);
+        $this->assertStringNotContainsString('TestimonialsSection', $welcome);
+        $this->assertStringNotContainsString('Apa Kata Mereka', $welcome);
+        $this->assertStringNotContainsString('Ahmad Fauzi', $welcome);
+    }
+
     public function test_homepage_hides_hidden_courses(): void
     {
         $instructor = User::factory()->create();
