@@ -81,6 +81,16 @@ class HomePageTest extends TestCase
         );
     }
 
+    public function test_logo_is_an_inline_mark_not_a_storage_bitmap(): void
+    {
+        $icon = file_get_contents(resource_path('js/components/AppLogoIcon.vue'));
+
+        $this->assertIsString($icon);
+        $this->assertStringContainsString('<svg', $icon);
+        $this->assertStringNotContainsString('/storage/', $icon);
+        $this->assertStringNotContainsString('enterlms-logo', $icon);
+    }
+
     public function test_homepage_does_not_mount_placeholder_testimonials(): void
     {
         $welcome = file_get_contents(resource_path('js/pages/Welcome.vue'));
