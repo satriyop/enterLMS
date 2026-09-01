@@ -24,7 +24,7 @@ import type { BreadcrumbItem } from '@/types';
 interface CertificateItem {
     id: number;
     certificate_number: string;
-    type: 'course_completion' | 'assessment_pass' | 'learning_path_completion';
+    type: 'course_completion' | 'learning_path_completion';
     status: 'active' | 'revoked' | 'expired';
     recipient_name: string;
     certificable_title: string;
@@ -56,7 +56,6 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Sertifikat', href: '/certificat
 const getTypeLabel = (type: string): string => {
     const labels: Record<string, string> = {
         course_completion: 'Penyelesaian Kursus',
-        assessment_pass: 'Kelulusan Ujian',
         learning_path_completion: 'Penyelesaian Learning Path',
     };
     return labels[type] || type;
@@ -65,7 +64,6 @@ const getTypeLabel = (type: string): string => {
 const getTypeBadgeVariant = (type: string): 'default' | 'secondary' | 'outline' => {
     const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
         course_completion: 'default',
-        assessment_pass: 'secondary',
         learning_path_completion: 'outline',
     };
     return variants[type] || 'default';

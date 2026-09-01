@@ -4,6 +4,8 @@ use App\Domain\Certificate\Services\CertificateService;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\LearningPath;
+use App\Models\LearningPathEnrollment;
 use App\Models\User;
 
 beforeEach(function () {
@@ -110,6 +112,50 @@ describe('CertificateService', function () {
 
             $certificate = $this->service->issueCourseCompletionCertificate(
                 $enrollment,
+                $this->admin
+            );
+
+            expect($certificate->issued_by)->toBe($this->admin->id);
+        });
+    });
+
+    describe('issuePathCompletionCertificate', function () {
+        it('issues certificate for a completed path enrollment', function () {
+            $pathEnrollment = LearningPathEnrollment::factory()->completed()->create([
+                'user_id' => $this->learner->id,
+            ]);
+
+            $certificate = $this->service->issuePathCompletionCertificate($pathEnrollment);
+
+            expect($certificate)->toBeInstanceOf(Certificate::class);
+            expect($certificate->user_id)->toBe($this->learner->id);
+            expect($certificate->type)->toBe(Certificate::TYPE_LEARNING_PATH_COMPLETION);
+            expect($certificate->certificable_type)->toBe(LearningPath::class);
+            expect($certificate->certificable_id)->toBe($pathEnrollment->learning_path_id);
+            expect($certificate->enrollment_id)->toBeNull();
+            expect($certificate->recipient_name)->toBe($this->learner->name);
+            expect($certificate->certificable_title)->toBe($pathEnrollment->learningPath->title);
+            expect($certificate->status)->toBe(Certificate::STATUS_ACTIVE);
+        });
+
+        it('returns existing path certificate if already issued', function () {
+            $pathEnrollment = LearningPathEnrollment::factory()->completed()->create([
+                'user_id' => $this->learner->id,
+            ]);
+
+            $first = $this->service->issuePathCompletionCertificate($pathEnrollment);
+            $second = $this->service->issuePathCompletionCertificate($pathEnrollment);
+
+            expect($first->id)->toBe($second->id);
+        });
+
+        it('records issued_by when provided', function () {
+            $pathEnrollment = LearningPathEnrollment::factory()->completed()->create([
+                'user_id' => $this->learner->id,
+            ]);
+
+            $certificate = $this->service->issuePathCompletionCertificate(
+                $pathEnrollment,
                 $this->admin
             );
 
@@ -281,6 +327,56 @@ describe('Auto-issue on completion', function () {
         expect($certificate)->not->toBeNull();
         expect($certificate->user_id)->toBe($this->learner->id);
         expect($certificate->certificable_id)->toBe($this->course->id);
+    });
+
+    it('issues a path diploma when path enrollment is completed', function () {
+        $pathEnrollment = LearningPathEnrollment::factory()->active()->create([
+            'user_id' => $this->learner->id,
+        ]);
+
+        $pathEnrollment->complete();
+
+        $certificate = Certificate::query()
+            ->where('user_id', $this->learner->id)
+            ->where('type', Certificate::TYPE_LEARNING_PATH_COMPLETION)
+            ->first();
+
+        expect($certificate)->not->toBeNull();
+        expect($certificate->certificable_type)->toBe(LearningPath::class);
+        expect($certificate->certificable_id)->toBe($pathEnrollment->learning_path_id);
+        expect($certificate->enrollment_id)->toBeNull();
+    });
+});
+
+describe('Certificate PDF', function () {
+    it('prints the named verification url on the template', function () {
+        $certificate = Certificate::factory()->active()->create();
+        $url = $certificate->getVerificationUrl();
+
+        expect($url)->toBe(route('certificates.verify', $certificate->verification_code));
+
+        $method = new \ReflectionMethod(CertificateService::class, 'prepareCertificateData');
+        $data = $method->invoke($this->service, $certificate);
+
+        expect($data['verification_url'])->toBe($url);
+
+        $view = $this->view('pdf.certificate', $data);
+
+        $view->assertSee($url, false);
+        $view->assertDontSee(config('app.url').'/verify', false);
+    });
+
+    it('uses path copy on the template for a path diploma', function () {
+        $certificate = Certificate::factory()->learningPathCompletion()->active()->create();
+
+        $method = new \ReflectionMethod(CertificateService::class, 'prepareCertificateData');
+        $data = $method->invoke($this->service, $certificate);
+
+        $view = $this->view('pdf.certificate', $data);
+
+        $view->assertSee('Penyelesaian Learning Path', false);
+        $view->assertSee('Telah berhasil menyelesaikan learning path', false);
+        $view->assertDontSee('Penyelesaian Kursus', false);
     });
 });
 

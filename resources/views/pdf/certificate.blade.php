@@ -218,7 +218,7 @@
                     <div class="logo-text">EnterLMS</div>
                 </div>
                 <div class="certificate-title">Sertifikat</div>
-                <div class="certificate-subtitle">Penyelesaian Kursus</div>
+                <div class="certificate-subtitle">{{ $subtitle }}</div>
             </div>
 
             <div class="content">
@@ -226,7 +226,7 @@
                 <div class="recipient-name">{{ $recipient_name }}</div>
 
                 <div class="completion-text">
-                    Telah berhasil menyelesaikan kursus
+                    {{ $completion_text }}
                 </div>
 
                 <div class="course-title">"{{ $course_title }}"</div>
@@ -266,7 +266,7 @@
 
                         <div class="issued-date">
                             Verifikasi sertifikat ini di:<br>
-                            {{ config('app.url') }}/verify
+                            {{ $verification_url }}
                         </div>
                     </div>
                 </div>

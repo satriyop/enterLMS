@@ -48,8 +48,6 @@ class Certificate extends Model
 
     public const TYPE_COURSE_COMPLETION = 'course_completion';
 
-    public const TYPE_ASSESSMENT_PASS = 'assessment_pass';
-
     public const TYPE_LEARNING_PATH_COMPLETION = 'learning_path_completion';
 
     public const STATUS_ACTIVE = 'active';

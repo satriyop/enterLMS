@@ -9,6 +9,7 @@ use App\Domain\Assessment\Events\AssessmentGraded;
 use App\Domain\Assessment\Listeners\UpdateProgressOnAssessmentGraded;
 use App\Domain\Certificate\Events\CertificateIssued;
 use App\Domain\Certificate\Listeners\IssueCertificateOnCompletion;
+use App\Domain\Certificate\Listeners\IssueCertificateOnPathCompletion;
 use App\Domain\Course\Events\CourseArchived;
 use App\Domain\Course\Events\CoursePublished;
 use App\Domain\Course\Events\CourseUnpublished;
@@ -131,6 +132,7 @@ class EventServiceProvider extends ServiceProvider
         PathCompleted::class => [
             LogDomainEvent::class,
             SendPathCompletionCongratulations::class,
+            IssueCertificateOnPathCompletion::class,
         ],
         PathDropped::class => [
             LogDomainEvent::class,

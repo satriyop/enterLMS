@@ -6,11 +6,12 @@ use App\Domain\Certificate\Events\CertificateIssued;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\LearningPath;
+use App\Models\LearningPathEnrollment;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\View;
 
 /**
  * Certificate generation and management service.
@@ -52,6 +53,51 @@ class CertificateService
                 'recipient_name' => $user->name,
                 'certificable_title' => $course->title,
                 'progress_percentage' => $enrollment->progress_percentage,
+                'issued_at' => now(),
+                'issued_by' => $issuedBy?->id,
+                'verification_code' => Certificate::generateVerificationCode(),
+            ]);
+
+            CertificateIssued::dispatch($certificate);
+
+            return $certificate;
+        });
+    }
+
+    /**
+     * Issue a Learning Path completion certificate.
+     */
+    public function issuePathCompletionCertificate(
+        LearningPathEnrollment $pathEnrollment,
+        ?User $issuedBy = null
+    ): Certificate {
+        $existingCertificate = Certificate::query()
+            ->where('user_id', $pathEnrollment->user_id)
+            ->where('certificable_type', LearningPath::class)
+            ->where('certificable_id', $pathEnrollment->learning_path_id)
+            ->where('type', Certificate::TYPE_LEARNING_PATH_COMPLETION)
+            ->active()
+            ->first();
+
+        if ($existingCertificate) {
+            return $existingCertificate;
+        }
+
+        return DB::transaction(function () use ($pathEnrollment, $issuedBy) {
+            $path = $pathEnrollment->learningPath;
+            $user = $pathEnrollment->user;
+
+            $certificate = Certificate::create([
+                'certificate_number' => Certificate::generateCertificateNumber(),
+                'type' => Certificate::TYPE_LEARNING_PATH_COMPLETION,
+                'status' => Certificate::STATUS_ACTIVE,
+                'certificable_type' => LearningPath::class,
+                'certificable_id' => $path->id,
+                'user_id' => $user->id,
+                'enrollment_id' => null,
+                'recipient_name' => $user->name,
+                'certificable_title' => $path->title,
+                'progress_percentage' => $pathEnrollment->progress_percentage,
                 'issued_at' => now(),
                 'issued_by' => $issuedBy?->id,
                 'verification_code' => Certificate::generateVerificationCode(),
@@ -180,10 +226,24 @@ class CertificateService
     /**
      * Prepare data for certificate PDF view.
      *
-     * @return array<string, mixed>
+     * @return array{
+     *     certificate: Certificate,
+     *     recipient_name: string,
+     *     course_title: string,
+     *     certificate_number: string,
+     *     issued_at: string,
+     *     verification_code: string,
+     *     verification_url: string,
+     *     subtitle: string,
+     *     completion_text: string,
+     *     grade: float|string|null,
+     *     progress_percentage: int|null
+     * }
      */
     protected function prepareCertificateData(Certificate $certificate): array
     {
+        $isPath = $certificate->type === Certificate::TYPE_LEARNING_PATH_COMPLETION;
+
         return [
             'certificate' => $certificate,
             'recipient_name' => $certificate->recipient_name,
@@ -192,6 +252,10 @@ class CertificateService
             'issued_at' => $certificate->issued_at->translatedFormat('d F Y'),
             'verification_code' => $certificate->verification_code,
             'verification_url' => $certificate->getVerificationUrl(),
+            'subtitle' => $isPath ? 'Penyelesaian Learning Path' : 'Penyelesaian Kursus',
+            'completion_text' => $isPath
+                ? 'Telah berhasil menyelesaikan learning path'
+                : 'Telah berhasil menyelesaikan kursus',
             'grade' => $certificate->grade,
             'progress_percentage' => $certificate->progress_percentage,
         ];

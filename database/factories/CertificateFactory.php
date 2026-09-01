@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\LearningPath;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -50,22 +51,15 @@ class CertificateFactory extends Factory
     }
 
     /**
-     * Certificate for assessment pass.
-     */
-    public function assessmentPass(): static
-    {
-        return $this->state(fn () => [
-            'type' => Certificate::TYPE_ASSESSMENT_PASS,
-        ]);
-    }
-
-    /**
      * Certificate for learning path completion.
      */
     public function learningPathCompletion(): static
     {
         return $this->state(fn () => [
             'type' => Certificate::TYPE_LEARNING_PATH_COMPLETION,
+            'certificable_type' => LearningPath::class,
+            'certificable_id' => LearningPath::factory()->published(),
+            'enrollment_id' => null,
         ]);
     }
 
