@@ -80,7 +80,7 @@ function reject(id: number): void {
                     <select
                         id="proposal-lesson"
                         v-model="form.lesson_id"
-                        class="border-input bg-background h-9 w-full rounded-md border px-3 text-sm"
+                        class="border-border bg-surface h-9 w-full rounded-md border px-3 text-sm"
                     >
                         <option v-for="lesson in textLessons" :key="lesson.id" :value="lesson.id">
                             {{ lesson.title }}
@@ -125,7 +125,7 @@ function reject(id: number): void {
                 <p v-if="proposal.reason"><span class="font-medium">Alasan:</span> {{ proposal.reason }}</p>
                 <div v-if="proposal.proposed_body_text" class="space-y-1">
                     <p class="font-medium">Usulan isi</p>
-                    <pre class="bg-muted overflow-x-auto whitespace-pre-wrap rounded-md p-3 text-sm">{{ proposal.proposed_body_text }}</pre>
+                    <pre class="bg-surface-2 overflow-x-auto whitespace-pre-wrap rounded-md p-3 text-sm">{{ proposal.proposed_body_text }}</pre>
                 </div>
                 <div v-if="proposal.status === 'pending'" class="flex flex-wrap gap-2">
                     <Button type="button" size="sm" @click="accept(proposal.id)">Terima</Button>
