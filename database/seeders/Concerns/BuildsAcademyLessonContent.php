@@ -192,6 +192,79 @@ trait BuildsAcademyLessonContent
     }
 
     /**
+     * @param  list<string>  $items
+     * @return array<string, mixed>
+     */
+    protected function numbered(array $items): array
+    {
+        return [
+            'type' => 'orderedList',
+            'content' => array_map(fn (string $item) => [
+                'type' => 'listItem',
+                'content' => [$this->paragraph($item)],
+            ], $items),
+        ];
+    }
+
+    /**
+     * @param  list<string>  $headers
+     * @param  list<list<string>>  $rows
+     * @return array<string, mixed>
+     */
+    protected function table(array $headers, array $rows): array
+    {
+        $headerRow = [
+            'type' => 'tableRow',
+            'content' => array_map(fn (string $header) => [
+                'type' => 'tableHeader',
+                'content' => [$this->paragraph($header)],
+            ], $headers),
+        ];
+
+        $body = array_map(fn (array $row) => [
+            'type' => 'tableRow',
+            'content' => array_map(fn (string $cell) => [
+                'type' => 'tableCell',
+                'content' => [$this->paragraph($cell)],
+            ], $row),
+        ], $rows);
+
+        return [
+            'type' => 'table',
+            'content' => array_merge([$headerRow], $body),
+        ];
+    }
+
+    /**
+     * Structured diagram stored as TipTap data; TipTapRenderer emits SVG.
+     *
+     * @param  list<array{id: string, label: string, hint?: string}>  $nodes
+     * @param  list<array{from: string, to: string, label?: string}>  $edges
+     * @return array<string, mixed>
+     */
+    protected function diagram(string $caption, array $nodes, array $edges = [], int $columns = 0, ?string $alt = null): array
+    {
+        $attrs = [
+            'caption' => $caption,
+            'alt' => $alt ?? $caption,
+            'nodes' => $nodes,
+        ];
+
+        if ($edges !== []) {
+            $attrs['edges'] = $edges;
+        }
+
+        if ($columns > 0) {
+            $attrs['columns'] = $columns;
+        }
+
+        return [
+            'type' => 'diagram',
+            'attrs' => $attrs,
+        ];
+    }
+
+    /**
      * @param  list<array{option_text: string, is_correct: bool}>  $options
      */
     protected function createMultipleChoice(Assessment $assessment, string $text, array $options, int $order, int $points = 10): void

@@ -57,6 +57,8 @@ class TipTapRenderer
         return match ($type) {
             'paragraph', 'heading', 'blockquote', 'codeBlock', 'listItem' => $inner."\n\n",
             'horizontalRule' => "\n\n",
+            'diagram' => trim((string) (($node['attrs']['caption'] ?? '') ?: ($node['attrs']['alt'] ?? '')))."\n\n",
+            'image' => trim((string) ($node['attrs']['alt'] ?? ''))."\n\n",
             default => $inner,
         };
     }
@@ -100,6 +102,8 @@ class TipTapRenderer
             'tableRow' => $this->renderTableRow($content),
             'tableHeader' => $this->renderTableHeader($content),
             'tableCell' => $this->renderTableCell($content),
+            'image' => $this->renderImage($attrs),
+            'diagram' => $this->renderDiagram($attrs),
             default => $this->renderNodes($content),
         };
     }
@@ -265,5 +269,37 @@ class TipTapRenderer
         $inner = $this->renderNodes($content);
 
         return "<td>{$inner}</td>";
+    }
+
+    /**
+     * Render a TipTap image node so figures survive `rich_content_html`.
+     *
+     * @param  array<string, mixed>  $attrs
+     */
+    private function renderImage(array $attrs): string
+    {
+        $src = trim((string) ($attrs['src'] ?? ''));
+
+        if ($src === '' || preg_match('/^\s*javascript:/i', $src) === 1) {
+            return '';
+        }
+
+        $alt = e((string) ($attrs['alt'] ?? ''));
+        $title = isset($attrs['title']) && $attrs['title'] !== ''
+            ? ' title="'.e((string) $attrs['title']).'"'
+            : '';
+
+        return '<img src="'.e($src).'" alt="'.$alt.'"'.$title.' class="lesson-figure-img">';
+    }
+
+    /**
+     * Render a structured diagram node as an inline SVG figure.
+     *
+     * @param  array<string, mixed>  $attrs
+     */
+    private function renderDiagram(array $attrs): string
+    {
+        /** @var array{caption?: string, alt?: string, nodes?: list<array{id?: string, label?: string, hint?: string}>, edges?: list<array{from?: string, to?: string, label?: string}>, columns?: int} $attrs */
+        return (new LessonDiagramRenderer)->render($attrs);
     }
 }

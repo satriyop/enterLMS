@@ -858,3 +858,35 @@
         animation: none;
     }
 }
+
+/* Lesson figures rendered from TipTap diagram/image nodes */
+.prose figure.lesson-diagram,
+.lesson-diagram {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.prose figure.lesson-diagram svg,
+.lesson-diagram svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.prose figure.lesson-diagram figcaption,
+.lesson-diagram figcaption {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    text-align: center;
+}
+
+.prose img.lesson-figure-img,
+img.lesson-figure-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+}
