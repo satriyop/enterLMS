@@ -61,6 +61,24 @@ trait BuildsAiForCorporateSyllabus
     }
 
     /**
+     * Companion YouTube Lesson. Official source only. Not a lab.
+     *
+     * @param  list<array<string, mixed>>  $blocks
+     * @return array<string, mixed>
+     */
+    private function youtubeLesson(string $title, string $description, int $duration, string $url, array $blocks): array
+    {
+        return [
+            'title' => $title,
+            'description' => $description,
+            'content_type' => 'youtube',
+            'duration' => $duration,
+            'youtube_url' => $url,
+            'rich_content' => $this->doc($blocks),
+        ];
+    }
+
+    /**
      * @return array{title: string, description: string, lessons: list<array<string, mixed>>}
      */
     private function sectionKonteks(): array
@@ -123,6 +141,18 @@ trait BuildsAiForCorporateSyllabus
                         ),
                         $this->paragraph('NEX sudah punya alat bantu keputusan di situs (simulasi ROI, dampak armada) dan produk kantor (nex-project). Itu bukti perusahaan ini tidak anti-teknologi. Itu bukan izin untuk mengunggah arsip pelanggan institusi ke model publik tanpa dasar.'),
                         $this->paragraph('Contoh di Lesson berikutnya — lembar keputusan, klausul vendor, peta jalan 24 bulan — adalah kerangka yang bisa dibawa ke rapat. Bukan SK yang sudah berlaku. Jika NEX kelak menerbitkan kebijakan resmi, kebijakan itu yang diikuti; kerangka ini hanya latihan keputusan.'),
+                    ],
+                ),
+                $this->youtubeLesson(
+                    'Video: IEA, nexus energi dan AI',
+                    'Klip resmi IEA: tidak ada AI tanpa listrik. Bukan izin mengunggah data armada.',
+                    6,
+                    self::YOUTUBE_IEA_ENERGY_AI,
+                    [
+                        $this->heading('Video: IEA, nexus energi dan AI', 1),
+                        $this->paragraph('Tonton klip resmi International Energy Agency. Laporan IEA Energy and AI (2025) adalah analisis global pertama tentang dua arah: AI butuh listrik — khususnya untuk data center — dan AI bisa mengubah cara energi diproduksi dan dioperasikan. NEX menjual PLTS atap ke institusi. Itu konteks, bukan slide vendor.'),
+                        $this->paragraph('Artinya di rapat NEX: permintaan listrik institusi (termasuk yang menopang komputasi) adalah alasan kajian teknis, bukan alasan menempel model publik ke data stasiun, SPBU, atau instansi. “Tidak ada AI tanpa energi” bukan izin men-deploy agen di jaringan lapangan minggu ini.'),
+                        $this->paragraph('Video ini bukan lab. Setelah selesai, kamu tetap di academy. Tidak ada konsol yang terbuka. Klip IEA yang lebih panjang (peluncuran laporan) tidak wajib; yang wajib adalah memetakan dua arah itu ke lembar keputusan.'),
                     ],
                 ),
                 $this->textLesson(
@@ -223,6 +253,18 @@ trait BuildsAiForCorporateSyllabus
                         $this->quote('Yang NEX adopsi bukan merek. Yang diadopsi adalah wewenang: siapa boleh memakai alat apa, pada data siapa, sampai kapan.'),
                     ],
                 ),
+                $this->youtubeLesson(
+                    'Video: agen versus chatbot (Google Cloud)',
+                    'Dua menit resmi: agen memakai model, alat, dan loop. Bukan tombol Lesson.',
+                    6,
+                    self::YOUTUBE_GOOGLE_AGENTS,
+                    [
+                        $this->heading('Video: agen versus chatbot', 1),
+                        $this->paragraph('Tonton penjelasan singkat Google Cloud. Bandingkan dengan Lesson sebelumnya: chatbot menjawab; agen merencanakan, memakai alat, melihat hasil, lalu langkah berikutnya. Kebijakan NEX memutuskan mana yang boleh masuk ke desk dan ke data institusi.'),
+                        $this->paragraph('Artinya di NEX: simulasi ROI di energimasadepan.com bukan agen. Agen kantor di desk nex-project — jika dipakai — tetap butuh manusia mengesahkan sebelum kalimat ke instansi. Agen yang “menandatangani kajian” gagal saringan. Video ini menjelaskan bentuknya, bukan memberi izin runtime.'),
+                        $this->paragraph('Video ini bukan lab. Setelah selesai, kamu tetap di academy. Tidak ada konsol yang terbuka.'),
+                    ],
+                ),
                 $this->textLesson(
                     'Tren, proyek IT, dan kebijakan: tiga benda',
                     'FOMO, pengadaan, dan keputusan pimpinan adalah tiga kalender berbeda. Jangan disatukan di satu undangan.',
@@ -253,6 +295,18 @@ trait BuildsAiForCorporateSyllabus
                         $this->paragraph('NEX menjual ke stasiun, SPBU, perkantoran, dan instansi. “Human agency” dalam UNESCO 2021 di NEX tidak netral-abstrak: ia bertemu janji ke institusi, keselamatan instalasi, dan data lokasi aset. Kebijakan yang hanya bilang “deklarasikan pemakaian ChatGPT” tanpa menaut ke UU 27/2022 akan terasa asing di rapat pengawas.'),
                         $this->paragraph('Hukum yang mengikat NEX adalah hukum Indonesia: UU 27/2022 PDP, UU ITE beserta perubahannya, dan — terbatas — Surat Edaran Menkominfo 9/2023 tentang Etika Kecerdasan Artifisial. SE bukan undang-undang; ia tidak menggantikan keputusan direksi, tetapi ia menandai arah negara.'),
                         $this->paragraph('Baca kebijakan luar sebagai bahan. Tulis keputusan NEX sebagai pemilik. Lesson deliverable menyediakan draf untuk rapat, bukan terjemahan kebijakan orang lain.'),
+                    ],
+                ),
+                $this->youtubeLesson(
+                    'Video: UNESCO, dari prinsip ke tata kelola',
+                    'Rekomendasi etika AI 2021: pengawasan manusia, bukan playbook Big Tech.',
+                    10,
+                    self::YOUTUBE_UNESCO_ETHICS,
+                    [
+                        $this->heading('Video: UNESCO, dari prinsip ke tata kelola', 1),
+                        $this->paragraph('Tonton video resmi UNESCO tentang tantangan dan tata kelola etika AI. Recommendation on the Ethics of Artificial Intelligence (23 November 2021) adalah standar global yang sudah disebut di Lesson sebelumnya: martabat manusia, pengawasan manusia, pelindungan data.'),
+                        $this->paragraph('Artinya di NEX: UNESCO adalah rujukan rapat, bukan pengganti UU 27/2022 PDP atau SE Menkominfo 9/2023. “Human agency” di NEX bertemu janji ke instansi dan data lokasi aset. Menyalin playbook luar negeri tidak menyalin hukum Indonesia.'),
+                        $this->paragraph('Video ini bukan lab dan bukan SK. Setelah selesai, bawa satu kalimat ke lembar keputusan: siapa manusia yang mengesahkan sebelum AI menyentuh data pelanggan institusi.'),
                     ],
                 ),
             ],
@@ -301,6 +355,18 @@ trait BuildsAiForCorporateSyllabus
                         ),
                         $this->paragraph('UNESCO Guidance for policy-makers (2021) dan NIST AI RMF sejalan: tata kelola dulu, peta risiko, ukur, kelola. Peta jalan NEX hanya menerjemahkan itu ke kalender perusahaan PLTS institusi: wewenang dulu, data, satu use case kantor, lalu kelembagaan. nex-project adalah tempat pilot yang sudah ada — bukan alasan melewati tahap.'),
                         $this->paragraph('Direksi tidak perlu menyetujui merek chatbot di tahap 0. Direksi perlu menyetujui bahwa data pelanggan institusi tidak keluar perusahaan tanpa dasar, dan bahwa NEX tidak akan mewajibkan satu merek ke seluruh staf dalam tujuh hari.'),
+                    ],
+                ),
+                $this->youtubeLesson(
+                    'Video: NIST AI RMF — Govern, Map, Measure, Manage',
+                    'Empat fungsi NIST yang sudah jadi peta jalan NEX. Bukan formulir impor.',
+                    12,
+                    self::YOUTUBE_NIST_RMF,
+                    [
+                        $this->heading('Video: NIST AI RMF', 1),
+                        $this->paragraph('Tonton penjelasan IBM Technology tentang NIST Artificial Intelligence Risk Management Framework (AI RMF 1.0, Januari 2023). Empat fungsi inti: Govern, Map, Measure, Manage. Itu bahasa yang sama dengan peta jalan NEX: sikap, fondasi, pilot, kelembagaan.'),
+                        $this->paragraph('Artinya di NEX: Govern = siapa menandatangani; Map = inventaris data dan sistem (nex-project, pantau, email); Measure = uji satu use case kantor 1–2 kuartal; Manage = audit tahunan dan kemampuan mematikan sambungan. NEX tidak wajib meniru formulir NIST. NEX wajib punya pemilik tiap fungsi.'),
+                        $this->paragraph('Video ini bukan lab. NIST adalah rujukan pelengkap, bukan pengganti UU PDP. Setelah selesai, jangan beli tools; isi lembar keputusan.'),
                     ],
                 ),
                 $this->textLesson(
@@ -391,6 +457,18 @@ trait BuildsAiForCorporateSyllabus
                             'Henti: sistem bisa dimatikan tanpa merusak komisioning PLTS. NIST MANAGE. Jika vendor memegang satu-satunya salinan pipeline, itu bukan adopsi.',
                         ]),
                         $this->paragraph('Gunakan saringan pada setiap usulan. “AI untuk menandatangani kontrak institusi” gagal di manusia. “AI dilatih dari arsip stasiun” gagal di data. “AI untuk draf di desk nex-project, dengan manusia mengesahkan” bisa lolos ke tahap 2. Itu yang dimaksud andal: bisa dimulai, bisa diuji, bisa dihentikan.'),
+                    ],
+                ),
+                $this->youtubeLesson(
+                    'Video: OECD, mengklasifikasi sistem AI',
+                    'Konteks, data, tugas, pengawasan manusia. Saringan NEX dalam bahasa OECD.',
+                    8,
+                    self::YOUTUBE_OECD_CLASSIFY,
+                    [
+                        $this->heading('Video: OECD, mengklasifikasi sistem AI', 1),
+                        $this->paragraph('Tonton klip resmi OECD.AI. Kerangka klasifikasi sistem AI membedakan konteks, data, tugas, dan tingkat otonomi atau pengawasan manusia. OECD AI Principles (2019, diperbarui 2024) sudah disebut di peta jalan. Klasifikasi ini adalah alat saringan, bukan daftar merek.'),
+                        $this->paragraph('Artinya di NEX: draf desk dengan manusia mengesahkan berbeda kelasnya dari chatbot yang mengirim kajian ke instansi. Data tagihan yang calon sendiri masukkan di simulasi ROI berbeda kelasnya dari arsip stasiun di pantau. Jika kamu tidak bisa menulis kelas sistemnya di lembar keputusan, itu bukan use case andal.'),
+                        $this->paragraph('Video ini bukan lab. OECD tidak menggantikan hukum Indonesia. Setelah selesai, pakai empat saringan Lesson sebelumnya pada satu usulan nyata — bukan pada sepuluh demo.'),
                     ],
                 ),
                 $this->textLesson(
@@ -623,6 +701,18 @@ trait BuildsAiForCorporateSyllabus
                             'Kontrak: agen pembalas otomatis ke instansi adalah pemrosesan data, bukan “efisiensi humas”.',
                         ]),
                         $this->paragraph('Contoh rapat yang jujur: “Kuartal ini NEX tidak menyambungkan pantau ke chatbot, dan rekaman kajian tidak boleh diunggah ke model publik.” Itu keputusan data. Bisa ditulis hari ini, tanpa menunggu tender tools.'),
+                    ],
+                ),
+                $this->youtubeLesson(
+                    'Video: SE Kominfo 9/2023, etika AI di Indonesia',
+                    'Pedoman PSE publik dan privat. Bukan undang-undang. UU PDP dan ITE yang mengikat.',
+                    12,
+                    self::YOUTUBE_KOMINFO_ETIKA,
+                    [
+                        $this->heading('Video: SE Kominfo 9/2023', 1),
+                        $this->paragraph('Tonton Kominfo Newsroom tentang panduan etika kecerdasan buatan. Surat Edaran Menkominfo Nomor 9 Tahun 2023 tentang Etika Kecerdasan Artifisial ditujukan kepada pelaku usaha dan penyelenggara sistem elektronik lingkup publik dan privat. NEX sebagai PSE privat merujuk ke sini.'),
+                        $this->paragraph('Artinya di NEX: SE adalah pedoman, bukan undang-undang. Ia tidak menggantikan keputusan direksi. Yang mengikat tetap UU 27/2022 PDP dan UU ITE. SE menegaskan AI sebagai pendukung manusia, menjaga privasi, dan — penting untuk rapat — AI tidak diselenggarakan sebagai penentu kebijakan yang menyangkut kemanusiaan. Kajian teknis ke instansi tetap ditandatangani manusia.'),
+                        $this->paragraph('Video ini bukan lab. Setelah selesai, tulis di lembar keputusan: SE 9/2023 disebut sebagai arah; klausul vendor tetap merujuk UU PDP.'),
                     ],
                 ),
                 $this->textLesson(
@@ -900,6 +990,15 @@ trait BuildsAiForCorporateSyllabus
                             'Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi.',
                             'Undang-Undang Informasi dan Transaksi Elektronik beserta perubahannya.',
                             'Surat Edaran Menteri Komunikasi dan Informatika Nomor 9 Tahun 2023 tentang Etika Kecerdasan Artifisial — arah, bukan pengganti keputusan direksi.',
+                        ]),
+                        $this->heading('Video resmi di Course ini'),
+                        $this->bullets([
+                            'IEA. Leading the Conversation on Energy & AI Nexus. https://www.youtube.com/watch?v=oD5NFHz4giw — dua arah: AI butuh listrik; AI bisa mengubah operasi energi.',
+                            'Google Cloud. AI agents explained (2-minute AI with Google). https://www.youtube.com/watch?v=d0wUM8hIaxE — agen versus chatbot.',
+                            'UNESCO. Ethics of AI: Challenges and Governance. https://www.youtube.com/watch?v=VqFqWIqOB1g — dari prinsip ke tata kelola.',
+                            'IBM Technology. Mastering AI Risk: NIST AI RMF Explained. https://www.youtube.com/watch?v=0oeD2Wf25wY — Govern, Map, Measure, Manage.',
+                            'OECD.AI. The OECD Framework for the Classification of AI Systems. https://www.youtube.com/watch?v=Hgw-5rtT9dg — konteks, data, pengawasan manusia.',
+                            'Ditjen Komunikasi Publik. Panduan Etika Menggunakan Kecerdasan Buatan | Kominfo Newsroom. https://www.youtube.com/watch?v=B0eB9CAHf_g — SE 9/2023 sebagai pedoman PSE.',
                         ]),
                         $this->paragraph('Kalau suatu klaim di Lesson tidak tertaut ke salah satu sumber ini, perlakukan sebagai kerangka diskusi, bukan sebagai berita NEX. Academy ini menolak mengarang organigram dan menolak menjual merek. Tugasmu setelah lulus kuis: bawa lembar keputusan ke rapat, bukan membawa konsol ke jaringan kantor.'),
                     ],

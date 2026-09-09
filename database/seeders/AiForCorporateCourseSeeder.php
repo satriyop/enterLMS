@@ -32,6 +32,32 @@ class AiForCorporateCourseSeeder extends Seeder
 
     public const PREVIEW_LESSON_TITLE = 'Untuk siapa kursus ini';
 
+    public const YOUTUBE_IEA_ENERGY_AI = 'https://www.youtube.com/watch?v=oD5NFHz4giw';
+
+    public const YOUTUBE_GOOGLE_AGENTS = 'https://www.youtube.com/watch?v=d0wUM8hIaxE';
+
+    public const YOUTUBE_UNESCO_ETHICS = 'https://www.youtube.com/watch?v=VqFqWIqOB1g';
+
+    public const YOUTUBE_NIST_RMF = 'https://www.youtube.com/watch?v=0oeD2Wf25wY';
+
+    public const YOUTUBE_OECD_CLASSIFY = 'https://www.youtube.com/watch?v=Hgw-5rtT9dg';
+
+    public const YOUTUBE_KOMINFO_ETIKA = 'https://www.youtube.com/watch?v=B0eB9CAHf_g';
+
+    /**
+     * Companion YouTube Lessons, in syllabus order.
+     *
+     * @var list<string>
+     */
+    public const YOUTUBE_LESSON_TITLES = [
+        'Video: IEA, nexus energi dan AI',
+        'Video: agen versus chatbot (Google Cloud)',
+        'Video: UNESCO, dari prinsip ke tata kelola',
+        'Video: NIST AI RMF — Govern, Map, Measure, Manage',
+        'Video: OECD, mengklasifikasi sistem AI',
+        'Video: SE Kominfo 9/2023, etika AI di Indonesia',
+    ];
+
     /**
      * @var list<string>
      */
@@ -52,17 +78,22 @@ class AiForCorporateCourseSeeder extends Seeder
     public const LESSON_TITLES = [
         'Untuk siapa kursus ini',
         'NEX Energi Masa Depan sebagai kasus berjalan',
+        'Video: IEA, nexus energi dan AI',
         'Bukan kursus men-deploy agen',
         'Empat kursi: direksi, proyek, kantor, pengawas',
         'Apa artinya adopsi AI di perusahaan',
         'Bukan beli chatbot lalu selesai',
+        'Video: agen versus chatbot (Google Cloud)',
         'Tren, proyek IT, dan kebijakan: tiga benda',
         'Mengapa NEX tidak copy-paste strategi Big Tech mentah-mentah',
+        'Video: UNESCO, dari prinsip ke tata kelola',
         'Peta jalan empat tahap NEX',
+        'Video: NIST AI RMF — Govern, Map, Measure, Manage',
         'Tahap 0–1: sikap, wewenang, inventaris',
         'Tahap 2: pilot kantor, bukan PLTS otomatis',
         'Tahap 3–4: perluasan produk dan kelembagaan',
         'Cara menemukan use case AI yang andal',
+        'Video: OECD, mengklasifikasi sistem AI',
         'Use case nex-project: desk, pipeline, solar',
         'Use case situs publik: simulasi ROI dan kajian',
         'Use case yang tidak dimulai: data pelanggan institusi ke model publik',
@@ -73,6 +104,7 @@ class AiForCorporateCourseSeeder extends Seeder
         'Data pelanggan institusi dan karyawan NEX',
         'UU 27/2022 PDP dan data proyek PLTS',
         'Transfer ke vendor, rekaman rapat, kontrak',
+        'Video: SE Kominfo 9/2023, etika AI di Indonesia',
         'Agent AI runtime: batas academy',
         'Yang sudah dikerjakan di NEX: nex-project',
         'Lembar keputusan pimpinan NEX',
@@ -165,7 +197,7 @@ class AiForCorporateCourseSeeder extends Seeder
                 'status' => 'published',
                 'visibility' => 'public',
                 'difficulty_level' => 'beginner',
-                'estimated_duration_minutes' => 480,
+                'estimated_duration_minutes' => 540,
                 'is_paid' => false,
                 'price' => null,
                 'published_at' => now(),

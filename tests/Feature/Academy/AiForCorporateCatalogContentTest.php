@@ -31,10 +31,10 @@ it('seeds an extensive Bahasa Indonesia NEX corporate AI-adoption framework', fu
         ->whereNull('course_sections.deleted_at')
         ->orderBy('course_sections.order')
         ->orderBy('lessons.order')
-        ->get(['lessons.id', 'lessons.title', 'lessons.rich_content', 'lessons.estimated_duration_minutes']);
+        ->get(['lessons.id', 'lessons.title', 'lessons.rich_content', 'lessons.estimated_duration_minutes', 'lessons.content_type', 'lessons.youtube_url']);
 
     expect($lessons->pluck('title')->all())->toBe(AiForCorporateCourseSeeder::LESSON_TITLES)
-        ->and($lessons)->toHaveCount(32)
+        ->and($lessons)->toHaveCount(38)
         ->and($lessons->count())->toBeGreaterThan(10)
         ->and((int) $course->estimated_duration_minutes)->toBeGreaterThan(90)
         ->and((int) $course->estimated_duration_minutes)->toBeGreaterThanOrEqual(360)
@@ -58,6 +58,8 @@ it('seeds an extensive Bahasa Indonesia NEX corporate AI-adoption framework', fu
         ->toContain('untuk')
         ->toContain('yang')
         ->toContain('tidak')
+        ->toContain('IEA')
+        ->toContain('Kominfo')
         ->not->toContain('```mermaid');
 
     $renderer = new TipTapRenderer;
@@ -106,6 +108,36 @@ it('seeds an extensive Bahasa Indonesia NEX corporate AI-adoption framework', fu
         ->toContain('<th>')
         ->toContain('nex-project')
         ->not->toContain('```mermaid');
+
+    $youtubeLessons = $lessons->where('content_type', 'youtube')->values();
+
+    expect($youtubeLessons->pluck('title')->all())
+        ->toBe(AiForCorporateCourseSeeder::YOUTUBE_LESSON_TITLES)
+        ->and($youtubeLessons)->toHaveCount(6)
+        ->and($youtubeLessons->every(fn (Lesson $lesson) => is_string($lesson->youtube_url) && $lesson->youtube_url !== ''))->toBeTrue();
+
+    expect($youtubeLessons->firstWhere('title', 'Video: IEA, nexus energi dan AI')?->youtube_url)
+        ->toBe(AiForCorporateCourseSeeder::YOUTUBE_IEA_ENERGY_AI)
+        ->and($youtubeLessons->firstWhere('title', 'Video: agen versus chatbot (Google Cloud)')?->youtube_url)
+        ->toBe(AiForCorporateCourseSeeder::YOUTUBE_GOOGLE_AGENTS)
+        ->and($youtubeLessons->firstWhere('title', 'Video: UNESCO, dari prinsip ke tata kelola')?->youtube_url)
+        ->toBe(AiForCorporateCourseSeeder::YOUTUBE_UNESCO_ETHICS)
+        ->and($youtubeLessons->firstWhere('title', 'Video: NIST AI RMF — Govern, Map, Measure, Manage')?->youtube_url)
+        ->toBe(AiForCorporateCourseSeeder::YOUTUBE_NIST_RMF)
+        ->and($youtubeLessons->firstWhere('title', 'Video: OECD, mengklasifikasi sistem AI')?->youtube_url)
+        ->toBe(AiForCorporateCourseSeeder::YOUTUBE_OECD_CLASSIFY)
+        ->and($youtubeLessons->firstWhere('title', 'Video: SE Kominfo 9/2023, etika AI di Indonesia')?->youtube_url)
+        ->toBe(AiForCorporateCourseSeeder::YOUTUBE_KOMINFO_ETIKA);
+
+    $ieaBody = (new TipTapRenderer)->plainText($youtubeLessons->firstWhere('title', 'Video: IEA, nexus energi dan AI')?->rich_content);
+    $kominfoBody = (new TipTapRenderer)->plainText($youtubeLessons->firstWhere('title', 'Video: SE Kominfo 9/2023, etika AI di Indonesia')?->rich_content);
+
+    expect($ieaBody)
+        ->toContain('NEX')
+        ->toContain('bukan lab')
+        ->and($kominfoBody)
+        ->toContain('UU 27/2022')
+        ->toContain('bukan lab');
 
     $diagramLessons = $lessons->filter(function (Lesson $lesson) use ($renderer) {
         $html = $renderer->render($lesson->rich_content);
