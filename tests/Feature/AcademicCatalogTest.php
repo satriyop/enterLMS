@@ -20,6 +20,18 @@ it('does not list Open Courses on the home catalog when offerings are enabled', 
         );
 });
 
+it('still hides register on the home catalog when offerings are enabled even if registration is on', function () {
+    Academy::using('academic');
+    config(['lms.registration_enabled' => true]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Welcome')
+            ->where('canRegister', false)
+        );
+});
+
 it('still lists Open Courses on the home catalog for the academy preset', function () {
     $course = Course::factory()->published()->public()->create();
 

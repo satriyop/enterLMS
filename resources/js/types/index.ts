@@ -103,6 +103,7 @@ export type AppPageProps<
 > = T & {
     name: string;
     quote: { message: string; author: string };
+    canRegister: boolean;
     auth: Auth;
     sidebarOpen: boolean;
     academy: AcademyShared;

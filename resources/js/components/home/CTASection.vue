@@ -22,8 +22,8 @@ withDefaults(defineProps<Props>(), {
         'Komunitas belajar yang aktif',
         'Dukungan dari instruktur',
     ],
-    primaryButtonText: 'Daftar Gratis',
-    primaryButtonHref: '/register',
+    primaryButtonText: 'Masuk',
+    primaryButtonHref: '/login',
     secondaryButtonText: 'Lihat Kursus',
     secondaryButtonHref: '/courses',
 });

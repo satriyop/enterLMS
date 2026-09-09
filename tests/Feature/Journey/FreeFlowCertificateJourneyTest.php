@@ -22,6 +22,8 @@ describe('Free Flow Certificate Journey', function () {
             'title' => 'Kursus Gratis Journey Test',
         ]);
 
+        config(['lms.registration_enabled' => true]);
+
         // 1. Register as new learner
         $response = $this->post(route('register.store'), [
             'name' => 'Rina Pratama',

@@ -25,7 +25,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
     appName: 'EnterLMS',
-    canRegister: true,
+    canRegister: false,
 });
 
 const page = usePage();

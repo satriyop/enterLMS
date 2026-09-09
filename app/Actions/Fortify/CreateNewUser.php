@@ -18,6 +18,8 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+        abort_unless((bool) config('lms.registration_enabled'), 404);
+
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'email' => [

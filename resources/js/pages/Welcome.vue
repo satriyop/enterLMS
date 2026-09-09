@@ -63,7 +63,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    canRegister: true,
+    canRegister: false,
     featuredCourses: () => [],
     popularCourses: () => [],
     categories: () => [],
@@ -125,15 +125,17 @@ const formattedStats = computed(() => {
 
             <CTASection
                 title="Mulai dari pengenalan"
-                subtitle="Daftar, ambil Pengenalan Agen AI, dan selesaikan Course terbuka. Jalur Operator tidak tampil di katalog publik."
+                :subtitle="canRegister
+                    ? 'Daftar, ambil Pengenalan Agen AI, dan selesaikan Course terbuka. Jalur Operator tidak tampil di katalog publik.'
+                    : 'Masuk, ambil Pengenalan Agen AI, dan selesaikan Course terbuka. Jalur Operator tidak tampil di katalog publik.'"
                 :features="[
                     'Course terbuka tanpa biaya',
                     'Sertifikat penyelesaian',
                     'Bahasa Indonesia',
                     'Bukan control plane — belajar, bukan men-deploy',
                 ]"
-                primary-button-text="Daftar Gratis"
-                primary-button-href="/register"
+                :primary-button-text="canRegister ? 'Daftar Gratis' : 'Masuk'"
+                :primary-button-href="canRegister ? '/register' : '/login'"
                 secondary-button-text="Lihat Kursus"
                 secondary-button-href="/courses"
             />

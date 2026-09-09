@@ -9,7 +9,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-    canRegister: true,
+    canRegister: false,
 });
 
 const page = usePage();

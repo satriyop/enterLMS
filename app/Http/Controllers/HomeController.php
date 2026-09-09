@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
-use Laravel\Fortify\Features;
 
 class HomeController extends Controller
 {
@@ -88,7 +87,7 @@ class HomeController extends Controller
         });
 
         return Inertia::render('Welcome', [
-            'canRegister' => $catalogOpen && Features::enabled(Features::registration()),
+            'canRegister' => $catalogOpen && (bool) config('lms.registration_enabled'),
             'featuredCourses' => $featuredCourses,
             'popularCourses' => $popularCourses,
             'categories' => $catalogOpen ? $categories : collect(),

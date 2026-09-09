@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            'canRegister' => (bool) config('lms.registration_enabled'),
             'auth' => [
                 'user' => $request->user(),
             ],

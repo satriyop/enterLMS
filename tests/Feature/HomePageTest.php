@@ -20,12 +20,24 @@ class HomePageTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Welcome')
-            ->has('canRegister')
+            ->where('canRegister', false)
             ->has('featuredCourses')
             ->has('popularCourses')
             ->has('categories')
             ->has('stats')
         );
+    }
+
+    public function test_homepage_offers_register_when_registration_is_enabled(): void
+    {
+        config(['lms.registration_enabled' => true]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('Welcome')
+                ->where('canRegister', true)
+            );
     }
 
     public function test_homepage_displays_published_courses(): void

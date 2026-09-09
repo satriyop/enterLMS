@@ -166,6 +166,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public registration
+    |--------------------------------------------------------------------------
+    |
+    | When false, /register 404s and Daftar links stay hidden. LMS Admin
+    | still creates accounts from /admin/users. Set REGISTRATION_ENABLED=true
+    | to open self-serve signup.
+    |
+    */
+    'registration_enabled' => filter_var(
+        env('REGISTRATION_ENABLED', false),
+        FILTER_VALIDATE_BOOLEAN
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Install preset (ADR 010)
     |--------------------------------------------------------------------------
     |
