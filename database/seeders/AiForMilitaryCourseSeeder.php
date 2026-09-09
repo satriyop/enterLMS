@@ -5,40 +5,102 @@ namespace Database\Seeders;
 use App\Models\Assessment;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\Lesson;
+use App\Models\Question;
+use App\Models\QuestionOption;
 use App\Models\Tag;
 use App\Models\User;
 use App\Services\SeederThumbnailGenerator;
 use Database\Seeders\Concerns\BuildsAcademyLessonContent;
+use Database\Seeders\Concerns\BuildsAiForMilitarySyllabus;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 /**
- * Open catalog Course for military leadership: AI adoption, not a live lab.
+ * Open catalog Course: TNI AD AI-adoption framework, Korem 074/072 as staff cases.
  *
  *   php artisan db:seed --class=AiForMilitaryCourseSeeder
  */
 class AiForMilitaryCourseSeeder extends Seeder
 {
     use BuildsAcademyLessonContent;
+    use BuildsAiForMilitarySyllabus;
 
     public const COURSE_TITLE = 'AI untuk Militer';
 
     public const QUIZ_TITLE = 'Kuis Wajib AI untuk Militer';
+
+    public const PREVIEW_LESSON_TITLE = 'Untuk siapa kursus ini';
+
+    /**
+     * @var list<string>
+     */
+    public const SECTION_TITLES = [
+        'Konteks TNI AD dan mandat pimpinan',
+        'Adopsi, bukan belanja tools',
+        'Peta jalan bertahap',
+        'Use case yang andal di kesatuan',
+        'Tiga meja: tugas, komando, personel',
+        'Data, wewenang, dan hukum',
+        'Contoh dan deliverable Korem 074 dan 072',
+        'Rapat, batas, dan pustaka',
+    ];
 
     /**
      * @var list<string>
      */
     public const LESSON_TITLES = [
         'Untuk siapa kursus ini',
+        'TNI AD sebagai kasus berjalan',
         'Bukan kursus men-deploy agen',
+        'Empat kursi: Danrem, Kasrem, staf, personel',
         'Apa artinya adopsi AI di kesatuan',
         'Bukan beli chatbot lalu selesai',
+        'Tren, proyek IT, dan perintah: tiga benda',
+        'Mengapa kesatuan tidak copy-paste strategi NATO mentah-mentah',
+        'Peta jalan empat tahap TNI AD',
+        'Tahap 0–1: sikap, wewenang, inventaris',
+        'Tahap 2: pilot staf Korem, bukan senjata',
+        'Tahap 3–4: perluasan Kodim dan kelembagaan',
+        'Cara menemukan use case AI yang andal',
+        'Use case administrasi personel: Sisfomil',
+        'Use case rapat, surat, dan pelatihan',
+        'Use case yang tidak dimulai: intel, senjata, targeting',
         'Tiga meja: tugas, komando, personel',
+        'Meja tugas: staf dan administrasi',
+        'Meja komando: anggaran, vendor, klasifikasi',
+        'Meja personel: perangkat dinas dan shadow AI',
         'Data personel dan kesatuan',
+        'UU 27/2022 PDP dan data prajurit',
+        'SPBE, BSSN, dan vendor di luar kesatuan',
+        'Agent AI runtime: batas academy',
+        'Yang sudah dikerjakan di Korem 074: Sisfomil',
+        'Yang sudah dikerjakan di Korem 072: Sipamungkas',
+        'Lembar keputusan pimpinan kesatuan',
+        'Peta jalan 24 bulan TNI AD',
         'Risiko yang pimpinan harus sebutkan',
-        'Lembar keputusan pimpinan',
         'Mulai dari rapat, bukan dari tools',
         'Apa yang tidak dimulai minggu pertama',
+        'Pustaka: NATO, DoD, UU TNI, PDP, SPBE',
+    ];
+
+    /**
+     * Roadmap, framework, and Korem-deliverable Lessons that must render a figure.
+     *
+     * @var list<string>
+     */
+    public const DIAGRAM_LESSON_TITLES = [
+        'Untuk siapa kursus ini',
+        'Empat kursi: Danrem, Kasrem, staf, personel',
+        'Bukan beli chatbot lalu selesai',
+        'Peta jalan empat tahap TNI AD',
+        'Cara menemukan use case AI yang andal',
+        'Use case administrasi personel: Sisfomil',
+        'Tiga meja: tugas, komando, personel',
+        'Agent AI runtime: batas academy',
+        'Peta jalan 24 bulan TNI AD',
+        'Risiko yang pimpinan harus sebutkan',
+        'Mulai dari rapat, bukan dari tools',
     ];
 
     public function run(): void
@@ -64,7 +126,7 @@ class AiForMilitaryCourseSeeder extends Seeder
             ['slug' => 'adopsi-ai-militer'],
             [
                 'name' => 'Adopsi AI Militer',
-                'description' => 'Kursus terbuka untuk pimpinan kesatuan yang memutuskan adopsi AI.',
+                'description' => 'Kerangka mendalam untuk pimpinan kesatuan yang memutuskan adopsi AI di TNI AD, dengan Korem 074 dan 072 sebagai kasus staf.',
                 'order' => 5,
             ]
         );
@@ -83,23 +145,26 @@ class AiForMilitaryCourseSeeder extends Seeder
             [
                 'user_id' => $admin->id,
                 'slug' => Str::slug(self::COURSE_TITLE),
-                'short_description' => 'Untuk komandan, perwira staf, personel, dan pimpinan kesatuan yang ingin memahami adopsi AI — tanpa menjalankan agen hidup.',
-                'long_description' => 'Kursus terbuka dan gratis. Kamu tidak perlu jadi teknisi. Kamu akan membedakan tren, chatbot, dan adopsi: siapa yang memutuskan, data siapa yang dipakai, risiko apa yang harus disebut di rapat pimpinan, dan apa yang tidak dimulai di minggu pertama. Lesson ini bukan konsol. Menyelesaikan kursus ini tidak membuka Course terbatas.',
+                'short_description' => 'Kerangka mendalam adopsi AI TNI AD dengan Korem 074/Warastratama (Sisfomil) dan Korem 072/Pamungkas (Sipamungkas) sebagai kasus staf: peta jalan, use case andal, tiga meja, data/hukum, dan deliverable rapat — tanpa menjalankan agen hidup.',
+                'long_description' => 'Open Course gratis dalam Bahasa Indonesia. Ini satu kerangka komprehensif, bukan briefing 90 menit. Kasus berjalannya Tentara Nasional Indonesia Angkatan Darat: hierarki Kodam–Korem–Kodim, dengan dua kesatuan staf yang sudah punya sistem nyata — Korem 074/Warastratama (Sisfomil) dan Korem 072/Pamungkas (Sipamungkas). Kamu akan membedakan adopsi dari belanja tools; menyusun peta jalan empat tahap; menyaring use case staf yang andal (administrasi, rapat, pelatihan — bukan intel atau senjata); memisahkan tugas, komando, dan personel; menautkan data prajurit ke UU 27/2022 PDP dan tata kelola elektronik ke Perpres 95/2018 SPBE; serta memakai NATO Principles of Responsible Use dan DoD AI Ethical Principles sebagai rujukan, bukan slide vendor. Agent AI runtime diajarkan sebagai batas academy, bukan tombol Lesson. Lesson berisi teks, tabel, diagram, dan PDF takeaway. Ini bukan konsol. Menyelesaikan kursus ini tidak membuka Course terbatas.',
                 'objectives' => [
-                    'Menjelaskan adopsi AI kesatuan dalam bahasa pimpinan, bukan bahasa vendor',
-                    'Membedakan tugas harian, komando, dan personel',
-                    'Menyebut risiko: data kesatuan, ketergantungan vendor, shadow AI di perangkat dinas',
-                    'Menyusun pertanyaan untuk rapat pimpinan sebelum membeli tools',
+                    'Menjelaskan adopsi AI kesatuan sebagai keputusan wewenang TNI AD, bukan pembelian chatbot',
+                    'Menyusun peta jalan empat tahap: sikap, fondasi, pilot staf, kelembagaan',
+                    'Menyaring use case andal di administrasi personel, rapat, surat, dan pelatihan — menolak intel, senjata, targeting',
+                    'Memisahkan tiga meja: tugas, komando, dan personel',
+                    'Menautkan data prajurit ke UU 27/2022 PDP dan sistem staf ke Perpres 95/2018 SPBE',
+                    'Memakai NATO PRU dan DoD AI Ethical Principles sebagai rujukan, bukan pengganti hukum TNI',
+                    'Membawa deliverable rapat: lembar keputusan, filter use case, dan peta jalan 24 bulan, dengan contoh Sisfomil dan Sipamungkas',
                 ],
                 'prerequisites' => [
-                    'Tidak ada prasyarat teknis. Ditujukan untuk pimpinan yang memutuskan, bukan yang men-deploy.',
+                    'Tidak ada prasyarat teknis. Ditujukan untuk pimpinan yang memutuskan — Danrem, Kasrem, staf, Dandim — bukan yang men-deploy.',
                 ],
                 'category_id' => $category->id,
                 'thumbnail_path' => $thumbnailPath,
                 'status' => 'published',
                 'visibility' => 'public',
                 'difficulty_level' => 'beginner',
-                'estimated_duration_minutes' => 90,
+                'estimated_duration_minutes' => 480,
                 'is_paid' => false,
                 'price' => null,
                 'published_at' => now(),
@@ -113,7 +178,7 @@ class AiForMilitaryCourseSeeder extends Seeder
         );
         $course->tags()->syncWithoutDetaching([$tag->id]);
 
-        if ($this->catalogMatches($course, self::LESSON_TITLES)) {
+        if ($this->catalogMatches($course, self::LESSON_TITLES) && $this->contentFingerprintIsCurrent($course)) {
             $this->command?->info('Open course catalog already current: '.self::COURSE_TITLE);
 
             return $course->load('sections.lessons');
@@ -124,223 +189,53 @@ class AiForMilitaryCourseSeeder extends Seeder
         return $course->load('sections.lessons');
     }
 
-    /**
-     * @return list<array{title: string, description: string, lessons: list<array<string, mixed>>}>
-     */
-    private function sections(): array
+    private function contentFingerprintIsCurrent(Course $course): bool
     {
-        return [
-            [
-                'title' => 'Pimpinan yang memutuskan',
-                'description' => 'Komandan, perwira staf, personel, pimpinan kesatuan — satu Course, pertanyaan berbeda',
-                'lessons' => [
-                    [
-                        'title' => 'Untuk siapa kursus ini',
-                        'description' => 'Pimpinan kesatuan yang harus bicara AI di rapat, bukan di server.',
-                        'content_type' => 'text',
-                        'duration' => 10,
-                        'is_free_preview' => true,
-                        'rich_content' => $this->doc([
-                            $this->heading('Untuk siapa kursus ini', 1),
-                            $this->paragraph('Kursus ini untuk pimpinan kesatuan yang harus mengambil sikap: komandan, perwira staf, personel, dan pimpinan di atasnya. Kamu tidak perlu menulis kode. Kamu perlu bahasa yang sama sebelum ada yang membeli tools.'),
-                            $this->heading('Empat kursi, satu meja'),
-                            $this->bullets([
-                                'Pimpinan kesatuan — mandat, reputasi, dan tanggung jawab jangka panjang.',
-                                'Komandan — prioritas tugas, beban staf, dan apa yang boleh masuk ke ruang kerja.',
-                                'Perwira staf — data, koordinasi, dan apa yang tertulis di perintah harian.',
-                                'Personel — prajurit dan staf yang akan memakai — atau dilarang memakai — tools di perangkat dinas.',
-                            ]),
-                            $this->paragraph('Kamu boleh enroll sendiri. Ini Open Course, gratis. Menyelesaikannya tidak membuka Course terbatas dan tidak memberi akses produksi.'),
-                            $this->quote('Kalau yang kamu cari adalah tombol untuk menjalankan agen di kesatuan, kamu di Course yang salah. Itu bukan Lesson.'),
-                        ]),
-                    ],
-                    [
-                        'title' => 'Bukan kursus men-deploy agen',
-                        'description' => 'Adopsi bukan lab. Lesson bukan konsol.',
-                        'content_type' => 'text',
-                        'duration' => 8,
-                        'rich_content' => $this->doc([
-                            $this->heading('Bukan kursus men-deploy agen', 1),
-                            $this->paragraph('EnterLMS adalah academy. Tutor di sini menjelaskan. Ia tidak men-deploy agen, tidak membuka desktop runtime, dan tidak menyelesaikan Lesson untukmu.'),
-                            $this->paragraph('Pengenalan Agen AI mengajarkan apa itu agen. Kursus ini mengajarkan apa yang pimpinan kesatuan putuskan sebelum ada agen, chatbot, atau “AI militer” di slide vendor.'),
-                            $this->bullets([
-                                'Tidak ada lab di Lesson.',
-                                'Tidak ada akses produksi karena lulus kuis.',
-                                'Restricted Course tentang operasi runtime tetap tersembunyi dari katalog ini.',
-                                'Kursus ini bukan pelatihan senjata, intelijen, atau operasi tempur.',
-                            ]),
-                        ]),
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Adopsi, bukan tren',
-                'description' => 'Membeli chatbot bukan kebijakan kesatuan',
-                'lessons' => [
-                    [
-                        'title' => 'Apa artinya adopsi AI di kesatuan',
-                        'description' => 'Keputusan berulang: tugas, data, vendor, dan wewenang.',
-                        'content_type' => 'text',
-                        'duration' => 12,
-                        'rich_content' => $this->doc([
-                            $this->heading('Apa artinya adopsi AI di kesatuan', 1),
-                            $this->paragraph('Adopsi AI di kesatuan bukan satu proyek IT. Itu rangkaian keputusan: pekerjaan mana yang boleh dibantu, data siapa yang boleh masuk ke vendor, siapa yang menandatangani, dan kapan berhenti.'),
-                            $this->heading('Tiga pertanyaan yang selalu kembali'),
-                            $this->bullets([
-                                'Untuk siapa? Administrasi, pelatihan, atau kerja staf — masing-masing beda risiko.',
-                                'Dengan data apa? Daftar personel, surat, peta kerja, rekaman rapat.',
-                                'Siapa yang bertanggung jawab jika salah? Staf, komandan, atau pimpinan di atasnya.',
-                            ]),
-                            $this->paragraph('Kalau rapat hanya membahas merek tools, itu belum adopsi. Itu belanja.'),
-                        ]),
-                    ],
-                    [
-                        'title' => 'Bukan beli chatbot lalu selesai',
-                        'description' => 'Chatbot, agen, dan perintah adalah tiga benda berbeda.',
-                        'content_type' => 'text',
-                        'duration' => 10,
-                        'rich_content' => $this->doc([
-                            $this->heading('Bukan beli chatbot lalu selesai', 1),
-                            $this->paragraph('Chatbot menjawab percakapan. Agen menerima tujuan, memakai alat, dan bekerja dalam loop. Perintah kesatuan memutuskan mana yang boleh masuk ke kerja staf dan ke data personel.'),
-                            $this->paragraph('Vendor sering menjual ketiganya sebagai satu “AI militer”. Tugas pimpinan adalah memisahkannya sebelum tanda tangan.'),
-                            $this->quote('Yang kamu adopsi bukan merek. Yang kamu adopsi adalah wewenang: siapa boleh memakai alat apa, pada data siapa, sampai kapan.'),
-                        ]),
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Tiga meja',
-                'description' => 'Tugas, komando, personel — jangan dicampur di satu perintah',
-                'lessons' => [
-                    [
-                        'title' => 'Tiga meja: tugas, komando, personel',
-                        'description' => 'Staf, komandan, dan personel tidak duduk di kursi yang sama.',
-                        'content_type' => 'text',
-                        'duration' => 12,
-                        'rich_content' => $this->doc([
-                            $this->heading('Tiga meja', 1),
-                            $this->paragraph('Kesatuan yang mencampur tiga meja ini biasanya membeli dulu, menyesal kemudian.'),
-                            $this->heading('Tugas'),
-                            $this->paragraph('Staf: administrasi, korespondensi, ringkasan rapat, pelatihan. Mana yang boleh dibantu, mana yang tetap harus ditinjau manusia. Ini desain kerja, bukan tiket helpdesk.'),
-                            $this->heading('Komando'),
-                            $this->paragraph('Komandan dan pimpinan: anggaran, kontrak vendor, klasifikasi, reputasi. Siapa yang boleh menandatangani data kesatuan ke pihak ketiga.'),
-                            $this->heading('Personel'),
-                            $this->paragraph('Kebijakan prajurit dan staf memakai AI di perangkat dinas. Bukan pekerjaan kursus ini untuk men-deploy agen, dan bukan tombol di Lesson.'),
-                        ]),
-                    ],
-                    [
-                        'title' => 'Data personel dan kesatuan',
-                        'description' => 'Siapa yang punya, siapa yang boleh meminjamkan ke vendor.',
-                        'content_type' => 'text',
-                        'duration' => 10,
-                        'rich_content' => $this->doc([
-                            $this->heading('Data personel dan kesatuan', 1),
-                            $this->paragraph('Setiap “AI untuk militer” yang menyentuh daftar personel, surat dinas, peta kerja, atau rekaman rapat adalah keputusan data. Bukan keputusan fitur.'),
-                            $this->bullets([
-                                'Data personel — identitas, riwayat, penilaian. Tidak keluar ke vendor tanpa dasar.',
-                                'Surat dan perintah — bukan bahan latihan model tanpa persetujuan.',
-                                'Peta kerja dan lokasi — shadow AI di perangkat dinas adalah kebocoran yang sudah terjadi.',
-                            ]),
-                            $this->paragraph('Komandan yang tidak bisa menyebut data mana yang keluar kesatuan, belum siap adopsi. Ia baru siap demo.'),
-                        ]),
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Risiko dan keputusan',
-                'description' => 'Yang harus disebut sebelum kontrak',
-                'lessons' => [
-                    [
-                        'title' => 'Risiko yang pimpinan harus sebutkan',
-                        'description' => 'Data kesatuan, ketergantungan vendor, shadow AI.',
-                        'content_type' => 'text',
-                        'duration' => 12,
-                        'rich_content' => $this->doc([
-                            $this->heading('Risiko yang pimpinan harus sebutkan', 1),
-                            $this->bullets([
-                                'Data kesatuan — data yang tidak bisa ditarik kembali dari vendor.',
-                                'Ketergantungan vendor — kesatuan tidak bisa pindah tanpa kehilangan riwayat.',
-                                'Shadow AI — staf sudah memakai tools pribadi di perangkat dinas sebelum ada perintah.',
-                                'Perintah tanpa kebijakan — “pakai AI” tanpa batas data adalah kebocoran yang dilegalkan.',
-                            ]),
-                            $this->paragraph('Menyebut risiko bukan menolak AI. Menyembunyikan risiko adalah yang membuat pimpinan kaget di tahun kedua.'),
-                        ]),
-                    ],
-                    [
-                        'title' => 'Lembar keputusan pimpinan',
-                        'description' => 'Satu halaman untuk rapat komandan dan staf.',
-                        'content_type' => 'document',
-                        'duration' => 8,
-                        'rich_content' => $this->doc([
-                            $this->heading('Lembar keputusan pimpinan', 1),
-                            $this->paragraph('Unduh atau baca PDF ini sebelum rapat. Bukan checklist belanja tools. Daftar keputusan yang harus ada pemiliknya.'),
-                        ]),
-                        'pdf' => [
-                            'filename' => 'lembar-keputusan-ai-militer.pdf',
-                            'title' => 'Lembar Keputusan AI untuk Militer',
-                            'paragraphs' => [
-                                'Kursus: AI untuk Militer. Open Course, gratis. Bukan lab, bukan konsol.',
-                                'Untuk: komandan, perwira staf, personel, pimpinan kesatuan.',
-                                '1. Untuk siapa AI dipakai di kesatuan ini tahun ini? Administrasi, pelatihan, kerja staf — sebut satu prioritas.',
-                                '2. Data apa yang boleh keluar ke vendor? Personel, surat, peta kerja — sebut yang dilarang.',
-                                '3. Siapa menandatangani? Komandan, staf, atau pimpinan di atasnya.',
-                                '4. Apa kebijakan memakai AI di perangkat dinas? Diam adalah kebijakan terburuk.',
-                                '5. Apa yang tidak dimulai minggu pertama? Deploy agen hidup, unggah arsip personel, kontrak tanpa klausul data.',
-                                'Adopsi: keputusan wewenang, bukan pembelian chatbot.',
-                                'EnterLMS: academy. Menyelesaikan kursus ini tidak membuka Course terbatas dan tidak men-deploy apa pun.',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Mulai dari sini',
-                'description' => 'Rapat pimpinan sebelum tools',
-                'lessons' => [
-                    [
-                        'title' => 'Mulai dari rapat, bukan dari tools',
-                        'description' => 'Agenda 45 menit yang cukup untuk komandan dan staf.',
-                        'content_type' => 'text',
-                        'duration' => 10,
-                        'rich_content' => $this->doc([
-                            $this->heading('Mulai dari rapat, bukan dari tools', 1),
-                            $this->paragraph('Undangan rapat yang hanya berisi demo vendor akan menghasilkan pembelian. Undangan yang berisi lima pertanyaan di lembar keputusan akan menghasilkan sikap.'),
-                            $this->heading('Agenda singkat'),
-                            $this->bullets([
-                                'Sepuluh menit: satu prioritas tahun ini (bukan sepuluh).',
-                                'Lima belas menit: data yang dilarang keluar.',
-                                'Sepuluh menit: kebijakan perangkat dinas — boleh, wajib deklarasi, atau dilarang.',
-                                'Sepuluh menit: siapa pemilik keputusan lanjutan.',
-                            ]),
-                            $this->paragraph('Kalau rapat berakhir tanpa pemilik, kesatuan belum adopsi. Kesatuan baru menonton slide.'),
-                        ]),
-                    ],
-                    [
-                        'title' => 'Apa yang tidak dimulai minggu pertama',
-                        'description' => 'Daftar yang menahan FOMO tanpa menolak belajar.',
-                        'content_type' => 'text',
-                        'duration' => 8,
-                        'rich_content' => $this->doc([
-                            $this->heading('Apa yang tidak dimulai minggu pertama', 1),
-                            $this->bullets([
-                                'Menjalankan agen hidup di jaringan dinas “supaya kelihatan modern”.',
-                                'Mengunggah arsip personel atau surat dinas ke vendor untuk “melatih AI kesatuan”.',
-                                'Mewajibkan seluruh staf memakai satu merek dalam tujuh hari.',
-                                'Membuka konsol runtime di dalam Lesson atau LMS.',
-                            ]),
-                            $this->paragraph('Belajar di academy ini boleh dimulai hari ini. Mengoperasikan agen hidup tidak. Tutor di Lesson ini akan menolak membuka konsol, karena Lesson bukan lab.'),
-                            $this->quote('Adopsi yang dewasa kelihatan lambat di minggu pertama, dan murah di tahun kedua.'),
-                        ]),
-                    ],
-                ],
-            ],
-        ];
+        $intro = Lesson::query()
+            ->join('course_sections', 'lessons.course_section_id', '=', 'course_sections.id')
+            ->where('course_sections.course_id', $course->id)
+            ->where('lessons.title', self::PREVIEW_LESSON_TITLE)
+            ->whereNull('lessons.deleted_at')
+            ->first(['lessons.*']);
+
+        $roadmap = Lesson::query()
+            ->join('course_sections', 'lessons.course_section_id', '=', 'course_sections.id')
+            ->where('course_sections.course_id', $course->id)
+            ->where('lessons.title', 'Peta jalan empat tahap TNI AD')
+            ->whereNull('lessons.deleted_at')
+            ->first(['lessons.*']);
+
+        $json = json_encode($intro instanceof Lesson ? $intro->rich_content : []);
+        $roadmapJson = json_encode($roadmap instanceof Lesson ? $roadmap->rich_content : []);
+
+        return is_string($json)
+            && str_contains($json, 'TNI AD')
+            && str_contains($json, 'peta jalan')
+            && str_contains($json, 'Korem 074')
+            && is_string($roadmapJson)
+            && str_contains($roadmapJson, '"label":"Fondasi"')
+            && str_contains($roadmapJson, 'Sisfomil');
     }
 
     private function seedQuiz(Course $course, User $author): void
     {
-        if ($course->assessments()->where('title', self::QUIZ_TITLE)->exists()) {
+        $existing = Assessment::query()
+            ->where('course_id', $course->id)
+            ->where('title', self::QUIZ_TITLE)
+            ->with('questions')
+            ->first();
+
+        if ($existing && $this->quizIsCurrent($existing)) {
             return;
+        }
+
+        if ($existing) {
+            $questions = Question::withTrashed()->where('assessment_id', $existing->id)->get();
+            foreach ($questions as $question) {
+                QuestionOption::withTrashed()->where('question_id', $question->id)->forceDelete();
+                $question->forceDelete();
+            }
+            $existing->forceDelete();
         }
 
         $assessment = Assessment::query()->create([
@@ -348,44 +243,97 @@ class AiForMilitaryCourseSeeder extends Seeder
             'user_id' => $author->id,
             'title' => self::QUIZ_TITLE,
             'slug' => 'kuis-wajib-ai-untuk-militer',
-            'description' => 'Kuis wajib untuk komandan, staf, dan personel. Bukan ujian operasi runtime.',
-            'instructions' => "Jawab dari Lesson. Pilihan ganda dinilai otomatis. Jawaban singkat menunggu LMS Admin.\n\nIni bukan ujian men-deploy agen.",
+            'description' => 'Kuis wajib kerangka adopsi AI TNI AD dengan kasus Korem 074 dan 072. Mengukur peta jalan, use case staf, dan wewenang/risiko — bukan ujian operasi runtime.',
+            'instructions' => "Jawab dari Lesson. Pilihan ganda dan benar/salah dinilai otomatis. Jawaban singkat menunggu LMS Admin.\n\nIni mengukur kerangka adopsi: peta jalan, use case, wewenang dan risiko. Bukan ujian men-deploy agen.",
             'status' => 'published',
             'passing_score' => 70,
             'max_attempts' => 3,
             'is_required' => true,
-            'time_limit_minutes' => 20,
+            'time_limit_minutes' => 40,
             'allow_review' => true,
             'show_correct_answers' => true,
             'published_at' => now(),
             'published_by' => $author->id,
         ]);
 
-        $this->createMultipleChoice($assessment, 'Siapa audiens utama kursus AI untuk Militer?', [
-            ['option_text' => 'Komandan, perwira staf, personel, dan pimpinan kesatuan yang memutuskan adopsi', 'is_correct' => true],
-            ['option_text' => 'Teknisi yang men-deploy agen di produksi', 'is_correct' => false],
+        $this->createMultipleChoice($assessment, 'Siapa audiens utama kerangka adopsi AI untuk Militer dengan kasus TNI AD?', [
+            ['option_text' => 'Danrem, Kasrem, perwira staf, Dandim, dan pimpinan kesatuan yang memutuskan adopsi', 'is_correct' => true],
+            ['option_text' => 'Teknisi yang men-deploy agen di produksi Korem 074', 'is_correct' => false],
             ['option_text' => 'Prajurit yang ingin jadi operator OpenClaw', 'is_correct' => false],
             ['option_text' => 'Vendor yang menjual chatbot kesatuan', 'is_correct' => false],
         ], 1);
 
         $this->createTrueFalse(
             $assessment,
-            'Membeli chatbot berarti kesatuan sudah mengadopsi AI.',
+            'Membeli chatbot berarti kesatuan TNI AD sudah mengadopsi AI.',
             false,
             2,
         );
 
-        $this->createMultipleChoice($assessment, 'Apa yang tidak dimulai di minggu pertama adopsi?', [
-            ['option_text' => 'Menjalankan agen hidup atau mengunggah arsip personel ke vendor tanpa kebijakan', 'is_correct' => true],
-            ['option_text' => 'Rapat pimpinan dengan pertanyaan tentang data dan wewenang', 'is_correct' => false],
-            ['option_text' => 'Membaca Open Course ini', 'is_correct' => false],
-            ['option_text' => 'Menyusun kebijakan memakai AI di perangkat dinas', 'is_correct' => false],
+        $this->createMultipleChoice($assessment, 'Urutan peta jalan empat tahap TNI AD yang benar adalah…', [
+            ['option_text' => 'Sikap dan wewenang, fondasi, pilot staf, lalu kelembagaan', 'is_correct' => true],
+            ['option_text' => 'Beli tools, wajibkan seluruh Kodim, baru tulis kebijakan', 'is_correct' => false],
+            ['option_text' => 'Deploy agen hidup di minggu pertama, lalu rapat Danrem', 'is_correct' => false],
+            ['option_text' => 'Copy-paste strategi NATO, lalu unggah arsip Sisfomil ke vendor', 'is_correct' => false],
         ], 3);
+
+        $this->createMultipleChoice($assessment, 'Manakah use case AI yang andal untuk dimulai di Korem?', [
+            ['option_text' => 'Administrasi personel Sisfomil, notulen rapat, draf surat, dan pelatihan — dengan manusia mengesahkan', 'is_correct' => true],
+            ['option_text' => 'Intelijen, senjata, dan targeting di minggu pertama', 'is_correct' => false],
+            ['option_text' => 'Menyalin basis Sisfomil 074 ke Sipamungkas 072 agar AI-nya satu', 'is_correct' => false],
+            ['option_text' => 'Chatbot yang mengirim perintah ke Kodim tanpa perwira', 'is_correct' => false],
+        ], 4);
+
+        $this->createMultipleChoice($assessment, 'Tiga meja yang tidak boleh dicampur dalam satu perintah kesatuan adalah…', [
+            ['option_text' => 'Tugas, komando, dan personel', 'is_correct' => true],
+            ['option_text' => 'Marketing, pengadaan, dan humas', 'is_correct' => false],
+            ['option_text' => 'Chatbot, agen, dan GPU', 'is_correct' => false],
+            ['option_text' => 'Katalog Open Course, Restricted Course, dan konsol', 'is_correct' => false],
+        ], 5);
+
+        $this->createMultipleChoice($assessment, 'Dasar hukum Indonesia yang paling langsung mengatur data personel ke vendor AI adalah…', [
+            ['option_text' => 'UU 27/2022 tentang Pelindungan Data Pribadi', 'is_correct' => true],
+            ['option_text' => 'NATO Principles of Responsible Use', 'is_correct' => false],
+            ['option_text' => 'DoD AI Ethical Principles 2020', 'is_correct' => false],
+            ['option_text' => 'Perintah intern yang belum ada di Lesson ini', 'is_correct' => false],
+        ], 6);
+
+        $this->createTrueFalse(
+            $assessment,
+            'Menjalankan agen hidup di jaringan dinas adalah langkah wajib minggu pertama peta jalan.',
+            false,
+            7,
+        );
+
+        $this->createMultipleChoice($assessment, 'Siapa yang memegang wewenang menandatangani data personel Sisfomil ke pihak ketiga?', [
+            ['option_text' => 'Pimpinan yang disebut di lembar keputusan — Danrem dan/atau Kasrem — bukan operator Sisfomil sendirian', 'is_correct' => true],
+            ['option_text' => 'Prajurit yang klik setuju di chatbot', 'is_correct' => false],
+            ['option_text' => 'Vendor karena sudah punya kebijakan privasi sendiri', 'is_correct' => false],
+            ['option_text' => 'Tutor di Lesson ini', 'is_correct' => false],
+        ], 8);
+
+        $this->createMultipleChoice($assessment, 'NATO Principles of Responsible Use (2021, dikukuhkan 2024) menuntut aplikasi AI antara lain…', [
+            ['option_text' => 'Use case yang eksplisit, tanggung jawab manusia, dan kemampuan mengelola/menghentikan sistem', 'is_correct' => true],
+            ['option_text' => 'Wajib men-deploy agen di setiap Korem dalam tujuh hari', 'is_correct' => false],
+            ['option_text' => 'Mengganti UU 34/2004 dengan dokumen NATO', 'is_correct' => false],
+            ['option_text' => 'Melatih model dari arsip personel tanpa pemilik', 'is_correct' => false],
+        ], 9);
 
         $this->createManualShortAnswer(
             $assessment,
-            'Sebutkan satu risiko yang harus disebut komandan sebelum menandatangani vendor AI.',
-            4,
+            'Sebutkan satu risiko TNI AD yang harus disebut di rapat pimpinan sebelum tanda tangan vendor AI, dan siapa yang memegang wewenang atas risiko itu.',
+            10,
         );
+    }
+
+    private function quizIsCurrent(Assessment $quiz): bool
+    {
+        $text = $quiz->questions->pluck('question_text')->implode(' ');
+
+        return $quiz->questions->count() >= 8
+            && str_contains($text, 'peta jalan')
+            && str_contains($text, 'use case')
+            && str_contains($text, 'wewenang')
+            && str_contains($text, 'risiko');
     }
 }
