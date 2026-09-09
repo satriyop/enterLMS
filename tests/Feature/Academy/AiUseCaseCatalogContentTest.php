@@ -46,6 +46,8 @@ it('seeds an extensive Bahasa Indonesia Open Course covering the full model-buil
 
     expect($bodies)
         ->toContain('klasifikasi tiket layanan')
+        ->toContain('Biro Layanan')
+        ->toContain('gak bisa login SSO')
         ->toContain('metrik')
         ->toContain('kebocoran')
         ->toContain('macro-F1')
@@ -67,11 +69,39 @@ it('seeds an extensive Bahasa Indonesia Open Course covering the full model-buil
     $deepdiveHtml = $renderer->render($deepdive->rich_content);
 
     expect($introHtml)
+        ->toContain('<h1>')
+        ->toContain('<p>')
+        ->toContain('<ul>')
         ->toContain('<svg')
         ->toContain('<figure class="lesson-diagram">')
+        ->toContain('</svg><figcaption>')
+        ->toContain('>Kasus<')
+        ->toContain('Biro Layanan')
+        ->not->toContain('Kasus + metrik')
         ->and($deepdiveHtml)
         ->toContain('<svg')
-        ->toContain('<figure class="lesson-diagram">');
+        ->toContain('<figure class="lesson-diagram">')
+        ->toContain('</svg><figcaption>');
+
+    $serving = $lessons->firstWhere('title', 'Kontrak serving: dari teks ke label');
+    $servingHtml = $renderer->render($serving->rich_content);
+
+    expect($servingHtml)
+        ->toContain('<h1>')
+        ->toContain('<p>')
+        ->toContain('</svg><figcaption>')
+        ->toContain('>Antrian<')
+        ->toContain('>Fallback<')
+        ->not->toContain('ragu/timeout');
+
+    $taskLesson = $lessons->firstWhere('title', 'Klasifikasi, ekstraksi, atau generasi');
+    $taskHtml = $renderer->render($taskLesson->rich_content);
+
+    expect($taskHtml)
+        ->toContain('<div class="lesson-table-wrap"><table>')
+        ->toContain('<th>')
+        ->toContain('Klasifikasi (kasus ini)')
+        ->not->toContain('ini)Satu');
 
     $diagramLessons = $lessons->filter(function (Lesson $lesson) use ($renderer) {
         $html = $renderer->render($lesson->rich_content);

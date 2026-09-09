@@ -171,7 +171,7 @@ class AiUseCaseCourseSeeder extends Seeder
         );
         $course->tags()->syncWithoutDetaching([$tag->id]);
 
-        if ($this->catalogMatches($course, self::LESSON_TITLES)) {
+        if ($this->catalogMatches($course, self::LESSON_TITLES) && $this->diagramCopyIsCurrent($course)) {
             $this->command?->info('Open course catalog already current: '.self::COURSE_TITLE);
 
             return $course->load('sections.lessons');
@@ -180,6 +180,17 @@ class AiUseCaseCourseSeeder extends Seeder
         $this->replaceCourseLessons($course, $this->sections());
 
         return $course->load('sections.lessons');
+    }
+
+    private function diagramCopyIsCurrent(Course $course): bool
+    {
+        $intro = $course->lessons()->where('lessons.title', self::PREVIEW_LESSON_TITLE)->first();
+        $json = json_encode($intro?->rich_content ?? []);
+
+        return is_string($json)
+            && str_contains($json, 'Biro Layanan')
+            && str_contains($json, '"label":"Kasus"')
+            && ! str_contains($json, 'Kasus + metrik');
     }
 
     private function seedQuiz(Course $course, User $author): void

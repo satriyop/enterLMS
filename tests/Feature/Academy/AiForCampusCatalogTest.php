@@ -60,13 +60,20 @@ it('keeps a preview Lesson without requiring Enrollment', function () {
 
     $learner = User::query()->where('email', 'learner@enterlms.test')->first();
     $course = Course::query()->where('title', AiForCampusCourseSeeder::COURSE_TITLE)->first();
-    $preview = $course->lessons()->where('lessons.title', 'Untuk siapa kursus ini')->first();
+    $preview = $course->lessons()->where('lessons.title', AiForCampusCourseSeeder::PREVIEW_LESSON_TITLE)->first();
 
     expect($preview?->is_free_preview)->toBeTrue();
 
     $this->actingAs($learner)
         ->get(route('courses.lessons.preview', [$course, $preview]))
-        ->assertOk();
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('courses/LessonPreview')
+            ->where('lesson.rich_content_html', fn ($html) => is_string($html)
+                && $html !== ''
+                && str_contains($html, '<svg')
+                && str_contains($html, 'lesson-diagram'))
+        );
 });
 
 it('does not grant Restricted OpenClaw by finishing AI untuk Kampus', function () {
@@ -91,4 +98,32 @@ it('does not grant Restricted OpenClaw by finishing AI untuk Kampus', function (
     $this->actingAs($learner)
         ->get(route('courses.show', $openClaw))
         ->assertForbidden();
+});
+
+it('shows rendered diagram HTML on an enrolled Unissula roadmap Lesson', function () {
+    $this->seed(FreeFlowDemoSeeder::class);
+    $this->seed(AiForCampusCourseSeeder::class);
+
+    $learner = User::query()->where('email', 'learner@enterlms.test')->first();
+    $course = Course::query()->where('title', AiForCampusCourseSeeder::COURSE_TITLE)->first();
+    $roadmap = $course->lessons()
+        ->where('lessons.title', 'Peta jalan empat tahap Unissula')
+        ->first();
+
+    expect($roadmap)->not->toBeNull();
+
+    $this->actingAs($learner)
+        ->post(route('courses.enroll', $course))
+        ->assertRedirect();
+
+    $this->actingAs($learner)
+        ->get(route('courses.lessons.show', [$course, $roadmap]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('lessons/Show')
+            ->where('lesson.rich_content_html', fn ($html) => is_string($html)
+                && $html !== ''
+                && str_contains($html, '<svg')
+                && str_contains($html, '<figure class="lesson-diagram">'))
+        );
 });

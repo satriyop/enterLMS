@@ -5,11 +5,27 @@ namespace App\Services;
 /**
  * Turns a structured TipTap `diagram` node into an inline SVG figure.
  *
- * Seeded Lessons store boxes and edges as data. The Learner sees a real
- * figure in `rich_content_html`, not mermaid or ASCII sitting in a code block.
+ * Seeded Lessons store boxes and edges as data. Connectors are orthogonal
+ * (no diagonal through empty space or through other boxes).
  */
 class LessonDiagramRenderer
 {
+    private int $boxW = 168;
+
+    private int $boxH = 72;
+
+    private int $gapX = 48;
+
+    private int $gapY = 64;
+
+    private int $pad = 24;
+
+    private int $arrowShorten = 10;
+
+    private int $minStem = 20;
+
+    private int $laneSpacing = 22;
+
     /**
      * @param  array{
      *     caption?: string,
@@ -35,12 +51,6 @@ class LessonDiagramRenderer
 
         $edges = $this->normalizeEdges($attrs['edges'] ?? [], $nodes);
 
-        $boxW = 168;
-        $boxH = 72;
-        $gapX = 40;
-        $gapY = 56;
-        $pad = 20;
-
         $positions = [];
         $maxRow = 0;
         $index = 0;
@@ -49,8 +59,9 @@ class LessonDiagramRenderer
             $col = $index % $columns;
             $row = intdiv($index, $columns);
             $positions[$id] = [
-                'x' => $pad + ($col * ($boxW + $gapX)),
-                'y' => $pad + ($row * ($boxH + $gapY)),
+                'id' => $id,
+                'x' => $this->pad + ($col * ($this->boxW + $this->gapX)),
+                'y' => $this->pad + ($row * ($this->boxH + $this->gapY)),
                 'row' => $row,
                 'col' => $col,
                 'label' => $node['label'],
@@ -60,8 +71,16 @@ class LessonDiagramRenderer
             $index++;
         }
 
-        $width = $pad + ($columns * $boxW) + (($columns - 1) * $gapX) + $pad;
-        $height = $pad + (($maxRow + 1) * $boxH) + ($maxRow * $gapY) + $pad + 8;
+        $laneDrop = $this->arrowShorten + $this->minStem + 2;
+        $lastRowBottom = $this->pad + ($maxRow * ($this->boxH + $this->gapY)) + $this->boxH;
+        $edgeLaneY = $this->assignBelowLanes($edges, $positions, $maxRow, $lastRowBottom, $laneDrop);
+        $maxLaneY = $lastRowBottom;
+        foreach ($edgeLaneY as $laneY) {
+            $maxLaneY = max($maxLaneY, $laneY);
+        }
+
+        $width = $this->pad + ($columns * $this->boxW) + (($columns - 1) * $this->gapX) + $this->pad;
+        $height = $maxLaneY + 28 + $this->pad;
 
         $markerId = 'darrow-'.substr(hash('sha256', $caption.implode(',', array_keys($nodes))), 0, 10);
 
@@ -73,11 +92,18 @@ class LessonDiagramRenderer
                 continue;
             }
 
-            $svg .= $this->edgePath($positions[$edge['from']], $positions[$edge['to']], $boxW, $boxH, $markerId, $edge['label']);
+            $key = $edge['from'].':'.$edge['to'];
+            $svg .= $this->edgePath(
+                $positions[$edge['from']],
+                $positions[$edge['to']],
+                $markerId,
+                $edge['label'],
+                $edgeLaneY[$key] ?? null,
+            );
         }
 
         foreach ($positions as $box) {
-            $svg .= $this->box($box, $boxW, $boxH);
+            $svg .= $this->box($box);
         }
 
         $svg .= '</svg>';
@@ -168,54 +194,245 @@ class LessonDiagramRenderer
     }
 
     /**
-     * @param  array{x: int, y: int, row: int, col: int, label: string, hint: string}  $from
-     * @param  array{x: int, y: int, row: int, col: int, label: string, hint: string}  $to
+     * @param  list<array{from: string, to: string, label: string}>  $edges
+     * @param  array<string, array{id: string, x: int, y: int, row: int, col: int, label: string, hint: string}>  $positions
+     * @return array<string, int>
      */
-    private function edgePath(array $from, array $to, int $boxW, int $boxH, string $markerId, string $label): string
+    private function assignBelowLanes(array $edges, array $positions, int $maxRow, int $lastRowBottom, int $laneDrop): array
     {
-        $x1 = $from['x'] + $boxW;
-        $y1 = $from['y'] + (int) round($boxH / 2);
-        $x2 = $to['x'];
-        $y2 = $to['y'] + (int) round($boxH / 2);
+        $lanes = [];
+        $skipOnLast = 0;
+        $skipOnRow = [];
+        $loopY = null;
 
-        if ($to['row'] > $from['row'] || $to['x'] <= $from['x']) {
-            $x1 = $from['x'] + (int) round($boxW / 2);
-            $y1 = $from['y'] + $boxH;
-            $x2 = $to['x'] + (int) round($boxW / 2);
-            $y2 = $to['y'];
+        foreach ($edges as $edge) {
+            $from = $positions[$edge['from']];
+            $to = $positions[$edge['to']];
+            if ($from['row'] !== $to['row']) {
+                continue;
+            }
+
+            $dCol = $to['col'] - $from['col'];
+            $key = $edge['from'].':'.$edge['to'];
+
+            if ($dCol > 1) {
+                if ($from['row'] === $maxRow) {
+                    $lanes[$key] = $lastRowBottom + $laneDrop + ($skipOnLast * $this->laneSpacing);
+                    $skipOnLast++;
+                } else {
+                    $n = $skipOnRow[$from['row']] ?? 0;
+                    $lanes[$key] = $from['y'] + $this->boxH + $laneDrop + ($n * $this->laneSpacing);
+                    $skipOnRow[$from['row']] = $n + 1;
+                }
+            } elseif ($dCol < -1) {
+                $loopY ??= $lastRowBottom + $laneDrop + ($skipOnLast * $this->laneSpacing) + $this->laneSpacing;
+                $lanes[$key] = $loopY;
+            }
         }
 
-        $path = '<line x1="'.$x1.'" y1="'.$y1.'" x2="'.$x2.'" y2="'.$y2.'" stroke="var(--primary)" stroke-width="2" marker-end="url(#'.$markerId.')"/>';
+        return $lanes;
+    }
+
+    /**
+     * @param  array{id: string, x: int, y: int, row: int, col: int, label: string, hint: string}  $from
+     * @param  array{id: string, x: int, y: int, row: int, col: int, label: string, hint: string}  $to
+     */
+    private function edgePath(
+        array $from,
+        array $to,
+        string $markerId,
+        string $label,
+        ?int $belowLaneY,
+    ): string {
+        $points = $this->route($from, $to, $belowLaneY);
+        $points = $this->shortenEnd($points, $this->arrowShorten);
+
+        $d = '';
+        foreach ($points as $i => $point) {
+            $d .= ($i === 0 ? 'M ' : ' L ').$point[0].' '.$point[1];
+        }
+
+        $path = '<path fill="none" data-edge="'.$this->xml($from['id'].':'.$to['id']).'" d="'.$d.'" stroke="var(--primary)" stroke-width="2" marker-end="url(#'.$markerId.')"/>';
 
         if ($label !== '') {
-            $mx = (int) round(($x1 + $x2) / 2);
-            $my = (int) round(($y1 + $y2) / 2) - 6;
-            $path .= '<text x="'.$mx.'" y="'.$my.'" text-anchor="middle" font-size="11" fill="var(--muted-foreground)">'.$this->xml($label).'</text>';
+            $path .= $this->labelOnPath($points, $label, min($from['y'] + $this->boxH, $to['y'] + $this->boxH));
         }
 
         return $path;
     }
 
     /**
-     * @param  array{x: int, y: int, row: int, col: int, label: string, hint: string}  $box
+     * @param  array{id: string, x: int, y: int, row: int, col: int, label: string, hint: string}  $from
+     * @param  array{id: string, x: int, y: int, row: int, col: int, label: string, hint: string}  $to
+     * @return list<array{0: int, 1: int}>
      */
-    private function box(array $box, int $boxW, int $boxH): string
+    private function route(array $from, array $to, ?int $belowLaneY): array
+    {
+        $fromE = [$from['x'] + $this->boxW, $from['y'] + (int) round($this->boxH / 2)];
+        $fromW = [$from['x'], $from['y'] + (int) round($this->boxH / 2)];
+        $fromS = [$from['x'] + (int) round($this->boxW / 2), $from['y'] + $this->boxH];
+        $fromN = [$from['x'] + (int) round($this->boxW / 2), $from['y']];
+        $toE = [$to['x'] + $this->boxW, $to['y'] + (int) round($this->boxH / 2)];
+        $toW = [$to['x'], $to['y'] + (int) round($this->boxH / 2)];
+        $toN = [$to['x'] + (int) round($this->boxW / 2), $to['y']];
+        $toS = [$to['x'] + (int) round($this->boxW / 2), $to['y'] + $this->boxH];
+
+        $dRow = $to['row'] - $from['row'];
+        $dCol = $to['col'] - $from['col'];
+
+        if ($dRow === 0 && $dCol === 1) {
+            return [$fromE, $toW];
+        }
+
+        if ($dRow === 0 && $dCol === -1) {
+            return [$fromW, $toE];
+        }
+
+        if ($dRow === 0 && $dCol > 1) {
+            $laneY = $belowLaneY ?? ($from['y'] + $this->boxH + $this->arrowShorten + $this->minStem + 2);
+
+            return [
+                $fromS,
+                [$fromS[0], $laneY],
+                [$toS[0], $laneY],
+                $toS,
+            ];
+        }
+
+        if ($dRow === 0 && $dCol < -1) {
+            $laneY = $belowLaneY ?? ($from['y'] + $this->boxH + $this->arrowShorten + $this->minStem + 2);
+
+            return [
+                $fromS,
+                [$fromS[0], $laneY],
+                [$toS[0], $laneY],
+                $toS,
+            ];
+        }
+
+        if ($dRow === 1 && $dCol === 0) {
+            return [$fromS, $toN];
+        }
+
+        if ($dRow === 1) {
+            $laneY = $from['y'] + $this->boxH + (int) round($this->gapY / 2);
+
+            return [
+                $fromS,
+                [$fromS[0], $laneY],
+                [$toN[0], $laneY],
+                $toN,
+            ];
+        }
+
+        if ($dRow === -1 && $dCol === 0) {
+            return [$fromN, $toS];
+        }
+
+        if ($dRow === -1) {
+            $laneY = $to['y'] + $this->boxH + (int) round($this->gapY / 2);
+
+            return [
+                $fromN,
+                [$fromN[0], $laneY],
+                [$toS[0], $laneY],
+                $toS,
+            ];
+        }
+
+        $midY = (int) round(($fromE[1] + $toW[1]) / 2);
+
+        return [
+            $fromE,
+            [$fromE[0] + 8, $fromE[1]],
+            [$fromE[0] + 8, $midY],
+            [$toW[0] - 8, $midY],
+            [$toW[0] - 8, $toW[1]],
+            $toW,
+        ];
+    }
+
+    /**
+     * @param  list<array{0: int, 1: int}>  $points
+     * @return list<array{0: int, 1: int}>
+     */
+    private function shortenEnd(array $points, int $by): array
+    {
+        $n = count($points);
+        if ($n < 2) {
+            return $points;
+        }
+
+        $a = $points[$n - 2];
+        $b = $points[$n - 1];
+        $dx = $b[0] - $a[0];
+        $dy = $b[1] - $a[1];
+        $len = hypot($dx, $dy);
+
+        if ($len <= $by) {
+            return $points;
+        }
+
+        $points[$n - 1] = [
+            (int) round($b[0] - ($dx / $len) * $by),
+            (int) round($b[1] - ($dy / $len) * $by),
+        ];
+
+        return $points;
+    }
+
+    /**
+     * @param  list<array{0: int, 1: int}>  $points
+     */
+    private function labelOnPath(array $points, string $label, int $boxBottom): string
+    {
+        $best = null;
+        $bestLen = -1.0;
+
+        for ($i = 0; $i < count($points) - 1; $i++) {
+            $x1 = $points[$i][0];
+            $y1 = $points[$i][1];
+            $x2 = $points[$i + 1][0];
+            $y2 = $points[$i + 1][1];
+            $horizontal = abs($y1 - $y2) < 1;
+            $len = hypot($x2 - $x1, $y2 - $y1);
+
+            if ($horizontal && $len > $bestLen) {
+                $bestLen = $len;
+                $belowLane = $y1 >= $boxBottom + 4;
+                $best = [(int) round(($x1 + $x2) / 2), $belowLane ? $y1 + 14 : $y1 - 8];
+            }
+        }
+
+        if ($best === null) {
+            $mid = $points[(int) floor(count($points) / 2)];
+            $best = [$mid[0], $mid[1] - 8];
+        }
+
+        return '<text class="diagram-edge-label" x="'.$best[0].'" y="'.$best[1].'" text-anchor="middle" font-size="11" fill="var(--muted-foreground)">'.$this->xml($label).'</text>';
+    }
+
+    /**
+     * @param  array{id: string, x: int, y: int, row: int, col: int, label: string, hint: string}  $box
+     */
+    private function box(array $box): string
     {
         $rx = $box['x'];
         $ry = $box['y'];
-        $cx = $rx + (int) round($boxW / 2);
-        $lines = $this->wrap($box['label'], 18);
+        $cx = $rx + (int) round($this->boxW / 2);
+        $lines = $this->wrap($box['label'], 16);
         $hasHint = $box['hint'] !== '';
-        $startY = $ry + ($hasHint ? 26 : 34);
+        $startY = $ry + ($hasHint ? 28 : 40);
 
-        $svg = '<rect x="'.$rx.'" y="'.$ry.'" width="'.$boxW.'" height="'.$boxH.'" rx="8" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>';
+        $svg = '<rect data-box="'.$this->xml($box['id']).'" x="'.$rx.'" y="'.$ry.'" width="'.$this->boxW.'" height="'.$this->boxH.'" rx="8" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>';
 
         foreach ($lines as $i => $line) {
             $svg .= '<text x="'.$cx.'" y="'.($startY + ($i * 14)).'" text-anchor="middle" font-size="12" font-weight="600" fill="var(--foreground)">'.$this->xml($line).'</text>';
         }
 
         if ($hasHint) {
-            $svg .= '<text x="'.$cx.'" y="'.($ry + $boxH - 14).'" text-anchor="middle" font-size="10" fill="var(--muted-foreground)">'.$this->xml($box['hint']).'</text>';
+            $hint = $this->wrap($box['hint'], 18)[0];
+            $svg .= '<text x="'.$cx.'" y="'.($ry + $this->boxH - 14).'" text-anchor="middle" font-size="10" fill="var(--muted-foreground)">'.$this->xml($hint).'</text>';
         }
 
         return $svg;

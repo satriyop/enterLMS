@@ -238,7 +238,7 @@ class TipTapRenderer
     {
         $inner = $this->renderNodes($content);
 
-        return "<table>{$inner}</table>";
+        return '<div class="lesson-table-wrap"><table>'.$inner.'</table></div>';
     }
 
     /**

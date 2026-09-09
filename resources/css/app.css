@@ -890,3 +890,39 @@ img.lesson-figure-img {
     height: auto;
     border-radius: var(--radius-md);
 }
+
+.prose .lesson-table-wrap,
+.lesson-table-wrap {
+    margin: 1.25rem 0;
+    overflow-x: auto;
+}
+
+.prose .lesson-table-wrap table,
+.lesson-table-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    display: table;
+}
+
+.prose .lesson-table-wrap th,
+.prose .lesson-table-wrap td,
+.lesson-table-wrap th,
+.lesson-table-wrap td {
+    border: 1px solid var(--border);
+    padding: 0.55rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.prose .lesson-table-wrap th,
+.lesson-table-wrap th {
+    font-weight: 600;
+    background: var(--surface-2);
+}
+
+.prose .lesson-table-wrap th p,
+.prose .lesson-table-wrap td p,
+.lesson-table-wrap th p,
+.lesson-table-wrap td p {
+    margin: 0;
+}
