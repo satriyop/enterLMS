@@ -31,7 +31,7 @@ it('seeds an extensive Bahasa Indonesia TNI AD AI-adoption framework', function 
         ->whereNull('course_sections.deleted_at')
         ->orderBy('course_sections.order')
         ->orderBy('lessons.order')
-        ->get(['lessons.id', 'lessons.title', 'lessons.rich_content', 'lessons.estimated_duration_minutes']);
+        ->get(['lessons.id', 'lessons.title', 'lessons.rich_content', 'lessons.youtube_url', 'lessons.estimated_duration_minutes']);
 
     expect($lessons->pluck('title')->all())->toBe(AiForMilitaryCourseSeeder::LESSON_TITLES)
         ->and($lessons)->toHaveCount(32)
@@ -62,7 +62,25 @@ it('seeds an extensive Bahasa Indonesia TNI AD AI-adoption framework', function 
         ->toContain('untuk')
         ->toContain('yang')
         ->toContain('tidak')
+        ->toContain('Tonton, lalu jawab')
+        ->toContain('Google Cloud')
+        ->toContain('TVRI')
+        ->toContain('ICRC')
+        ->toContain('Kemkomdigi')
         ->not->toContain('```mermaid');
+
+    $youtubeLessons = $lessons->filter(fn (Lesson $lesson) => filled($lesson->youtube_url));
+
+    expect($youtubeLessons->pluck('title')->all())
+        ->toEqualCanonicalizing(AiForMilitaryCourseSeeder::YOUTUBE_LESSON_TITLES)
+        ->and($youtubeLessons->firstWhere('title', 'Bukan beli chatbot lalu selesai')?->youtube_url)
+        ->toBe(AiForMilitaryCourseSeeder::YOUTUBE_AGENTS)
+        ->and($youtubeLessons->firstWhere('title', 'Use case rapat, surat, dan pelatihan')?->youtube_url)
+        ->toBe(AiForMilitaryCourseSeeder::YOUTUBE_TMMD)
+        ->and($youtubeLessons->firstWhere('title', 'Use case yang tidak dimulai: intel, senjata, targeting')?->youtube_url)
+        ->toBe(AiForMilitaryCourseSeeder::YOUTUBE_ICRC)
+        ->and($youtubeLessons->firstWhere('title', 'SPBE, BSSN, dan vendor di luar kesatuan')?->youtube_url)
+        ->toBe(AiForMilitaryCourseSeeder::YOUTUBE_KOMINFO_ETIKA);
 
     $renderer = new TipTapRenderer;
     $intro = $lessons->firstWhere('title', AiForMilitaryCourseSeeder::PREVIEW_LESSON_TITLE);

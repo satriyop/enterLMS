@@ -55,6 +55,18 @@ const youtubeEmbedUrl = computed(() => {
     return `https://www.youtube.com/embed/${props.youtubeVideoId}`;
 });
 
+const showingYoutube = computed(
+    () =>
+        Boolean(youtubeEmbedUrl.value) &&
+        ['youtube', 'text'].includes(props.contentType),
+);
+
+const showingText = computed(
+    () =>
+        Boolean(props.richContentHtml) &&
+        ['youtube', 'text'].includes(props.contentType),
+);
+
 const getMediaByCollection = (collection: string): Media | null => {
     return props.media?.find(m => m.collection_name === collection) ?? null;
 };
@@ -94,8 +106,12 @@ const getDocumentType = (mimeType: string): string => {
 <template>
     <Card class="mb-6">
         <CardContent class="p-6">
-            <!-- YouTube Content -->
-            <div v-if="contentType === 'youtube' && youtubeEmbedUrl" class="aspect-video w-full rounded-lg overflow-hidden bg-black">
+            <!-- YouTube: own type, or a text briefing that carries a contextual clip -->
+            <div
+                v-if="showingYoutube"
+                class="aspect-video w-full rounded-lg overflow-hidden bg-black"
+                :class="showingText ? 'mb-6' : ''"
+            >
                 <iframe
                     :src="youtubeEmbedUrl"
                     class="h-full w-full"
@@ -107,14 +123,15 @@ const getDocumentType = (mimeType: string): string => {
 
             <!-- Text Content — HTML from rich_content_html (TipTap rendered server-side) -->
             <div
-                v-else-if="contentType === 'text' && richContentHtml"
+                v-if="showingText"
                 class="prose prose-sm dark:prose-invert max-w-none"
             >
                 <div v-html="richContentHtml" />
             </div>
 
+            <template v-if="!showingYoutube && !showingText">
             <!-- Video Content (Uploaded) -->
-            <div v-else-if="contentType === 'video' && videoMedia" class="space-y-4">
+            <div v-if="contentType === 'video' && videoMedia" class="space-y-4">
                 <div class="aspect-video w-full rounded-lg overflow-hidden bg-black">
                     <video
                         :src="videoMedia.url"
@@ -235,6 +252,7 @@ const getDocumentType = (mimeType: string): string => {
                     <p>Konten tidak tersedia untuk preview</p>
                 </div>
             </div>
+            </template>
         </CardContent>
     </Card>
 </template>

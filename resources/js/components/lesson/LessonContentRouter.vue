@@ -81,9 +81,25 @@ const videoMedia = computed(() => getMediaByCollection('video'));
 const audioMedia = computed(() => getMediaByCollection('audio'));
 const documentMedia = computed(() => getMediaByCollection('document'));
 
-/** Whether content needs dark background (video/youtube) */
+const showYoutube = computed(
+    () =>
+        Boolean(props.youtubeVideoId) &&
+        ['youtube', 'text'].includes(props.contentType),
+);
+
+const showRichText = computed(
+    () =>
+        Boolean(props.richContentHtml) &&
+        ['youtube', 'text'].includes(props.contentType),
+);
+
+/** Full-bleed black only when the lesson is video-only. */
 const needsDarkBackground = computed(() => {
-    return ['video', 'youtube'].includes(props.contentType);
+    if (props.contentType === 'video') {
+        return true;
+    }
+
+    return props.contentType === 'youtube' && !showRichText.value;
 });
 
 // =============================================================================
@@ -116,14 +132,45 @@ const handleMediaPause = () => {
         class="lesson-content-router flex min-h-0 flex-1 items-start justify-center overflow-y-auto pb-24"
         :class="needsDarkBackground ? 'bg-black' : 'bg-surface-2/30'"
     >
-        <!-- YouTube Content -->
-        <div v-if="contentType === 'youtube' && youtubeVideoId" class="w-full aspect-video max-h-[70vh]">
+        <!-- YouTube: own type, or a text briefing that carries a contextual clip -->
+        <div
+            v-if="showYoutube"
+            class="w-full aspect-video max-h-[70vh]"
+            :class="showRichText ? 'mx-auto mt-6 max-w-4xl overflow-hidden rounded-lg' : ''"
+        >
             <YouTubePlayer
-                :video-id="youtubeVideoId"
+                :video-id="youtubeVideoId!"
                 :initial-position="lessonProgress?.media_position_seconds ?? 0"
                 @timeupdate="handleMediaTimeUpdate"
                 @pause="handleMediaPause"
             />
+        </div>
+
+        <!-- Text Content (with pagination), including youtube lessons that also have briefing HTML -->
+        <div v-if="showRichText" class="w-full p-6 max-w-4xl mx-auto">
+            <PaginatedTextContent
+                :content="richContentHtml!"
+                :initial-page="lessonProgress?.current_page ?? 1"
+                :saved-metadata="(lessonProgress?.pagination_metadata as any) ?? null"
+                :course-id="courseId"
+                :lesson-id="lessonId"
+                @page-change="handlePageChange"
+                @pagination-ready="handlePaginationReady"
+            />
+        </div>
+
+        <div
+            v-else-if="contentType === 'text'"
+            class="w-full p-6 max-w-4xl mx-auto"
+        >
+            <ContentPlaceholder :icon="FileText" message="Konten teks belum tersedia" />
+        </div>
+
+        <div
+            v-else-if="contentType === 'youtube' && !showYoutube"
+            class="w-full aspect-video max-h-[70vh]"
+        >
+            <ContentPlaceholder :icon="PlayCircle" message="Video belum tersedia" />
         </div>
 
         <!-- Video Content (Uploaded) -->
@@ -176,21 +223,6 @@ const handleMediaPause = () => {
                 />
             </template>
             <ContentPlaceholder v-else :icon="FileDown" message="Dokumen belum tersedia" />
-        </div>
-
-        <!-- Text Content (with pagination) -->
-        <div v-else-if="contentType === 'text'" class="w-full p-6 max-w-4xl mx-auto">
-            <PaginatedTextContent
-                v-if="richContentHtml"
-                :content="richContentHtml"
-                :initial-page="lessonProgress?.current_page ?? 1"
-                :saved-metadata="(lessonProgress?.pagination_metadata as any) ?? null"
-                :course-id="courseId"
-                :lesson-id="lessonId"
-                @page-change="handlePageChange"
-                @pagination-ready="handlePaginationReady"
-            />
-            <ContentPlaceholder v-else :icon="FileText" message="Konten teks belum tersedia" />
         </div>
 
         <!-- Conference -->

@@ -31,15 +31,34 @@ trait BuildsAiForMilitarySyllabus
      * @param  list<array<string, mixed>>  $blocks
      * @return array<string, mixed>
      */
-    private function textLesson(string $title, string $description, int $duration, array $blocks, bool $preview = false): array
+    private function textLesson(string $title, string $description, int $duration, array $blocks, bool $preview = false, ?string $youtubeUrl = null): array
     {
-        return [
+        $lesson = [
             'title' => $title,
             'description' => $description,
             'content_type' => 'text',
             'duration' => $duration,
             'is_free_preview' => $preview,
             'rich_content' => $this->doc($blocks),
+        ];
+
+        if ($youtubeUrl !== null) {
+            $lesson['youtube_url'] = $youtubeUrl;
+        }
+
+        return $lesson;
+    }
+
+    /**
+     * @param  list<string>  $questions
+     * @return list<array<string, mixed>>
+     */
+    private function watchFor(string $source, array $questions): array
+    {
+        return [
+            $this->heading('Tonton, lalu jawab'),
+            $this->paragraph($source.' Video ini bukan lab. Setelah selesai kamu tetap di academy. Tidak ada konsol yang terbuka.'),
+            $this->numbered($questions),
         ];
     }
 
@@ -201,9 +220,17 @@ trait BuildsAiForMilitarySyllabus
                 $this->textLesson(
                     'Bukan beli chatbot lalu selesai',
                     'Chatbot, agen, dan perintah adalah tiga benda berbeda. Vendor sering menjualnya sebagai satu.',
-                    14,
+                    18,
                     [
                         $this->heading('Bukan beli chatbot lalu selesai', 1),
+                        ...$this->watchFor(
+                            'Tonton penjelasan Google Cloud tentang agen versus chatbot — klip yang sama dipakai di Pengenalan Agen AI.',
+                            [
+                                'Apa yang agen lakukan yang chatbot tidak lakukan?',
+                                'Siapa yang tetap memiliki tujuan, jika itu kerja staf Sisfomil?',
+                                'Loop seperti ini boleh masuk ke data personel Korem — atau belum?',
+                            ],
+                        ),
                         $this->paragraph('Chatbot menjawab percakapan. Agen menerima tujuan, memakai alat, dan bekerja dalam loop. Perintah kesatuan memutuskan mana yang boleh masuk ke kerja staf TNI AD dan ke data personel. Tiga benda ini sering dijual sebagai satu paket “AI militer”.'),
                         $this->diagram(
                             'Chatbot menjawab. Agen bertindak. Perintah kesatuan yang memutuskan mana yang boleh masuk.',
@@ -221,6 +248,7 @@ trait BuildsAiForMilitarySyllabus
                         $this->paragraph('Contoh TNI AD yang sah sebagai diskusi rapat, bukan sebagai fakta rahasia: chatbot FAQ cuti di intranet berbeda risikonya dari agen yang menulis balasan otomatis ke surat personel, dan berbeda lagi dari model yang dilatih dengan arsip Sisfomil. Yang pertama mungkin layanan informasi. Yang kedua menyentuh data pribadi. Yang ketiga menyentuh UU 27/2022 sekaligus ketergantungan vendor.'),
                         $this->quote('Yang TNI AD adopsi bukan merek. Yang diadopsi adalah wewenang: siapa boleh memakai alat apa, pada data siapa, sampai kapan.'),
                     ],
+                    youtubeUrl: self::YOUTUBE_AGENTS,
                 ),
                 $this->textLesson(
                     'Tren, proyek IT, dan perintah: tiga benda',
@@ -428,9 +456,17 @@ trait BuildsAiForMilitarySyllabus
                 $this->textLesson(
                     'Use case rapat, surat, dan pelatihan',
                     'Notulen, draf surat dinas, academy. Manusia tetap pemilik kalimat.',
-                    16,
+                    22,
                     [
                         $this->heading('Use case rapat, surat, dan pelatihan', 1),
+                        ...$this->watchFor(
+                            'Tonton dokumenter TVRI tentang TMMD ke-123 di Kodim 1311/Morowali. Itu kerja staf unclassified yang Sipamungkas bisa hitung progresnya — bukan intel.',
+                            [
+                                'Apa yang dihitung di lapangan (jalan, sumur, penyuluhan) — dan siapa yang menandatangani angka mingguan jika model merangkumnya?',
+                                'Mengapa kegiatan ini lolos saringan “bukan intel”?',
+                                'Jika AI hanya menghitung progres TMMD, apa yang tetap tidak boleh otomatis dikirim ke Kodim?',
+                            ],
+                        ),
                         $this->paragraph('Tiga pekerjaan staf yang hampir setiap Korem sudah lakukan tanpa AI: rapat, surat, pelatihan. Itu kandidat andal karena kebutuhannya bukan fiksi vendor.'),
                         $this->table(
                             ['Use case', 'Contoh di 074 / 072', 'Saringan yang harus lolos'],
@@ -444,13 +480,22 @@ trait BuildsAiForMilitarySyllabus
                         $this->paragraph('Sipamungkas di Korem 072 adalah sistem staf kesatuan (https://si.pamungkas.org). Ia tempat wajar untuk administrasi dan pemantauan kegiatan yang sudah unclassified. Ia bukan alasan untuk menyambungkan agent runtime ke Sisfomil 074. Dua sistem, dua peta data, dua pemilik.'),
                         $this->paragraph('Pelatihan adalah use case yang sering dilupakan. NATO 2024 menyebut tenaga kerja. DoD RAI menyebut AI workforce. TNI AD yang mengirim perwira ke academy ini sedang mengadopsi kapasitas. TNI AD yang mewajibkan chatbot tanpa Lesson wewenang sedang mengadopsi tren.'),
                     ],
+                    youtubeUrl: self::YOUTUBE_TMMD,
                 ),
                 $this->textLesson(
                     'Use case yang tidak dimulai: intel, senjata, targeting',
                     'Bukan karena “belum diajarkan”. Karena saringan dan hukum menolaknya di kerangka ini.',
-                    14,
+                    18,
                     [
                         $this->heading('Use case yang tidak dimulai', 1),
+                        ...$this->watchFor(
+                            'Tonton Cordula Droege (ICRC) di klip “AI: Humans remain accountable” (sekitar tiga menit). Itu batas resmi kursus ini, bukan runbook senjata.',
+                            [
+                                'Tiga aplikasi AI militer yang ICRC sebut berisiko — mana yang Open Course ini menolak?',
+                                'Mengapa manusia tetap bertanggung jawab, bukan modelnya?',
+                                'Setelah klip ini, apa yang masih boleh diuji di Sisfomil tahap 2?',
+                            ],
+                        ),
                         $this->paragraph('Kursus ini ekstensif tentang staf. Ia sengaja pendek tentang tempur. ICRC dan forum senjata otonom ada di pustaka sebagai batas. REAIM membahas AI di domain militer secara luas; academy ini tidak mengeklaim menutupi itu. Yang berikut tidak masuk peta jalan Korem tahun ini, dan tidak masuk kuis sebagai “jawaban benar kalau modern”.'),
                         $this->bullets([
                             'Intelijen: fusi sumber, profil, targeting intel. Data tidak bisa disebut di Open Course. Saringan data gagal.',
@@ -461,6 +506,7 @@ trait BuildsAiForMilitarySyllabus
                         ]),
                         $this->paragraph('Menolak ini di minggu pertama bukan ketinggalan zaman. NATO Lawfulness: sesuai hukum nasional dan internasional. Hukum nasional kamu adalah UU TNI dan UU PDP, bukan brosur. Kalau suatu hari TNI AD menulis doktrin AI tempur, itu dokumen lain, Course lain, klasifikasi lain. Bukan Lesson ini.'),
                     ],
+                    youtubeUrl: self::YOUTUBE_ICRC,
                 ),
             ],
         ];
@@ -595,13 +641,22 @@ trait BuildsAiForMilitarySyllabus
                 $this->textLesson(
                     'SPBE, BSSN, dan vendor di luar kesatuan',
                     'Pemerintahan berbasis elektronik sudah ada. AI bukan izin melewatinya.',
-                    14,
+                    18,
                     [
                         $this->heading('SPBE, BSSN, dan vendor', 1),
+                        ...$this->watchFor(
+                            'Tonton Toktok Kominfo EPS 90 di kanal Kemkomdigi TV. Jangan seluruh 47 menit: cukup bagian nilai etika (safe, human-centric, trustworthy, responsible) dan kalimat bahwa AI tidak menjadi penentu keputusan kemanusiaan. SE 9/2023 adalah arah, bukan pengganti perintah Danrem.',
+                            [
+                                'Nilai etika mana yang menolak AI sebagai penentu keputusan yang menyangkut manusia?',
+                                'Mengapa surat edaran tidak cukup sebagai dasar kontrak Sisfomil ke vendor?',
+                                'Kalau vendor bilang “di Indonesia belum ada aturan AI”, apa yang kamu tunjuk dari klip ini?',
+                            ],
+                        ),
                         $this->paragraph('Perpres 95/2018 tentang Sistem Pemerintahan Berbasis Elektronik mengatur tata kelola, manajemen, dan audit TIK. TNI adalah institusi negara. Pengadaan AI yang mengabaikan SPBE “karena khusus militer” sedang mencari celah, bukan mencari ketaatan. BSSN dan keamanan siber adalah meja komando, bukan footnote vendor.'),
                         $this->paragraph('SE Menkominfo 9/2023 tentang Etika Kecerdasan Artifisial menandai arah: etika, akuntabilitas, keandalan. Ia bukan pengganti perintah Danrem. Ia cukup untuk menolak argumen “di Indonesia belum ada aturan jadi bebas”.'),
                         $this->paragraph('Vendor di luar kesatuan: tulis lokasi data, subprosesor, dan apakah prompt personel dipakai melatih model. DoD RAI dan NATO PRU sama-sama menuntut jejak. Jika jawaban vendor “rahasia dagang”, itu bukan jejak. Itu gembok.'),
                     ],
+                    youtubeUrl: self::YOUTUBE_KOMINFO_ETIKA,
                 ),
                 $this->textLesson(
                     'Agent AI runtime: batas academy',
@@ -866,14 +921,15 @@ trait BuildsAiForMilitarySyllabus
                             'UNESCO. Recommendation on the Ethics of Artificial Intelligence. 23 November 2021. (Etika umum; bukan doktrin TNI.)',
                             'OECD AI Principles — rujukan pelengkap tata kelola.',
                             'NIST AI Risk Management Framework (AI RMF 1.0) — rujukan pelengkap risiko staf/IT.',
-                            'ICRC — rujukan batas tentang AI dan konflik bersenjata. Bukan silabus tempur kursus ini.',
+                            'ICRC — rujukan batas tentang AI dan konflik bersenjata. Bukan silabus tempur kursus ini. Klip wajib Lesson batas: https://www.youtube.com/watch?v=KkhAVzSexBc',
+                            'CDAO / CSIAC. Responsible AI Toolkit, DAGR and SHIELD (webinar, ~61 menit) — bahan rapat lanjut, bukan syarat lulus: https://www.youtube.com/watch?v=4uiV8siHx6E',
                         ]),
                         $this->heading('Indonesia'),
                         $this->bullets([
                             'Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi.',
                             'Undang-Undang Informasi dan Transaksi Elektronik beserta perubahannya.',
                             'Peraturan Presiden Nomor 95 Tahun 2018 tentang Sistem Pemerintahan Berbasis Elektronik (SPBE).',
-                            'Surat Edaran Menteri Komunikasi dan Informatika Nomor 9 Tahun 2023 tentang Etika Kecerdasan Artifisial — arah, bukan pengganti perintah Danrem.',
+                            'Surat Edaran Menteri Komunikasi dan Informatika Nomor 9 Tahun 2023 tentang Etika Kecerdasan Artifisial — arah, bukan pengganti perintah Danrem. Klip Toktok Kominfo EPS 90 (tonton bagian nilai etika, bukan seluruh episode): https://www.youtube.com/watch?v=vfuSFTA43fU',
                         ]),
                         $this->paragraph('Kalau suatu klaim di Lesson tidak tertaut ke salah satu sumber ini, perlakukan sebagai kerangka diskusi, bukan sebagai berita kesatuan. Academy ini menolak mengarang orgas dan menolak menjual merek. Tugasmu setelah lulus kuis: bawa lembar keputusan ke rapat, bukan membawa konsol ke jaringan dinas.'),
                     ],

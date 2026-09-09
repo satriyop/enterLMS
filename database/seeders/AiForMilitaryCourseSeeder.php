@@ -32,6 +32,26 @@ class AiForMilitaryCourseSeeder extends Seeder
 
     public const PREVIEW_LESSON_TITLE = 'Untuk siapa kursus ini';
 
+    public const YOUTUBE_AGENTS = 'https://www.youtube.com/watch?v=d0wUM8hIaxE';
+
+    public const YOUTUBE_TMMD = 'https://www.youtube.com/watch?v=6Y_RbbVU78Q';
+
+    public const YOUTUBE_ICRC = 'https://www.youtube.com/watch?v=KkhAVzSexBc';
+
+    public const YOUTUBE_KOMINFO_ETIKA = 'https://www.youtube.com/watch?v=vfuSFTA43fU';
+
+    /**
+     * Text Lessons that carry a contextual YouTube clip above the briefing.
+     *
+     * @var list<string>
+     */
+    public const YOUTUBE_LESSON_TITLES = [
+        'Bukan beli chatbot lalu selesai',
+        'Use case rapat, surat, dan pelatihan',
+        'Use case yang tidak dimulai: intel, senjata, targeting',
+        'SPBE, BSSN, dan vendor di luar kesatuan',
+    ];
+
     /**
      * @var list<string>
      */
@@ -205,6 +225,13 @@ class AiForMilitaryCourseSeeder extends Seeder
             ->whereNull('lessons.deleted_at')
             ->first(['lessons.*']);
 
+        $chatbot = Lesson::query()
+            ->join('course_sections', 'lessons.course_section_id', '=', 'course_sections.id')
+            ->where('course_sections.course_id', $course->id)
+            ->where('lessons.title', 'Bukan beli chatbot lalu selesai')
+            ->whereNull('lessons.deleted_at')
+            ->first(['lessons.*']);
+
         $json = json_encode($intro instanceof Lesson ? $intro->rich_content : []);
         $roadmapJson = json_encode($roadmap instanceof Lesson ? $roadmap->rich_content : []);
 
@@ -214,7 +241,9 @@ class AiForMilitaryCourseSeeder extends Seeder
             && str_contains($json, 'Korem 074')
             && is_string($roadmapJson)
             && str_contains($roadmapJson, '"label":"Fondasi"')
-            && str_contains($roadmapJson, 'Sisfomil');
+            && str_contains($roadmapJson, 'Sisfomil')
+            && $chatbot instanceof Lesson
+            && $chatbot->youtube_url === self::YOUTUBE_AGENTS;
     }
 
     private function seedQuiz(Course $course, User $author): void
