@@ -31,10 +31,10 @@ it('seeds an extensive Bahasa Indonesia Unissula campus AI-adoption framework', 
         ->whereNull('course_sections.deleted_at')
         ->orderBy('course_sections.order')
         ->orderBy('lessons.order')
-        ->get(['lessons.id', 'lessons.title', 'lessons.rich_content', 'lessons.estimated_duration_minutes']);
+        ->get(['lessons.id', 'lessons.title', 'lessons.content_type', 'lessons.youtube_url', 'lessons.rich_content', 'lessons.estimated_duration_minutes']);
 
     expect($lessons->pluck('title')->all())->toBe(AiForCampusCourseSeeder::LESSON_TITLES)
-        ->and($lessons)->toHaveCount(31)
+        ->and($lessons)->toHaveCount(34)
         ->and($lessons->count())->toBeGreaterThan(10)
         ->and((int) $course->estimated_duration_minutes)->toBeGreaterThan(90)
         ->and((int) $course->estimated_duration_minutes)->toBeGreaterThanOrEqual(360)
@@ -55,6 +55,9 @@ it('seeds an extensive Bahasa Indonesia Unissula campus AI-adoption framework', 
         ->toContain('Baca Tugas')
         ->toContain('Bu Laila')
         ->toContain('Panduan GenAI')
+        ->toContain('Stefania Giannini')
+        ->toContain('RSUD Banyumas')
+        ->toContain('bukan RSI Sultan Agung')
         ->toContain('deliverable')
         ->toContain('Lembar keputusan')
         ->toContain('UNESCO')
@@ -123,6 +126,16 @@ it('seeds an extensive Bahasa Indonesia Unissula campus AI-adoption framework', 
     expect($diagramLessons->pluck('title')->all())
         ->toEqualCanonicalizing(AiForCampusCourseSeeder::DIAGRAM_LESSON_TITLES)
         ->and($diagramLessons->count())->toBeGreaterThanOrEqual(8);
+
+    $youtube = $lessons->where('content_type', 'youtube');
+
+    expect($youtube->pluck('title')->all())
+        ->toEqualCanonicalizing(AiForCampusCourseSeeder::YOUTUBE_LESSON_TITLES)
+        ->and($youtube->pluck('youtube_url')->all())->toEqualCanonicalizing([
+            AiForCampusCourseSeeder::YOUTUBE_UNESCO_GIANNINI,
+            AiForCampusCourseSeeder::YOUTUBE_UNESCO_DECODING,
+            AiForCampusCourseSeeder::YOUTUBE_PDP_RS_PENDIDIKAN,
+        ]);
 
     $quiz = Assessment::query()
         ->where('course_id', $course->id)

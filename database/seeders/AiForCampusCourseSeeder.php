@@ -31,6 +31,21 @@ class AiForCampusCourseSeeder extends Seeder
 
     public const PREVIEW_LESSON_TITLE = 'Untuk siapa kursus ini';
 
+    public const YOUTUBE_UNESCO_GIANNINI = 'https://www.youtube.com/watch?v=_Tx_iwvkvBM';
+
+    public const YOUTUBE_UNESCO_DECODING = 'https://www.youtube.com/watch?v=4jN0ASk959Y';
+
+    public const YOUTUBE_PDP_RS_PENDIDIKAN = 'https://www.youtube.com/watch?v=2tEkKeUoLEE';
+
+    /**
+     * @var list<string>
+     */
+    public const YOUTUBE_LESSON_TITLES = [
+        'UNESCO: lembaga yang menvalidasi alat, bukan vendor',
+        'UNESCO: literasi GenAI untuk sivitas',
+        'PDP di rumah sakit pendidikan: analog FK',
+    ];
+
     /**
      * @var list<string>
      */
@@ -57,6 +72,7 @@ class AiForCampusCourseSeeder extends Seeder
         'Bukan beli chatbot lalu selesai',
         'Tren, proyek IT, dan kebijakan: tiga benda',
         'Mengapa Unissula tidak copy-paste kebijakan luar negeri',
+        'UNESCO: lembaga yang menvalidasi alat, bukan vendor',
         'Peta jalan empat tahap Unissula',
         'Tahap 0–1: sikap, wewenang, inventaris',
         'Tahap 2: pilot FTI dan satu fakultas non-teknik',
@@ -71,7 +87,9 @@ class AiForCampusCourseSeeder extends Seeder
         'Integritas akademik: Permendikbudristek 39/2021',
         'UNESCO untuk dosen: AI Competency Framework for Teachers',
         'UNESCO untuk mahasiswa: AI Competency Framework for Students',
+        'UNESCO: literasi GenAI untuk sivitas',
         'Dari FTI ke fakultas kesehatan dan hukum',
+        'PDP di rumah sakit pendidikan: analog FK',
         'Lembar keputusan pimpinan Unissula',
         'Kebijakan kelas: contoh FTI Informatika',
         'Klausul data vendor untuk LMS dan SIA',
@@ -163,7 +181,7 @@ class AiForCampusCourseSeeder extends Seeder
                 'status' => 'published',
                 'visibility' => 'public',
                 'difficulty_level' => 'beginner',
-                'estimated_duration_minutes' => 560,
+                'estimated_duration_minutes' => 620,
                 'is_paid' => false,
                 'price' => null,
                 'published_at' => now(),

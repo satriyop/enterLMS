@@ -2,6 +2,8 @@
 
 namespace Database\Seeders\Concerns;
 
+use Database\Seeders\AiForCampusCourseSeeder;
+
 /**
  * Syllabus for AI untuk Kampus.
  *
@@ -58,6 +60,22 @@ trait BuildsAiForCampusSyllabus
             'duration' => $duration,
             'rich_content' => $this->doc($blocks),
             'pdf' => $pdf,
+        ];
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $blocks
+     * @return array<string, mixed>
+     */
+    private function youtubeLesson(string $title, string $description, int $duration, string $url, array $blocks): array
+    {
+        return [
+            'title' => $title,
+            'description' => $description,
+            'content_type' => 'youtube',
+            'duration' => $duration,
+            'youtube_url' => $url,
+            'rich_content' => $this->doc($blocks),
         ];
     }
 
@@ -264,6 +282,24 @@ trait BuildsAiForCampusSyllabus
                         $this->paragraph('Unissula adalah PTS Islam dengan BudAI. “Human agency” UNESCO di sini bertemu amanah dan kejujuran. Kebijakan yang hanya bilang “deklarasikan ChatGPT” tanpa Permendikbudristek 39/2021 akan terasa aturan IT di senat yang biasa bicara karya ilmiah.'),
                         $this->paragraph('Hukum yang mengikat: UU 12/2012, UU 27/2022 PDP, Permendikbudristek 39/2021, UU ITE beserta perubahan, PP 4/2014. Panduan GenAI Kemendikbudristek 2024 adalah beleidsregel: arah, contoh, etika — bukan pengganti SK. Surat Edaran Menkominfo 9/2023 tentang Etika KA lebih sempit lagi. Gema Kampus yang bilang “sudah sesuai UNESCO” belum tentu sesuai pengendali data Unissula.'),
                         $this->paragraph('Baca luar sebagai bahan. Tulis keputusan Unissula sebagai pemilik. Lesson deliverable mengisi lembar untuk rapat Gema Kampus, bukan menerjemahkan kebijakan orang lain.'),
+                    ],
+                ),
+                $this->youtubeLesson(
+                    'UNESCO: lembaga yang menvalidasi alat, bukan vendor',
+                    'Pidato Stefania Giannini (19 menit) saat UNESCO merilis Guidance for GenAI 2023. Bahasa Inggris, briefing di sini Bahasa Indonesia.',
+                    24,
+                    AiForCampusCourseSeeder::YOUTUBE_UNESCO_GIANNINI,
+                    [
+                        $this->heading('UNESCO: lembaga yang menvalidasi alat, bukan vendor', 1),
+                        $this->paragraph('Tonton pidato Stefania Giannini, Assistant Director-General for Education UNESCO, di Digital Learning Week 4–7 September 2023. Di sini ia merilis Guidance for generative AI in education and research (Miao & Holmes, 2023) — dokumen yang Course ini sudah sitir. Video resmi kanal UNESCO, 19 menit, bahasa Inggris. Briefing ini Bahasa Indonesia.'),
+                        $this->paragraph('Dengar tiga mandat yang ia sebut untuk pemerintah dan lembaga: (1) pelindungan privasi data, (2) pembaruan hukum hak cipta, (3) batas kelayakan/usia untuk percakapan mandiri dengan GenAI. Yang paling dekat ke rapat Gema Kampus: institusi pendidikan harus menvalidasi sistem GenAI terhadap kelayakan etis dan pedagogis — bukan menerima “sudah sesuai UNESCO” dari slide vendor.'),
+                        $this->heading('Tiga pertanyaan rapat setelah tonton'),
+                        $this->numbered([
+                            'Chat PMB: apakah Unissula sudah menvalidasi alat itu, atau baru menonton demo?',
+                            'Baca Tugas: privasi teks Dimas dan Alya — Giannini menempatkan mandat data di depan manfaat. Apa dasar UU 27/2022 yang tertulis?',
+                            'Kenal Mahasiswa: “who decides” dalam pidato ini. YBWSA dan rektorat, atau admin LMS yang klik setuju?',
+                        ]),
+                        $this->paragraph('Ini bukan lab. Setelah video selesai kamu tetap di academy. Tidak ada konsol, tidak ada tanda tangan Gema Kampus.'),
                     ],
                 ),
             ],
@@ -630,6 +666,24 @@ trait BuildsAiForCampusSyllabus
                         $this->paragraph('Kesetaraan: Alya di HP sewa. Tugas yang hanya selesai dengan model berbayar menggagalkan Apply untuk yang tidak membayar. “Unissula AI-ready” di brosur PMB tanpa kebijakan kelas adalah klaim. Klaim itu ditagih saat ujian dan wisuda.'),
                     ],
                 ),
+                $this->youtubeLesson(
+                    'UNESCO: literasi GenAI untuk sivitas',
+                    'Klip resmi UNESCO empat menit: bias, misinformasi, agency. Untuk Dimas dan Alya, bukan untuk GPU.',
+                    10,
+                    AiForCampusCourseSeeder::YOUTUBE_UNESCO_DECODING,
+                    [
+                        $this->heading('UNESCO: literasi GenAI untuk sivitas', 1),
+                        $this->paragraph('Tonton Decoding Generative Artificial Intelligence with Media and Information Literacy (kanal UNESCO, 2024, 4 menit, bahasa Inggris). Ini bukan kerangka 12 kompetensi secara penuh. Ini literasi: model mengarang, bisa bias, dan warga perlu menilai keluaran — bukan menelan.'),
+                        $this->paragraph('Kembali ke kasus. Dimas yang pintar prompt belum lulus ethics jika ia tidak bisa menjelaskan fungsi di wawancara. Alya yang menyalin “pasal” dari chatbot tanpa cek putusan gagal Understand. Tugas yang hanya selesai dengan langganan berbayar menggagalkan kesetaraan yang video ini sebut sebagai tanggung jawab institusi, bukan tanggung jawab mahasiswa miskin.'),
+                        $this->heading('Tiga pertanyaan rapat setelah tonton'),
+                        $this->numbered([
+                            'Apa yang harus tertulis di silabus Pak Irfan supaya Alya menilai keluaran, bukan menyalinnya?',
+                            'Jika Dimas berlangganan dan Alya tidak, kebijakan kelas minimum Unissula melindungi siapa?',
+                            'Gema Kampus yang menjanjikan “literasi 3 jam” — itu kompetensi UNESCO, atau onboarding produk?',
+                        ]),
+                        $this->paragraph('Video selesai. Kamu tetap di academy. Tidak ada tools yang dibuka.'),
+                    ],
+                ),
                 $this->textLesson(
                     'Dari FTI ke fakultas kesehatan dan hukum',
                     'Satu minimum universitas, tiga beban. FK tidak ikut pilot hanya karena “FTI yang ngerti”.',
@@ -657,6 +711,24 @@ trait BuildsAiForCampusSyllabus
                             ],
                         ),
                         $this->paragraph('Pelatihan yang hanya diisi FTI menghasilkan dua Unissula. Diam di kesehatan adalah PDP. Diam di hukum adalah 39/2021. Anggaran tahap 3 yang tidak menyentuh dua klaster itu salah sasaran, meski lab robotik FTI menang kontes.'),
+                    ],
+                ),
+                $this->youtubeLesson(
+                    'PDP di rumah sakit pendidikan: analog FK',
+                    '19 menit, Bahasa Indonesia. Analog data klinis — bukan RSI Sultan Agung, bukan Unissula.',
+                    24,
+                    AiForCampusCourseSeeder::YOUTUBE_PDP_RS_PENDIDIKAN,
+                    [
+                        $this->heading('PDP di rumah sakit pendidikan: analog FK', 1),
+                        $this->paragraph('Tonton Perlindungan Data Pribadi di RS Pendidikan (RSUD Banyumas, 19 menit, Bahasa Indonesia, 2025). Ini analog, bukan Unissula. Bukan RSI Sultan Agung. Bukan SK FK. Kanalnya rumah sakit kabupaten. Yang relevan untuk rapat Gema Kampus: data klinis di lingkungan pendidikan kedokteran adalah data spesifik UU 27/2022, bukan teks tugas Informatika.'),
+                        $this->paragraph('Itu sebabnya FK tidak dipilih sebagai fakultas non-teknik pada pilot tahap 2. dr. Rina yang mengunggah ringkasan kasus ke model publik sedang memindahkan data spesifik ke prosesor yang Unissula tidak kendalikan. Modul Kenal Mahasiswa yang “hanya NIM” sudah berat; kasus pasien jauh lebih berat.'),
+                        $this->heading('Tiga pertanyaan rapat setelah tonton'),
+                        $this->numbered([
+                            'Jika Gema Kampus menawarkan “AI untuk kasus klinis mahasiswa kedokteran”, meja mana yang menolak dulu — pengajaran atau tata kelola PDP?',
+                            'Siapa pengendali data praktikum FK Unissula: fakultas, rumah sakit mitra, atau YBWSA?',
+                            'Apa yang harus tertulis di moratorium minggu pertama khusus FK, yang tidak perlu sama dengan silabus Bu Laila?',
+                        ]),
+                        $this->paragraph('Setelah video: moratorium data klinis ke model publik tetap, meski FTI sudah mengajar Kecerdasan Buatan. Ini bukan lab, dan bukan izin men-deploy apa pun di rumah sakit mitra.'),
                     ],
                 ),
             ],
@@ -912,12 +984,15 @@ trait BuildsAiForCampusSyllabus
                             'Permendikbudristek 39/2021 Integritas Akademik dalam Menghasilkan Karya Ilmiah.',
                             'PP 4/2014 Penyelenggaraan Pendidikan Tinggi.',
                             'SE Menkominfo 9/2023 Etika Kecerdasan Artifisial — arah, bukan pengganti SK kampus.',
+                            'RSUD Banyumas. Perlindungan Data Pribadi di RS Pendidikan. YouTube, 2025. Analog FK — bukan Unissula, bukan RSI Sultan Agung. https://www.youtube.com/watch?v=2tEkKeUoLEE',
                         ]),
                         $this->heading('Internasional'),
                         $this->bullets([
                             'UNESCO. Recommendation on the Ethics of Artificial Intelligence. 23 November 2021.',
                             'UNESCO. AI and education: Guidance for policy-makers. 2021 (Miao & Holmes).',
                             'UNESCO. Guidance for generative AI in education and research. 2023 (Miao & Holmes).',
+                            'Stefania Giannini. Digital learning and AI in education: UNESCO’s integrated vision. YouTube UNESCO, 5 September 2023. https://www.youtube.com/watch?v=_Tx_iwvkvBM',
+                            'UNESCO. Decoding Generative Artificial Intelligence with Media and Information Literacy. YouTube UNESCO, 2024. https://www.youtube.com/watch?v=4jN0ASk959Y',
                             'UNESCO. AI competency framework for teachers. 2024 (Miao & Cukurova).',
                             'UNESCO. AI competency framework for students. 2024.',
                             'OECD AI Principles; NIST AI RMF 1.0 — pelengkap, bukan pengganti hukum Indonesia.',
