@@ -51,6 +51,10 @@ it('seeds an extensive Bahasa Indonesia Unissula campus AI-adoption framework', 
         ->toContain('YBWSA')
         ->toContain('BudAI')
         ->toContain('Khaira Ummah')
+        ->toContain('Gema Kampus')
+        ->toContain('Baca Tugas')
+        ->toContain('Bu Laila')
+        ->toContain('Panduan GenAI')
         ->toContain('deliverable')
         ->toContain('Lembar keputusan')
         ->toContain('UNESCO')
@@ -138,6 +142,7 @@ it('seeds an extensive Bahasa Indonesia Unissula campus AI-adoption framework', 
         ->toContain('peta jalan')
         ->toContain('wewenang')
         ->toContain('risiko')
+        ->toContain('Gema Kampus')
         ->toContain('yang');
 });
 
@@ -174,5 +179,6 @@ it('replaces stale lesson bodies on a second seed even when titles match', funct
     expect($json)
         ->toContain('Unissula')
         ->toContain('peta jalan')
-        ->toContain('UNESCO');
+        ->toContain('UNESCO')
+        ->toContain('Gema Kampus');
 });

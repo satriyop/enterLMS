@@ -93,8 +93,11 @@ class AiForCampusCourseSeeder extends Seeder
         'Bukan beli chatbot lalu selesai',
         'Peta jalan empat tahap Unissula',
         'Tiga meja: pengajaran, tata kelola, operasional',
+        'Meja pengajaran: silabus, tugas, ujian, skripsi',
         'UU 27/2022 PDP untuk kampus',
+        'Transfer ke vendor, rekaman kuliah, SIA',
         'UNESCO untuk dosen: AI Competency Framework for Teachers',
+        'Dari FTI ke fakultas kesehatan dan hukum',
         'Peta jalan 24 bulan Unissula',
         'Risiko yang pimpinan harus sebutkan',
         'Mulai dari rapat, bukan dari tools',
@@ -142,8 +145,8 @@ class AiForCampusCourseSeeder extends Seeder
             [
                 'user_id' => $admin->id,
                 'slug' => Str::slug(self::COURSE_TITLE),
-                'short_description' => 'Kerangka mendalam adopsi AI kampus dengan Unissula sebagai kasus berjalan: peta jalan, tiga meja, data/privasi, kapasitas sivitas, dan deliverable rapat — tanpa menjalankan agen hidup.',
-                'long_description' => 'Open Course gratis dalam Bahasa Indonesia. Ini satu kerangka komprehensif, bukan briefing 90 menit. Kasus berjalannya Universitas Islam Sultan Agung (Unissula, Semarang): PTS di bawah Yayasan Badan Wakaf Sultan Agung, akreditasi institusi Unggul BAN-PT, motto Bismillah Membangun Generasi Khaira Ummah, dan strategi Budaya Akademik Islami (BudAI). Kamu akan membedakan adopsi dari belanja tools; menyusun peta jalan bertahap; memisahkan pengajaran, tata kelola, dan operasional; menautkan keputusan data ke UU 27/2022 tentang Pelindungan Data Pribadi dan integritas akademik ke Permendikbudristek 39/2021; serta memakai UNESCO AI Competency Framework dan Recommendation on the Ethics of AI sebagai rujukan, bukan slide vendor. Lesson berisi teks, tabel, diagram, dan PDF takeaway. Ini bukan konsol. Menyelesaikan kursus ini tidak membuka Course terbatas.',
+                'short_description' => 'Kerangka mendalam adopsi AI kampus: satu rapat Unissula, tiga modul vendor, peta jalan, tiga meja, UU PDP, UNESCO, dan deliverable terisi — tanpa menjalankan agen hidup.',
+                'long_description' => 'Open Course gratis dalam Bahasa Indonesia. Kasus berjalannya satu rapat di Universitas Islam Sultan Agung (Unissula, Semarang): vendor fiktif Gema Kampus menawarkan Chat PMB, Baca Tugas, dan Kenal Mahasiswa (SIA). Informatika FTI sudah mengajar kecerdasan buatan; 12 fakultas lain masih diam. Kamu memisahkan adopsi dari belanja; menyusun peta jalan; memisahkan pengajaran, tata kelola, dan operasional; menaut ke UU 27/2022 PDP, Permendikbudristek 39/2021, Panduan GenAI Kemendikbudristek 2024, dan UNESCO. Lesson berisi teks, tabel, diagram, dan PDF takeaway yang sudah terisi untuk rapat. Ini bukan konsol. Menyelesaikan kursus ini tidak membuka Course terbatas.',
                 'objectives' => [
                     'Menjelaskan adopsi AI kampus sebagai keputusan wewenang Unissula, bukan pembelian chatbot',
                     'Menyusun peta jalan empat tahap: sikap, fondasi, pilot, kelembagaan',
@@ -160,7 +163,7 @@ class AiForCampusCourseSeeder extends Seeder
                 'status' => 'published',
                 'visibility' => 'public',
                 'difficulty_level' => 'beginner',
-                'estimated_duration_minutes' => 480,
+                'estimated_duration_minutes' => 560,
                 'is_paid' => false,
                 'price' => null,
                 'published_at' => now(),
@@ -197,9 +200,11 @@ class AiForCampusCourseSeeder extends Seeder
             && str_contains($json, 'Unissula')
             && str_contains($json, 'peta jalan')
             && str_contains($json, 'UNESCO')
+            && str_contains($json, 'Gema Kampus')
             && is_string($roadmapJson)
             && str_contains($roadmapJson, '"label":"Fondasi"')
-            && str_contains($roadmapJson, 'YBWSA');
+            && str_contains($roadmapJson, 'YBWSA')
+            && str_contains($roadmapJson, 'Gema Kampus');
     }
 
     private function seedQuiz(Course $course, User $author): void
@@ -241,46 +246,46 @@ class AiForCampusCourseSeeder extends Seeder
             'published_by' => $author->id,
         ]);
 
-        $this->createMultipleChoice($assessment, 'Siapa audiens utama kerangka adopsi AI untuk Kampus dengan kasus Unissula?', [
-            ['option_text' => 'Dekan, dosen, pemangku kepentingan, dan pimpinan YBWSA / rektorat yang memutuskan adopsi', 'is_correct' => true],
-            ['option_text' => 'Teknisi yang men-deploy agen di produksi Kampus Kaligawe', 'is_correct' => false],
-            ['option_text' => 'Mahasiswa yang ingin jadi operator OpenClaw', 'is_correct' => false],
-            ['option_text' => 'Vendor yang menjual chatbot kampus', 'is_correct' => false],
+        $this->createMultipleChoice($assessment, 'Gema Kampus menawarkan tiga modul ke Unissula. Siapa yang memegang wewenang menandatangani Kenal Mahasiswa (sambungan SIA)?', [
+            ['option_text' => 'YBWSA dan rektorat sebagai pengendali data — bukan Bu Laila atau admin LMS sendirian', 'is_correct' => true],
+            ['option_text' => 'Dosen Informatika karena prodi sudah punya mata kuliah Kecerdasan Buatan', 'is_correct' => false],
+            ['option_text' => 'Mahasiswa yang klik setuju di chatbot', 'is_correct' => false],
+            ['option_text' => 'Vendor, karena kebijakan privasinya sudah lengkap', 'is_correct' => false],
         ], 1);
 
         $this->createTrueFalse(
             $assessment,
-            'Membeli chatbot berarti Unissula sudah mengadopsi AI.',
+            'Membeli modul Chat PMB dari Gema Kampus berarti Unissula sudah mengadopsi AI.',
             false,
             2,
         );
 
-        $this->createMultipleChoice($assessment, 'Urutan peta jalan empat tahap Unissula yang benar adalah…', [
-            ['option_text' => 'Sikap dan wewenang, fondasi, pilot, lalu kelembagaan', 'is_correct' => true],
-            ['option_text' => 'Beli tools, wajibkan seluruh dosen, baru tulis kebijakan', 'is_correct' => false],
-            ['option_text' => 'Deploy agen hidup di minggu pertama, lalu rapat YBWSA', 'is_correct' => false],
-            ['option_text' => 'Copy-paste kebijakan NUS, lalu unggah arsip tugas ke vendor', 'is_correct' => false],
+        $this->createMultipleChoice($assessment, 'Jika Unissula menandatangani Baca Tugas di minggu pertama, tahap peta jalan mana yang dilompati?', [
+            ['option_text' => 'Sikap, fondasi, dan klausul data — vendor masuk sebelum wewenang dan peta data selesai', 'is_correct' => true],
+            ['option_text' => 'Hanya pelatihan Create UNESCO untuk seluruh dosen', 'is_correct' => false],
+            ['option_text' => 'Tidak ada yang dilompati; tools dulu adalah peta jalan yang benar', 'is_correct' => false],
+            ['option_text' => 'Tahap kelembagaan SPMI, karena audit harus di awal', 'is_correct' => false],
         ], 3);
 
-        $this->createMultipleChoice($assessment, 'Fakta publik Unissula yang relevan untuk merangka adopsi AI adalah…', [
-            ['option_text' => 'PTS di bawah YBWSA, akreditasi institusi Unggul BAN-PT, motto Khaira Ummah, dan strategi BudAI', 'is_correct' => true],
-            ['option_text' => 'Unissula adalah PTN dengan kementerian sebagai yayasan', 'is_correct' => false],
-            ['option_text' => 'Unissula tidak memiliki Fakultas Teknologi Industri', 'is_correct' => false],
-            ['option_text' => 'BudAI adalah nama chatbot resmi kampus', 'is_correct' => false],
+        $this->createMultipleChoice($assessment, 'Visi publik Informatika FTI Unissula (Panduan Akademik 2024/2025) yang mengubah rumusan adopsi adalah…', [
+            ['option_text' => 'Prodi sudah berfokus pada kecerdasan buatan; yang belum ada adalah kebijakan GenAI untuk 13 fakultas dan data SIA', 'is_correct' => true],
+            ['option_text' => 'Unissula adalah PTN sehingga yayasan tidak duduk di rapat vendor', 'is_correct' => false],
+            ['option_text' => 'FTI tidak mengajar AI, jadi kampus harus beli chatbot agar kelihatan modern', 'is_correct' => false],
+            ['option_text' => 'BudAI adalah nama add-on LMS resmi', 'is_correct' => false],
         ], 4);
 
-        $this->createMultipleChoice($assessment, 'Tiga meja yang tidak boleh dicampur dalam satu SK Unissula adalah…', [
-            ['option_text' => 'Pengajaran, tata kelola, dan operasional', 'is_correct' => true],
-            ['option_text' => 'Marketing, pengadaan, dan humas', 'is_correct' => false],
-            ['option_text' => 'Chatbot, agen, dan GPU', 'is_correct' => false],
-            ['option_text' => 'Katalog Open Course, Restricted Course, dan konsol', 'is_correct' => false],
+        $this->createMultipleChoice($assessment, 'Dimas mengumpulkan take-home kode. Tiga meja mana yang tersentuh sekaligus, dan mengapa tidak boleh satu SK Gema Kampus?', [
+            ['option_text' => 'Pengajaran (apa yang diuji), tata kelola (apakah teks boleh ke vendor), operasional (siapa mematikan add-on)', 'is_correct' => true],
+            ['option_text' => 'Hanya pengajaran, karena tugas adalah urusan dosen', 'is_correct' => false],
+            ['option_text' => 'Hanya operasional, karena LMS adalah urusan TIK', 'is_correct' => false],
+            ['option_text' => 'Marketing, PMB, dan humas', 'is_correct' => false],
         ], 5);
 
-        $this->createMultipleChoice($assessment, 'Dasar hukum Indonesia yang paling langsung mengatur data mahasiswa Unissula ke vendor AI adalah…', [
-            ['option_text' => 'UU 27/2022 tentang Pelindungan Data Pribadi', 'is_correct' => true],
+        $this->createMultipleChoice($assessment, 'Kenal Mahasiswa menarik NIM dan status dari SIA Unissula ke Gema Kampus. Dasar hukum yang paling langsung adalah…', [
+            ['option_text' => 'UU 27/2022 tentang Pelindungan Data Pribadi — Unissula pengendali, vendor prosesor hanya jika tujuan tetap milik kampus', 'is_correct' => true],
             ['option_text' => 'UNESCO AI Competency Framework for Students', 'is_correct' => false],
             ['option_text' => 'AppliedHE ranking ASEAN', 'is_correct' => false],
-            ['option_text' => 'SK intern yang belum ada di Lesson ini', 'is_correct' => false],
+            ['option_text' => 'Syarat layanan vendor di portal klik-setuju', 'is_correct' => false],
         ], 6);
 
         $this->createTrueFalse(
@@ -290,23 +295,23 @@ class AiForCampusCourseSeeder extends Seeder
             7,
         );
 
-        $this->createMultipleChoice($assessment, 'Siapa yang memegang wewenang menandatangani data mahasiswa Unissula ke pihak ketiga?', [
-            ['option_text' => 'Pimpinan yang disebut di lembar keputusan — rektorat dan/atau YBWSA — bukan dosen sendirian di kelas', 'is_correct' => true],
-            ['option_text' => 'Mahasiswa yang klik setuju di chatbot', 'is_correct' => false],
-            ['option_text' => 'Vendor karena sudah punya kebijakan privasi sendiri', 'is_correct' => false],
-            ['option_text' => 'Tutor di Lesson ini', 'is_correct' => false],
+        $this->createMultipleChoice($assessment, 'Pak Irfan (FH) di tingkat UNESCO Acquire minggu ini yang paling tepat adalah…', [
+            ['option_text' => 'Mengganti esai take-home menjadi dossier sumber plus lisan singkat, dan menolak teks memo ke vendor tanpa dasar PDP', 'is_correct' => true],
+            ['option_text' => 'Fine-tuning model di GPU FTI sampai tingkat Create', 'is_correct' => false],
+            ['option_text' => 'Mewajibkan seluruh mahasiswa FH berlangganan merek Gema Kampus', 'is_correct' => false],
+            ['option_text' => 'Menggantungkan skripsi pada skor detektor AI saja', 'is_correct' => false],
         ], 8);
 
-        $this->createMultipleChoice($assessment, 'UNESCO AI Competency Framework for Teachers (2024) membagi kompetensi dosen ke lima dimensi, termasuk…', [
-            ['option_text' => 'Human-centred mindset, ethics of AI, fondasi/aplikasi, pedagogi AI, dan pembelajaran profesional', 'is_correct' => true],
-            ['option_text' => 'Prompt engineering, GPU, dan fine-tuning saja', 'is_correct' => false],
-            ['option_text' => 'Hanya coding Python untuk seluruh dosen Unissula', 'is_correct' => false],
-            ['option_text' => 'Hanya pemasaran kampus di media sosial', 'is_correct' => false],
+        $this->createMultipleChoice($assessment, 'Mengapa FK Unissula tidak dipilih sebagai fakultas non-teknik pada pilot tahap 2 peta jalan?', [
+            ['option_text' => 'Data praktikum klinis adalah data spesifik UU 27/2022; risiko PDP lebih berat daripada FH yang menguji karya tulis dulu', 'is_correct' => true],
+            ['option_text' => 'FK tidak terakreditasi, jadi tidak penting', 'is_correct' => false],
+            ['option_text' => 'Dosen FK sudah Create UNESCO, tidak perlu kebijakan', 'is_correct' => false],
+            ['option_text' => 'Gema Kampus menolak fakultas kesehatan', 'is_correct' => false],
         ], 9);
 
         $this->createManualShortAnswer(
             $assessment,
-            'Sebutkan satu risiko Unissula yang harus disebut di rapat pimpinan sebelum tanda tangan vendor AI, dan siapa yang memegang wewenang atas risiko itu.',
+            'Gema Kampus mendesak Unissula menandatangani Baca Tugas minggu ini. Sebutkan satu risiko yang harus disebut di rapat, dan siapa yang memegang wewenang menolak atau menerima modul itu.',
             10,
         );
     }
@@ -319,6 +324,7 @@ class AiForCampusCourseSeeder extends Seeder
             && str_contains($text, 'Unissula')
             && str_contains($text, 'peta jalan')
             && str_contains($text, 'wewenang')
-            && str_contains($text, 'risiko');
+            && str_contains($text, 'risiko')
+            && str_contains($text, 'Gema Kampus');
     }
 }
