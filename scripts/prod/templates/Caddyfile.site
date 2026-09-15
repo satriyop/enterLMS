@@ -1,5 +1,5 @@
 # EnterLMS — Inertia + Laravel public/
-# Installed as /etc/caddy/sites/lms.pamungkas.org.caddy
+# Installed as /etc/caddy/sites/__DOMAIN__.caddy
 
 __DOMAIN__ {
 	encode gzip zstd

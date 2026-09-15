@@ -7,17 +7,17 @@ set -euo pipefail
 PROD_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PROD_SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-DOMAIN="${DOMAIN:-lms.pamungkas.org}"
+DOMAIN="${DOMAIN:-lms.example.com}"
 AIDEV_HOST="${AIDEV_HOST:-root@aidev}"
-AIDEV_IP="${AIDEV_IP:-146.190.87.122}"
+AIDEV_IP="${AIDEV_IP:-}"
+AIDEV_IDENTITY_FILE="${AIDEV_IDENTITY_FILE:-}"
 APP_DIR="${APP_DIR:-/var/www/enterlms}"
 APP_USER="${APP_USER:-www-data}"
 DB_NAME="${DB_NAME:-enterlms}"
 DB_USER="${DB_USER:-enterlms}"
 PHP_VERSION="${PHP_VERSION:-}"
 
-# Share the enter365 ControlMaster so fail2ban does not see a new burst.
-CTRL_PATH="${CTRL_PATH:-/tmp/enter365-aidev.sock}"
+CTRL_PATH="${CTRL_PATH:-/tmp/enterlms-aidev.sock}"
 
 red() { printf '\033[31m%s\033[0m\n' "$*"; }
 green() { printf '\033[32m%s\033[0m\n' "$*"; }
@@ -40,16 +40,19 @@ ensure_ssh_alias() {
     if [[ -f "$cfg" ]] && grep -Eq '^Host[[:space:]]+aidev([[:space:]]|$)' "$cfg"; then
         return 0
     fi
+    [[ -n "${AIDEV_IP}" ]] || die "AIDEV_IP is required to configure SSH alias (e.g. export AIDEV_IP=x.x.x.x)"
     info "Adding Host aidev to ${cfg}"
     {
         echo ""
-        echo "# EnterLMS / Enter365 prod (added by scripts/prod.sh ssh-config)"
+        echo "# EnterLMS prod (added by scripts/prod.sh ssh-config)"
         echo "Host aidev"
         echo "    HostName ${AIDEV_IP}"
         echo "    User root"
         echo "    IdentityFile ~/.ssh/id_ed25519"
         echo "    IdentityFile ~/.ssh/id_rsa"
-        echo "    IdentityFile ~/.ssh/enteraksi_do"
+        if [[ -n "${AIDEV_IDENTITY_FILE}" ]]; then
+            echo "    IdentityFile ${AIDEV_IDENTITY_FILE}"
+        fi
         echo "    AddKeysToAgent yes"
         echo "    UseKeychain yes"
         echo "    ServerAliveInterval 60"

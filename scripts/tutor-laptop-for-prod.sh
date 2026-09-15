@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Run the enterlms-tutor Hermes API server on this Mac for
-# https://lms.pamungkas.org over Tailscale. Keep this process (and the lid) open.
+# production EnterLMS over Tailscale. Keep this process (and the lid) open.
 #
 #   ./scripts/tutor-laptop-for-prod.sh
 #
@@ -47,7 +47,7 @@ if [[ -z "${TS_HOST}" ]]; then
 fi
 
 echo "==> Hermes API http://${TS_HOST}:${PORT}/v1/chat/completions (profile enterlms-tutor)"
-echo "==> aidev TUTOR_RUNTIME_URL=http://${TS_HOST}:${PORT}"
+echo "==> Production TUTOR_RUNTIME_URL=http://${TS_HOST}:${PORT}"
 echo "==> keep this Mac awake. Ctrl-C stops Tutor on production."
 
 caffeinate -dims hermes -p enterlms-tutor gateway run --accept-hooks

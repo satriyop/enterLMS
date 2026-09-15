@@ -8,6 +8,8 @@
 /storage/*.key
 /storage/pail
 /storage/backups
+/storage/debugbar
+/storage/inertia-devtools
 /resources/js/actions
 /resources/js/routes
 /resources/js/wayfinder

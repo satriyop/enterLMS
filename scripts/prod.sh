@@ -13,10 +13,10 @@ shift || true
 case "${cmd}" in
     help|-h|--help)
         cat <<'EOF'
-EnterLMS → aidev (lms.pamungkas.org)
+EnterLMS production CLI (aidev)
 
 First time
-  ./scripts/prod.sh ssh-config   add Host aidev to ~/.ssh/config if missing
+  AIDEV_IP=x.x.x.x ./scripts/prod.sh ssh-config   add Host aidev to ~/.ssh/config if missing
   ./scripts/prod.sh inspect      what is already on the droplet
   ./scripts/prod.sh provision    PHP pool, MySQL DB, Caddy site (additive)
   ./scripts/prod.sh env-init     APP_KEY + DB password
@@ -41,7 +41,7 @@ Never
   Use seed-academy once.
 
 Env
-  AIDEV_HOST=root@aidev DOMAIN=lms.pamungkas.org PROD_YES=1
+  AIDEV_IP=x.x.x.x AIDEV_HOST=root@aidev DOMAIN=lms.example.com PROD_YES=1
 EOF
         ;;
     ssh-config)

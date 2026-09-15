@@ -34,7 +34,7 @@ apt-get update -y
 apt-get install -y ca-certificates curl gnupg unzip git rsync acl supervisor mysql-client
 
 if ! command -v caddy >/dev/null; then
-    echo "Caddy is missing. aidev already serves pamungkas.org via Caddy." >&2
+    echo "Caddy is missing. Please install Caddy first." >&2
     exit 1
 fi
 
