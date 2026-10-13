@@ -6,8 +6,9 @@ namespace Database\Seeders\Concerns;
  * Three-day syllabus for Insinyur Kecerdasan Artificial (AI Engineer).
  *
  * Occupation TIK.DSC0704, scheme SKEMA-45. Running case: complaint routing
- * at Dinas Pelayanan Publik Kota Arunika. Lessons are text and figures.
- * Not a live training console, and not a BNSP certificate.
+ * at Dinas Pelayanan Publik Kota Arunika. Lessons are text, figures, and
+ * Python the learner runs locally. The LMS does not execute that code.
+ * Not a BNSP certificate.
  */
 trait BuildsAiEngineerSyllabus
 {
@@ -37,6 +38,21 @@ trait BuildsAiEngineerSyllabus
             'is_free_preview' => $preview,
             'rich_content' => $this->doc($blocks),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function fixtureCode(string $filename, string $language = 'python'): array
+    {
+        $path = dirname(__DIR__).'/fixtures/ai-engineer/'.$filename;
+        $source = file_get_contents($path);
+
+        if (! is_string($source) || trim($source) === '') {
+            throw new \RuntimeException('Berkas latihan kosong: '.$filename);
+        }
+
+        return $this->code($source, $language);
     }
 
     /**
@@ -90,7 +106,7 @@ trait BuildsAiEngineerSyllabus
                             ],
                             3,
                         ),
-                        $this->paragraph('Lesson berisi teks, tabel, dan diagram. Tidak ada notebook dan tidak ada konsol. Di akhir hari ada tugas tertulis. Kuis pengetahuan dinilai otomatis. Tugas portofolio dinilai manusia.'),
+                        $this->paragraph('Kamu menjalankan tujuh berkas Python di mesinmu sendiri: atur_meja.py, lembar_september.py, redaksi.py, evaluasi_latihan.py, celah_proyek.py, jejak_ambang.py, dan layanan_bayangan.py. Cukup Python 3, tanpa pustaka tambahan. LMS ini tidak menjalankan kode itu. Di akhir hari ada tugas tertulis. Kuis pengetahuan dinilai otomatis. Tugas portofolio dinilai manusia.'),
                         $this->paragraph('Kursus tetangga, Membangun Model AI untuk Kasus Tertentu, mengerjakan klasifikasi dari sisi model. Di sini model itu sudah ada. Kamu yang memutuskan versi mana yang boleh mengubah meja tujuan warga.'),
                     ],
                     preview: true,
@@ -152,6 +168,11 @@ trait BuildsAiEngineerSyllabus
                         ),
                         $this->paragraph('Dua aturan dipakai Dina, dan kamu akan menulisnya ke sasaran. Pertama, jika teks menyebut bahaya fisik (jalan ambles, lampu mati, rob, genangan, pohon tumbang) bersama urusan meja lain, pilih infrastruktur. Kedua, jika teks hanya bertanya dan tidak melaporkan urusan, jangan paksakan meja. Itu kelas ragu.'),
                         $this->paragraph('Nomor 11 mudah tertukar dengan infrastruktur. “Selokan mampet” bisa berarti banjir. Dina memilih kebersihan karena keluhannya bau, bukan air yang menutup jalan. Kalau teksnya “selokan mampet sampai air masuk rumah”, meja yang dipilih adalah infrastruktur.'),
+                        $this->heading('Aturan itu sebagai berkas yang bisa dijalankan'),
+                        $this->paragraph('Tabel di atas adalah spesifikasinya. atur_meja.py adalah spesifikasi yang sama, dalam urutan yang sama: bahaya fisik dulu, pertanyaan jam atau syarat tidak dipaksa ke meja, NIK tidak mengubah meja. Salin berkasnya, lalu jalankan python3 atur_meja.py. Dua belas baris pertama harus sama dengan tabel Dina. Empat baris latihan harus sama dengan kunci di lesson artefak. Kalau mejanya beda, aturannya yang salah.'),
+                        $this->fixtureCode('atur_meja.py'),
+                        $this->paragraph('Keluaran yang sesuai:'),
+                        $this->fixtureCode('atur_meja.out.txt', 'text'),
                         $this->diagram(
                             'Teks masuk, identitas dilepas, lalu model memilih meja atau mengembalikan ke Dina.',
                             [
@@ -276,6 +297,11 @@ trait BuildsAiEngineerSyllabus
                         ),
                         $this->paragraph('Ibu Lestari tidak menandatangani macro-F1 sebagai angka lomba. Ia menandatangani waktu warga sampai meja yang benar. Tiap salah meja harus bisa diceritakan sebagai menit tambahan atau bahaya yang tertunda. Untuk infrastruktur, 120 salah meja adalah cerita itu.'),
                         $this->paragraph('Syarat berhenti juga masuk ke halaman yang sama. Kalimatnya: jika recall infrastruktur pada data yang lebih baru daripada data latih jatuh di bawah 0,85, solusi tidak naik dari mode bayangan. Mode bayangan berarti model menghitung meja, tetapi antrian warga tidak berubah. Dina tetap yang mengirim. Tanpa kalimat berhenti, tidak ada yang berhak menahan pemasangan ketika angka berikutnya jelek.'),
+                        $this->heading('Hitungan yang sama, dijalankan'),
+                        $this->paragraph('lembar_september.py menghitung porsi, recall, menit ragu, dan p95. Python mencetak titik desimal. Di halaman yang ditandatangani kamu menulis koma: keluaran 0.85 adalah ambang 0,85. p95 pada daftar notebook Bima tercetak 21 ms. p95 pada daftar layanan dinas tercetak 340 ms. Keduanya memakai fungsi yang sama. Yang lulus ambang 300 ms hanya jika sampelnya diambil di layanan, bukan di notebook. Baris sosial tidak diisi berkas ini. Kamu yang memanggil recall dengan pembagimu sendiri.'),
+                        $this->fixtureCode('lembar_september.py'),
+                        $this->paragraph('Keluaran yang sesuai:'),
+                        $this->fixtureCode('lembar_september.out.txt', 'text'),
                         $this->heading('Baris yang kamu hitung sendiri'),
                         $this->paragraph('Sosial belum punya ambang recall pada halaman di atas. September mencatat 480 pengaduan sosial. Salah meja di sini tidak menunda jalan ambles. Salah meja di sini menaruh keadaan bantuan seseorang di meja yang tidak berwenang membacanya. Di tugas kamu memilih berapa yang boleh terlewat, membagi angka itu dengan 480, lalu menulis recall minimum. Sertakan satu kalimat tentang apa yang terjadi pada warga jika teks bansos dibaca meja lain.'),
                     ],
@@ -299,6 +325,11 @@ trait BuildsAiEngineerSyllabus
                         $this->paragraph('Ini cuplikan latihan, bukan log sungguhan. Nomornya karangan.'),
                         $this->quote('2026-09-08 08:14:02 prediksi=kebersihan skor=0,62 teks="ktp saya hilang nik 3201013101900001 mohon diterbitkan ulang"'),
                         $this->paragraph('Ada dua masalah pada satu baris. Pertama, meja yang dipilih salah. Teks ini minta KTP, jadi kependudukan, sama seperti nomor 2 pada daftar Dina. Kedua, 16 digit ikut tersimpan di log prediksi. Raka harus memotong pola 16 digit dan nomor HP sebelum layanan prediksi menulis log. Kamu yang menolak layanan yang belum bisa memotong itu. Cacah NIK yang diterima di log adalah nol, bukan “sedikit”.'),
+                        $this->heading('Pemotong yang bisa diuji'),
+                        $this->paragraph('redaksi.py memakai dua pola. NIK adalah 16 digit yang tidak menempel pada digit lain. HP adalah nomor seluler Indonesia, lebih pendek dari 16 digit, jadi pemotong yang hanya mencari NIK membiarkannya utuh. Jalankan python3 redaksi.py. Log 8 September gagal sebelum dipotong dan lulus sesudahnya. Teks bansos dengan 081234567890 masih gagal pada redaksi_nik_saja(). Kalimat “sudah diteruskan ke bidang PU” terdeteksi, dan kalimat loket sebelum tanda titik tidak.'),
+                        $this->fixtureCode('redaksi.py'),
+                        $this->paragraph('Keluaran yang sesuai:'),
+                        $this->fixtureCode('redaksi.out.txt', 'text'),
                         $this->heading('Satu baris latih yang membuat skor berbohong'),
                         $this->paragraph('Bima menunjukkan satu baris dari berkas latih.'),
                         $this->quote('Teks: "jalan di gang melati ambles setelah hujan. sudah diteruskan ke bidang PU". Label: infrastruktur.'),
@@ -335,7 +366,7 @@ trait BuildsAiEngineerSyllabus
                             'Mode bayangan berjalan tanpa mengubah antrian warga. Dina tetap mengirim. Kamu membandingkan usulan model dengan pilihan Dina.',
                             'Kamu menulis naik, tunda, atau tolak. Laporan akhir menyusul keputusan itu, tidak mendahuluinya.',
                         ]),
-                        $this->paragraph('Tiap langkah selesai ketika bendanya ada, bukan ketika rapatnya selesai. Langkah 2 selesai ketika berkas latih tidak lagi berisi “sudah diteruskan ke bidang PU”. Langkah 3 selesai ketika satu permintaan percobaan menulis log tanpa 16 digit, dan ketika tombol rollback pernah dicoba. Langkah 4 selesai setelah sepuluh hari kerja mode bayangan, bukan setelah satu sore.'),
+                        $this->paragraph('Tiap langkah selesai ketika bendanya ada, bukan ketika rapatnya selesai. Langkah 2 selesai ketika kalimat_setelah_ditangani() pada berkas latih mengembalikan False. Langkah 3 selesai ketika uji_log() pada satu permintaan percobaan mengembalikan lulus, termasuk untuk nomor HP, dan ketika rollback pernah dicatat di bawah 15 menit. Langkah 4 selesai setelah sepuluh hari kerja mode bayangan, bukan setelah satu sore. Fungsi uji_log() ada di redaksi.py. Log 8 September adalah permintaan yang harus gagal sebelum dipotong.'),
                         $this->diagram(
                             'Rencana adalah urutan. Langsung memasang membuat review tidak terpakai.',
                             [
@@ -372,6 +403,7 @@ trait BuildsAiEngineerSyllabus
                             ],
                         ),
                         $this->paragraph('Oktober masih musim hujan di banyak kota. Pengaduan infrastruktur dan kebersihan pada mode bayangan bisa lebih banyak daripada September. Itu bukan gangguan jadwal. Itu data yang lebih keras daripada data uji musim kemarau. Rencana menyebutkannya, dan tidak memindahkan mode bayangan hanya supaya angkanya lebih mudah.'),
+                        $this->paragraph('Angka p95 untuk minggu layanan diambil dari lembar_september.py. Sampel notebook mencetak 21 ms. Sampel layanan mencetak 340 ms dan gagal ambang 300 ms. Rencana yang menulis “latensi aman” karena notebook Bima cepat belum mengukur layanan.'),
                         $this->heading('Empat risiko yang sudah punya benda'),
                         $this->table(
                             ['Risiko', 'Tanda yang bisa diperiksa', 'Mitigasi', 'Pemilik'],
@@ -410,7 +442,7 @@ trait BuildsAiEngineerSyllabus
                             ],
                         ),
                         $this->heading('Tiga puluh menit: dua hitungan'),
-                        $this->paragraph('Di kertas, ulang baris infrastruktur tanpa melihat tabel jadi satu-satunya sumber. Tulis 800, tulis 120, bagi, lalu tulis 0,85. Di bawahnya tulis baris ragu: 20 persen dari 400 adalah 80 pengaduan, kali 2 menit adalah 160 menit. Jika hasilmu berbeda, kamu salah pada perkalian, bukan pada selera.'),
+                        $this->paragraph('Jalankan python3 lembar_september.py. Tempel keluaran recall = 0.85 dan menit Dina = 160 ke kertas, lalu tulis ulang pembagiannya dengan koma desimal: 120 / 800 = 0,15, recall 0,85, dan 80 tiket kali 2 menit = 160 menit. Jika hasilmu berbeda dari keluaran berkas, kamu salah pada perkalian, bukan pada selera.'),
                         $this->paragraph('Lalu hitung baris yang belum ada kuncinya. Sosial pada September berjumlah 480. Pilih berapa yang boleh terlewat. Recall minimum sama dengan 1 dikurangi (jumlah terlewat dibagi 480). Tulis satu kalimat: apa yang terjadi jika teks bansos dibaca meja kependudukan atau meja kebersihan. Angka sosial ini masuk ke tugas. Jangan menyalin ambang infrastruktur lalu mengganti namanya menjadi sosial.'),
                         $this->heading('Tiga puluh menit: mulai rencana dari halaman vendor'),
                         $this->paragraph('Salin halaman vendor ke kertas: “Akurasi 95 persen. Chatbot menjawab warga. Go-live Jumat. GPU cloud. Tim data menyiapkan semuanya.” Coret tiap kalimat dan ganti. Penggantinya memakai lingkup, lima langkah, nama Bima, Raka, Ibu Lestari, dan kamu, plus jadwal enam minggu yang berisi sepuluh hari kerja mode bayangan. Bawa coretan ini ke tugas. Tugas meminta dokumen utuh, bukan coretan.'),
@@ -441,8 +473,8 @@ trait BuildsAiEngineerSyllabus
                     25,
                     [
                         $this->heading('Isi paket, dan yang tidak ada', 1),
-                        $this->paragraph('Pagi hari 2, Bima meletakkan paket: catatan label lima meja, notebook evaluasi, dua artefak model, dan satu lembar metrik. Baseline adalah aturan kata kunci ditambah regresi logistik. Kandidat kedua adalah encoder bahasa Indonesia. Kamu tidak membuka pelatihan baru di Lesson ini.'),
-                        $this->paragraph('Lembar metrik yang kamu adili tidak ada di Lesson ini. Ia ada di Tugas Hari 2, dengan nama paket siang. Di sini kamu belajar cara membaca lembar itu: macro-F1, recall kelas mahal, porsi ragu, dan apakah angkanya diukur pada data yang jujur. Angka di kuis adalah latihan aturan. Angka paket siang adalah yang masuk berita acara. Kedua angka itu tidak sama.'),
+                        $this->paragraph('Pagi hari 2, Bima meletakkan paket: catatan label lima meja, notebook evaluasi, dua artefak model, dan satu lembar metrik. Baseline adalah aturan kata kunci ditambah regresi logistik. Kandidat kedua adalah encoder bahasa Indonesia. Kamu tidak melatih model baru di lesson ini.'),
+                        $this->paragraph('Yang kamu jalankan di sini adalah evaluasi_latihan.py. Bobotnya kecil supaya satu baris bisa dihitung tangan, datanya 22 pengaduan latihan, dan angkanya bukan paket siang. Lembar yang masuk berita acara ada di Tugas Hari 2. Angka kuis, angka berkas latihan, dan angka paket siang adalah tiga lembar yang berbeda. Jangan menyalin macro-F1 atau recall dari berkas latihan ke berita acara.'),
                         $this->heading('Yang belum ada di paket'),
                         $this->bullets([
                             'Daftar bidang yang dipakai saat prediksi, dibedakan dari bidang yang hanya ada di arsip setelah ditangani.',
@@ -466,7 +498,13 @@ trait BuildsAiEngineerSyllabus
                             'Apakah metrik yang dilaporkan adalah metrik sasaran? Macro-F1 tanpa recall infrastruktur belum menjawab Ibu Lestari.',
                             'Apakah data uji lebih baru daripada data latih, atau diacak dari minggu yang sama?',
                         ]),
-                        $this->paragraph('Bentuk temuan yang sah kira-kira begini. Sebuah baris latih memuat kalimat yang baru ada setelah petugas menangani pengaduan, misalnya “sudah diteruskan ke bidang PU”. Itu kebocoran: fitur itu tidak ada pada saat keputusan. Label lama yang berisi “ke Dina” atau nama staf, bukan nama meja, mengajarkan model pada giliran jaga, bukan pada jenis layanan. Kamu baru boleh menulis temuan itu di berita acara jika kamu mengutip barisnya dari paket siang. Lesson ini tidak memberi kutipan paket itu.'),
+                        $this->heading('Notebook latihan, bukan paket siang'),
+                        $this->paragraph('Jalankan python3 evaluasi_latihan.py. Modelnya jumlah bobot kata, ditambah bias meja besar. Jika selisih dua skor teratas di bawah 0.5, fungsi mengembalikan ragu. Pada “lampu jalan mati dan sampah menumpuk” kebersihan mencetak 2.3 dan infrastruktur 2.0. Selisihnya 0.3, jadi ragu. Label emasnya infrastruktur, karena lampu mati adalah bahaya fisik. Aturan dinas itu tidak ada di bobot. “jalan rusak di rt 04” hanya menyalakan fitur jalan dengan skor 1.0, terlalu dekat dengan bias kependudukan 0.6, dan juga jatuh ke ragu. “kk saya tertinggal di kampung” tidak menyalakan fitur apa pun: berkas ini tidak punya fitur kk, jadi prediksinya ragu padahal labelnya kependudukan.'),
+                        $this->paragraph('Pada 22 baris itu, tanpa kalimat setelah penanganan, berkas mencetak akurasi 0.86, macro-F1 0.85, dan recall infrastruktur 0.50. lulus ambang 0.85 pada data jujur = False. Macro-F1 yang tercetak 0.85 bukan recall infrastruktur. Ambang yang ditandatangani adalah recall, dan recall-nya 0.50. Setelah kalimat “sudah diteruskan ke bidang PU” ditempel hanya pada baris infrastruktur, recall kelas itu naik menjadi 1.00 dan macro-F1 menjadi 0.94. Kenaikan itu tidak sah: kalimatnya belum ada di loket. Uji 2026-10-06 lebih baru daripada latih 2026-09-30. Uji 2026-09-18 tidak.'),
+                        $this->fixtureCode('evaluasi_latihan.py'),
+                        $this->paragraph('Keluaran yang sesuai:'),
+                        $this->fixtureCode('evaluasi_latihan.out.txt', 'text'),
+                        $this->paragraph('Bentuk temuan yang sah pada paket siang memakai cara yang sama, dengan kutipan dari paket itu, bukan dari 22 baris ini. Sebuah baris latih memuat kalimat yang baru ada setelah petugas menangani pengaduan, misalnya “sudah diteruskan ke bidang PU”. Itu kebocoran. Label lama yang berisi “ke Dina” atau nama staf, bukan nama meja, mengajarkan giliran jaga. Kamu baru boleh menulis temuan itu di berita acara jika kamu mengutip barisnya dari paket siang.'),
                         $this->diagram(
                             'Review berjalan dari data ke putusan. Putusan belum tentu layak pasang.',
                             [
@@ -496,12 +534,12 @@ trait BuildsAiEngineerSyllabus
                         $this->paragraph('Tiga hasil itu tidak sama. Kandidat yang gagal kelas mahal pada data yang sudah jujur ditolak untuk dinaikkan. Kandidat yang angkanya belum sah ditunda, bukan diluluskan dan bukan serta-merta ditolak selamanya. Kandidat yang lolos angka pada data yang jujur masih harus menunggu gerbang pemasangan di hari 3. Putusan paket siang kamu tulis sendiri di tugas. Lesson ini tidak menyimpannya.'),
                         $this->heading('Salah yang tidak rata'),
                         $this->bullets([
-                            '“jalan di gang melati ambles” yang masuk kebersihan menunda bahaya. Ini salah mahal.',
-                            'Pengaduan kebersihan yang masuk infrastruktur menyita waktu bidang yang sedang siaga. Mengganggu, tidak sebahaya.',
-                            'Teks pendek dari WhatsApp (“ambles gan”) lebih rapuh daripada kalimat loket yang lengkap. Laporkan metrik per saluran, bukan satu angka.',
-                            'Pengaduan campur tidak boleh dipaksa. Ragu adalah keluaran yang sah.',
+                            '“lampu jalan mati dan sampah menumpuk” jatuh ke ragu karena selisih skor 0.3. Bahaya fisik tidak menang. Warga yang mengadu dua hal sekaligus tidak terlayani mesin, dan Dina tetap mengerjakan tiket berbahaya itu.',
+                            '“jalan rusak di rt 04” jatuh ke ragu karena fitur jalan hanya bernilai 1.0, kalah tipis dari bias kependudukan. Kata “ambles” tidak ada, padahal kerusakannya infrastruktur.',
+                            '“ambles gan” pada berkas latihan justru kena, karena bobot ambles adalah 2.0. Teks pendek tidak otomatis salah. Yang rapuh adalah teks yang tidak menyalakan kata yang kebetulan ada di daftar fitur.',
+                            '“kk saya tertinggal di kampung” jatuh ke ragu karena fitur kk tidak ada. Meja terbesar pun salah jika kata yang dipakai warga tidak masuk vektor.',
                         ]),
-                        $this->paragraph('Bias di sini bukan kuliah moral yang terpisah dari antrian. Warga yang menulis singkat, atau yang mengadu dalam bahasa campur, lebih sering jatuh ke kelas mayoritas. Jika kelas mayoritasnya kependudukan, pengaduan infrastruktur yang pendek tertelan. Itu alasan gerbang recall, bukan paragraf etika yang menempel di lampiran.'),
+                        $this->paragraph('Bias di sini terlihat di bobot. Kependudukan membawa bias 0.6 sebelum ada kata yang menyala. Infrastruktur membawa bias 0.0. Pada data yang timpang, meja besar menang saat buktinya lemah. Itu alasan gerbang recall, dan angkanya ada di keluaran evaluasi_latihan.py: akurasi 0.86 menyembunyikan recall infrastruktur 0.50.'),
                         $this->paragraph('Keterbatasan ditulis untuk pembaca yang tidak melihat notebook: model membaca teks, bukan foto jalan; model tidak tahu giliran jaga petugas; model tidak boleh melihat NIK. Keterbatasan yang tidak ditulis akan diperlakukan sebagai kemampuan oleh orang yang memasang slide.'),
                     ],
                 ),
@@ -538,6 +576,11 @@ trait BuildsAiEngineerSyllabus
                             4,
                         ),
                         $this->paragraph('Jangan menolak proyek hanya karena encoder kalah. Jangan meluluskan proyek hanya karena Bima bekerja keras. Unjuk kerja unit ini adalah celah yang ditunjuk ke dokumen, plus tindakan yang punya nama dan tanggal.'),
+                        $this->heading('Celah sebagai fungsi'),
+                        $this->paragraph('celah_proyek.py memeriksa satu serahan latihan. Ia bukan paket siang. Recall infrastruktur kosong, layanan kosong, rollback belum diuji, tidak ada pemilik metrik, GPU cloud menyala, dan go-live dijanjikan lima hari lagi. Jalankan python3 celah_proyek.py. Enam celah harus tercetak. Pada tugas, kamu mengisi argumen fungsi itu dari paket siang, bukan menyalin kamus di berkas.'),
+                        $this->fixtureCode('celah_proyek.py'),
+                        $this->paragraph('Keluaran yang sesuai:'),
+                        $this->fixtureCode('celah_proyek.out.txt', 'text'),
                     ],
                 ),
                 $this->textLesson(
@@ -554,7 +597,11 @@ trait BuildsAiEngineerSyllabus
                                 ['Satu baris tiap ambang', 'Jangan merata-rata menjadi satu kesan', 'Jangan menyalin status dari Lesson lain'],
                             ],
                         ),
-                        $this->paragraph('Status belum sah berbeda dari gagal. Angka yang kelihatan memenuhi ambang pada data bocor masuk sebagai angka yang harus diulang, bukan sebagai kelulusan. Jejak ini yang membuat review bisa dibaca Ibu Lestari. Ia tidak perlu membuka notebook untuk melihat ambang mana yang belum punya bukti sah.'),
+                        $this->paragraph('Status belum sah berbeda dari gagal ambang. Angka yang kelihatan memenuhi ambang pada data bocor masuk sebagai angka yang harus diulang, bukan sebagai kelulusan. jejak_ambang.py memisahkan dua pertanyaan itu. status_bukti() hanya menjawab apakah angkanya boleh dipakai. lulus_ambang() membandingkan recall dengan 0.85, dan mengembalikan False jika datanya tidak jujur walaupun recall-nya 1.00.'),
+                        $this->paragraph('Tiga baris di berkas memakai hasil evaluasi_latihan.py, bukan paket siang. Latihan jujur: bukti lolos, recall 0.50, lulus ambang False. Kalimat setelah ditangani: bukti belum sah, recall 1.00, lulus ambang False. Tanpa bukti latensi: celah. Jalankan python3 jejak_ambang.py. Pada paket siang kamu menambah satu baris untuk tiap ambang hari 1, dengan angka dari tugas.'),
+                        $this->fixtureCode('jejak_ambang.py'),
+                        $this->paragraph('Keluaran yang sesuai:'),
+                        $this->fixtureCode('jejak_ambang.out.txt', 'text'),
                     ],
                 ),
                 $this->textLesson(
@@ -618,8 +665,11 @@ trait BuildsAiEngineerSyllabus
                     50,
                     [
                         $this->heading('Yang boleh dipasang hari ini', 1),
-                        $this->paragraph('Unit J.62AIN00.015.1 meminta pemasangan solusi AI. Yang boleh kamu rancang mengikuti putusan berita acara hari 2. Putusan tunda berarti layanan siap untuk mode bayangan, dan syarat yang belum terpenuhi ditulis sebagai gerbang. Putusan tolak berarti kamu menulis cara jalur itu tetap mati, bukan jadwal promosi. Putusan layak tetap melewati gerbang di bawah sebelum antrian warga berubah. Lesson ini tidak membuka konsol dan tidak meminta kamu men-deploy.'),
-                        $this->paragraph('Kontraknya sempit. Masukan: teks pengaduan yang sudah dipotong dari NIK, nomor HP, dan nama. Keluaran: kode meja, skor, versi model, dan tanda ragu. Jika identitas masih menempel, layanan menolak permintaan. Itu bagian dari pemasangan, bukan urusan nanti.'),
+                        $this->paragraph('Unit J.62AIN00.015.1 meminta pemasangan solusi AI. Yang boleh kamu rancang mengikuti putusan berita acara hari 2. Putusan tunda berarti layanan siap untuk mode bayangan, dan syarat yang belum terpenuhi ditulis sebagai gerbang. Putusan tolak berarti kamu menulis cara jalur itu tetap mati, bukan jadwal promosi. Putusan layak tetap melewati gerbang di bawah sebelum antrian warga berubah.'),
+                        $this->paragraph('Kontraknya sempit, dan ada berkasnya. layanan_bayangan.py memotong NIK dan HP, memilih meja, lalu menulis log. MODE_BAYANGAN benar, jadi meja_antrian tercetak None: antrian warga tidak berubah, saran meja tetap ada untuk dibandingkan dengan Dina. Jika identitas masih ada di baris log, tulis_log() melempar kesalahan dan proses berhenti. LMS ini tidak memasang layanan ke dinas. Kamu menjalankan python3 layanan_bayangan.py di mesinmu. Raka yang nanti menjalankan kontrak yang sama di jaringan dinas.'),
+                        $this->fixtureCode('layanan_bayangan.py'),
+                        $this->paragraph('Keluaran yang sesuai. Lima baris log tidak memuat 16 digit dan tidak memuat 081234567890. meja_antrian=None pada kelimanya.'),
+                        $this->fixtureCode('layanan_bayangan.out.txt', 'text'),
                         $this->heading('Gerbang sebelum artefak boleh naik'),
                         $this->numbered([
                             'Uji kebocoran kosong: tidak ada kalimat resolusi di data yang dipakai menghitung metrik rilis.',
@@ -661,7 +711,8 @@ trait BuildsAiEngineerSyllabus
                             'Persen ragu per saluran. WhatsApp yang tiba-tiba nol ragu biasanya tanda salah.',
                             'Waktu terakhir rollback dicoba, dan berapa lama trafik kembali ke Dina.',
                         ]),
-                        $this->paragraph('Rollback adalah bendera trafik, bukan pembangunan ulang. Raka mengalihkan antrean ke jalur manual. Kamu mencatat jam mulai dan jam antrian warga kembali normal. Jika caranya “telepon Raka lalu edit konfigurasi yang tidak disimpan”, kamu belum memasang solusi. Kamu memasang ketergantungan pada ingatan satu orang.'),
+                        $this->paragraph('Rollback adalah bendera trafik, bukan pembangunan ulang. Di layanan_bayangan.py, rollback() mengembalikan MODE_BAYANGAN ke benar dan mencatat antrian Dina. uji_rollback(6) lulus. uji_rollback(22) gagal karena melewati 15 menit. Raka mengalihkan antrean ke jalur manual. Kamu mencatat menitnya. Jika caranya “telepon Raka lalu edit konfigurasi yang tidak disimpan”, kamu belum memasang solusi.'),
+                        $this->paragraph('health() pada lima permintaan latihan mencetak identitas_di_log = 0 dan porsi_ragu = 0.20. Nol itu belum membuktikan pemotong hidup di produksi. Berkas ini memanggil redaksi() sebelum tulis_log(), jadi identitas sudah hilang sebelum health() menghitung. Uji yang berlaku adalah baris log memuat [NIK] atau [HP] ketika masukan masih membawa nomor, bukan sekadar cacah nol. Lima permintaan juga terlalu sedikit untuk menagih ambang ragu 20 persen.'),
                     ],
                 ),
                 $this->textLesson(
@@ -706,7 +757,7 @@ trait BuildsAiEngineerSyllabus
                     [
                         $this->heading('Apa yang bergeser di dinas', 1),
                         $this->paragraph('Hujan menaikkan infrastruktur dan kebersihan. Tahun dengan layanan kependudukan massal menaikkan kalimat KTP dan pindah. Saluran baru, misalnya formulir yang berubah di loket, mengubah bahasa pengaduan tanpa mengubah lima meja. Itu drift. Model tidak “rusak”. Distribusinya yang pergi.'),
-                        $this->paragraph('Pemicu di runbook harus angka, dan angkanya diturunkan dari sasaran hari 1, bukan dari berita rilis model. Tiga bentuk yang sah: macro-F1 mingguan turun sekian dari titik mode bayangan yang diterima, recall kelas mahal jatuh di bawah ambang hari 1, atau saluran baru belum punya sampel di data latih. Salah satu saja sudah cukup untuk menghentikan promosi dan memanggil Bima. Kamu yang memiliki pemicu. Bima yang mengulang pelatihan. Kamu yang meninjau ulang sebelum versi baru naik. Angka pemicu untuk kasus ini kamu tulis di tugas.'),
+                        $this->paragraph('Pemicu di runbook harus angka, dan angkanya diturunkan dari sasaran hari 1, bukan dari berita rilis model. picu_latih_ulang() di layanan_bayangan.py membandingkan recall minggu ini dengan 0.85. Keluaran untuk 0.81 adalah “tahan, panggil Bima, jangan promosikan”. Keluaran untuk 0.92 adalah “lanjut pantau”. Tiga bentuk yang sah pada runbook dinas: macro-F1 mingguan turun sekian dari titik mode bayangan yang diterima, recall kelas mahal jatuh di bawah ambang hari 1, atau saluran baru belum punya sampel di data latih. Salah satu saja sudah cukup untuk menghentikan promosi dan memanggil Bima. Kamu yang memiliki pemicu. Bima yang mengulang pelatihan. Kamu yang meninjau ulang sebelum versi baru naik. Angka pemicu untuk paket siang kamu tulis di tugas, tidak disalin dari 0.81.'),
                         $this->heading('Yang bukan pemicu'),
                         $this->bullets([
                             'Rilis model umum di berita. Arunika tidak ganti encoder karena ada yang baru.',
@@ -766,7 +817,7 @@ trait BuildsAiEngineerSyllabus
                         $this->paragraph('Arsip pengaduan mengikuti jadwal retensi dinas. Kamu tidak mengarang angka tahun di Lesson ini. Yang kamu pastikan: layanan prediksi tidak menyimpan salinan teks mentah yang umurnya tidak ada di jadwal itu. Fitur dan log yang masih bisa dipakai menunjuk ke seseorang dihapus atau dipotong sesuai program kerja, lebih cepat daripada arsip resmi jika tidak diperlukan untuk audit routing.'),
                         $this->paragraph('Hak subjek tidak diciptakan ulang di aplikasi model. Dinas sudah punya jalur melalui pelayanan dan melalui saluran pengaduan. Program kerja menambahkan satu hal: jika warga meminta akses atau penghapusan, kamu bisa menemukan apakah teks itu pernah masuk log prediksi, versi mana yang memprosesnya, dan bagaimana salinan teknis dihapus tanpa merusak arsip yang memang wajib disimpan.'),
                         $this->heading('Insiden yang sudah hampir terjadi'),
-                        $this->paragraph('Contoh yang kamu tulis di latihan: satu baris log menyimpan nomor HP karena pemotong hanya mencari pola NIK. Itu insiden pada rancangan, walaupun belum keluar dari jaringan dinas. Catatan insiden menyebut apa yang bocor, berapa lama, siapa yang diakses lognya, apa yang dipotong hari itu, dan apa yang berubah di uji kontrak besoknya. “Sudah kami hapus” tanpa uji yang mencegah nomor HP berikutnya adalah tutup buku, bukan perawatan.'),
+                        $this->paragraph('Contoh yang kamu tulis di latihan ada di keluaran redaksi.py. redaksi_nik_saja() pada “ibu saya nomor 081234567890 bansos belum cair” membiarkan nomor itu utuh, dan ada_identitas() tetap True. redaksi() menggantinya menjadi [HP]. Itu insiden pada rancangan, walaupun belum keluar dari jaringan dinas. Catatan insiden menyebut apa yang bocor, berapa lama, siapa yang diakses lognya, apa yang dipotong hari itu, dan uji yang berubah besoknya: uji_log() harus gagal pada HP, bukan hanya pada 16 digit. “Sudah kami hapus” tanpa uji itu adalah tutup buku, bukan perawatan.'),
                         $this->paragraph('Bantuan sosial yang tidak cair tetap kelas meja sosial. Isinya tidak boleh muncul di contoh Lesson publik, di slide vendor, atau di notebook yang disimpan di luar dinas. Gunakan pengaduan latihan yang sudah dianonimkan, seperti yang dipakai Course ini. Penerapan dua teks itu pada piagam ditulis di tugas, bukan di sini.'),
                     ],
                 ),
@@ -823,7 +874,7 @@ trait BuildsAiEngineerSyllabus
                         $this->heading('Kalau kamu mau lanjut ke lembaga sertifikasi'),
                         $this->paragraph('Skema SKEMA-45 milik LSP Telekomunikasi Digital Indonesia. Pemohon yang diakui skema itu ada tiga jalur: mahasiswa D3 semester akhir atau semester 6 yang telah mengikuti pelatihan berbasis kompetensi ini, atau pemilik ijazah minimal SMA atau SMK yang telah mengikuti pelatihan yang sama, atau tenaga kerja dengan pengalaman minimal 1 tahun di jabatan ini.'),
                         $this->paragraph('Biaya sertifikasi yang tertulis pada skema adalah Rp2.500.000. Sertifikat kompetensi, jika kelak terbit, berlaku 3 tahun. Surveilan pemegang sertifikat dilakukan minimal sekali dalam satu tahun. Peta okupasi TIK.DSC0704 mensyaratkan sertifikat okupasi setara KKNI level 6 dan pengalaman minimal 3 tahun. Pelatihan tiga hari ini tidak menggantikan syarat peta itu, dan tidak menggantikan asesmen.'),
-                        $this->paragraph('Portofolio yang paling dekat dengan bukti skema adalah tiga tugas ini, setelah kamu rapikan. Sasaran dan rencana untuk J.62AIN00.002.1 dan J.62AIN00.004.1. Dua berita acara untuk J.62DMI00.015.1 dan J.62DMI00.020.1. Laporan akhir yang memuat J.62AIN00.015.1, J.62AIN00.017.1, J.62PDP00.011.1, dan J.62DMI00.021.1. Course ini bukan formulir APL 01 atau APL 02.'),
+                        $this->paragraph('Portofolio yang paling dekat dengan bukti skema adalah tiga tugas ini, setelah kamu rapikan. Sasaran dan rencana untuk J.62AIN00.002.1 dan J.62AIN00.004.1. Dua berita acara untuk J.62DMI00.015.1 dan J.62DMI00.020.1. Laporan akhir yang memuat J.62AIN00.015.1, J.62AIN00.017.1, J.62PDP00.011.1, dan J.62DMI00.021.1. Tujuh berkas Python adalah latihan supaya artefak itu punya hitungan dan uji. Menyalin keluaran berkas latihan ke paket siang tidak memadai, karena angkanya berbeda. Course ini bukan formulir APL 01 atau APL 02.'),
                         $this->paragraph('Kalau putusanmu tunda dengan syarat, kamu tidak gagal sebagai insinyur. Kamu menolak memasang model yang belum layak ke antrian warga. Itu salah satu pekerjaan yang diminta okupasi ini.'),
                     ],
                 ),

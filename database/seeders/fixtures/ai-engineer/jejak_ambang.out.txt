@@ -1,0 +1,3 @@
+latihan jujur: bukti=lolos lulus_ambang=False recall=0.50
+kalimat setelah ditangani: bukti=belum sah lulus_ambang=False recall=1.00
+tanpa bukti latensi: bukti=celah lulus_ambang=False recall=tidak ada

@@ -7,6 +7,7 @@ use App\Models\Lesson;
 use App\Services\TipTapRenderer;
 use Database\Seeders\AiEngineerCourseSeeder;
 use Database\Seeders\FreeFlowDemoSeeder;
+use Illuminate\Support\Facades\Process;
 
 it('seeds a three-day Bahasa Indonesia Open Course for the AI Engineer occupation', function () {
     $this->seed(FreeFlowDemoSeeder::class);
@@ -49,6 +50,17 @@ it('seeds a three-day Bahasa Indonesia Open Course for the AI Engineer occupatio
         ->toContain('8.000')
         ->toContain('3201013101900001')
         ->toContain('95 persen')
+        ->toContain('atur_meja.py')
+        ->toContain('lembar_september.py')
+        ->toContain('redaksi.py')
+        ->toContain('evaluasi_latihan.py')
+        ->toContain('celah_proyek.py')
+        ->toContain('jejak_ambang.py')
+        ->toContain('layanan_bayangan.py')
+        ->toContain('def meja')
+        ->toContain('def recall')
+        ->toContain('def redaksi')
+        ->toContain('def picu_latih_ulang')
         ->toContain('TIK.DSC0704')
         ->toContain('SKEMA-45')
         ->toContain('J.62AIN00.002.1')
@@ -92,7 +104,15 @@ it('seeds a three-day Bahasa Indonesia Open Course for the AI Engineer occupatio
         ->toContain('<svg')
         ->toContain('<figure class="lesson-diagram">')
         ->toContain('>Hari 1<')
-        ->toContain('J.62AIN00.002.1')
+        ->toContain('J.62AIN00.002.1');
+
+    $kasus = $lessons->firstWhere('title', 'Kasus berjalan: pengaduan Kota Arunika');
+    expect($kasus)->not->toBeNull();
+    $kasusHtml = $renderer->render($kasus->rich_content);
+
+    expect($kasusHtml)
+        ->toContain('<pre><code class="language-python">')
+        ->toContain('def meja')
         ->and($installHtml)
         ->toContain('<svg')
         ->toContain('mode bayangan');
@@ -157,6 +177,8 @@ it('seeds a three-day Bahasa Indonesia Open Course for the AI Engineer occupatio
     expect($hari1Text)
         ->toContain('J.62AIN00.002.1')
         ->toContain('J.62AIN00.004.1')
+        ->toContain('lembar_september.py')
+        ->toContain('redaksi.py')
         ->and($hari2Text)
         ->toContain('paket siang')
         ->toContain('J.62DMI00.015.1')
@@ -170,5 +192,29 @@ it('seeds a three-day Bahasa Indonesia Open Course for the AI Engineer occupatio
         ->toContain('J.62DMI00.021.1')
         ->toContain('ktp saya hilang')
         ->toContain('bantuan sosial')
-        ->toContain('RoPA');
+        ->toContain('RoPA')
+        ->toContain('layanan_bayangan.py');
+});
+
+it('runs the AI Engineer practice scripts with the output shown in the lessons', function () {
+    $directory = base_path('database/seeders/fixtures/ai-engineer');
+
+    foreach ([
+        'atur_meja',
+        'lembar_september',
+        'redaksi',
+        'evaluasi_latihan',
+        'celah_proyek',
+        'jejak_ambang',
+        'layanan_bayangan',
+    ] as $name) {
+        $ran = Process::run(['python3', $directory.'/'.$name.'.py']);
+
+        expect($ran->successful())->toBeTrue()
+            ->and($ran->output())->toBe(file_get_contents($directory.'/'.$name.'.out.txt'))
+            ->and($ran->output())->not->toContain('0,74')
+            ->and($ran->output())->not->toContain('0,87')
+            ->and($ran->output())->not->toContain('0.74')
+            ->and($ran->output())->not->toContain('0.87');
+    }
 });

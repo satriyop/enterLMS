@@ -184,6 +184,26 @@ trait BuildsAcademyLessonContent
     }
 
     /**
+     * TipTap code block. The lesson page renders this as pre/code.
+     *
+     * @return array<string, mixed>
+     */
+    protected function code(string $source, string $language = 'python'): array
+    {
+        $source = rtrim($source, "\n");
+
+        if ($source === '') {
+            throw new \RuntimeException('Blok kode kosong.');
+        }
+
+        return [
+            'type' => 'codeBlock',
+            'attrs' => ['language' => $language],
+            'content' => [['type' => 'text', 'text' => $source]],
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     protected function rule(): array

@@ -1,0 +1,15 @@
+log September, sebelum dipotong
+  identitas = True
+gagal: log masih menyimpan NIK atau HP
+log setelah redaksi()
+  2026-09-08 08:14:02 prediksi=kebersihan skor=0.62 teks="ktp saya hilang nik [NIK] mohon diterbitkan ulang"
+lulus: log tanpa NIK dan tanpa HP
+
+HP tidak 16 digit, pemotong NIK saja gagal
+  nik saja : ibu saya nomor 081234567890 bansos belum cair
+  lengkap  : ibu saya nomor [HP] bansos belum cair
+  identitas tersisa pada nik saja = True
+
+baris latih
+  setelah ditangani = True
+  teks loket saja   = False

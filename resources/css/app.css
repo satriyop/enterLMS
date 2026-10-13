@@ -926,3 +926,22 @@ img.lesson-figure-img {
 .lesson-table-wrap td p {
     margin: 0;
 }
+
+.prose pre {
+    margin: 1.25rem 0;
+    max-height: 60vh;
+    overflow: auto;
+    padding: 1rem 1.1rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.prose pre code {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--foreground);
+    background: transparent;
+    padding: 0;
+}

@@ -1,0 +1,22 @@
+versi=arunika-aturan-2026-10-05 mode=bayangan prediksi=kependudukan skor=0.65 teks='ktp saya hilang nik [NIK] mohon diterbitkan ulang'
+  meja_antrian=None saran=kependudukan ragu=False
+versi=arunika-aturan-2026-10-05 mode=bayangan prediksi=infrastruktur skor=0.65 teks='jalan di gang melati ambles setelah hujan'
+  meja_antrian=None saran=infrastruktur ragu=False
+versi=arunika-aturan-2026-10-05 mode=bayangan prediksi=ragu skor=0.38 teks='jam buka loket hari Sabtu sampai jam berapa?'
+  meja_antrian=None saran=ragu ragu=True
+versi=arunika-aturan-2026-10-05 mode=bayangan prediksi=kebersihan skor=0.65 teks='sampah tiga hari tidak diangkut'
+  meja_antrian=None saran=kebersihan ragu=False
+versi=arunika-aturan-2026-10-05 mode=bayangan prediksi=sosial skor=0.65 teks='ibu saya nomor [HP] bansos belum cair'
+  meja_antrian=None saran=sosial ragu=False
+
+health versi = arunika-aturan-2026-10-05
+health permintaan = 5
+health identitas_di_log = 0
+health porsi_ragu = 0.20
+health mode = bayangan
+
+lulus: antrian kembali ke Dina dalam 6 menit
+gagal: 22 menit melewati batas 15
+{'mode': 'bayangan', 'antrian': 'Dina', 'alasan': 'recall infrastruktur jatuh pada data yang lebih baru', 'batas_menit': 15}
+tahan, panggil Bima, jangan promosikan
+lanjut pantau

@@ -1,0 +1,19 @@
+total September = 8000
+  kependudukan      3360  porsi 0.42
+  perizinan         1920  porsi 0.24
+  kebersihan        1440  porsi 0.18
+  infrastruktur      800  porsi 0.10
+  sosial             480  porsi 0.06
+
+infrastruktur: 120 terlewat dari 800
+  recall = 0.85
+  ambang minimum = 0.85
+
+ragu: 20 persen dari 400 pengaduan, 2 menit tiap tiket
+  tiket = 80
+  menit Dina = 160
+
+p95 notebook Bima = 21 ms
+p95 layanan dinas = 340 ms
+ambang p95 = 300 ms, diukur pada layanan, bukan pada notebook
+sosial: panggil recall(terlewat_yang_kamu_pilih, 480)

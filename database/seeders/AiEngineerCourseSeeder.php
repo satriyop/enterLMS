@@ -138,7 +138,7 @@ class AiEngineerCourseSeeder extends Seeder
                 'code' => self::COURSE_CODE,
                 'slug' => Str::slug(self::COURSE_TITLE),
                 'short_description' => 'Tiga hari untuk okupasi AI Engineer: sasaran, rencana, review, pasang, rawat, data pribadi, dan laporan akhir pada pengaduan layanan publik.',
-                'long_description' => 'Open Course gratis dalam Bahasa Indonesia. Pelatihan tiga hari untuk okupasi Insinyur Kecerdasan Artificial (TIK.DSC0704, skema SKEMA-45). Kasus berjalannya Dinas Pelayanan Publik Kota Arunika: model klasifikasi pengaduan sudah ada, dan kamu yang meninjau lalu memutuskan ia layak masuk antrian warga atau belum. Delapan unit kompetensi dikerjakan sebagai artefak, bukan sebagai survei machine learning. Lesson berisi teks, tabel, dan diagram. Ini bukan konsol. Menyelesaikannya tidak menerbitkan sertifikat BNSP dan tidak membuka Course terbatas.',
+                'long_description' => 'Open Course gratis dalam Bahasa Indonesia. Pelatihan tiga hari untuk okupasi Insinyur Kecerdasan Artificial (TIK.DSC0704, skema SKEMA-45). Kasus berjalannya Dinas Pelayanan Publik Kota Arunika: model klasifikasi pengaduan sudah ada, dan kamu yang meninjau lalu memutuskan ia layak masuk antrian warga atau belum. Delapan unit kompetensi dikerjakan sebagai artefak. Lesson memuat teks dan berkas Python yang kamu jalankan di mesinmu, tanpa pustaka tambahan. LMS ini tidak menjalankan kode itu. Menyelesaikannya tidak menerbitkan sertifikat BNSP dan tidak membuka Course terbatas.',
                 'objectives' => [
                     'Menentukan sasaran teknis solusi AI untuk routing pengaduan, lengkap dengan ambang kelas mahal dan syarat belum siap',
                     'Menyusun rencana proyek yang memisahkan lingkup, ketergantungan, jadwal, dan risiko',
@@ -197,6 +197,7 @@ class AiEngineerCourseSeeder extends Seeder
             && str_contains($json, 'Kota Arunika')
             && str_contains($json, 'J.62PDP00.011.1')
             && str_contains($json, 'lembar September')
+            && str_contains($json, 'atur_meja.py')
             && is_string($closingJson)
             && str_contains($closingJson, 'Rp2.500.000')
             && str_contains($closingJson, 'paket siang');
@@ -315,7 +316,7 @@ class AiEngineerCourseSeeder extends Seeder
     {
         $existing = $course->assessments()->where('title', self::TUGAS_HARI_1)->with('questions')->first();
 
-        if ($existing instanceof Assessment && $this->tugasContains($existing, 'J.62AIN00.002.1') && $this->tugasContains($existing, '8.000')) {
+        if ($existing instanceof Assessment && $this->tugasContains($existing, 'J.62AIN00.002.1') && $this->tugasContains($existing, '8.000') && $this->tugasContains($existing, 'lembar_september.py')) {
             return;
         }
 
@@ -349,8 +350,10 @@ Tulis dua dokumen terpisah untuk routing pengaduan Kota Arunika. Pakai lembar Se
 Dokumen pertama, sasaran teknis unit J.62AIN00.002.1. Tulis keputusan, masukan pada saat pengaduan masuk, keluaran, dan lingkungan. Tunjukkan hitungan recall infrastruktur: 120 terlewat dari 800 menghasilkan 0,85. Tunjukkan hitungan ragu: 20 persen dari 400 adalah 80 pengaduan, kali 2 menit adalah 160 menit. Untuk sosial, pilih sendiri berapa yang boleh terlewat dari 480, hitung recall-nya, dan tulis apa yang terjadi jika teks bansos dibaca meja lain. Tutup dengan syarat berhenti dan larangan NIK di log.
 
 Dokumen kedua, rencana proyek unit J.62AIN00.004.1. Halaman vendor yang harus kamu ganti berbunyi: “Akurasi 95 persen. Chatbot menjawab warga di WhatsApp. Go-live Jumat. GPU cloud. Tim data menyiapkan semuanya.” Tulis lingkup dan di luar lingkup, lima langkah dengan nama orang pada tiap ketergantungan, jadwal enam minggu yang berisi sepuluh hari kerja mode bayangan, dan empat risiko. Tiap risiko punya tanda yang bisa diperiksa, mitigasi, dan pemilik.
+
+Tempel keluaran lembar_september.py untuk recall(120, 800) dan menit_ragu. Tempel satu baris log dari redaksi.py yang sudah dipotong, berisi [NIK], bukan 16 digit. Angka di evaluasi_latihan.py bukan angka tugas ini.
 TEXT,
-            'Cukup jika infrastruktur menunjukkan 800, 120, dan 0,85, ragu menunjukkan 80 pengaduan dan 160 menit, dan sosial menunjukkan 480 plus recall hasil bagi milik peserta. Syarat berhenti menyebut data yang lebih baru dan ambang 0,85. Rencana menolak chatbot, GPU cloud, dan go-live Jumat, memakai nama orang, dan menjadwalkan mode bayangan sepuluh hari kerja. Belum cukup jika hanya menyalin tabel ambang tanpa pembagian, jika baris sosial menyalin 0,85 tanpa dibagi 480, atau jika solusinya membalas warga.',
+            'Cukup jika infrastruktur menunjukkan 800, 120, dan 0,85, termasuk keluaran recall dari lembar_september.py, ragu menunjukkan 80 pengaduan dan 160 menit, dan sosial menunjukkan 480 plus recall hasil bagi milik peserta. Ada satu baris log yang sudah dipotong, berisi [NIK] dan bukan 16 digit. Syarat berhenti menyebut data yang lebih baru dan ambang 0,85. Rencana menolak chatbot, GPU cloud, dan go-live Jumat, memakai nama orang, dan menjadwalkan mode bayangan sepuluh hari kerja. Belum cukup jika hanya menyalin tabel ambang tanpa pembagian, jika baris sosial menyalin 0,85 tanpa dibagi 480, jika log masih memuat 16 digit, atau jika solusinya membalas warga.',
             1,
             100,
         );
@@ -409,7 +412,7 @@ TEXT,
     {
         $existing = $course->assessments()->where('title', self::TUGAS_HARI_3)->with('questions')->first();
 
-        if ($existing instanceof Assessment && $this->tugasContains($existing, 'J.62PDP00.011.1') && $this->tugasContains($existing, 'ktp saya hilang')) {
+        if ($existing instanceof Assessment && $this->tugasContains($existing, 'J.62PDP00.011.1') && $this->tugasContains($existing, 'ktp saya hilang') && $this->tugasContains($existing, 'layanan_bayangan.py')) {
             return;
         }
 
@@ -440,7 +443,7 @@ TEXT,
             <<<'TEXT'
 Tulis laporan akhir proyek routing pengaduan Kota Arunika. Pakai putusanmu pada paket siang. Jangan mengganti putusan agar laporan lebih halus. Wajib empat judul berikut.
 
-Pemasangan, unit J.62AIN00.015.1. Gerbang, mode bayangan, dan rollback, hanya sepanjang berita acara mengizinkan.
+Pemasangan, unit J.62AIN00.015.1. Gerbang, mode bayangan, dan rollback, hanya sepanjang berita acara mengizinkan. Tempel satu baris log dari layanan_bayangan.py. Baris itu memuat [NIK] atau [HP], bukan nomor aslinya, dan meja_antrian pada mode bayangan kosong.
 
 Perawatan, unit J.62AIN00.017.1. Irama pantau dan pemicu latih ulang. Angka pemicu diturunkan dari ambang hari 1.
 

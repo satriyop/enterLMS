@@ -1,0 +1,6 @@
+celah: metrik yang dilaporkan bukan recall infrastruktur
+celah: serahan tidak bisa dipasang di loket
+celah: rollback belum diuji
+celah: tidak ada pemilik metrik
+celah: GPU cloud, teks keluar jaringan
+celah: jadwal melompati sepuluh hari mode bayangan

@@ -1,0 +1,61 @@
+satu baris campur, dihitung tangan
+teks: lampu jalan mati dan sampah menumpuk
+  kependudukan     0.6
+  perizinan        0.2
+  infrastruktur    2.0
+  kebersihan       2.3
+  sosial           0.2
+  ragu             0.5
+  prediksi = ragu
+label emas = infrastruktur
+kebersihan 2.3 dan infrastruktur 2.0, selisih 0.3, di bawah 0.5, jadi ragu
+aturan dinas tidak setuju: lampu mati harus menang, bukan abstain
+
+satu baris tanpa kata ambles
+teks: jalan rusak di rt 04
+  kependudukan     0.6
+  perizinan        0.2
+  infrastruktur    1.0
+  kebersihan       0.3
+  sosial           0.2
+  ragu             0.5
+  prediksi = ragu
+label emas = infrastruktur. Skor 1.0 terlalu dekat dengan bias kependudukan 0.6
+
+fitur tidak memuat kk
+teks: kk saya tertinggal di kampung
+  kependudukan     0.6
+  perizinan        0.2
+  infrastruktur    0.0
+  kebersihan       0.3
+  sosial           0.2
+  ragu             0.5
+  prediksi = ragu
+label emas = kependudukan. Tidak ada kata yang menyala, prediksi jatuh ke ragu
+
+tanpa kalimat setelah ditangani
+  akurasi   0.86
+  macro-F1  0.85
+  recall kependudukan     0.75
+  recall perizinan        1.00
+  recall infrastruktur    0.50
+  recall kebersihan       1.00
+  recall sosial           1.00
+  recall ragu             1.00
+
+kalimat setelah ditangani menempel di infrastruktur
+  akurasi   0.95
+  macro-F1  0.94
+  recall kependudukan     0.75
+  recall perizinan        1.00
+  recall infrastruktur    1.00
+  recall kebersihan       1.00
+  recall sosial           1.00
+  recall ragu             1.00
+
+kenaikan recall infrastruktur 0.50 -> 1.00 tidak sah: fiturnya belum ada di loket
+lulus ambang 0.85 pada data jujur = False
+
+uji 2026-10-06 lebih baru daripada latih 2026-09-30 = True
+uji 2026-09-18 lebih baru daripada latih 2026-09-30 = False
+paket siang tidak ada di berkas ini
