@@ -14,6 +14,7 @@ interface PaginationMetadata {
     pageBreaks: number[];
 }
 import PaginatedTextContent from './PaginatedTextContent.vue';
+import LessonDownloads from './content/LessonDownloads.vue';
 import PaginatedPDFContent from './PaginatedPDFContent.vue';
 import YouTubePlayer from './YouTubePlayer.vue';
 import VideoContent from './content/VideoContent.vue';
@@ -80,6 +81,11 @@ const getMediaByCollection = (collection: string): Media | null => {
 const videoMedia = computed(() => getMediaByCollection('video'));
 const audioMedia = computed(() => getMediaByCollection('audio'));
 const documentMedia = computed(() => getMediaByCollection('document'));
+const downloads = computed(() =>
+    (props.media ?? [])
+        .filter((item) => item.collection_name === 'download')
+        .sort((a, b) => (a.order_column ?? 0) - (b.order_column ?? 0)),
+);
 
 const showYoutube = computed(
     () =>
@@ -148,6 +154,7 @@ const handleMediaPause = () => {
 
         <!-- Text Content (with pagination), including youtube lessons that also have briefing HTML -->
         <div v-if="showRichText" class="w-full p-6 max-w-4xl mx-auto">
+            <LessonDownloads v-if="downloads.length > 0" :files="downloads" />
             <PaginatedTextContent
                 :content="richContentHtml!"
                 :initial-page="lessonProgress?.current_page ?? 1"

@@ -102,6 +102,34 @@ it('does not grant Restricted OpenClaw by finishing Insinyur Kecerdasan Artifici
         ->assertForbidden();
 });
 
+it('lets an enrolled learner download the practice script from the lesson', function () {
+    $this->seed(FreeFlowDemoSeeder::class);
+    $this->seed(AiEngineerCourseSeeder::class);
+
+    $learner = User::query()->where('email', 'learner@enterlms.test')->first();
+    $course = Course::query()->where('title', AiEngineerCourseSeeder::COURSE_TITLE)->first();
+    $lesson = $course->lessons()
+        ->where('lessons.title', 'Kasus berjalan: pengaduan Kota Arunika')
+        ->first();
+
+    expect($lesson)->not->toBeNull();
+
+    $this->actingAs($learner)
+        ->post(route('courses.enroll', $course))
+        ->assertRedirect();
+
+    $this->actingAs($learner)
+        ->get(route('courses.lessons.show', [$course, $lesson]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('lessons/Show')
+            ->where('lesson.media.0.file_name', 'atur_meja.py')
+            ->where('lesson.media.0.collection_name', 'download')
+            ->where('lesson.media.1.file_name', 'atur_meja.out.txt')
+            ->where('lesson.rich_content_html', fn ($html) => is_string($html) && str_contains($html, 'Unduh berkas di atas halaman ini'))
+        );
+});
+
 it('shows a rendered diagram on an enrolled AI Engineer Lesson', function () {
     $this->seed(FreeFlowDemoSeeder::class);
     $this->seed(AiEngineerCourseSeeder::class);

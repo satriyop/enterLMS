@@ -212,15 +212,16 @@ class SeederLessonMedia
         ?int $durationSeconds = null,
         ?string $bodyText = null,
     ): Media {
-        $path = "lessons/{$lesson->id}/{$collection}/{$filename}";
+        $storedName = basename($filename);
+        $path = "lessons/{$lesson->id}/{$collection}/{$storedName}";
         Storage::disk('public')->put($path, $binary);
 
         return Media::query()->create([
             'mediable_type' => $lesson->getMorphClass(),
             'mediable_id' => $lesson->id,
             'collection_name' => $collection,
-            'name' => pathinfo($filename, PATHINFO_FILENAME),
-            'file_name' => $filename,
+            'name' => pathinfo($storedName, PATHINFO_FILENAME),
+            'file_name' => $storedName,
             'mime_type' => $mimeType,
             'disk' => 'public',
             'path' => $path,

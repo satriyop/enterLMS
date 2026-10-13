@@ -4,10 +4,12 @@ use App\Models\Assessment;
 use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Lesson;
+use App\Models\Media;
 use App\Services\TipTapRenderer;
 use Database\Seeders\AiEngineerCourseSeeder;
 use Database\Seeders\FreeFlowDemoSeeder;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Storage;
 
 it('seeds a three-day Bahasa Indonesia Open Course for the AI Engineer occupation', function () {
     $this->seed(FreeFlowDemoSeeder::class);
@@ -78,6 +80,7 @@ it('seeds a three-day Bahasa Indonesia Open Course for the AI Engineer occupatio
         ->toContain('paket siang')
         ->toContain('Rp2.500.000')
         ->toContain('Surveilan')
+        ->toContain('Unduh berkas')
         ->toContain('untuk')
         ->toContain('yang')
         ->toContain('tidak')
@@ -116,6 +119,17 @@ it('seeds a three-day Bahasa Indonesia Open Course for the AI Engineer occupatio
         ->and($installHtml)
         ->toContain('<svg')
         ->toContain('mode bayangan');
+
+    $downloads = Media::query()
+        ->where('mediable_type', $kasus->getMorphClass())
+        ->where('mediable_id', $kasus->id)
+        ->where('collection_name', 'download')
+        ->orderBy('order_column')
+        ->get();
+
+    expect($downloads->pluck('file_name')->all())->toBe(['atur_meja.py', 'atur_meja.out.txt'])
+        ->and(Storage::disk('public')->get((string) $downloads->first()->path))->toContain('def meja')
+        ->and(Media::query()->where('collection_name', 'download')->count())->toBe(14);
 
     $diagramLessons = $lessons->filter(function (Lesson $lesson) use ($renderer) {
         $html = $renderer->render($lesson->rich_content);

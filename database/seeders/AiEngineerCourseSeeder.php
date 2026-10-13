@@ -6,10 +6,12 @@ use App\Models\Assessment;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Models\Media;
 use App\Models\Question;
 use App\Models\QuestionOption;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\SeederLessonMedia;
 use App\Services\SeederThumbnailGenerator;
 use Database\Seeders\Concerns\BuildsAcademyLessonContent;
 use Database\Seeders\Concerns\BuildsAiEngineerSyllabus;
@@ -106,6 +108,7 @@ class AiEngineerCourseSeeder extends Seeder
 
         $category = $this->ensureCategory();
         $course = $this->seedCourse($lmsAdmin, $category);
+        $this->attachPracticeDownloads($course);
         $this->seedAssessments($course, $lmsAdmin);
 
         $this->command?->info('Open course ready: '.self::COURSE_TITLE);
@@ -138,7 +141,7 @@ class AiEngineerCourseSeeder extends Seeder
                 'code' => self::COURSE_CODE,
                 'slug' => Str::slug(self::COURSE_TITLE),
                 'short_description' => 'Tiga hari untuk okupasi AI Engineer: sasaran, rencana, review, pasang, rawat, data pribadi, dan laporan akhir pada pengaduan layanan publik.',
-                'long_description' => 'Open Course gratis dalam Bahasa Indonesia. Pelatihan tiga hari untuk okupasi Insinyur Kecerdasan Artificial (TIK.DSC0704, skema SKEMA-45). Kasus berjalannya Dinas Pelayanan Publik Kota Arunika: model klasifikasi pengaduan sudah ada, dan kamu yang meninjau lalu memutuskan ia layak masuk antrian warga atau belum. Delapan unit kompetensi dikerjakan sebagai artefak. Lesson memuat teks dan berkas Python yang kamu jalankan di mesinmu, tanpa pustaka tambahan. LMS ini tidak menjalankan kode itu. Menyelesaikannya tidak menerbitkan sertifikat BNSP dan tidak membuka Course terbatas.',
+                'long_description' => 'Open Course gratis dalam Bahasa Indonesia. Pelatihan tiga hari untuk okupasi Insinyur Kecerdasan Artificial (TIK.DSC0704, skema SKEMA-45). Kasus berjalannya Dinas Pelayanan Publik Kota Arunika: model klasifikasi pengaduan sudah ada, dan kamu yang meninjau lalu memutuskan ia layak masuk antrian warga atau belum. Delapan unit kompetensi dikerjakan sebagai artefak. Lesson memuat teks, dan tombol Unduh berkas untuk Python yang kamu jalankan di komputermu, tanpa pustaka tambahan. LMS ini tidak menjalankan kode itu. Menyelesaikannya tidak menerbitkan sertifikat BNSP dan tidak membuka Course terbatas.',
                 'objectives' => [
                     'Menentukan sasaran teknis solusi AI untuk routing pengaduan, lengkap dengan ambang kelas mahal dan syarat belum siap',
                     'Menyusun rencana proyek yang memisahkan lingkup, ketergantungan, jadwal, dan risiko',
@@ -180,6 +183,51 @@ class AiEngineerCourseSeeder extends Seeder
         return $course->load('sections.lessons');
     }
 
+    private function attachPracticeDownloads(Course $course): void
+    {
+        $files = [
+            'Kasus berjalan: pengaduan Kota Arunika' => 'atur_meja',
+            'Menentukan sasaran teknis solusi AI' => 'lembar_september',
+            'Kendala, lingkungan, dan kriteria belum siap' => 'redaksi',
+            'Review pemodelan: data, fitur, dan metrik' => 'evaluasi_latihan',
+            'Review proyek data science' => 'celah_proyek',
+            'Menyelaraskan artefak ke sasaran hari 1' => 'jejak_ambang',
+            'Memasang solusi AI ke layanan operasional' => 'layanan_bayangan',
+        ];
+
+        $attacher = app(SeederLessonMedia::class);
+
+        foreach ($files as $title => $stem) {
+            $lesson = $course->lessons()->where('lessons.title', $title)->first();
+
+            if (! $lesson instanceof Lesson) {
+                throw new \RuntimeException('Pelajaran latihan tidak ada: '.$title);
+            }
+
+            $names = [
+                $stem.'.py' => 'text/x-python',
+                $stem.'.out.txt' => 'text/plain',
+            ];
+            $order = 0;
+
+            foreach ($names as $name => $mime) {
+                $existing = $lesson->media()
+                    ->where('collection_name', 'download')
+                    ->where('file_name', $name)
+                    ->first();
+
+                if ($existing instanceof Media) {
+                    $existing->update(['order_column' => $order]);
+                } else {
+                    $attacher->attachFixture($lesson, 'download', 'ai-engineer/'.$name, $mime)
+                        ->update(['order_column' => $order]);
+                }
+
+                $order++;
+            }
+        }
+    }
+
     private function copyIsCurrent(Course $course): bool
     {
         $intro = $course->lessons()->where('lessons.title', self::PREVIEW_LESSON_TITLE)->first();
@@ -198,6 +246,7 @@ class AiEngineerCourseSeeder extends Seeder
             && str_contains($json, 'J.62PDP00.011.1')
             && str_contains($json, 'lembar September')
             && str_contains($json, 'atur_meja.py')
+            && str_contains($json, 'Unduh berkas')
             && is_string($closingJson)
             && str_contains($closingJson, 'Rp2.500.000')
             && str_contains($closingJson, 'paket siang');
