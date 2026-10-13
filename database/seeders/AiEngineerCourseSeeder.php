@@ -196,6 +196,7 @@ class AiEngineerCourseSeeder extends Seeder
             && str_contains($json, 'TIK.DSC0704')
             && str_contains($json, 'Kota Arunika')
             && str_contains($json, 'J.62PDP00.011.1')
+            && str_contains($json, 'lembar September')
             && is_string($closingJson)
             && str_contains($closingJson, 'Rp2.500.000')
             && str_contains($closingJson, 'paket siang');
@@ -314,7 +315,7 @@ class AiEngineerCourseSeeder extends Seeder
     {
         $existing = $course->assessments()->where('title', self::TUGAS_HARI_1)->with('questions')->first();
 
-        if ($existing instanceof Assessment && $this->tugasContains($existing, 'J.62AIN00.002.1')) {
+        if ($existing instanceof Assessment && $this->tugasContains($existing, 'J.62AIN00.002.1') && $this->tugasContains($existing, '8.000')) {
             return;
         }
 
@@ -342,8 +343,14 @@ class AiEngineerCourseSeeder extends Seeder
 
         $this->createEssay(
             $assessment,
-            'Tulis dua artefak terpisah untuk routing pengaduan Kota Arunika. Pertama, sasaran teknis unit J.62AIN00.002.1: jenis solusi, ambang kelas mahal, lingkungan, dan syarat belum siap. Kedua, rencana proyek unit J.62AIN00.004.1: lingkup, di luar lingkup, urutan kerja, ketergantungan, dan risiko beserta pemiliknya.',
-            'Cukup jika jenis solusinya klasifikasi lima meja plus ragu, ada angka ambang (termasuk recall infrastruktur dan larangan identitas di log), syarat belum siap, lingkup plus di luar lingkup, urutan yang tidak melompat ke produksi, dan risiko yang punya nama pemilik. Belum cukup jika hanya menulis “akurasi tinggi”, menjadwalkan go-live tanpa mode bayangan, atau menjadikan solusinya chatbot yang membalas warga.',
+            <<<'TEXT'
+Tulis dua dokumen terpisah untuk routing pengaduan Kota Arunika. Pakai lembar September: 8.000 pengaduan, infrastruktur 800, sosial 480, 400 pengaduan per hari kerja.
+
+Dokumen pertama, sasaran teknis unit J.62AIN00.002.1. Tulis keputusan, masukan pada saat pengaduan masuk, keluaran, dan lingkungan. Tunjukkan hitungan recall infrastruktur: 120 terlewat dari 800 menghasilkan 0,85. Tunjukkan hitungan ragu: 20 persen dari 400 adalah 80 pengaduan, kali 2 menit adalah 160 menit. Untuk sosial, pilih sendiri berapa yang boleh terlewat dari 480, hitung recall-nya, dan tulis apa yang terjadi jika teks bansos dibaca meja lain. Tutup dengan syarat berhenti dan larangan NIK di log.
+
+Dokumen kedua, rencana proyek unit J.62AIN00.004.1. Halaman vendor yang harus kamu ganti berbunyi: “Akurasi 95 persen. Chatbot menjawab warga di WhatsApp. Go-live Jumat. GPU cloud. Tim data menyiapkan semuanya.” Tulis lingkup dan di luar lingkup, lima langkah dengan nama orang pada tiap ketergantungan, jadwal enam minggu yang berisi sepuluh hari kerja mode bayangan, dan empat risiko. Tiap risiko punya tanda yang bisa diperiksa, mitigasi, dan pemilik.
+TEXT,
+            'Cukup jika infrastruktur menunjukkan 800, 120, dan 0,85, ragu menunjukkan 80 pengaduan dan 160 menit, dan sosial menunjukkan 480 plus recall hasil bagi milik peserta. Syarat berhenti menyebut data yang lebih baru dan ambang 0,85. Rencana menolak chatbot, GPU cloud, dan go-live Jumat, memakai nama orang, dan menjadwalkan mode bayangan sepuluh hari kerja. Belum cukup jika hanya menyalin tabel ambang tanpa pembagian, jika baris sosial menyalin 0,85 tanpa dibagi 480, atau jika solusinya membalas warga.',
             1,
             100,
         );
