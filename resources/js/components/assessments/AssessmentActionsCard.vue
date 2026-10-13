@@ -69,7 +69,7 @@ const handleDelete = () => {
             <CardTitle>Aksi Cepat</CardTitle>
         </CardHeader>
         <CardContent class="space-y-3">
-            <Link v-if="can.attempt" :href="`/courses/${courseId}/assessments/${assessmentId}/start`" class="w-full block">
+            <Link v-if="can.attempt" :href="`/courses/${courseId}/assessments/${assessmentId}/start`" method="post" class="w-full block">
                 <Button class="w-full gap-2 bg-ok text-white hover:bg-ok/90">
                     <PlayCircle class="h-4 w-4" />
                     Mulai Penilaian

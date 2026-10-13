@@ -96,7 +96,7 @@ const canRetry = computed(() => !props.passed && props.attemptNumber < props.max
                 </Button>
             </Link>
 
-            <Link v-if="canRetry" :href="`/courses/${courseId}/assessments/${assessmentId}/start`" class="w-full">
+            <Link v-if="canRetry" :href="`/courses/${courseId}/assessments/${assessmentId}/start`" method="post" class="w-full">
                 <Button class="w-full gap-2">
                     <PlayCircle class="h-4 w-4" />
                     Coba Lagi

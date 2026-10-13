@@ -117,7 +117,7 @@ const getAssessmentActions = (assessment: AssessmentListItem) => {
     if (assessment.status !== 'published') {
         actions.push({ label: 'Edit', href: edit(props.course, assessment).url, icon: Pencil });
     } else {
-        actions.push({ label: 'Mulai', href: `/courses/${props.course.id}/assessments/${assessment.id}/start`, icon: PlayCircle });
+        actions.push({ label: 'Mulai', href: `/courses/${props.course.id}/assessments/${assessment.id}/start`, method: 'post', icon: PlayCircle });
     }
 
     return actions;

@@ -141,7 +141,7 @@ const scrollToQuestion = (index: number) => {
 
                     <!-- Questions Form -->
                     <Form
-                        v-bind="attemptSubmit([props.course.id, props.assessment.id, props.attempt.id]).form()"
+                        v-bind="attemptSubmit.form([props.course.id, props.assessment.id, props.attempt.id])"
                         class="space-y-6"
                         v-slot="{ errors, processing }"
                         enctype="multipart/form-data"

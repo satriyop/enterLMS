@@ -15,6 +15,7 @@ import type { Component, Raw } from 'vue';
 interface Action {
     label: string;
     href?: string;
+    method?: 'get' | 'post' | 'put' | 'patch' | 'delete';
     icon?: Component;
     variant?: 'default' | 'destructive';
     onClick?: () => void;
@@ -99,6 +100,7 @@ defineProps<Props>();
                             <DropdownMenuItem
                                 :as="action.href ? Link : 'button'"
                                 :href="action.href"
+                                :method="action.method"
                                 :class="action.variant === 'destructive' ? 'text-destructive focus:text-destructive' : ''"
                                 @click="action.onClick"
                             >
